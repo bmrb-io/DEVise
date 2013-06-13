@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.7.56.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.7  1999/11/16 17:02:05  wenger
+  Removed all DTE-related conditional compiles; changed version number to
+  1.7.0 because of removing DTE; removed DTE-related schema editing and
+  data source creation GUI.
+
   Revision 1.6  1999/01/20 22:47:09  beyer
   Major changes to the DTE.
   * Added a new type system.
@@ -64,8 +74,8 @@
  * function: DerivedTable::DerivedTable
  * Constructor.
  */
-DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
-    DevStatus &result)
+DerivedTable::DerivedTable(const char *name, TData *tdata,
+    const char *masterAttrName, DevStatus &result)
 {
 #if defined(DEBUG)
   printf("DerivedTable(0x%p)::DerivedTable(%s, %s, %s)\n", this, name,
@@ -81,7 +91,8 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
  * function: DerivedTable::DerivedTable
  * Constructor (creates dummy table).
  */
-DerivedTable::DerivedTable(char *name, char *masterAttrName, DevStatus &result)
+DerivedTable::DerivedTable(const char *name, const char *masterAttrName,
+     DevStatus &result)
 {
 #if defined(DEBUG)
   printf("DerivedTable(0x%p)::DerivedTable(%s)\n", this, name);

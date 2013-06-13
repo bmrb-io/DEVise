@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.34.14.1  2013/06/13 21:36:12  wenger
+  Fixed a bug in RangeInfo::ReturnRecs() that was found by fussier
+  compiler on CentOS6 -- surprised this hasn't caused obvious problems
+  in the past...
+
+  Revision 1.34  2008/10/13 19:45:25  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.33  2008/01/24 22:08:31  wenger
   Got rid of a bunch of compile warnings.
 
@@ -399,8 +407,9 @@ Boolean BufMgrFull::GetDataInMem(BufMgrRequest *req, Coord &startVal,
             return false;
         }
 
-        if (uHigh > req->high)
+        if (uHigh > req->high) {
             uHigh = req->high;
+	}
         
         /* Limit number of records returned to BMFULL_RECS_PER_BATCH. */
 	// now done in ReturnRecs;

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.49.2.1  2013/06/13 21:02:54  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.49  2013/02/19 00:06:46  wenger
+  Got rid of more sprintfs, strcpys and strcats.
+
   Revision 1.48  2013/01/25 22:13:16  wenger
   Fixed DEVise/JS bugs 1027 and 1028 -- we now re-make DEVise tmp and
   work dirs before we try to use them, in case /tmp cleaner has
@@ -463,7 +471,7 @@ AddEnvToPath(const char *envVar, const char *path)
     // rest of the function and copy the string at the end.
   }
 
-  char *match = NULL;
+  const char *match = NULL;
   if (envVal) {
     match = strstr(path, envVal);
   }

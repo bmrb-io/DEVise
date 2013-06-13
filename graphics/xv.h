@@ -9,6 +9,15 @@
   $Id$
 
   $Log$
+  Revision 1.5.22.1  2013/06/13 21:02:54  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.5  2005/12/06 20:03:17  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.4.14.1  2005/10/20 20:29:35  wenger
   Some errno-related fixes; added RH 7.3 stuff; clarifying note
   in linux setup script.
@@ -214,7 +223,8 @@
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
-#include <X11/Intrinsic.h>
+// More recent X11s don't have this header file.
+//TEMP? #include <X11/Intrinsic.h>
 #include <X11/Xatom.h>
 #include <X11/Xmd.h>
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.4.22.1  2013/06/13 21:02:47  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.4  2005/12/06 20:02:50  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.3.26.1  2005/09/28 22:29:34  wenger
   Various const-ifying to make things compile better on basslet.
 
@@ -60,6 +69,7 @@ public:
 
   virtual void MainLoop();
 
+  //TEMP -- arg should be const char *
   virtual int EvalCmd(char *cmd) { return Tcl_Eval(_interp, cmd); }
   	// process server command
   virtual void ControlCmd(int argc, const char * const *argv);

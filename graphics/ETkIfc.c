@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.8.14.1  2013/06/13 21:02:54  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.8  2008/10/13 19:45:16  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.7  2001/08/28 21:40:52  wenger
   Environment variables are now expanded in Tasvir file names, EmbeddedTk
   script names and arguments, and physical schema paths within logical
@@ -430,6 +438,7 @@ ETkIfc::LaunchServer(char *&serverName)
     } else if (pid == 0) {
       /* Child. */
       char *args[2];
+      //TEMP -- warning on const to non-const conversion here
       args[0] = "EmbeddedTk";
       args[1] = NULL;
       execvp(args[0], args);
@@ -438,6 +447,7 @@ ETkIfc::LaunchServer(char *&serverName)
       _exit(1);
     } else {
       /* Parent. */
+      //TEMP -- warning on const to non-const conversion here
       serverName = "localhost";
       char replyBuf[ETK_MAX_STR_LENGTH];
       int count = 0;
@@ -447,6 +457,7 @@ ETkIfc::LaunchServer(char *&serverName)
       const int maxConnectTries = 10;
       while (count < maxConnectTries && !done) {
         sleep(2);
+        //TEMP -- warning on const to non-const conversion here
         DevStatus tmpResult = ConnectAndSendETkCommand(serverName,
 						       "status", 0, NULL,
 						       replyBuf, 2.0);

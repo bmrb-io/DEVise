@@ -17,6 +17,14 @@
   $Id$
 
   $Log$
+  Revision 1.85.2.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.85  2013/02/19 00:06:51  wenger
+  Got rid of more sprintfs, strcpys and strcats.
+
   Revision 1.84  2009/11/16 21:48:46  wenger
   Added new 'isAngle' field to the mapping for HighLow symbols -- if
   this is turned on, the HighLow symbols treat the data as angles
@@ -2078,7 +2086,9 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	Coord x = map->GetX(gdata);
 	Coord y = map->GetY(gdata);
 
+        //TEMP -- warning here on const to non-const conversion
 	char *file = "polyline.dat";
+        //TEMP -- warning here on const to non-const conversion
 	char *format = "%lf%lf";
 
 	if (offset->_shapeAttrOffset[0] >= 0) {

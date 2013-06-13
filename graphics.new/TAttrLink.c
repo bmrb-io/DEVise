@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -29,6 +29,15 @@
   $Id$
 
   $Log$
+  Revision 1.19.56.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.19  2000/03/14 17:05:34  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.18  2000/02/16 18:51:44  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -127,7 +136,7 @@
 
 int TAttrLink::_objectCount = 0;
 DerivedTable *TAttrLink::_dummyTable = NULL;
-char *TAttrLink::_dummyAttrName = "dummy_attribute";
+const char *TAttrLink::_dummyAttrName = "dummy_attribute";
 
 /*------------------------------------------------------------------------------
  * function: TAttrLink::TAttrLink
@@ -410,8 +419,7 @@ TAttrLink::CreateMasterTable()
   DevStatus result = StatusOk;
 
   if (_masterView != NULL) {
-    //TEMP -- get rid of cast
-    _masterTableName = _masterView->CreateDerivedTable((char *)_name,
+    _masterTableName = _masterView->CreateDerivedTable(_name,
         _masterAttrName);
     if (_masterTableName == NULL) {
       char errBuf[1024];
@@ -598,7 +606,7 @@ TAttrLink::GetPhysMasterAttrName()
   printf("TAttrLink(%s)::GetPhysMasterAttrName()\n", _name);
 #endif
 
-  char *attrName = _masterAttrName;
+  const char *attrName = _masterAttrName;
 
   if (_masterTableName == NULL) {
     attrName = _dummyAttrName;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.49.22.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.49  2005/12/06 20:04:12  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.48.14.2  2005/09/28 17:14:50  wenger
   Fixed a bunch of possible buffer overflows (sprintfs and
   strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
@@ -354,7 +363,7 @@ void ServerAPI::DoAbort(const char *reason)
   checkAndTermBuf2(errBuf, formatted);
   reportErrNosys(errBuf);
 
-  char *args[] = { "AbortProgram", (char *)reason };
+  const char *args[] = { "AbortProgram", (char *)reason };
   SendControl(2, args, false);
   fprintf(stderr, "Server aborts.\n");
   delete _server;
@@ -434,7 +443,7 @@ void ServerAPI::SetBusy()
 #endif
 
   if (++_busy == 1) {
-    char *args[] = { "ChangeStatus", "1" };
+    const char *args[] = { "ChangeStatus", "1" };
     SendControl(2, args, false);
   }
 }
@@ -448,7 +457,7 @@ void ServerAPI::SetIdle()
   DOASSERT(_busy > 0, "Control panel unexpectedly busy");
 
   if (--_busy == 0) {
-    char *args[] = { "ChangeStatus", "0" };
+    const char *args[] = { "ChangeStatus", "0" };
     SendControl(2, args, false);
   }
 }
@@ -514,7 +523,7 @@ void ServerAPI::SelectView(View *view)
   printf("ServerAPI(0x%p)::SelectView(%s)\n", this, view->GetName());
 #endif
 
-  char *args[] = { "ProcessViewSelected", view->GetName() };
+  const char *args[] = { "ProcessViewSelected", view->GetName() };
   SendControl(2, args, true);
 }
 
@@ -525,7 +534,7 @@ ServerAPI::ShowMouseLocation(const char *dataX, const char *dataY)
   printf("ServerAPI(0x%p)::ShowMouseLocation(%s, %s)\n", this, dataX, dataY);
 #endif
 
-  char *args[] = { "ShowMouseLocation", (char *)dataX, (char *)dataY };
+  const char *args[] = { "ShowMouseLocation", (char *)dataX, (char *)dataY };
   SendControl(3, args, true);
 }
 
@@ -535,6 +544,7 @@ void ServerAPI::SyncNotify()
   printf("ServerAPI(0x%p)::SyncNotify()\n", this);
 #endif
 
+  //TEMP -- const to non-const conversion warning here
   SendControl(API_CTL, "SyncDone", false);
   ClearSyncNotify();
 }
@@ -545,6 +555,7 @@ void ServerAPI::Raise()
   printf("ServerAPI(0x%p)::Raise()\n", this);
 #endif
 
+  //TEMP -- const to non-const conversion warning here
   SendControl(API_CTL, "raise .", false);
 }
 

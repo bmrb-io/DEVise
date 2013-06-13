@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2009
+  (c) Copyright 1998-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -25,6 +25,15 @@
   $Id$
 
   $Log$
+  Revision 1.6.12.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.6  2009/05/13 22:41:30  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.5.44.2  2009/05/06 20:19:19  wenger
   Got rid of extra debug output, cleaned up a few things.
 
@@ -65,7 +74,6 @@
 #include "TData.h"
 #include "TAttrLink.h"
 #include "Session.h"
-#include "DerivedTable.h"
 #include "DataSeg.h"
 
 //#define DEBUG

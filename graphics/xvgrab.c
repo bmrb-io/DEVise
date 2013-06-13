@@ -9,6 +9,19 @@
   $Id$
 
   $Log$
+  Revision 1.6.64.1  2013/06/13 21:02:54  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.6  1998/09/22 17:23:45  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.5  1998/09/15 22:29:10  wenger
   Fixed bug 392 (MolBio.tk crash in JavaScreen -- caused by cursor not
   connected to any views); workaround to bug 391 (problems with Xvfb).
@@ -950,7 +963,9 @@ static int getxcolors(win_info, colors)
 
 
   if (win_info->visual->class == DirectColor) {
-    Pixel red, green, blue, red1, green1, blue1;
+    // Pixel no longer defined for us...
+    //TEMP? Pixel red, green, blue, red1, green1, blue1;
+    unsigned long red, green, blue, red1, green1, blue1;//TEMP?
 
 #ifdef DEBUG
     fprintf(stderr,"DirectColor visual\n");

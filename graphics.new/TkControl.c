@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2004
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.102.14.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.102  2008/09/11 20:55:37  wenger
+  A few more compile warning fixes...
+
   Revision 1.101  2005/12/06 20:04:15  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -588,24 +596,29 @@ void TkControlPanel::StartSession()
   /* Create a new tcl command for CRSP data */
   Tcl_CreateCommand(_interp, "crsp_extract", crsp_extract, 0, 0);
 
-  char *controlFile = "control.tk";
+  const char *controlFile = "control.tk";
   if (Init::BatchFile()) {
     controlFile = "batch.tcl";
     SetBatchMode(true);
   }
 
   char *envPath = getenv("DEVISE_LIB");
-  char *control;
+  const char *control;
   char buf[256];
   if (envPath) {
     sprintf(buf, "%s/%s", envPath, controlFile);
     control = buf;
-  } else
+  } else {
     control = controlFile;
+  }
 
   printf("Control panel file is: %s\n", control);
 
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 4)
   int code = Tcl_EvalFile(_interp, control);
+#else
+  int code = Tcl_EvalFile(_interp, (char *)control);
+#endif
   if (code != TCL_OK) {
     fprintf(stderr,"%s\n", _interp->result);
     reportErrSys("Fatal error in Tcl_EvalFile()");

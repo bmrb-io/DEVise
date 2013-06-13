@@ -24,7 +24,7 @@
     // 		already the largest possible value of this attr of this TData 
 Boolean RangeInfo::ReturnRecs(Coord lowVal, Coord highVal, char *&buf,
 			Coord &startVal, Coord &endVal, int &numRecs, 
-			Coord nextVal)
+			Coord &nextVal)
     {
 	if ( (lowVal > highVal) || (highVal > interval.High)
 	   || (lowVal < interval.Low) ) 

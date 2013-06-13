@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.7.22.1  2013/06/13 21:02:41  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.7  2005/12/06 20:01:13  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.6.14.1  2005/09/06 21:20:00  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -92,6 +101,7 @@ Datum::Datum(const char *bytearray, int size) {
 	
 	datasize = size;
 	dataval = new char[size];
+        //TEMP -- const to non-const conversion warning here
 	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
 	memmove(dataval, bytearray, size);
 }
@@ -100,6 +110,7 @@ Datum::Datum(const Datum& d) {
 		
 	datasize = d.datasize;
 	dataval = new char[datasize];
+        //TEMP -- const to non-const conversion warning here
 	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
 	memmove(dataval, d.dataval, datasize);
 }
@@ -130,6 +141,7 @@ Datum::set(char *bytearray, int size) {
 
 	datasize = size;
 	dataval = new char[size];
+        //TEMP -- const to non-const conversion warning here
 	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
 	memmove(dataval, bytearray, size);
 }
@@ -153,6 +165,7 @@ Datum::operator=(const Datum& d) {
 
 	datasize = d.datasize;
 	dataval = new char[datasize];
+        //TEMP -- const to non-const conversion warning here
 	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
 	memmove(dataval, d.dataval, datasize);
 	return *this;

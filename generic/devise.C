@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.25.2.1  2013/06/13 21:02:47  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.25  2013/02/08 23:09:28  wenger
+  Changed a bunch more sprintfs to snprintfs; fixed errors in the
+  error return in JavaScreenCmd; added provision for other parts of
+  the DEVise code to "register" errors in JavaScreenCmd (if they can't
+  return an error code up the call stack) -- MappingInterp now uses
+  this functionality.  Working on sprintf->snprintf conversion in
+  GDataSock (not finished).
+
   Revision 1.24  2005/12/06 20:02:51  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -188,11 +201,14 @@
 #include "Version.h"
 #include "Util.h"
 
+#if defined(DOASSERT)
+#  undef DOASSERT
+#endif
 #define  DOASSERT(c,r) {if (!(c)) DoAbort(r); } 
 #undef	DEBUG
 
 static char *_progName = 0;
-static char *_hostName = "localhost";
+static const char *_hostName = "localhost";
 static int _portNum = DefaultNetworkPort;
 static DeviseClient *_client;
 static int _dataFd = -1;
@@ -205,7 +221,7 @@ static char *_restoreFile = 0;
 
 int _useopengl = 0;
 
-static void DoAbort(char *reason)
+static void DoAbort(const char *reason)
 {
     fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
     char cmd[256];
@@ -385,8 +401,9 @@ void SetupConnection()
       printf("\n");
     }
 
-    _client = new DeviseClient("DEVise", _hostName, _portNum, !_idleScript, 
-		"NULL");
+    //TEMP -- get rid of casts
+    _client = new DeviseClient((char *)"DEVise", (char *)_hostName, _portNum, !_idleScript, 
+		(char *)"NULL");
 
     Tcl_LinkVar(_client->Interp(), "argv0", (char *)&_progName,
 	TCL_LINK_STRING);
@@ -417,14 +434,15 @@ void SetupConnection()
     
     if(!_quiet) printf("Connection established.\n\n");
     
-    char *controlFile = "groupcontrol.tk";
+    const char *controlFile = "groupcontrol.tk";
     if (_idleScript) {
         controlFile = "batch.tcl";
-        (void) _client->EvalCmd("DEVise setBatchMode 1");
+        //TEMP -- get rid of cast
+        (void) _client->EvalCmd((char *)"DEVise setBatchMode 1");
     }
     
     char *envPath = getenv("DEVISE_LIB");
-    char *control;
+    const char *control;
     char buf[256];
     if (envPath) {
         int formatted = snprintf(buf, sizeof(buf), "%s/%s", envPath,
@@ -437,7 +455,11 @@ void SetupConnection()
     
     if(!_quiet) printf("Control panel file is: %s\n", control);
     
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 4)
     int code = Tcl_EvalFile(_client->Interp(), control);
+#else
+    int code = Tcl_EvalFile(_client->Interp(), (char *)control);
+#endif
     if (code != TCL_OK) {
         fprintf(stderr, "Cannot start up control panel.\n");
         fprintf(stderr, "%s\n", _client->Interp()->result);
@@ -509,7 +531,8 @@ int main(int argc, char **argv)
 
     if (_idleScript) {
         if (!_quiet) printf("Waiting for server synchronization.\n");
-        (void) _client->EvalCmd("DEVise sync");
+        //TEMP -- get rid of cast
+        (void) _client->EvalCmd((char *)"DEVise sync");
         while(!_client->SyncDone()) {
 	    _client->ReadServer();
         }

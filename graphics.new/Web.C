@@ -7,6 +7,15 @@
   $Id$
 
   $Log$
+  Revision 1.15.22.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.15  2005/12/06 20:04:15  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.14.46.1  2005/10/20 20:29:41  wenger
   Some errno-related fixes; added RH 7.3 stuff; clarifying note
   in linux setup script.
@@ -122,8 +131,8 @@
 
 #define BUF_LENGTH 1024
 
-static char *uname = "anonymous";
-static char *passwd = "dummy@";
+static const char *uname = "anonymous";
+static const char *passwd = "dummy@";
 
 static char buffer[BUF_LENGTH];
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.9.14.2  2013/06/13 21:36:12  wenger
+  Fixed a bug in RangeInfo::ReturnRecs() that was found by fussier
+  compiler on CentOS6 -- surprised this hasn't caused obvious problems
+  in the past...
+
+  Revision 1.9.14.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.9  2008/09/23 22:55:41  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.8  2001/12/28 18:34:39  wenger
   Fixed bugs 727 and 730 (problems with line graphs in DEVise).
 
@@ -132,7 +145,7 @@ public:
     // 		already the largest possible value of this attr of this TData 
     Boolean ReturnRecs(Coord lowVal, Coord highVal, char *&buf,
 			Coord &startVal, Coord &endVal, int &numRecs, 
-			Coord nextVal);
+			Coord &nextVal);
 
     // given pointer to a record and AttrName, find the value of this attribute
     Boolean GetAttrVal(const char *record, const char *attrName, double &value);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2012
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.36.2.1  2013/06/13 21:02:54  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.36  2012/04/30 22:21:10  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.35.12.1  2012/04/27 15:36:15  wenger
   We now escape any commas in the actual data strings for data download.
 
@@ -274,7 +282,7 @@ extern void CheckDirSpace(const char *dirname, const char *envVar,
 
 /* strip file of path name */
 inline const char *StripPath(const char *name) {
-  char *last;
+  const char *last;
   if ((last = strrchr(name,'/')) == (char *)NULL)
     return name;
   return last + 1;
@@ -318,7 +326,7 @@ inline Boolean EndsWith(const char *main, const char *suffix)
 {
   Boolean result = false;
 
-  char *start = strstr(main, suffix);
+  const char *start = strstr(main, suffix);
   if (start != NULL) {
     if (!strcmp(start, suffix)) {
       result = true;

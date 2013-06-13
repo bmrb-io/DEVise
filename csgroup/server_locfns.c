@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.10.14.1  2013/06/13 21:02:41  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.10  2008/09/11 20:55:23  wenger
+  A few more compile warning fixes...
+
   Revision 1.9  2005/12/06 20:01:13  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -182,6 +190,7 @@ AcptSwitchConnection(int sockfd, struct sockaddr *Address, int *size) {
 #endif
 	    tmpSize;
 	if ((acptfd = accept(sockfd, Address, &tmpSize)) < 0) {
+                //TEMP -- const to non-const conversion warning here
 		{ ERROR(FATAL, "Accept Failed"); }
 	}
 	*size = tmpSize;
@@ -232,11 +241,13 @@ RPCInit(char *server, ConnectInfo Address) {
     SwitchAddress.sin_port = htons(SRV_PORT);
 
 	if ((MySocketfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+                //TEMP -- const to non-const conversion warning here
 		{ ERROR(FATAL, "Socket Failed"); }
 	}
 
 	if (setsockopt(MySocketfd, SOL_SOCKET, SO_REUSEADDR,
 			(char *) &code, sizeof(code)) < 0) {
+                //TEMP -- const to non-const conversion warning here
 		{ ERROR(FATAL, "Setsockopt Failed"); }
 	}
 
@@ -244,9 +255,11 @@ RPCInit(char *server, ConnectInfo Address) {
 		 sizeof(Address)) < 0) {
 		fprintf(stderr, "Error: %d", errno);
 		perror("Bind: ");
+                //TEMP -- const to non-const conversion warning here
 		{ ERROR(FATAL, "Bind Failed"); }
 	}
 	if (listen(MySocketfd, 5) < 0) {
+                //TEMP -- const to non-const conversion warning here
 		{ ERROR(FATAL, "Listen Failed"); }
 	}
 	return MySocketfd;
@@ -484,6 +497,7 @@ ReConnect(void) {
 			}
 		 	if ((gInfo->fd = AcptSwitchConnection(MySocketfd, 
 				 (struct sockaddr *) &Address, &size)) <0){
+                //TEMP -- const to non-const conversion warning here
 					{ ERROR(FATAL, "Accept Failed"); }
 			}
 		}

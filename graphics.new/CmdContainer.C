@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2012
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.92.2.1  2013/06/13 21:03:00  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.92  2012/04/30 22:21:19  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.91.4.2  2012/04/23 18:48:49  wenger
   Data download now handles piles (still with dummy data); partway to
   correctly doing Miron's requested change of creating a file that we
@@ -627,6 +635,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	_collabEnabled = true;
 
 	// JAVA Screen commands
+	//TEMP -- all of these produce const to non-const conversion warnings...
 	REGISTER_COMMAND(JAVAC_GetSessionList)
 	REGISTER_COMMAND(JAVAC_OpenSession)
 	REGISTER_COMMAND(JAVAC_CloseCurrentSession)

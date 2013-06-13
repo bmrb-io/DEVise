@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2007
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.16.14.1  2013/06/13 21:02:54  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.16  2008/09/11 20:28:04  wenger
+  Committed more of the "easy" compile warning fixes.
+
   Revision 1.15  2008/01/24 22:08:23  wenger
   Got rid of a bunch of compile warnings.
 
@@ -100,6 +108,7 @@ using namespace std;
 
 #include <sys/time.h>
 #include <iostream>
+//TEMP -- strstream is deprecated
 #include <strstream>
 
 #include "DevError.h"

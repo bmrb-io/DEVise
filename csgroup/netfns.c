@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.8.64.1  2013/06/13 21:02:41  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.8  1998/08/21 22:16:09  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.7  1998/07/29 14:19:43  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -152,6 +161,7 @@ ConnectWithTimeout(int sockfd, struct sockaddr *Address,
 // errno is 2 (*not* EINPROGRESS)!!  RKW Mar. 25, 1998.
 	 	 if (errno != EINPROGRESS) {
          	fprintf(stderr, "errno = %d\n", errno);
+                    //TEMP -- const to non-const conversion warning here
 		    { ERROR(NON_FATAL, "Connect Failed"); }
 			return -1;
 		 }

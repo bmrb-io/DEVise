@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.11.6.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.11  2010/09/01 18:44:17  wenger
+  Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
+
   Revision 1.10.50.2  2010/08/19 17:12:50  wenger
   Got rid of a bunch of debug output, etc.
 
@@ -323,7 +331,7 @@ void
 MasterSlaveLink::Print()
 {
   DeviseLink::Print();
-  char *masterName = NULL;
+  const char *masterName = NULL;
   if (_masterView != NULL) _masterView->GetName();
   if (masterName == NULL) masterName = "NULL";
   printf("Master view = %s\n", masterName);

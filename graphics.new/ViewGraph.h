@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2012
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.96.2.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.96  2012/04/30 22:21:19  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.95.4.4  2012/04/24 16:38:46  wenger
   Improved how data download code handles opening the data file; we
   now exclude views from the data download that are excluded from
@@ -874,8 +882,8 @@ public:
   // Send GData to socket or file.
   DevStatus Send(void **gdataArray, TDataMap *map, int recCount);
 
-  virtual char *CreateDerivedTable(char *namePrefix, char *masterAttrName) {
-    return NULL; }
+  virtual char *CreateDerivedTable(const char *namePrefix,
+    const char *masterAttrName) { return NULL; }
   virtual void DestroyDerivedTable(char *tableName) {}
   virtual DerivedTable *GetDerivedTable(char *tableName) { return NULL; }
 

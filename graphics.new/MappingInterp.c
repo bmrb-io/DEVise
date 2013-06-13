@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.109.2.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.109  2013/02/11 22:29:00  wenger
+  More sprintf->snprintf conversions, and more error checking in
+  JavaScreenCmd.
+
   Revision 1.108  2013/02/09 23:22:46  wenger
   Fixed up GDataSock stuff.
 
@@ -819,6 +828,7 @@ const AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
       // recId and a constant mapping.
       if (entry.cmd.attrNum == -1) {
 	static AttrInfo recId;
+        //TEMP -- warning here on const to non-const conversion
         recId.name = REC_ID_NAME;
         recId.attrNum = -1;
         recId.offset = -1;

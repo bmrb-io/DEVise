@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2012
+  (c) Copyright 1998-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.140.2.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.140  2012/04/30 22:21:19  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.139.4.2  2012/04/23 18:48:49  wenger
   Data download now handles piles (still with dummy data); partway to
   correctly doing Miron's requested change of creating a file that we
@@ -1593,6 +1601,7 @@ DeviseCommand_create::Run(int argc, char** argv)
         // HACK to provide backward compatibility
         if (!strcmp(argv[2], "WinVertical") ||
     	!strcmp(argv[2], "WinHorizontal")){
+	  //TEMP -- const to non-const conversion warning here
           argv[2] = "TileLayout";
     	}
     #if defined(DEBUG)
@@ -2631,11 +2640,13 @@ DeviseCommand_getCursorViews::Run(int argc, char** argv)
           if (src) {
     	    name[0] = src->GetName();
           } else {
+	    //TEMP -- const to non-const conversion warning here
     	    name[0] = "";
 	  }
           if (dst) {
     	    name[1] = dst->GetName();
           } else {
+	    //TEMP -- const to non-const conversion warning here
     	    name[1] = "";
 	  }
           ReturnVal(2, name); // 2 is argc here
@@ -3966,6 +3977,7 @@ DeviseCommand_getViewGDS::Run(int argc, char** argv)
     
           GDataSock::Params params;
           view->GetSendParams(params);
+	  //TEMP -- const to non-const conversion warning here
           if (params.file == NULL) params.file = "";
           char buf[1024];
           int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
@@ -6971,6 +6983,7 @@ IMPLEMENT_COMMAND_BEGIN(viewGetJSSendP)
         Boolean sendToSocket;
         GDataSock::Params params;
         view->GetJSSendP(drawToScreen, sendToSocket, params);
+	//TEMP -- const to non-const conversion warning here
         if (params.file == NULL) params.file = "";
         char buf[1024];
         int formatted = snprintf(buf, sizeof(buf)/sizeof(char),

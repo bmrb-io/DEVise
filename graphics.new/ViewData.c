@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.34.2.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.34  2013/01/28 20:37:43  wenger
+  Changed a bunch more sprintfs to snprintfs.
+
   Revision 1.33  2009/05/13 22:41:30  wenger
   Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
   the trunk.
@@ -509,7 +517,8 @@ ViewData::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 
 //******************************************************************************
 char *
-ViewData::CreateDerivedTable(char *namePrefix, char *masterAttrName)
+ViewData::CreateDerivedTable(const char *namePrefix,
+     const char *masterAttrName)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)

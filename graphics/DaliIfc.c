@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.20.14.1  2013/06/13 21:02:54  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.20  2008/09/11 20:28:04  wenger
+  Committed more of the "easy" compile warning fixes.
+
   Revision 1.19  2001/08/28 21:40:52  wenger
   Environment variables are now expanded in Tasvir file names, EmbeddedTk
   script names and arguments, and physical schema paths within logical
@@ -503,10 +511,11 @@ DaliIfc::LaunchServer()
       result = StatusFailed;
     } else if (pid == 0) {
       /* Child. */
-      char *args[2];
+      char * args[2];
 #if 0
       args[0] = "TasvirWithPaths";
 #else
+      //TEMP -- warning on const to non-const conversion here
       args[0] = "Tasvir";
 #endif
       args[1] = NULL;

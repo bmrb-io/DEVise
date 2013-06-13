@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.103  2013/02/28 16:45:35  wenger
+  Changed version to 1.11.4x1, added 1.11.4 version history section.
+
+  Revision 1.102.2.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
   Revision 1.102  2013/02/27 23:34:04  wenger
   Changed version to 1.11.3 for release.
 
@@ -614,7 +622,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.4x1"/*TEMP*/;
+static const char *	version = "1.11.4x2"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2013";
@@ -627,7 +635,7 @@ static const char *	winLogo = "Visualization by DEVise (tm) 2013";
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: Version::Get
@@ -670,7 +678,7 @@ Version::GetWinLogo()
 void
 Version::PrintInfo(LogFunc logFunc)
 {
-  char *msg = "DEVise Data Visualization Software\n";
+  const char *msg = "DEVise Data Visualization Software\n";
   printf("%s", msg);
   // if (logFunc) logFunc(msg);
 
@@ -701,13 +709,13 @@ Version::PrintInfo(LogFunc logFunc)
   // if (logFunc) logFunc(buf);
 
   if (logFunc) {
-    char *envVars[] = { "DEVISE_DAT", "DEVISE_HOME_TABLE", "DEVISE_CACHE",
+    const char *envVars[] = { "DEVISE_DAT", "DEVISE_HOME_TABLE", "DEVISE_CACHE",
         "DEVISE_SCHEMA", "DEVISE_SESSION", "DEVISE_TMP_SESSION",
 	"DEVISE_PALETTE", "DEVISE_LIB", "DEVISE_TMP", "DEVISE_WORK",
 	"DEVISE_LOG_DIR"};
     int varCount = sizeof(envVars) / sizeof(envVars[0]);
     for (int index = 0; index < varCount; index++) {
-      char *value = getenv(envVars[index]);
+      const char *value = getenv(envVars[index]);
       if (!value) {
         value = "null";
       }

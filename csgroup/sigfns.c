@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.3.68.1  2013/06/13 21:02:41  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.3  1998/03/03 20:54:06  wenger
+  Fixed bad free in csgroup code; cleaned up (somewhat) the use of the
+  (highly-dangerous) ERROR macro.
+
   Revision 1.2  1998/02/12 17:15:08  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -67,6 +76,7 @@ sig_install(int sig, SigHandler handler) {
 	sigemptyset(&act.sa_mask);
 	act.sa_flags = 0;
 	if (sigaction(sig, &act, 0) < 0) {
+                //TEMP -- const to non-const conversion warning here
 		{ ERROR(FATAL, "SigAction Failed\n"); }
 	}
 }
@@ -76,10 +86,12 @@ sig_block(int sig) {
 	sigset_t set;
 
 	if (sigprocmask(SIG_SETMASK, 0, &set) < 0) {
+                //TEMP -- const to non-const conversion warning here
 		{ ERROR(NON_FATAL, "Unable to read procmask"); }
 	}
 	sigaddset(&set, sig);
 	if (sigprocmask(SIG_SETMASK, &set, 0) < 0) {
+                //TEMP -- const to non-const conversion warning here
 		{ ERROR(NON_FATAL, "Unable to set procmask"); }
 	}
 }
@@ -89,10 +101,12 @@ sig_unblock(int sig) {
 	sigset_t set;
 
 	if (sigprocmask(SIG_SETMASK, 0, &set) < 0) {
+                //TEMP -- const to non-const conversion warning here
 		{ ERROR(NON_FATAL, "Unable to read procmask"); }
 	}
 	sigdelset(&set, sig);
 	if (sigprocmask(SIG_SETMASK, &set, 0) < 0) {
+                //TEMP -- const to non-const conversion warning here
 		{ ERROR(NON_FATAL, "Unable to set procmask"); }
 	}
 }

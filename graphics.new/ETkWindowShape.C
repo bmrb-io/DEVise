@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.22.22.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.22  2005/12/06 20:03:59  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.21.10.2  2005/09/06 21:20:17  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -108,6 +117,7 @@
  */
 
 #include <sys/param.h>
+//TEMP -- strstream is deprecated
 #include <strstream>
 
 #include "ETkWindowShape.h"

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,19 @@
   $Id$
 
   $Log$
+  Revision 1.4.64.2  2013/06/13 21:36:12  wenger
+  Fixed a bug in RangeInfo::ReturnRecs() that was found by fussier
+  compiler on CentOS6 -- surprised this hasn't caused obvious problems
+  in the past...
+
+  Revision 1.4.64.1  2013/06/13 21:03:01  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.4  1998/06/15 19:55:19  wenger
+  Fixed bugs 338 and 363 (problems with special cases of set links).
+
   Revision 1.3  1998/05/06 22:04:52  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -53,9 +66,9 @@ class UniqueInserter;
 
 class DerivedTable {
 public:
-  DerivedTable(char *name, TData *tdata, char *masterAttrName,
+  DerivedTable(const char *name, TData *tdata, const char *masterAttrName,
       DevStatus &result);
-  DerivedTable(char *name, char *masterAttrName, DevStatus &result);
+  DerivedTable(const char *name, const char *masterAttrName, DevStatus &result);
   virtual ~DerivedTable();
 
   virtual char *GetName() { return _name; }

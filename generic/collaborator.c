@@ -31,6 +31,15 @@
   $Id$
 
   $Log$
+  Revision 1.7.64.1  2013/06/13 21:02:47  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.7  1998/08/21 22:16:40  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.6  1998/08/18 15:22:15  wenger
   Found and fixed bug 384 (devisec not quitting).
 
@@ -244,6 +253,7 @@ main(int argc, char *argv[])
 	InitRegPort();
 	GroupDBInit();
 	svc_MainLoop();
+        //TEMP -- const to non-const conversion warning here
 	_msgout("svc_MainLoop returned");
 
 #ifdef __tcltk

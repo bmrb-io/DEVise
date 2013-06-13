@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.23.2.1  2013/06/13 21:02:54  wenger
+  Changes to get DEVise to compile/link on CentOS6 (with comments for
+  a bunch of unfixed warnings); minor mods to get this version to also
+  compile on RHEL5...
+
+  Revision 1.23  2013/02/09 23:22:39  wenger
+  Fixed up GDataSock stuff.
+
   Revision 1.22  2013/02/08 23:09:36  wenger
   Changed a bunch more sprintfs to snprintfs; fixed errors in the
   error return in JavaScreenCmd; added provision for other parts of
@@ -416,6 +424,7 @@ GDataSock::GetShapeAttr(int attrNum, const AttrInfo *attrInfo,
       char *tmpStr;
       if (stringTable->Lookup( (int) attrVal.numericalValue,
           tmpStr) < 0) {
+        //TEMP -- warning here on const to non-const conversion
         tmpStr = "<error>";
         char buf[1024];
         int formatted = snprintf(buf, sizeof(buf),
