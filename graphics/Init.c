@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.76  2013/01/25 22:13:16  wenger
+  Fixed DEVise/JS bugs 1027 and 1028 -- we now re-make DEVise tmp and
+  work dirs before we try to use them, in case /tmp cleaner has
+  removed them.
+
   Revision 1.75  2012/04/30 22:21:10  wenger
   Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 
@@ -566,7 +571,7 @@ void Init::DoInit(int &argc, char **argv)
   }
 
 #define MAXARGS 512
-  char *args[512];
+  char *args[MAXARGS];
 
   DOASSERT(argc <= MAXARGS, "Too many arguments");
 
@@ -586,8 +591,8 @@ void Init::DoInit(int &argc, char **argv)
   const int bufSize = MAXPATHLEN;
   char buf[bufSize];
   int formatted = snprintf(buf, bufSize, "%s/DEVise_%ld", tmpDir, (long)pid);
-  DOASSERT(checkAndTermBuf2(buf, formatted) == StatusOk,
-      "String space too small");
+  DevStatus tmpStatus = checkAndTermBuf2(buf, formatted);
+  DOASSERT(tmpStatus == StatusOk, "String space too small");
   CheckAndMakeDirectory(buf, true);
   _tmpDir = CopyString(buf);
 
