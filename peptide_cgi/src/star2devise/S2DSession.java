@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2012
+// (c) Copyright 2001-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2012/05/11 20:33:53  wenger
+// Changed dynamics movie defaults to devise=1 so Jon can mess with things
+// at his end w/o changing Peptide-CGI configuration; the generate_movies
+// script now saves the s2d.out files; all entries shown in the dynamics
+// demo page; minor fixes to S2DSession code.
+//
 // Revision 1.38  2012/01/27 23:19:37  wenger
 // Added the -s2p_name and -dyn_movie_demo arguments and generate_movies
 // script to allow generation of visualizations for demo dynamics movies.
@@ -160,13 +166,31 @@ public class S2DSession {
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
-    static void setJSDataDir(String dir)
+    public static void setJSDataDir(String dir)
     {
         _jsDataDir = dir;
     }
 
     //-------------------------------------------------------------------
-    static void getProperties(Properties props) throws S2DException
+    public static void makeDir(String sessionDir, String name)
+    {
+	String directory = sessionDir + File.separator + name;
+        if (doDebugOutput(5)) {
+	    System.out.println("Making session directory " + directory);
+	}
+
+	File dir = new File(directory);
+	if (!dir.isDirectory()) {
+	    // Note: stupid Java creates the directory here with 664
+	    // permissions; in spite of that, we seem to be able to
+	    // write into it.  The permissions are then fixed by
+	    // the set_modes script at the end.
+	    dir.mkdir();
+	}
+    }
+
+    //-------------------------------------------------------------------
+    public static void getProperties(Properties props) throws S2DException
     {
         _dynMovieUrl = props.getProperty("bmrb_mirror.dyn_movie_url");
         if (_dynMovieUrl == null) {
@@ -626,15 +650,6 @@ TEMP*/
 	String directory = sessionDir + File.separator + name;
         String outFileName = directory + File.separator + fullName +
 	  sessionSuffix + frameIndexStr + S2DNames.SESSION_SUFFIX;
-
-	File dir = new File(directory);
-	if (!dir.isDirectory()) {
-	    // Note: stupid Java creates the directory here with 664
-	    // permissions; in spite of that, we seem to be able to
-	    // write into it.  The permissions are then fixed by
-	    // the set_modes script at the end.
-	    dir.mkdir();
-	}
 
 	try {
             FileWriter writer = S2DFileWriter.create(outFileName);

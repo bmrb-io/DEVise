@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.323  2013/05/28 20:24:54  wenger
+// Fixed test_tar5 -- data apparently changed.
+//
 // Revision 1.322  2013/04/19 19:28:47  wenger
 // Working on bug 141:  fixed problems with how we determine the polymer
 // type in S2DmmCifIfc.getBmrbResLists() (although this didn't fully fix
@@ -853,7 +856,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.3x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.3x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
@@ -2910,6 +2913,11 @@ public class S2DMain {
         if (doDebugOutput(3)) {
             System.out.println("process()");
         }
+	//
+	//
+	// Make sure the session directory exists.
+	//
+	S2DSession.makeDir(_sessionDir, _name);
 
 	if (_cmdFrameIndex != -1) {
 	    // If we get here, it means that coord_index was specified on the
