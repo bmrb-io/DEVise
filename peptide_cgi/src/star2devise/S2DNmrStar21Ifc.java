@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  2013/04/19 19:28:47  wenger
+// Working on bug 141:  fixed problems with how we determine the polymer
+// type in S2DmmCifIfc.getBmrbResLists() (although this didn't fully fix
+// bug 141); also added code to print the entity assembly ID and chain ID
+// when we have a sequence mismatch (so it's easier to figure out what's
+// going on).
+//
 // Revision 1.24  2010/12/07 17:41:15  wenger
 // Did another version history purge.
 //
@@ -522,6 +529,10 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     protected S2DNmrStar21Ifc(StarNode starTree) throws S2DException
     {
 	super(starTree);
+
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DNmrStar21Ifc.S2DNmrStar21Ifc()");
+	}
 
 	setStarNames();
 

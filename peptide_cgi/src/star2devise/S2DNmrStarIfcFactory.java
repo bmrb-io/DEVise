@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2010/09/21 19:37:21  wenger
+// Added bug 117; temporarily removed some checks from test67 so it works
+// (related to bug 117); we now print the URL of the STAR files we use
+// (to aid debugging).
+//
 // Revision 1.4  2010/03/11 20:31:29  wenger
 // Implemented to-do 126 (multiple NMR-STAR file paths), except that
 // not all config files are updated yet; added checks that the URL
@@ -241,34 +246,39 @@ public abstract class S2DNmrStarIfcFactory {
 
 	S2DNmrStarIfc ifc = null;
 
-	S2DNmrStar21Ifc ifc21 = new S2DNmrStar21Ifc(starTree);
-	S2DNmrStar30Ifc ifc30 = new S2DNmrStar30Ifc(starTree);
+	//
+	// Figure out what version of file we have -- start out by
+	// looking for 3.1 because that should be the most common
+	// case.
+	//
 	S2DNmrStar31Ifc ifc31 = new S2DNmrStar31Ifc(starTree);
-
-	if (ifc21.isNmrStar21()) {
-            if (doDebugOutput(1)) {
-	        System.out.println("File is NMR-STAR 2.1");
-	    }
-	    ifc = ifc21;
-
-	} else if (ifc31.isNmrStar31()) {
+	if (ifc31.isNmrStar31()) {
             if (doDebugOutput(1)) {
 	        System.out.println("File is NMR-STAR 3.1");
 	    }
 	    ifc31.checkForProteins();
 	    ifc = ifc31;
-
-	} else if (ifc30.isNmrStar30()) {
-            if (doDebugOutput(1)) {
-	        System.out.println("File is NMR-STAR 3.0");
-	    }
-	    ifc30.checkForProteins();
-	    ifc = ifc30;
-
 	} else {
-	    System.err.println("Warning: possibly unknown or unsupported " +
-	      "NMR-STAR version; trying NMR-STAR 2.1");
-	    ifc = ifc21;
+	    S2DNmrStar21Ifc ifc21 = new S2DNmrStar21Ifc(starTree);
+	    if (ifc21.isNmrStar21()) {
+                if (doDebugOutput(1)) {
+	            System.out.println("File is NMR-STAR 2.1");
+	        }
+	        ifc = ifc21;
+	    } else {
+	        S2DNmrStar30Ifc ifc30 = new S2DNmrStar30Ifc(starTree);
+	        if (ifc30.isNmrStar30()) {
+                    if (doDebugOutput(1)) {
+	                System.out.println("File is NMR-STAR 3.0");
+	            }
+	            ifc30.checkForProteins();
+	            ifc = ifc30;
+	        } else {
+	            System.err.println("Warning: possibly unknown or unsupported " +
+	              "NMR-STAR version; trying NMR-STAR 2.1");
+	            ifc = ifc21;
+		}
+	    }
 	}
 
 	return ifc;
