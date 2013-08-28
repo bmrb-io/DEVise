@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  2009/09/23 22:05:19  wenger
+#  Updated release scripts for linux_rhel5.
+#
 #  Revision 1.14  2006/07/14 19:45:43  wenger
 #  More fixes to release scripts.
 #
@@ -113,6 +116,7 @@ if ($#argv < 2) then
   echo "    linux_tao10 (Linux (Tao 1.0)/Intel)"
   echo "    linux_centos (Linux (CentOS)/Intel)"
   echo "    linux_rhel5 (Linux (RHEL 5)/Intel)"
+  echo "    linux_rhel6 (Linux (RHEL 6)/AMD)"
   exit 1
 endif
 
@@ -217,6 +221,9 @@ foreach arch ($arches)
   else if ($arch == linux_rhel5) then
     set mainarch = i386_rhel5
     set otherarches = 
+  else if ($arch == linux_rhel6) then
+    set mainarch = amd64_rhel6
+    set otherarches = 
   else if ($arch == solaris) then
     set mainarch = sunx86_54
     set otherarches = (sunx86_55 sunx86_56 sunx86_57 sunx86_58)
@@ -265,6 +272,8 @@ foreach arch ($arches)
     set mainarch = i386_cent40
   else if ($arch == linux_rhel5) then
     set mainarch = i386_rhel5
+  else if ($arch == linux_rhel6) then
+    set mainarch = amd64_rhel6
   else if ($arch == solaris) then
     set mainarch = sunx86_54
   else if ($arch == solsparc) then
