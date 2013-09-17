@@ -52,7 +52,8 @@ devise		-a Makefile.common README \
 			run_public run.new \
 			scripts sgi solaris solsparc src sun tape test \
 			util xvertext linux_amd64 linux_rh72 linux_rh73 \
-			linux_rh9 linux_tao10 linux_centos linux_rhel5
+			linux_rh9 linux_tao10 linux_centos linux_rhel5 \
+			linux_rhel6
 devisefull	-a devise Java/JavaScreen EmbeddedTk ImTools QCIMS dist
 devisebmrb	-a devisefull peptide_cgi bmrb
 JS		-a Java/JavaScreen lib design_doc
