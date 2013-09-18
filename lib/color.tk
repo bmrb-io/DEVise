@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2001
+#  (c) Copyright 1992-2013
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -28,17 +28,17 @@
 
 set monochrome 0
 
-set colors(controlPanelForeground) white
-set colors(controlPanelBackground) black
-set colors(controlPanelStatus) DarkSlateGray
+set colors(controlPanelForeground) black
+set colors(controlPanelBackground) LightSteelBlue
+set colors(controlPanelStatus) gold
 
 set colors(groupFrameForeground) gold
 set colors(groupFrameAlertForeground) red
-set colors(groupFrameBackground) DarkOliveGreen
+set colors(groupFrameBackground) LightSteelBlue
 set colors(groupFrameHighlight) white
 
-set colors(aboutFrameForeground) gold
-set colors(aboutFrameBackground) DarkOliveGreen
+set colors(aboutFrameForeground) red4
+set colors(aboutFrameBackground) LightSteelBlue
 set colors(aboutFrameHighlight) white
 
 set colors(defaultViewForeground) black
@@ -46,7 +46,7 @@ set colors(defaultViewBackground) white
 
 set colors(textHighlight) red
 set colors(layoutModeText) red
-set colors(displayModeText) white
+set colors(displayModeText) black
 set colors(stopModeText) red
 set colors(runningModeText) white
 
