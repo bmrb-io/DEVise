@@ -3,7 +3,9 @@
 DEVise 1.11.4
 -------------
 
-* Got DEVise to compile on Cent OS 6.
+* Got DEVise to compile on CentOS 6.
+
+* Got DEVise to compile on RHEL 6.
 
 
 DEVise 1.11.3
