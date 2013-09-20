@@ -2,10 +2,11 @@
 
 DEVise 1.11.4
 -------------
-
 * Got DEVise to compile on CentOS 6.
 
 * Got DEVise to compile on RHEL 6.
+
+* Changed colors of the Tcl/Tk GUI.
 
 
 DEVise 1.11.3
