@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.7.14.1  2013/09/20 15:29:27  wenger
+  More Centos 6 compile fixes.
+
+  Revision 1.7  2008/10/13 19:45:16  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.6  1997/06/10 18:38:16  wenger
   Got DEVise to compile on HP again; updated hp, solaris, and sun dependencies.
 
@@ -174,7 +180,7 @@ class ETkIfc
     // will be true if this succeeded.
     //
     //
-    static DevStatus LaunchServer(char *&serverName);
+    static DevStatus LaunchServer(const char *&serverName);
 
     //
     // ETkIfc::SendCommand()

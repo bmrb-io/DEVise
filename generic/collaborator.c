@@ -31,6 +31,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  2013/06/13 22:03:04  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
+  Revision 1.7.64.2  2013/06/14 14:49:21  wenger
+  More cleanups from CentOS6 compile...
+
   Revision 1.7.64.1  2013/06/13 21:02:47  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -97,13 +103,14 @@ extern void
 initPort(int);
 
 static
-void _msgout(char* msg)
+void _msgout(const char* msg)
 {
 #ifdef RPC_SVC_FG
-	if (_rpcpmstart)
+	if (_rpcpmstart) {
 		syslog(LOG_ERR, msg);
-	else
+	} else {
 		(void) fprintf(stderr, "%s\n", msg);
+	}
 #else
 	syslog(LOG_ERR, msg);
 #endif
@@ -253,7 +260,6 @@ main(int argc, char *argv[])
 	InitRegPort();
 	GroupDBInit();
 	svc_MainLoop();
-        //TEMP -- const to non-const conversion warning here
 	_msgout("svc_MainLoop returned");
 
 #ifdef __tcltk

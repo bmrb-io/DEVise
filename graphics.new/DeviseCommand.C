@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.141  2013/06/13 22:03:15  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
+  Revision 1.140.2.3  2013/09/20 16:18:14  wenger
+  Cleaned up the last Centos 6 compile fixes.
+
+  Revision 1.140.2.2  2013/09/20 15:29:34  wenger
+  More Centos 6 compile fixes.
+
   Revision 1.140.2.1  2013/06/13 21:03:01  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -2636,17 +2645,15 @@ DeviseCommand_getCursorViews::Run(int argc, char** argv)
           }
           View *src = cursor->GetSource();
           View *dst = cursor->GetDst();
-          char *name[2];
+          const char *name[2];
           if (src) {
     	    name[0] = src->GetName();
           } else {
-	    //TEMP -- const to non-const conversion warning here
     	    name[0] = "";
 	  }
           if (dst) {
     	    name[1] = dst->GetName();
           } else {
-	    //TEMP -- const to non-const conversion warning here
     	    name[1] = "";
 	  }
           ReturnVal(2, name); // 2 is argc here
@@ -3977,8 +3984,7 @@ DeviseCommand_getViewGDS::Run(int argc, char** argv)
     
           GDataSock::Params params;
           view->GetSendParams(params);
-	  //TEMP -- const to non-const conversion warning here
-          if (params.file == NULL) params.file = "";
+          if (params.file == NULL) params.file = CopyString("");
           char buf[1024];
           int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
 		      "%d %d %d \"%s\" %d \"%c\" %d", drawToScreen,
@@ -5507,7 +5513,7 @@ DeviseCommand_setViewGDS::Run(int argc, char** argv)
     
           GDataSock::Params params;
           params.portNum = atoi(argv[4]);
-          params.file = argv[5];
+          params.file = CopyString(argv[5]);
           params.sendText = atoi(argv[6]);
           params.separator = argv[7][0];
 		  if (argc > 8) {
@@ -5516,6 +5522,7 @@ DeviseCommand_setViewGDS::Run(int argc, char** argv)
 		    params.rgbColor = true;
 		  }
           view->SetSendParams(params);
+	  	  FreeString(params.file);
     
           ReturnVal(API_ACK, "done");
           return 1;
@@ -6983,8 +6990,7 @@ IMPLEMENT_COMMAND_BEGIN(viewGetJSSendP)
         Boolean sendToSocket;
         GDataSock::Params params;
         view->GetJSSendP(drawToScreen, sendToSocket, params);
-	//TEMP -- const to non-const conversion warning here
-        if (params.file == NULL) params.file = "";
+        if (params.file == NULL) params.file = CopyString("");
         char buf[1024];
         int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
 		    "%d %d %d \"%s\" %d \"%c\" %d", drawToScreen,
@@ -7024,7 +7030,7 @@ IMPLEMENT_COMMAND_BEGIN(viewSetJSSendP)
 		Boolean sendToSocket = atoi(argv[3]);
         GDataSock::Params params;
         params.portNum = atoi(argv[4]);
-        params.file = argv[5];
+        params.file = CopyString(argv[5]);
         params.sendText = atoi(argv[6]);
         params.separator = argv[7][0];
 		if (argc > 8) {
@@ -7033,6 +7039,7 @@ IMPLEMENT_COMMAND_BEGIN(viewSetJSSendP)
 		  params.rgbColor = true;
 		}
         view->SetJSSendP(drawToScreen, sendToSocket, params);
+		FreeString(params.file);
     
         ReturnVal(API_ACK, "done");
         return 1;

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.24.14.1  2013/09/20 15:29:35  wenger
+  More Centos 6 compile fixes.
+
+  Revision 1.24  2008/10/13 19:45:27  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.23  2005/12/06 20:04:12  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -218,7 +224,7 @@ private:
 	_valueReturned = true;
     return _server->ReturnVal(flag, argc, argv, addBrace);
   } 
-  virtual int SendControl(u_short flag, char *result, bool grp_enable) {
+  virtual int SendControl(u_short flag, const char *result, bool grp_enable) {
 	if (grp_enable)
 	{
 		_server->ServerClientCmd(flag, 1,&result);

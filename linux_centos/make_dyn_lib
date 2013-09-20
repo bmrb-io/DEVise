@@ -2,21 +2,28 @@
 
 # $Id$
 
-# Copy dynamic libraries for Centos Linux 4.0.
+# Copy dynamic libraries for Centos Linux 6.0.
 
 if (! -e dyn_lib) then
   mkdir dyn_lib
 endif
 
-# On cent40-test, 2005-10-20.
-cp /s/tcl/lib/libtk8.3.so dyn_lib
-cp /s/tcl/lib/libtcl8.3.so dyn_lib
-cp /s/X11R6/lib/libX11.so.6 dyn_lib
-cp /lib/libdl.so.2 dyn_lib
-cp /s/gcc-3.2.2/i386_rh9/lib/libstdc++.so.5 dyn_lib
-cp /lib/tls/libm.so.6 dyn_lib
-cp /s/gcc-3.2.2/i386_rh9/lib/libgcc_s.so.1 dyn_lib
-cp /lib/tls/libc.so.6 dyn_lib
-cp /lib/ld-linux.so.2 dyn_lib
+# On beta-www, 2013-06-13.
+cp /lib64/ld-linux-x86-64.so.2 dyn_lib
+cp /lib64/libc.so.6 dyn_lib
+cp /lib64/libdl.so.2 dyn_lib
+cp /lib64/libexpat.so.1 dyn_lib
+cp /lib64/libgcc_s.so.1 dyn_lib
+cp /lib64/libm.so.6 dyn_lib
+cp /usr/lib64/libfontconfig.so.1 dyn_lib
+cp /usr/lib64/libfreetype.so.6 dyn_lib
+cp /usr/lib64/libstdc++.so.6 dyn_lib
+cp /usr/lib64/libtcl8.5.so dyn_lib
+cp /usr/lib64/libtk8.5.so dyn_lib
+cp /usr/lib64/libX11.so.6 dyn_lib
+cp /usr/lib64/libXau.so.6 dyn_lib
+cp /usr/lib64/libxcb.so.1 dyn_lib
+cp /usr/lib64/libXft.so.2 dyn_lib
+cp /usr/lib64/libXrender.so.1 dyn_lib
 
 chmod 644 dyn_lib/*.so*

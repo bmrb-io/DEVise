@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.13.14.1  2013/09/20 15:29:05  wenger
+  More Centos 6 compile fixes.
+
+  Revision 1.13  2008/10/13 19:45:34  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.12  2008/09/11 20:55:23  wenger
   A few more compile warning fixes...
 
@@ -179,7 +185,7 @@ public:
 	    int addBraces = true);
 
     virtual int SendControl(		  // send command to all clients
-		u_short flag, char *command)
+		u_short flag, const char *command)
 	{
 	    return SendControl(flag, 1, &command, false);
 	}

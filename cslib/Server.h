@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4.14.1  2013/09/20 15:29:13  wenger
+  More Centos 6 compile fixes.
+
+  Revision 1.4  2008/10/13 20:03:21  wenger
+  Const-ified cslib.
+
   Revision 1.3  2005/12/06 20:01:21  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -88,7 +94,7 @@ class Server {
 	    int addBraces = true);
 
     virtual int SendControl(		  // send command to all clients
-	u_short flag, char *command) {
+	u_short flag, const char *command) {
 	    return SendControl(flag, 1, &command, false); }
 
     virtual int SendControl(		  // send command to all clients

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.152.2.1  2013/09/20 15:29:27  wenger
+  More Centos 6 compile fixes.
+
+  Revision 1.152  2013/01/28 20:37:36  wenger
+  Changed a bunch more sprintfs to snprintfs.
+
   Revision 1.151  2012/04/30 22:21:11  wenger
   Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 
@@ -1389,7 +1395,7 @@ XWindowRep::ETk_CreateWindow(Coord x, Coord y,
     }
 
     if (_etkServer == NULL) {
-      char *serverName;
+      const char *serverName;
       DevStatus tmpResult = ETkIfc::LaunchServer(serverName);
       result += tmpResult;
       if (tmpResult.IsComplete()) {

@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.3.22.1  2013/06/14 14:48:58  wenger
+  More cleanups from CentOS6 compile...
+
+  Revision 1.3  2005/12/06 20:01:11  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.2.26.1  2005/09/28 22:29:21  wenger
   Various const-ifying to make things compile better on basslet.
 
@@ -40,7 +47,8 @@
 
 class TclClient : public Client {
 public:
-	TclClient(char *name, char *hostname, int port, char* initStr);
+	TclClient(const char *name, const char *hostname, int port,
+	  const char* initStr);
 	virtual ~TclClient();
 
 	virtual int ServerCmd(int argc,

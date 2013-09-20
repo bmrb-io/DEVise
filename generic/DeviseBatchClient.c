@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.5.22.1  2013/09/20 15:29:20  wenger
+  More Centos 6 compile fixes.
+
+  Revision 1.5  2005/12/06 20:02:49  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.4  2002/06/17 19:40:52  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
@@ -55,8 +62,8 @@
  * function: DeviseBatchClient::DeviseBatchClient
  * Constructor
  */
-DeviseBatchClient::DeviseBatchClient(char *name, char *hostname, int port) :
-  Client(name, hostname, port, "NULL")
+DeviseBatchClient::DeviseBatchClient(const char *name, const char *hostname,
+  int port) : Client(name, hostname, port, "NULL")
 {
 #if defined(DEBUG)
   printf("DeviseBatchClient(0x%p)::DeviseBatchClient(%s, %s, %d)\n", this,

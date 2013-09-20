@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  2013/06/13 22:03:04  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
+  Revision 1.13.56.2  2013/09/20 15:29:20  wenger
+  More Centos 6 compile fixes.
+
   Revision 1.13.56.1  2013/06/13 21:02:47  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -87,18 +93,17 @@
 #define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
 //#define DEBUG
 
-//TEMP -- lots of const to non-const conversion warnings in here...
-static char *_deviseKeyword = "DEVise ";
+static const char *_deviseKeyword = "DEVise ";
 static char _commentChar = '#';
 
 static char *_progName = 0;
-static char *_hostName = "localhost";
+static const char *_hostName = "localhost";
 static int   _portNum = DefaultNetworkPort;
 static DeviseBatchClient *_client;
 
 static char *_scriptFile = 0;
 
-void DoAbort(char *reason)
+void DoAbort(const char *reason)
 {
   fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
   delete _client;

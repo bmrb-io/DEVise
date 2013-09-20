@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.26  2013/06/13 22:03:04  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
+  Revision 1.25.2.2  2013/06/14 14:49:21  wenger
+  More cleanups from CentOS6 compile...
+
   Revision 1.25.2.1  2013/06/13 21:02:47  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -401,9 +407,8 @@ void SetupConnection()
       printf("\n");
     }
 
-    //TEMP -- get rid of casts
-    _client = new DeviseClient((char *)"DEVise", (char *)_hostName, _portNum, !_idleScript, 
-		(char *)"NULL");
+    _client = new DeviseClient("DEVise", _hostName, _portNum, !_idleScript, 
+		"NULL");
 
     Tcl_LinkVar(_client->Interp(), "argv0", (char *)&_progName,
 	TCL_LINK_STRING);

@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.21  2013/06/13 22:03:10  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
+  Revision 1.20.14.3  2013/09/20 15:29:27  wenger
+  More Centos 6 compile fixes.
+
+  Revision 1.20.14.2  2013/06/14 14:49:28  wenger
+  More cleanups from CentOS6 compile...
+
   Revision 1.20.14.1  2013/06/13 21:02:54  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -511,12 +520,11 @@ DaliIfc::LaunchServer()
       result = StatusFailed;
     } else if (pid == 0) {
       /* Child. */
-      char * args[2];
+      char *args[2];
 #if 0
       args[0] = "TasvirWithPaths";
 #else
-      //TEMP -- warning on const to non-const conversion here
-      args[0] = "Tasvir";
+      args[0] = CopyString("Tasvir");
 #endif
       args[1] = NULL;
       execvp(args[0], args);

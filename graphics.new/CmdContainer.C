@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.93  2013/06/13 22:03:15  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
+  Revision 1.92.2.2  2013/09/20 15:29:34  wenger
+  More Centos 6 compile fixes.
+
   Revision 1.92.2.1  2013/06/13 21:03:00  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -1157,9 +1163,10 @@ CmdContainer::RunOneCommand(int argc, const char* const *argv, ControlPanel* con
 }
 
 void
-CmdContainer::insertCmd(char* cmdName, DeviseCommand* cmdp, int cmdsize)
+CmdContainer::insertCmd(const char* cmdName, DeviseCommand* cmdp, int cmdsize)
 {
-    _commands->insert(cmdName, cmdp);
+	//TEMP -- get rid of cast
+    _commands->insert((char *)cmdName, cmdp);
 }
 
 DeviseCommand*

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  2013/06/13 22:03:04  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
+  Revision 1.4.22.2  2013/06/14 14:49:20  wenger
+  More cleanups from CentOS6 compile...
+
   Revision 1.4.22.1  2013/06/13 21:02:47  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -61,8 +67,8 @@
 
 class DeviseClient : public TclClient {
 public:
-  DeviseClient(char *name, char *hostname, int port, Boolean createWindow,
-  	char* initStr);
+  DeviseClient(const char *name, const char *hostname, int port,
+    Boolean createWindow, const char* initStr);
   virtual ~DeviseClient();
   virtual int RequestRelinquish() { return Client::RequestRelinquish();}
   virtual int NotifyGrabbed() { return Client::NotifyGrabbed();}

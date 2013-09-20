@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.6.22.1  2013/06/14 14:49:20  wenger
+  More cleanups from CentOS6 compile...
+
+  Revision 1.6  2005/12/06 20:02:49  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.5  2002/06/17 19:40:52  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
@@ -63,8 +70,8 @@
  * function: DeviseClient::DeviseClient
  * Constructor.
  */
-DeviseClient::DeviseClient(char *name, char *hostname, int port,
-    Boolean createWindow, char* initStr) :
+DeviseClient::DeviseClient(const char *name, const char *hostname, int port,
+    Boolean createWindow, const char* initStr) :
   TclClient(name, hostname, port, initStr)
 {
 #if defined(DEBUG)

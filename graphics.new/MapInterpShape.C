@@ -17,6 +17,15 @@
   $Id$
 
   $Log$
+  Revision 1.86  2013/06/13 22:03:15  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
+  Revision 1.85.2.3  2013/09/20 16:18:14  wenger
+  Cleaned up the last Centos 6 compile fixes.
+
+  Revision 1.85.2.2  2013/09/20 15:29:35  wenger
+  More Centos 6 compile fixes.
+
   Revision 1.85.2.1  2013/06/13 21:03:01  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -2087,13 +2096,17 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	Coord y = map->GetY(gdata);
 
         //TEMP -- warning here on const to non-const conversion
-	char *file = "polyline.dat";
-        //TEMP -- warning here on const to non-const conversion
-	char *format = "%lf%lf";
+	const char *file = "polyline.dat";
 
 	if (offset->_shapeAttrOffset[0] >= 0) {
 		int key = (int)map->GetShapeAttr0(gdata);
-		int code = stringTable->Lookup(key, file);
+		//TEMP -- make sure this works right!  I don't know if we even
+		// use polyline file anymore.  wenger 2013-09-20
+		char *tmpStr;
+		int code = stringTable->Lookup(key, tmpStr);
+		if (code == 0) {
+		    file = tmpStr;
+		}
 #ifdef DEBUG
 		printf("Key %d returns \"%s\", code %d\n", key, file, code);
 #endif
@@ -2103,9 +2116,18 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 #endif
 	}
 
+        //TEMP -- warning here on const to non-const conversion
+	const char *format = "%lf%lf";
+
 	if (offset->_shapeAttrOffset[1] >= 0) {
 		int key = (int)map->GetShapeAttr1(gdata);
-		int code = stringTable->Lookup(key, format);
+		//TEMP -- make sure this works right!  I don't know if we even
+		// use polyline file anymore.  wenger 2013-09-20
+		char *tmpStr;
+		int code = stringTable->Lookup(key, tmpStr);
+		if (code == 0) {
+		    format = tmpStr;
+		}
 #if defined(DEBUG)
 		printf("Key %d returns \"%s\", code %d\n", key, format, code);
 #endif

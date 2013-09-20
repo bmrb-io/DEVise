@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.3.22.1  2013/09/20 15:29:20  wenger
+  More Centos 6 compile fixes.
+
+  Revision 1.3  2005/12/06 20:02:49  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.2.28.1  2005/09/28 22:29:34  wenger
   Various const-ifying to make things compile better on basslet.
 
@@ -41,7 +48,7 @@
 
 class DeviseBatchClient : public Client {
 public:
-  DeviseBatchClient(char *name, char *hostname, int port);
+  DeviseBatchClient(const char *name, const char *hostname, int port);
   virtual ~DeviseBatchClient();
 
   virtual void MainLoop() {}

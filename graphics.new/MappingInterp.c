@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.110  2013/06/13 22:03:15  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
+  Revision 1.109.2.2  2013/09/20 15:29:35  wenger
+  More Centos 6 compile fixes.
+
   Revision 1.109.2.1  2013/06/13 21:03:01  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -828,8 +834,7 @@ const AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
       // recId and a constant mapping.
       if (entry.cmd.attrNum == -1) {
 	static AttrInfo recId;
-        //TEMP -- warning here on const to non-const conversion
-        recId.name = REC_ID_NAME;
+        recId.name = CopyString(REC_ID_NAME);
         recId.attrNum = -1;
         recId.offset = -1;
         recId.length = 0;

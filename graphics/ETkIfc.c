@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  2013/06/13 22:03:10  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
+  Revision 1.8.14.2  2013/09/20 15:29:27  wenger
+  More Centos 6 compile fixes.
+
   Revision 1.8.14.1  2013/06/13 21:02:54  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -73,11 +79,11 @@ Boolean ETkIfc::_etkQuit = false;
 
 static int MyWrite(int fd, unsigned char *buff, int num);
 static int newlinefd(char *s, int fd, int maxc);
-static DevStatus SendETkCommand(int fd, char *commandBuf,
+static DevStatus SendETkCommand(int fd, const char *commandBuf,
 				int argc, const char **argv,
 				char *replyBuf, double timeout);
 static DevStatus ConnectAndSendETkCommand(const char *etkServer,
-					  char *commandBuf,
+					  const char *commandBuf,
 					  int argc, const char **argv,
 					  char *replyBuf, double timeout);
 static DevStatus WaitForReply(char *buf, int fd, int bufSize, double timeout);
@@ -415,7 +421,7 @@ ETkIfc::MoveResizeWindow(const char *etkServer, int handle,
 // Attempts to launch an Embedded Tk server
 //
 DevStatus
-ETkIfc::LaunchServer(char *&serverName)
+ETkIfc::LaunchServer(const char *&serverName)
 {
   DevStatus result = StatusOk;
   const int maxLaunchTries = 2;
@@ -439,7 +445,7 @@ ETkIfc::LaunchServer(char *&serverName)
       /* Child. */
       char *args[2];
       //TEMP -- warning on const to non-const conversion here
-      args[0] = "EmbeddedTk";
+      args[0] = CopyString("EmbeddedTk");
       args[1] = NULL;
       execvp(args[0], args);
       /* execvp doesn't return if it works. */
@@ -496,7 +502,7 @@ ETkIfc::LaunchServer(char *&serverName)
 // the trailing newline after each string.
 //
 static DevStatus
-SendETkCommand(int fd, char *commandBuf,
+SendETkCommand(int fd, const char *commandBuf,
 	       int argc, const char **argv,
 	       char *replyBuf, double timeout)
 {
@@ -612,7 +618,7 @@ SendETkCommand(int fd, char *commandBuf,
 // - Closes the connection
 //
 static DevStatus
-ConnectAndSendETkCommand(const char *etkServer, char *commandBuf,
+ConnectAndSendETkCommand(const char *etkServer, const char *commandBuf,
 			 int argc, const char **argv,
 			 char *replyBuf, double timeout)
 {

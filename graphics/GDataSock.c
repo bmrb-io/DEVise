@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.24  2013/06/13 22:03:10  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
+  Revision 1.23.2.3  2013/09/20 16:18:07  wenger
+  Cleaned up the last Centos 6 compile fixes.
+
+  Revision 1.23.2.2  2013/06/14 14:49:28  wenger
+  More cleanups from CentOS6 compile...
+
   Revision 1.23.2.1  2013/06/13 21:02:54  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -167,7 +176,6 @@ int GDataSock::_objectCount = 0;
 int GDataSock::_sockOutputCount = 0;
 
 struct AttrVals {
-  char *name;
   AttrType type;
   Coord numericalValue;
   const char *stringValue;
@@ -425,15 +433,17 @@ GDataSock::GetShapeAttr(int attrNum, const AttrInfo *attrInfo,
       if (stringTable->Lookup( (int) attrVal.numericalValue,
           tmpStr) < 0) {
         //TEMP -- warning here on const to non-const conversion
-        tmpStr = "<error>";
+        attrVal.stringValue = "<error>";
         char buf[1024];
         int formatted = snprintf(buf, sizeof(buf),
 	    "String not found for %s", attrInfo->name);
         checkAndTermBuf2(buf, formatted);
         reportErrNosys(buf);
         result += StatusFailed;
+      } else {
+	//TEMP -- make sure this works!
+        attrVal.stringValue = tmpStr;
       }
-      attrVal.stringValue = tmpStr;
     }
   } else {
     // This attribute is not specified.
