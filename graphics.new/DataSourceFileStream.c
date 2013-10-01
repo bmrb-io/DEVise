@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.14.16.1  2013/09/20 18:12:59  wenger
+  Partially fixed DEVise bug 1008 -- not having the data file at all
+  works okay, but the file disappearing and reappearing can still
+  goof things up.
+
+  Revision 1.14  2008/09/11 20:28:13  wenger
+  Committed more of the "easy" compile warning fixes.
+
   Revision 1.13  2000/03/14 17:05:27  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -139,7 +147,7 @@ DataSourceFileStream::~DataSourceFileStream()
 DevStatus
 DataSourceFileStream::Open(const char *mode)
 {
-	DO_DEBUG(printf("DataSourceFileStream::Open()\n"));
+	DO_DEBUG(printf("DataSourceFileStream::Open(%s)\n", mode));
 
 	DevStatus	result = StatusOk;
 
@@ -147,7 +155,9 @@ DataSourceFileStream::Open(const char *mode)
 	if (_file == NULL)
 	{
 		char	errBuf[MAXPATHLEN+100];
-		sprintf(errBuf, "unable to open file %s", _filename);
+		int formatted = snprintf(errBuf, sizeof(errBuf),
+		  "unable to open file %s", _filename);
+		checkAndTermBuf2(errBuf, formatted);
 		reportError(errBuf, errno);
 		result = StatusFailed;
 	}
@@ -162,12 +172,14 @@ DataSourceFileStream::Open(const char *mode)
 Boolean
 DataSourceFileStream::IsOk()
 {
-    if (!_file)
+    if (!_file) {
         return false;
+    }
 
     struct stat sbuf;
-    if (stat(_filename, &sbuf) < 0)
+    if (stat(_filename, &sbuf) < 0) {
         return false;
+    }
 
     // All the following checks succeed even if the file has been deleted!
     // Stat is almost the only function that recognizes that a file
@@ -193,12 +205,12 @@ DevStatus
 DataSourceFileStream::Close()
 {
 	DO_DEBUG(printf("DataSourceFileStream::Close()\n"));
-        DOASSERT(_file != NULL, "Invalid file pointer");
 
 	DevStatus	result = StatusOk;
 
-	if (fclose(_file) != 0)
-	{
+	// We allow _file to be null so that non-existant data files are
+	// treated the same as zero-size data files.
+	if (_file != NULL && fclose(_file) != 0) {
 		reportError("error closing file", errno);
 		result = StatusFailed;
 	}

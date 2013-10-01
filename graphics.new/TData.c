@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.32.16.1  2013/09/20 18:13:00  wenger
+  Partially fixed DEVise bug 1008 -- not having the data file at all
+  works okay, but the file disappearing and reappearing can still
+  goof things up.
+
+  Revision 1.32  2008/09/23 22:55:41  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.31  2005/12/06 20:04:14  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -366,6 +374,8 @@ TData::~TData()
 Boolean
 TData::CheckFileStatus()
 {
+  DO_DEBUG(printf("TData(%s)::CheckFileStatus()\n", GetName()));
+
   CheckDataSource();
 
   /* See if file is no longer okay */
@@ -383,10 +393,7 @@ TData::CheckFileStatus()
     Boolean old = DevError::SetEnabled(false);
     if (!(_data->Open("r") == StatusOk)) {
       /* File access failure, get rid of index */
-      _indexP->Clear();
-      _initTotalRecs = _totalRecs = 0;
-      _initLastPos = _lastPos = 0;
-      _lastIncompleteLen = 0;
+      ClearRecCounts();
       (void)DevError::SetEnabled(old);
       return false;
     }
@@ -643,17 +650,21 @@ WriteString(int fd, const char *string)
 void
 TData::InvalidateTData()
 {
-    DO_DEBUG(printf("Invalidating tdata version %d for %d\n",
-		    _version, _data->Version()));
+    DO_DEBUG(printf("Invalidating tdata %s version %d for %d\n",
+		    GetName(), _version, _data->Version()));
 
     if (_data->IsOk()) {
       if (_data->Close().IsError()) {
-        reportErrNosys("Error closing data source");
+	string msg = "Error closing data source ";
+	msg += GetName();
+        reportErrNosys(msg.c_str());
       }
     }
 
     if (_data->Open("r").IsError()) {
-      reportErrNosys("Error re-opening data source");
+      string msg = "Error re-opening data source ";
+      msg += GetName();
+      reportErrNosys(msg.c_str());
     }
 
     if (_data->IsOk()) {
@@ -662,6 +673,9 @@ TData::InvalidateTData()
       QueryProc::Instance()->ClearTData(this);
 #endif
       _version = _data->Version();
+    } else {
+      InvalidateIndex();
+      ClearRecCounts();
     }
 }
 
@@ -836,13 +850,18 @@ TData::RebuildIndex()
 #endif
 
   InvalidateIndex();
+  ClearRecCounts();
+  BuildIndex();
+}
 
+//---------------------------------------------------------------------------
+void
+TData::ClearRecCounts()
+{
   _indexP->Clear();
   _initTotalRecs = _totalRecs = 0;
   _initLastPos = _lastPos = 0;
   _lastIncompleteLen = 0;
-
-  BuildIndex();
 }
 
 //---------------------------------------------------------------------------

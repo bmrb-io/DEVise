@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.104.2.1  2013/09/20 18:13:00  wenger
+  Partially fixed DEVise bug 1008 -- not having the data file at all
+  works okay, but the file disappearing and reappearing can still
+  goof things up.
+
+  Revision 1.104  2013/06/13 22:03:16  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
   Revision 1.103  2013/02/28 16:45:35  wenger
   Changed version to 1.11.4x1, added 1.11.4 version history section.
 
@@ -622,7 +630,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.4x2"/*TEMP*/;
+static const char *	version = "1.11.4x3"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2013";

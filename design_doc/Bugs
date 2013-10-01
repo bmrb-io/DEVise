@@ -4428,7 +4428,7 @@ java.security.AccessControlException: access denied
 			I'll bet this is because the View3DHighlight view
 			isn't a DEVise highligh view in this visualization.
 
-1008 1/21/11	OPEN	DEVise shouldn't crash if data source files don't
+1008 1/21/11	ACTIVE	DEVise shouldn't crash if data source files don't
 			exist. (wenger)
 
 1009 1/21/11	OPEN	Setting view highlight on for the View3DHighlight

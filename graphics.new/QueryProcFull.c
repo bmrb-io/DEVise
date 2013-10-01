@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.107.4.1  2013/09/20 18:13:00  wenger
+  Partially fixed DEVise bug 1008 -- not having the data file at all
+  works okay, but the file disappearing and reappearing can still
+  goof things up.
+
+  Revision 1.107  2013/02/11 22:29:00  wenger
+  More sprintf->snprintf conversions, and more error checking in
+  JavaScreenCmd.
+
   Revision 1.106  2009/05/13 22:41:30  wenger
   Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
   the trunk.
@@ -1606,8 +1615,10 @@ void QueryProcFull::EndQuery(QPFullData *query)
     if (query->low == firstRec && query->high == lastRec) {
       allDataReturned = true;
     }
-    query->callback->QueryDone(query->bytes, query->userData,
-      allDataReturned, query->map);
+    if (query->callback) {
+      query->callback->QueryDone(query->bytes, query->userData,
+        allDataReturned, query->map);
+    }
   }
 #if DEBUG_NEG_LINKS
   printf("****************************EndQuery %p (slave : %d) \n", query,

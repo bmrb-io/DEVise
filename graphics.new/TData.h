@@ -16,6 +16,14 @@
    $Id$
 
    $Log$
+   Revision 1.26.16.1  2013/09/20 18:13:00  wenger
+   Partially fixed DEVise bug 1008 -- not having the data file at all
+   works okay, but the file disappearing and reappearing can still
+   goof things up.
+
+   Revision 1.26  2008/10/13 19:45:27  wenger
+   More const-ifying, especially Control- and csgroup-related.
+
    Revision 1.25  2008/09/23 19:32:46  wenger
    Changed DispatchedName() to const char *.
 
@@ -351,6 +359,7 @@ class TData : protected DispatcherCallback {
     virtual void Initialize();
     virtual void BuildIndex() {}
     virtual void RebuildIndex();
+    virtual void ClearRecCounts();
 
     virtual TD_Status ReadRec(RecId id, int numRecs, void *buf) { return TD_FAIL; }
     virtual TD_Status ReadRecAsync(TDataRequest *req, RecId id,
