@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.105  2013/10/01 15:43:18  wenger
+  Merged devise_bug1008_br_0 thru devise_bug1008_br_1 to trunk.
+
   Revision 1.104.2.1  2013/09/20 18:13:00  wenger
   Partially fixed DEVise bug 1008 -- not having the data file at all
   works okay, but the file disappearing and reappearing can still
@@ -630,7 +633,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.4x3"/*TEMP*/;
+static const char *	version = "1.11.4";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2013";

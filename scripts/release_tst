@@ -20,4 +20,4 @@
 
 ############################################################
 
-scripts/release ~/tst/devise_release linux_rhel5
+scripts/release ~/tst/devise_release linux_rhel5 linux_rhel6
