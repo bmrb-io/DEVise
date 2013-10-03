@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.106  2013/10/02 21:36:21  wenger
+  Changed version to 1.11.4 for release; updated release_tst script
+  to include rhel6.
+
   Revision 1.105  2013/10/01 15:43:18  wenger
   Merged devise_bug1008_br_0 thru devise_bug1008_br_1 to trunk.
 
@@ -633,7 +637,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.4";
+static const char *	version = "1.11.5x1";//TEMP
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2013";
