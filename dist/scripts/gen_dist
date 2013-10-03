@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2007
+#  (c) Copyright 1992-2013
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -138,6 +138,39 @@ if (-f $logfile) then
 endif
 set src = linux-intel_rhel5
 set dest = $target/Devise-$version-linux-intel_rhel5.tar.gz
+cd $src
+tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+cd $dist_home
+
+echo "Generating linux-intel_rhel6 distribution"
+set logfile = $dist_home/linux-intel_rhel6.log
+if (-f $logfile) then
+  rm $logfile
+endif
+set src = linux-intel_rhel6
+set dest = $target/Devise-$version-linux-intel_rhel6.tar.gz
+cd $src
+tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+cd $dist_home
+
+echo "Generating linux-intel_centos5 distribution"
+set logfile = $dist_home/linux-intel_centos5.log
+if (-f $logfile) then
+  rm $logfile
+endif
+set src = linux-intel_centos5
+set dest = $target/Devise-$version-linux-intel_centos5.tar.gz
+cd $src
+tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+cd $dist_home
+
+echo "Generating linux-intel_centos6 distribution"
+set logfile = $dist_home/linux-intel_centos6.log
+if (-f $logfile) then
+  rm $logfile
+endif
+set src = linux-intel_centos6
+set dest = $target/Devise-$version-linux-intel_centos6.tar.gz
 cd $src
 tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
 cd $dist_home

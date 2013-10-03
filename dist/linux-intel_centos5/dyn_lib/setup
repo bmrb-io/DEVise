@@ -12,8 +12,7 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Run this script to set up the linux-intel_rhel5 architecture-specific
-#  subdirectory.
+#  Run this script to set up the linux-intel_centos5/dyn_lib directory.
 
 ############################################################
 
@@ -21,27 +20,4 @@
 
 ############################################################
 
-ln -s ../common/README .
-ln -s ../common/public .
-ln -s ../common/doc .
-ln -s ../common/lib .
-ln -s ../common/run .
-
-set here = `pwd`
-mkdir tcl
-ssh teal "cp -p -r /usr/lib/tcl8.4/* $here/tcl"
-rm -rf tcl/encoding
-mkdir tk
-ssh teal "cp -p -r /usr/lib/tk8.4/* $here/tk"
-rm -rf tk/demos tk/images
-
-mkdir bin
-cd bin
-../../scripts/setup.bin
-cd ..
-
-cd dyn_lib
-./setup
-cd ..
-
-mkdir cache
+ln -s ../../dist_sw/dyn_lib_arch/x86_64_centos5/* .

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2006
+#  (c) Copyright 2001-2013
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -12,7 +12,8 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Run this script to clean up the distribution area.
+#  Run this script to set up the linux-intel_centos5 architecture-specific
+#  subdirectory.
 
 ############################################################
 
@@ -20,62 +21,28 @@
 
 ############################################################
 
-\rm dist_sw
-\rm html
+ln -s ../common/README .
+ln -s ../common/public .
+ln -s ../common/doc .
+ln -s ../common/lib .
+ln -s ../common/run .
 
-cd common
-clean
+mkdir tcl
+#TEMP -- not 100% sure this is the right stuff...
+cp -p -r /usr/lib64/tcl8.5/tclx8.4/* tcl
+rm -rf tcl/encoding
+mkdir tk
+#TEMP -- not 100% sure this is the right stuff...
+cp -p -r /usr/lib64/tk8.5/* tk
+rm -rf tk/demos tk/images
+
+mkdir bin
+cd bin
+../../scripts/setup.bin
 cd ..
 
-
-# \rm -r hpux-hppa
-
-# cd solaris-intel
-# ./clean
-# cd ..
-
-# cd solaris-sparc
-# ./clean
-# cd ..
-
-# \rm -r sunos-sparc
-
-# cd linux-intel
-# ./clean
-# cd ..
-
-# cd linux-intel_rh72
-# ./clean
-# cd ..
-
-# cd linux-intel_tao10
-# ./clean
-# cd ..
-
-# cd linux-intel_centos
-# ./clean
-# cd ..
-
-cd linux-intel_rhel5
-./clean
+cd dyn_lib
+./setup
 cd ..
 
-cd linux-intel_rhel6
-./clean
-cd ..
-
-cd linux-intel_centos5
-./clean
-cd ..
-
-cd linux-intel_centos6
-./clean
-cd ..
-
-\rm -r JavaScreen
-
-cd demo
-./clean
-cd ..
-
-rm *.log
+mkdir cache

@@ -93,6 +93,24 @@ cd linux-intel_rhel5
 ./setup
 cd ..
 
+echo "Creating linux-intel_rhel6 directory"
+setenv ARCH_DIR amd64_rhel6
+cd linux-intel_rhel6
+./setup
+cd ..
+
+echo "Creating linux-intel_centos5 directory"
+setenv ARCH_DIR x86_64_centos5
+cd linux-intel_centos5
+./setup
+cd ..
+
+echo "Creating linux-intel_centos6 directory"
+setenv ARCH_DIR x86_64_centos6
+cd linux-intel_centos6
+./setup
+cd ..
+
 echo "Creating JavaScreen directory"
 set logfile = $dist_home/JavaScreen_create.log
 if (-f $logfile) then
