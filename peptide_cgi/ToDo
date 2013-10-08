@@ -856,6 +856,16 @@ Num Date        Status  Pri     Description
 				in the main view.  (How would that
 				highlighting work w/ the existing
 				highlighting?) (gabriel/elu/wenger)
+				(What about two-entry visualizations?)
+
+192 10/8/13	OPEN	1	Maybe move the chem shifts section to
+				the top left of visualization summary
+				pages. (gabriel/elu/wenger)
+
+193 10/8/13	OPEN	1	Make a 'minimum required information for
+				the vis server' test.  Probably grab the
+				tablegen example linked from the vis
+				server page.  (wenger)
 
 * Status:
 OPEN = item has not yet been addressed
