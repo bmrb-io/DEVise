@@ -653,6 +653,9 @@ Num Date        Status  Description
 			S2DmmCifIfc.getBmrbResLists() incorrectly determines
 			the polymer type). (wenger)
 
+142 10/9/13	OPEN	Visualization summary page for PDB-only restraint
+			visualizations has multi-entry vis form. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
