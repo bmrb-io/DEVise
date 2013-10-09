@@ -858,7 +858,7 @@ Num Date        Status  Pri     Description
 				highlighting?) (gabriel/elu/wenger)
 				(What about two-entry visualizations?)
 
-192 10/8/13	OPEN	1	Maybe move the chem shifts section to
+192 10/8/13	ACTIVE	1	Maybe move the chem shifts section to
 				the top left of visualization summary
 				pages. (gabriel/elu/wenger)
 
@@ -866,6 +866,12 @@ Num Date        Status  Pri     Description
 				the vis server' test.  Probably grab the
 				tablegen example linked from the vis
 				server page.  (wenger)
+
+194 10/9/13	OPEN	1	Disable thumbnail expansion in html
+				pages. (elu/wenger)
+
+195 10/9/13	OPEN	1	Make text boxes on visualization summary
+				page all the same height(?). (elu/wenger)
 
 * Status:
 OPEN = item has not yet been addressed
