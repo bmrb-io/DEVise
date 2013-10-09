@@ -4,6 +4,10 @@ Peptide-CGI 12.3.3
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
 
+* Moved the "chemical shift data" section to the first position in
+visualization summary pages (to-do 192); also changed visualization
+entry selection page.
+
 * Fixed the link to the visualization server in the visualization
 examples page.
 

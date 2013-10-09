@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.324  2013/07/17 22:33:41  wenger
+// Fixed error processing entry 5448 (has no chem shifts, etc., but
+// has links to PDB entries).
+//
 // Revision 1.323  2013/05/28 20:24:54  wenger
 // Fixed test_tar5 -- data apparently changed.
 //
@@ -856,7 +860,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.3x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.3x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 

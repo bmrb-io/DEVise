@@ -36,6 +36,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.59  2013/03/19 19:10:26  wenger
+// Changed the default BMRB accession number in the web forms to
+// 15381; when you visualize a specific entry, that entry's accession
+// number becomes the default in the forms associated with that entry.
+// (Note: still needs approval from Eldon.)
+//
 // Revision 1.58  2013/03/14 17:48:24  wenger
 // Added "select from menus..." message to summary html page (not yet
 // confirmed as the final version).
@@ -757,6 +763,10 @@ TEMP?*/
 
 		    } else {
 		        if (!_restraintOnly) {
+		            writeChemShiftTable(writeNoData);
+		        }
+
+		        if (!_restraintOnly) {
 		            writeCoordTable(writeNoData);
 		        }
 
@@ -764,7 +774,6 @@ TEMP?*/
 		        writeBothTorsionAngleTables(writeNoData);
 
 		        if (!_restraintOnly) {
-		            writeChemShiftTable(writeNoData);
 		            writeSpartaDeltaShiftTable(writeNoData);
 		            writeChemShiftRefTable(writeNoData);
 		            writeLacsTable(writeNoData);

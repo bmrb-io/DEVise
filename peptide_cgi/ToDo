@@ -858,9 +858,10 @@ Num Date        Status  Pri     Description
 				highlighting?) (gabriel/elu/wenger)
 				(What about two-entry visualizations?)
 
-192 10/8/13	ACTIVE	1	Maybe move the chem shifts section to
+192 10/8/13	DONE	1	Maybe move the chem shifts section to
 				the top left of visualization summary
 				pages. (gabriel/elu/wenger)
+				(Done by wenger, 10/9/13)
 
 193 10/8/13	OPEN	1	Make a 'minimum required information for
 				the vis server' test.  Probably grab the
