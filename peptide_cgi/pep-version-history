@@ -8,6 +8,8 @@ Peptide-CGI 12.3.3
 visualization summary pages (to-do 192); also changed visualization
 entry selection page.
 
+* Disabled thumbnail expansion in the html pages (to-do 194).
+
 * Fixed the link to the visualization server in the visualization
 examples page.
 

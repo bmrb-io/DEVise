@@ -36,6 +36,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.60  2013/10/09 20:28:06  wenger
+// Peptide-CGI to-do 192:  moved the "chemical shift data" section to the
+// first position in visualization summary pages; also changed visualization
+// entry selection page.
+//
 // Revision 1.59  2013/03/19 19:10:26  wenger
 // Changed the default BMRB accession number in the web forms to
 // 15381; when you visualize a specific entry, that entry's accession
@@ -835,7 +840,7 @@ TEMP?*/
 		    //TEMP -- we should get images here from the figures
 		    // directory...
 	            String imageDir = _isUvd ? "../.." : "..";
-		    _writer.write("<a class=\"thumbnail\"><img src=\"" + imageDir + "/two_entry_thumb.png\"><span><img src=\"" + imageDir + "/two_entry.png\"></span></a>\n");
+		    _writer.write("<a class=\"thumbnail\"><img src=\"" + imageDir + "/two_entry_thumb.png\"></a>\n");
 		    _writer.write("</td>\n");
 		    _writer.write("<th align=\"left\">\n");
 		    _writer.write("Multi-entry visualizations\n");
@@ -2263,7 +2268,7 @@ TEMP?*/
         _writer.write("    <td align=\"left\" rowspan=\"2\" width=\"120\">\n");
         _writer.write("      <a class=\"thumbnail\">" +
 	  "<img src=\"" + figuresDir + thumbnail +
-	  "\"><span><img src=\"" + figuresDir + image + "\"></span></a>\n");
+	  "\"></a>\n");
         _writer.write("    </td>\n");
         _writer.write("    <th align=\"left\">\n");
 

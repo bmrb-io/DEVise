@@ -868,8 +868,9 @@ Num Date        Status  Pri     Description
 				tablegen example linked from the vis
 				server page.  (wenger)
 
-194 10/9/13	OPEN	1	Disable thumbnail expansion in html
+194 10/9/13	DONE	1	Disable thumbnail expansion in html
 				pages. (elu/wenger)
+				(Done by wenger, 10/9/13)
 
 195 10/9/13	OPEN	1	Make text boxes on visualization summary
 				page all the same height(?). (elu/wenger)
