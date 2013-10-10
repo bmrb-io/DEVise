@@ -863,10 +863,13 @@ Num Date        Status  Pri     Description
 				pages. (gabriel/elu/wenger)
 				(Done by wenger, 10/9/13)
 
-193 10/8/13	OPEN	1	Make a 'minimum required information for
+193 10/8/13	NLR	1	Make a 'minimum required information for
 				the vis server' test.  Probably grab the
 				tablegen example linked from the vis
 				server page.  (wenger)
+				(See test_min_2_1 and test_min_3_0;
+				tablegen.str needs mods by Dimitri's
+				interface to work.)
 
 194 10/9/13	DONE	1	Disable thumbnail expansion in html
 				pages. (elu/wenger)
