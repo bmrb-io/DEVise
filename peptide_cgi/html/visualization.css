@@ -3,7 +3,7 @@ body {
 }
 
 .vis {
-  border: 2px solid #bdd3ff;
+  border: 2px solid #0000af;
   border-collapse: collapse;
 }
 
@@ -11,6 +11,11 @@ body {
   background-color: #bdd3ff;
   padding: 5;
   width: 100%;
+}
+
+.vis td {
+  background-color: #bdd3ff;
+  padding: 5;
 }
 
 .sub-vis {

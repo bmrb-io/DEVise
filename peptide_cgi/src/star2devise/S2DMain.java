@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.325  2013/10/09 20:28:05  wenger
+// Peptide-CGI to-do 192:  moved the "chemical shift data" section to the
+// first position in visualization summary pages; also changed visualization
+// entry selection page.
+//
 // Revision 1.324  2013/07/17 22:33:41  wenger
 // Fixed error processing entry 5448 (has no chem shifts, etc., but
 // has links to PDB entries).
@@ -860,7 +865,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.3x5"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.3x6"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 

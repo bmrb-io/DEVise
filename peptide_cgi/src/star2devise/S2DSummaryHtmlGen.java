@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2013/10/09 21:20:39  wenger
+// Peptide-CGI to-do 194:  disabled thumbnail expanion in the html pages.
+//
 // Revision 1.60  2013/10/09 20:28:06  wenger
 // Peptide-CGI to-do 192:  moved the "chemical shift data" section to the
 // first position in visualization summary pages; also changed visualization
@@ -842,12 +845,12 @@ TEMP?*/
 	            String imageDir = _isUvd ? "../.." : "..";
 		    _writer.write("<a class=\"thumbnail\"><img src=\"" + imageDir + "/two_entry_thumb.png\"></a>\n");
 		    _writer.write("</td>\n");
-		    _writer.write("<th align=\"left\">\n");
+		    _writer.write("<th align=\"center\">\n");
 		    _writer.write("Multi-entry visualizations\n");
 		    _writer.write("</th>\n");
 		    _writer.write("</tr>\n");
 		    _writer.write("<tr>\n");
-		    _writer.write("<td>\n");
+		    _writer.write("<td height=\"15\">\n");
 
 		    // Always use the default here (don't fill in the current
 		    // value because that wouldn't make any sense for two-
@@ -2270,14 +2273,14 @@ TEMP?*/
 	  "<img src=\"" + figuresDir + thumbnail +
 	  "\"></a>\n");
         _writer.write("    </td>\n");
-        _writer.write("    <th align=\"left\">\n");
+        _writer.write("    <th align=\"center\">\n");
 
         _writer.write(dataName + "\n");
 
         _writer.write("    </th>\n");
         _writer.write("  </tr>\n");
         _writer.write("\n  <tr>\n");
-        _writer.write("    <td align=\"center\">\n");
+        _writer.write("    <td align=\"center\" height=\"15\">\n");
     }
 
     //-------------------------------------------------------------------

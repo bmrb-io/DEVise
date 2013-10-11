@@ -15,6 +15,10 @@ examples page.
 
 * Added "select from menus..." message to summary html page.
 
+* Improved the appearance of the summary html page (to-do 195),
+and also the visualization selection pages and the histogram
+index page.
+
 * Implemented to-do 181 (merge the Jmol and non-Jmol visualization
 page templates).
 
