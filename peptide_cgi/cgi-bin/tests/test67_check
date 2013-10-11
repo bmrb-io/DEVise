@@ -58,7 +58,7 @@ set line = '^645 1_20_H2 1 20 A H2 H 3.233 14.267 -3.694 all_hydrogens$'
 
 set file = "data_dir/15080md.dat"
 set attr = '$C1p_DeltaShift'
-set line = "^EA 1 (RNA)	1	C1' delta chem shift \[1\]	.	Yeast U2 Stem I: 0.5 mM; H2O: 90 %; sodium chloride: 50 mM; D2O: 10 %; Yeast U2 Stem I: 0.5 mM; D...	temperature: 303 K; pH: 7.0 pH	15080d1	$attr"
+set line = "EA 1 (RNA)	1	C1' delta chem shift \[1\]	.	Yeast U2 Stem I: 0.5 mM; H2O: 90 %; sodium chloride: 50 mM; D2O: 10 %; Yeast U2 Stem I: 0.5 mM; D...	pH: 7.0 pH; temperature: 303 K	15080d1	$attr$"
 source tests/check4line
 set attr = '$H8_DeltaShift'
 set line = "^EA 1 (RNA)	1	H8 delta chem shift \[1\]	.	Yeast U2 Stem I: 0.5 mM; H2O: 90 %; sodium chloride: 50 mM; D2O: 10 %; Yeast U2 Stem I: 0.5 mM; D...	temperature: 303 K; pH: 7.0 pH	15080d1	$attr"

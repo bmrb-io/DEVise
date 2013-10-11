@@ -22,6 +22,8 @@ page templates).
 15381; when you visualize a specific entry, that entry's accession
 number becomes the default in the forms associated with that entry.
 
+* Fixed some tests that failed because of minor changes to entries.
+
 
 Peptide-CGI 12.3.2
 ------------------

@@ -144,10 +144,11 @@ set line = '<option value="http://.*/make_view?pdbid=2JTT&number=15418&do_rrtar=
 source tests/check4line
 
 set file = "data_dir/15418md.dat"
-set line = '^EA 1 (polypeptide(L))	1	HA delta chem shift \[1\]	.	Contains 15N-labeled SIP(189-219) and unlabeled S100A6. 2% d-TFE was added to improve spectral qu...	temperature: 318 K; pH: 6.5 pH; pressure: 1 atm; ionic strength: 0.08 M	15418d1	\$HA_DeltaShift'
+set line = 'EA 1 (polypeptide(L))	1	HA delta chem shift \[1\]	.	Contains 15N-labeled SIP(189-219) and unlabeled S100A6. 2% d-TFE was added to improve spectral qu...	ionic strength: 0.08 M; pH: 6.5 pH; pressure: 1 atm; temperature: 318 K	15418d1	\$HA_DeltaShift$'
 source tests/check4line
 # Check for bug 093.
 set line = '^EA 3 (polypeptide(L))	3	% 15N assign per res \[3\]	.	Contains 15N-labeled SIP(189-219) and unlabeled S100A6. 2% d-TFE was added to improve spectral qu...	temperature: 318 K; pH: 6.5 pH; pressure: 1 atm; ionic strength: 0.08 M	15418p2	\$assigForN'
+set line = 'EA 3 (polypeptide(L))	3	% 15N assign per res \[3\]	.	Contains 15N-labeled SIP(189-219) and unlabeled S100A6. 2% d-TFE was added to improve spectral qu...	ionic strength: 0.08 M; pH: 6.5 pH; pressure: 1 atm; temperature: 318 K	15418p2	\$assigForN$'
 source tests/check4line
 
 

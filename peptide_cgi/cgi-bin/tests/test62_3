@@ -17,6 +17,14 @@ endif
 source tests/test62_check
 
 
+# Output is slightly different for 2.1 and 3.0.
+set file = "data_dir/15117md.dat"
+set line = 'EA 1 (polypeptide(L))	1	C delta chem shift \[1\]	.	NS1A: 0.1 mM; ammonium acetate: 50 mM; ds-RNA: 0.2 mM	temperature: 293 K; pH: 6 pH; pressure: 1 atm	15117d1	\$C_DeltaShift$'
+source tests/check4line
+set line = 'EA 2 (polypeptide(L))	2	% 15N assign per res \[2\]	.	NS1A: 0.1 mM; ammonium acetate: 50 mM; ds-RNA: 0.2 mM	temperature: 293 K; pH: 6 pH; pressure: 1 atm	15117p2	\$assigForN$'
+source tests/check4line
+
+
 echo -n "Test62_3 result: "
 if ($result == 0) then
   echo "OK"
