@@ -34,7 +34,7 @@ if ($failed > 1) then
   set domail = 0
 endif
 
-chmod 644 $outfile
+chmod 666 $outfile
 
 if ($failed && $domail) then
   set header = "Error message from s2d on `hostname`"
