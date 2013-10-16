@@ -57,30 +57,3 @@ foreach file ($files)
     set result = 1
   endif
 end
-
-set file = "data_dir/15437md.dat"
-
-set attr = '$HA_DeltaShift'
-set line = "^EA 1 (polypeptide(L))	1	HA delta chem shift \[1\]	.	S836: . mM; D2O: 10 %; acetic acid - sodium acetate: 50 mM; S836: 2 mM; D2O: 10 %; acetic acid - ...	temperature: 298 K; pH: 4 pH; pressure: 1 atm	15437d1	$attr"
-source tests/check4line
-
-set attr = '$HA_Csi'
-set line = "^EA 1 (polypeptide(L))	1	HA CSI \[1\]	.	S836: . mM; D2O: 10 %; acetic acid - sodium acetate: 50 mM; S836: 2 mM; D2O: 10 %; acetic acid - ...	temperature: 298 K; pH: 4 pH; pressure: 1 atm	15437c1	$attr"
-source tests/check4line
-
-set attr = '$assigForH'
-set line = "^EA 1 (polypeptide(L))	1	% 1H assign per res \[1\]	.	S836: . mM; D2O: 10 %; acetic acid - sodium acetate: 50 mM; S836: 2 mM; D2O: 10 %; acetic acid - ...	temperature: 298 K; pH: 4 pH; pressure: 1 atm	15437p1	$attr"
-source tests/check4line
-
-set attr = '$relax_value'
-set line = "^EA 1 (polypeptide(L))	1	T1 Relaxation (500) \[1\]	.	S836: . mM; D2O: 10 %; acetic acid - sodium acetate: 50 mM	temperature: 298 K; pH: 4 pH; pressure: 1 atm	15437t11	$attr"
-source tests/check4line
-
-set attr = '$relax_value'
-set line = "^EA 1 (polypeptide(L))	1	T2 Relaxation (500) \[1\]	.	S836: . mM; D2O: 10 %; acetic acid - sodium acetate: 50 mM	temperature: 298 K; pH: 4 pH; pressure: 1 atm	15437t21	$attr"
-source tests/check4line
-
-set attr = '$NOE_value'
-set line = "^EA 1 (polypeptide(L))	1	Het NOE (600) N H \[2\]	.	S836: . mM; D2O: 10 %; acetic acid - sodium acetate: 50 mM; S836: 2 mM; D2O: 10 %; acetic acid - ...	temperature: 298 K; pH: 4 pH; pressure: 1 atm	15437n2	$attr"
-#TEMP -- 2.1 comes up with "? ?" for the atoms...
-#TEMP source tests/check4line
