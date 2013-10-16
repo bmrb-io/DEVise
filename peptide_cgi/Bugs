@@ -656,6 +656,12 @@ Num Date        Status  Description
 142 10/9/13	OPEN	Visualization summary page for PDB-only restraint
 			visualizations has multi-entry vis form. (wenger)
 
+143 10/16/13	OPEN	Boxes in summary page show up with different widths
+			in chrome. (elu/wenger)
+
+144 10/16/13	OPEN	Boxes in single-entry visualization selection page
+			aren't all the same height. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
