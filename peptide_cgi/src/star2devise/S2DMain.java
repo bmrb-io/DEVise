@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.326  2013/10/11 21:13:53  wenger
+// Peptide-CGI to-do 195:  improved the appearance of the summary html
+// page; also the visualization selection pages and the histogram
+// index page.
+//
 // Revision 1.325  2013/10/09 20:28:05  wenger
 // Peptide-CGI to-do 192:  moved the "chemical shift data" section to the
 // first position in visualization summary pages; also changed visualization
@@ -865,7 +870,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.3x6"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.3";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
