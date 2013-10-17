@@ -883,6 +883,9 @@ Num Date        Status  Pri     Description
 				says unsigned apps will be blocked in the
 				future). (wenger)
 
+197 10/17/13	OPEN	2	Have help pages for the histogram
+				visualizations. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
