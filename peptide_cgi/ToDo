@@ -879,6 +879,10 @@ Num Date        Status  Pri     Description
 				page all the same height(?). (elu/wenger)
 				(Done by wenger, 10/11/13)
 
+196 10/17/13	OPEN	1	Get Java applet signed (Java security warning
+				says unsigned apps will be blocked in the
+				future). (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
