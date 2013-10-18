@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.327  2013/10/17 20:49:55  wenger
+// Changed version to 12.3.3 for release.
+//
 // Revision 1.326  2013/10/11 21:13:53  wenger
 // Peptide-CGI to-do 195:  improved the appearance of the summary html
 // page; also the visualization selection pages and the histogram
@@ -870,7 +873,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.3";
+    public static final String PEP_CGI_VERSION = "12.3.4x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
