@@ -882,6 +882,7 @@ Num Date        Status  Pri     Description
 196 10/17/13	OPEN	1	Get Java applet signed (Java security warning
 				says unsigned apps will be blocked in the
 				future). (wenger)
+				(See design_doc/todo196)
 
 197 10/17/13	OPEN	2	Have help pages for the histogram
 				visualizations. (wenger)

@@ -1,0 +1,20 @@
+To-do 196: Get Java applet signed
+
+Need to think about when this should happen in the overall build/release
+process -- On each build?  On each install?  When making the distribution
+tarballs?  We need at least an optional way to do it before making
+the tarballs, for installs on teal -- I'd rather not have to make tarballs
+for that every time.  (Hmm -- maybe that would be a good idea??)
+
+Maybe have a question in 'make dist' about whether the jar files are
+signed, like the question about whether they've been tested?
+
+I think the signing should be done as the devise user, not as me, so
+that possibly someone else can do it.
+
+Check about how soon the unsigned applet ban will happen.  I just did
+a little bit of checking and couldn't find a timeline.
+
+
+Miron wants me to talk to OSG and SWAMP people about this in case they
+have similar issues and have done any work on them.
