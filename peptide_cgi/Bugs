@@ -662,6 +662,12 @@ Num Date        Status  Description
 144 10/16/13	OPEN	Boxes in single-entry visualization selection page
 			aren't all the same height. (wenger)
 
+145 11/5/13	OPEN	We seem to have some duplicate histogram html files
+			(html2/devise/histogram.html and
+			html2/devise/histograms/histogram.html, for example)
+			and I'm not sure which set really get used...
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
