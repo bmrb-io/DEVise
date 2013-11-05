@@ -359,6 +359,9 @@ Number Date	Status  Pri
 14.001 ?	OPEN	5
 Combine bin_arch and dyn_lib_arch in release/distribution.
 
+14.002	131105	OPEN	1
+Sign jar files for JavaScreen/Jmol.
+
 
 (add stuff from old to-do list?)
 (add stuff from my to-do list)
