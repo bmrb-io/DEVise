@@ -4545,8 +4545,7 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			(Okay, this was just a problem because of the old
 			download code crapping out before the chmod.)
 
-1030 11/6/13	OPEN	JS:  When exiting with a Jmol session open, you
-			get an error:
+1030 11/6/13	OPEN	JS:  When exiting you get an error:
 			Exception in thread "AWT-EventQueue-0"
 			  java.lang.IllegalArgumentException: null source
 			at java.util.EventObject.<init>(EventObject.java:56)
