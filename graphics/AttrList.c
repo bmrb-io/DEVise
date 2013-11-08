@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.26  2013/02/08 23:09:36  wenger
+  Changed a bunch more sprintfs to snprintfs; fixed errors in the
+  error return in JavaScreenCmd; added provision for other parts of
+  the DEVise code to "register" errors in JavaScreenCmd (if they can't
+  return an error code up the call stack) -- MappingInterp now uses
+  this functionality.  Working on sprintf->snprintf conversion in
+  GDataSock (not finished).
+
   Revision 1.25  2008/10/13 19:45:15  wenger
   More const-ifying, especially Control- and csgroup-related.
 
@@ -169,7 +177,7 @@ AttrList::~AttrList()
   Clear();
   delete [] _attrs;
   _attrs = NULL;
-  FreeString((char *)_name);
+  FreeString(const_cast<char *>(_name));
 
   _lists.Delete(this);
 }
@@ -511,7 +519,7 @@ void AttrList::PrintVal(const AttrVal *aval, AttrType atype)
       printf(" %s ", aval->strVal);
       break;
     case DateAttr:
-      printf(" %ld ", (long)aval->dateVal);
+      printf(" %ld ", static_cast<long>(aval->dateVal));
       break;
     default:
       break;
@@ -601,7 +609,7 @@ WriteVal(int fd, AttrVal *aval, AttrType atype)
     break;
 
   case DateAttr:
-    formatted = snprintf(buf, sizeof(buf), "%ld ", (long)aval->dateVal);//TEMP?
+    formatted = snprintf(buf, sizeof(buf), "%ld ", static_cast<long>(aval->dateVal));//TEMP?
     checkAndTermBuf2(buf, formatted);
     break;
 

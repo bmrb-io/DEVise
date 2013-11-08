@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  2009/05/13 22:41:23  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.15.42.2  2009/05/01 22:30:40  wenger
   Probably don't need the DList debug output any more.
 
@@ -433,24 +437,24 @@ class listName {\
 public:\
 	int Size() { return _voidList.Size(); }\
 \
-	void Insert(valType v) { _voidList.Insert((void *)v);}\
-	void Append(valType v) { _voidList.Append((void *)v);}\
+	void Insert(valType v) { _voidList.Insert(static_cast<void *>(v));}\
+	void Append(valType v) { _voidList.Append(static_cast<void *>(v));}\
 \
 	/* Return true if v is in the list */\
-	int Find(valType v) { return _voidList.Find((void *)v);}\
+	int Find(valType v) { return _voidList.Find(static_cast<void *>(v));}\
 \
 	/* Delete v from list. Return true if v is found */\
-	int Delete(valType v) { return _voidList.Delete((void *)v); }\
+	int Delete(valType v) { return _voidList.Delete(static_cast<void *>(v)); }\
 \
 	/* Return the first element */\
-	valType GetFirst() { return (valType)_voidList.GetFirst();} \
+	valType GetFirst() { return static_cast<valType>(_voidList.GetFirst());} \
 \
 	/* Return the last element */\
-	valType GetLast() { return (valType)_voidList.GetLast();}\
+	valType GetLast() { return static_cast<valType>(_voidList.GetLast());}\
 \
 	/* Swap two list elements */\
 	void Swap(valType val1, valType val2) { \
-		_voidList.Swap((void *)val1,(void *)val2);\
+		_voidList.Swap(static_cast<void *>(val1),static_cast<void *>(val2));\
 	}\
 \
 	/* Init and return index of iterator */\
@@ -460,7 +464,7 @@ public:\
 	/* Init iterator to return the last N records */\
 	int InitIteratorLastN(int n=1){ return _voidList.InitIteratorLastN(n);}\
 	int More(int index){return _voidList.More(index);}\
-	valType Next(int index){ return (valType)_voidList.Next(index);} \
+	valType Next(int index){ return static_cast<valType>(_voidList.Next(index));} \
 	void DeleteCurrent(int index){_voidList.DeleteCurrent(index);} \
 	void InsertAfterCurrent(int indx, valType v) { \
 		_voidList.InsertAfterCurrent(indx,v);\

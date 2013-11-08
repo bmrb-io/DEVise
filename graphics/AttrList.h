@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  2003/01/13 19:25:09  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.18.10.1  2002/09/17 23:34:11  wenger
   Fixed a bunch of memory leaks -- especially in DevError::ReportError()!
 
@@ -147,13 +150,13 @@ public:
   void InsertAttr(int attrNum,
 		  const char *name, int offset, int length, AttrType type,
 		  Boolean hasMatchVal = false,
-		  AttrVal *matchVal = (AttrVal *)NULL,
+		  AttrVal *matchVal = NULL,
 		  Boolean isComposite = false,
 		  Boolean isSorted = false,
 		  Boolean hasHiVal = false, 
-		  AttrVal *hiVal = (AttrVal *)NULL, 
+		  AttrVal *hiVal = NULL, 
 		  Boolean hasLoVal = false, 
-		  AttrVal *loVal = (AttrVal *)NULL);
+		  AttrVal *loVal = NULL);
 
   const char *GetName() { return _name; }
 

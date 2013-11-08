@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.40  2005/12/06 19:59:38  wenger
+#  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#  be the end of the V1_7b0_br branch.)
+#
 #  Revision 1.39.4.2  2005/06/08 19:00:28  wenger
 #  Changed DEVise makefiles to compile with the g++ and gcc from
 #  my path, instead of specifying specific paths (to make it easier
@@ -238,7 +242,7 @@ else
 endif
 
 
-DEBUG_FLAGS =
+DEBUG_FLAGS = -Wold-style-cast
 ifeq ($(DEBUG_MEM),1)
     DEBUG_FLAGS += -DDEBUG_MEM
 endif

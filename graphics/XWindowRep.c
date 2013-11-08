@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.153  2013/09/20 16:54:03  wenger
+  Merged devise_1_11_3_centos6_br_2 thru devise_1_11_3_centos6_br_3 to trunk.
+
   Revision 1.152.2.1  2013/09/20 15:29:27  wenger
   More Centos 6 compile fixes.
 
@@ -758,7 +761,7 @@ extern "C" {
 
 #define MAXPIXELDUMP 0
 
-#define ROUND(type, value) ((type)(value + 0.5))
+#define ROUND(type, value) (static_cast<type>(value + 0.5))
 #define DRAWABLE           (_win ? _win : _pixmap)
 
 #ifndef IMPLEMENTDLIST_DALIIMAGELIST
@@ -4576,7 +4579,7 @@ XWindowRep::SetOutput(WindowRep *winRep)
 
   if (winRep != this) {
     // winRep had better really be an XWindowRep!!
-    XWindowRep *outWR = (XWindowRep *)winRep;
+    XWindowRep *outWR = dynamic_cast<XWindowRep *>(winRep);
 
     _win = outWR->_win;
     _pixmap = outWR->_pixmap;

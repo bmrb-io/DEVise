@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  2013/06/13 22:03:10  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
   Revision 1.36.2.1  2013/06/13 21:02:54  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -283,7 +286,7 @@ extern void CheckDirSpace(const char *dirname, const char *envVar,
 /* strip file of path name */
 inline const char *StripPath(const char *name) {
   const char *last;
-  if ((last = strrchr(name,'/')) == (char *)NULL)
+  if ((last = strrchr(name,'/')) == static_cast<char *>(NULL))
     return name;
   return last + 1;
 }
@@ -342,7 +345,7 @@ const char *GetDefaultDateFormat();
 const char *DateString(time_t tm, const char *format = NULL);
 
 inline const char *DateString(double d, const char *format = NULL) {
-  return DateString((time_t)d, format);
+  return DateString(static_cast<time_t>(d), format);
 }
 
 /* Return true if a number, set num to the converted number.

@@ -137,7 +137,7 @@ Eliminate all dependencies on having /p/devise for a DEVise installation.
 Add a test session with a session postscript.  (wenger)
 (Done by wenger, 2/19/13.)
 
-08.005 10/31/13	OPEN	3
+08.005 10/31/13	ACTIVE	3
 Change C-style casts to C++-style (static_cast, dynamic_cast, etc.).
 (wenger)
 

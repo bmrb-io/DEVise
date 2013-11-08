@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.166  2013/02/21 20:55:29  wenger
+  We now print an error message if the chmod() on a data download fails.
+
   Revision 1.165  2013/02/19 00:06:51  wenger
   Got rid of more sprintfs, strcpys and strcats.
 
@@ -3152,7 +3155,7 @@ ViewGraph::HandleDataDownload(const char *file, Boolean useVisualFilter,
         if (ps) {
             int index = ps->InitIterator();
             while (ps->More(index)) {
-                ViewGraph *tmpView = (ViewGraph *)ps->Next(index);
+                ViewGraph *tmpView = dynamic_cast<ViewGraph *>(ps->Next(index));
 				if (!tmpView->GetDrillDownDisabled() &&
 				  !tmpView->GetExcludeFromDrillDown()) {
 					result &= tmpView->HandleDataDownload(file,

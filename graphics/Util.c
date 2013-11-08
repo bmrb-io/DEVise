@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  2013/06/13 22:03:10  wenger
+  Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
+
   Revision 1.49.2.1  2013/06/13 21:02:54  wenger
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
@@ -327,7 +330,7 @@ long ModTime(char *fname)
     reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
-  return (long)sbuf.st_mtime;
+  return static_cast<long>(sbuf.st_mtime);
 }
 
 DevStatus
@@ -386,7 +389,7 @@ char *CopyString(const char *str)
   // Changed from new to malloc here so the stack doesn't get too deep
   // for Purify to show.  RKW 1999-03-01.
   int bufSize = strlen(str) + 1;
-  char *result = (char *)malloc(bufSize);
+  char *result = static_cast<char *>(malloc(bufSize));
   if (!result) {
     reportErrNosys("Fatal error: out of memory");
     Exit::DoExit(2);
@@ -601,7 +604,7 @@ void ClearDir(const char *dir)
     for (dp = readdir(dirp); dp != NULL; dp = readdir(dirp)){
 #if defined(SOLARIS) || defined(HPUX) || defined(AIX) || defined(LINUX) \
       || defined(OSF)
-      struct dirent *realdp = (struct dirent *)dp;
+      struct dirent *realdp = static_cast<struct dirent *>(dp);
 #else
       struct direct *realdp = dp;
 #endif
@@ -685,13 +688,10 @@ void CheckDirSpace(const char *dirname, const char *envVar, int warnSize,
 #if defined(DEBUG)
     reportErrSys("Can't get status of file system");
 #endif
-  }
-  else
-  {
+  } else {
     int minBlocksFree = exitSize / stats.STAT_FRSIZE;
     int warnBlocksFree = warnSize / stats.STAT_FRSIZE;
-    if (((int)stats.STAT_BAVAIL) < minBlocksFree)
-    {
+    if (static_cast<int>(stats.STAT_BAVAIL) < minBlocksFree) {
       char errBuf[1024];
       int formatted = snprintf(errBuf, sizeof(errBuf)/sizeof(char),
           "Fatal error: %s directory (%s) has less than %d bytes free\n",
@@ -699,9 +699,7 @@ void CheckDirSpace(const char *dirname, const char *envVar, int warnSize,
       (void) checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       Exit::DoAbort(errBuf, __FILE__, __LINE__);
-    }
-    else if (((int)stats.STAT_BAVAIL) < warnBlocksFree)
-    {
+    } else if (static_cast<int>(stats.STAT_BAVAIL) < warnBlocksFree) {
       fprintf(stderr,
 	"Warning: %s directory (%s) has less than %d bytes free\n",
 	envVar, dirname, warnSize);
@@ -807,7 +805,7 @@ nice_strncpy(char *dest, const char *src, size_t destSize)
     status += StatusFailed;
   } else {
     int index = 0;
-    while (src[index] != '\0' && index < (int)destSize - 1) {
+    while (src[index] != '\0' && index < static_cast<int>(destSize) - 1) {
       dest[index] = src[index];
       index++;
     }
