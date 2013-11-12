@@ -84,19 +84,19 @@ end
 # Check for correct meta-data.
 set file = "data_dir/6838md.dat"
 
-set line = '^EA 1 (polypeptide(L))	1	C delta chem shift \[1\]	.	PSE-4 0.6 mM (U-98% 13C, U-96% 15N)    DSS 0.1 mM              Imidazole 3 mM              Sodium...	pH: 6.65 pH; temperature: 303.15 K; ionic strength: 0 mM	6838d1	\$C_DeltaShift$'
+set line = '^EA 1 (polypeptide(L))	1	C delta chem shift \[1\]	.	PSE-4 0.6 mM (U-98% 13C, U-96% 15N)    DSS 0.1 mM              Imidazole 3 mM              Sodium...	ionic strength: 0 mM; pH: 6.65 pH; temperature: 303.15 K	6838d1	\$C_DeltaShift$'
 source tests/check4line
 
-set line = '^EA 1 (polypeptide(L))	1	Het NOE (500) N H \[1\]	.	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	pH: 6.65 pH; temperature: 304.65 K; ionic strength: 0 mM	6838n1	\$NOE_value$'
+set line = '^EA 1 (polypeptide(L))	1	Het NOE (500) N H \[1\]	.	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	ionic strength: 0 mM; pH: 6.65 pH; temperature: 304.65 K	6838n1	\$NOE_value$'
 source tests/check4line
 
-set line = '^EA 1 (polypeptide(L))	1	T1 Relaxation (500) \[1\]	.	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	pH: 6.65 pH; temperature: 304.65 K; ionic strength: 0 mM	6838t11	\$relax_value$'
+set line = '^EA 1 (polypeptide(L))	1	T1 Relaxation (500) \[1\]	.	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	ionic strength: 0 mM; pH: 6.65 pH; temperature: 304.65 K	6838t11	\$relax_value$'
 source tests/check4line
 
-set line = '^EA 1 (polypeptide(L))	1	T2 Relaxation (500) \[1\]	.	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	pH: 6.65 pH; temperature: 304.65 K; ionic strength: 0 mM	6838t21	\$relax_value$'
+set line = '^EA 1 (polypeptide(L))	1	T2 Relaxation (500) \[1\]	.	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	ionic strength: 0 mM; pH: 6.65 pH; temperature: 304.65 K	6838t21	\$relax_value$'
 source tests/check4line
 
-set line = '^EA 1 (polypeptide(L))	1	S2 Order Parameters \[1\]	The Rex values and errors provided are scaled for a 600 MHz field.  That is, they originate from ...	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	pH: 6.65 pH; temperature: 304.65 K; ionic strength: 0 mM	6838o1	\$S2order_value$'
+set line = '^EA 1 (polypeptide(L))	1	S2 Order Parameters \[1\]	The Rex values and errors provided are scaled for a 600 MHz field.  That is, they originate from ...	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	ionic strength: 0 mM; pH: 6.65 pH; temperature: 304.65 K	6838o1	\$S2order_value$'
 source tests/check4line
 
 
