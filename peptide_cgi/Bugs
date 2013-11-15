@@ -668,6 +668,10 @@ Num Date        Status  Description
 			and I'm not sure which set really get used...
 			(wenger)
 
+146 11/15/13	OPEN	S2 predicted vs. experimental visualization isn't
+			generated unless you do 'force reprocessing' (at
+			least for 5991). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
