@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2010
+#  (c) Copyright 2001-2013
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -24,28 +24,28 @@
 # Directories for executables we need.
 
 # BIN2 is for JSS and devised.
-JAVA_BIN2 = /usr/local/bin
+JAVA_BIN2 = /usr/bin
 PERL_BIN2 = /usr/bin
 XVFB_BIN2 = /usr/bin
 
 # BIN2P is for JSPoP.
-JAVA_BIN2P = /usr/local/bin
+JAVA_BIN2P = /usr/bin
 PERL_BIN2P = /usr/bin
 
 # BIN3 is for compiling.
-JAVA_BIN3 = /usr/local/bin
+JAVA_BIN3 = /usr/bin
 
-POP_DIR = /bmrb/devise_installed/js.installed
-SERV_DIR = /bmrb/devise_installed/js.installed
+POP_DIR = /bmrb/devise/js.installed
+SERV_DIR = /bmrb/devise/js.installed
 JAR_DIR = /bmrb/htdocs/devise
 CGI_DIR = /bmrb/htdocs/cgi-bin
 IDSTR = regular
 
 # Where the DEVise sessions, schemas, etc., are installed.
-DEVISE_VIS = /bmrb/devise_installed/demo
+DEVISE_VIS = /bmrb/devise/demo
 
 # This is who gets email about any errors.
-ERROR_EMAIL = n-eiichi@protein.osaka-u.ac.jp
+ERROR_EMAIL = bmrbsys@protein.osaka-u.ac.jp
 
 INSTALL_HOST = bmrbweb
 
