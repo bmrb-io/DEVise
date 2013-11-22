@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2012
+#  (c) Copyright 2001-2013
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -22,7 +22,7 @@
 
 #-----------------------------------------------------------
 # Directories for executables we need.
-JAVA_BIN = /usr/local/bin
+JAVA_BIN = /usr/bin
 PERL_BIN = /usr/bin
 
 #-----------------------------------------------------------
@@ -43,7 +43,7 @@ UVD_CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/peptide-cgi/make_uvd
 # Places to install stuff.
 
 # The base of the DEVise demo setup.
-DEV_DEMO_HOME = /bmrb/devise_installed/demo
+DEV_DEMO_HOME = /bmrb/devise/demo
 
 WWW_HOME = /bmrb/htdocs
 
@@ -101,7 +101,7 @@ VUR_INSTALL_MACHINE = bmrbweb
 # the view_entry script, etc.
 
 # The directory in which the JavaScreen client is installed.
-VUR_JS_DIR = /bmrb/devise_installed/js.installed
+VUR_JS_DIR = /bmrb/devise/js.installed
 
 # The "base" directory from which to get the NMR-STAR file.
 # VUR_INPUT_DIR = web@yellowtail:/share/subedit/Third.Ed
@@ -113,7 +113,7 @@ VUR_CSR_LEVEL = 0
 # The user that the "front-end" script will log into the "main"
 # machine as.
 # VUR_LOGIN = web@manatee
-VUR_LOGIN = web@bmrbweb
+VUR_LOGIN = webmaster@bmrbweb
 
 # The "main" script to run.
 VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
@@ -129,7 +129,7 @@ UVD_DATA_UPLOAD = $(WWW_HOME)/vis_serv/upload_data
 LACS_LEVEL_DEFAULT = 1
 
 # The URL of directory containing LACS files (must end with "/").
-LACS_URL = file:/bmrb/ftp/pub/data/LACS/
+LACS_URL = file:/bmrb/ftp/pub/bmrb/validation_reports/LACS/
 
 #-----------------------------------------------------------
 # Histogram-related configuration
@@ -138,7 +138,7 @@ LACS_URL = file:/bmrb/ftp/pub/data/LACS/
 HISTOGRAM_HTML_HOME = $(WWW_HOME)/devise
 
 # The directory containing the "real" histogram data.
-HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/data/statistics/chem_shifts/full/devise
+HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/bmrb/statistics/chem_shifts/full/devise
 
 #-----------------------------------------------------------
 # SPARTA-related configuration
@@ -149,14 +149,14 @@ SPARTA_URL = file:/bmrb/ftp/pub/bmrb/validation_reports/SPARTA/
 # Restraint-related configuration.
 
 # The root URL of the restraint grid (must end with "/").
-RESTRAINT_GRID_ROOT = "http://bmrb.protein.osaka-u.ac.jp/servlets/"
+RESTRAINT_GRID_ROOT = "http://bmrbweb.protein.osaka-u.ac.jp/servlets/"
 
 # Default torsion angle restraint processing level: create link
 # if appropriate restraint grid entry is available.
 DO_TAR_DEFAULT = 1
 
 # The root URL of the remediated restraints files.
-REMEDIATED_RESTRAINTS_TEMPLATE = "http://www.bmrb.wisc.edu/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/divided/@/*/nmr-star/*_linked.str"
+REMEDIATED_RESTRAINTS_TEMPLATE = "file:/bmrb/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/divided/@/*/nmr-star/*_linked.str"
 
 # Default remediated restraints torsion angle processing level: create link
 # if appropriate restraint grid entry is available.
@@ -175,13 +175,13 @@ DO_RRDIST_DEFAULT = 1
 DO_S2PRED_DEFAULT = 1
 
 # The root URL of s2predict output files.
-S2PRED_URL_DEFAULT = file:/website/ftp/pub/bmrb/derived_data/s2predict/
+S2PRED_URL_DEFAULT = file:/bmrb/ftp/pub/bmrb/derived_data/s2predict/
 
 #-----------------------------------------------------------
 # Other.
 
 # User to send email to on errors.
-ERROR_EMAIL = devise-sup@cs.wisc.edu
+ERROR_EMAIL = bmrbsys@protein.osaka-u.ac.jp
 
 # Email for sending comments in web pages.
 COMMENT_EMAIL = bmrbhelp@protein.osaka-u.ac.jp
