@@ -6,12 +6,28 @@ set result = 0
 
 rm -r -f */15209*
 
-echo -n "Processing NMR-STAR, mmCIF, and torsion angle restraints: "
-./s2d -nomail -bmrbid 15209 -do_tar 3 -force -check_res_list -check_pct
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 15209 -force -check_res_list -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
 endif
+mv tmp/s2d.out tmp/s2d.out1
+
+echo -n "Processing mmCIF and distance restraints: "
+./s2d -nomail -bmrbid 15209 -pdbid 2oqs -coord_index 1 -force \
+  -do_tar 3 -check_res_list -check_pct
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+
+
+
+
+
 
 source tests/test_tar5_check
 

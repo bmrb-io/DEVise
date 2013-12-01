@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.328  2013/10/18 17:11:41  wenger
+// Changed version to 12.3.4.
+//
 // Revision 1.327  2013/10/17 20:49:55  wenger
 // Changed version to 12.3.3 for release.
 //
@@ -873,7 +876,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.4x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.4x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
@@ -2885,6 +2888,9 @@ public class S2DMain {
 
 	for (int index = 0; index < ids.size(); index++) {
 	    String id = ((String)ids.elementAt(index)).toUpperCase();
+            if (doDebugOutput(3)) {
+                System.out.println("  Adding PDB ID " + id);
+            }
 
 	    // Use only the first PDB ID.
 	    //TEMP -- comment this out to process all relevant PDB IDs.
