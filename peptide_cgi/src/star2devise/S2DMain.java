@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.329  2013/12/01 03:39:01  wenger
+// Fixed problem with test_tar5 (seems like 15209 no longer references
+// a PDB file, so the test specifies it explicitly).
+//
+// Revision 1.328.4.1  2013/11/27 19:06:29  wenger
+// JS signing:  Changed Peptide-CGI version to 12.3.4x_sign1.
+//
 // Revision 1.328  2013/10/18 17:11:41  wenger
 // Changed version to 12.3.4.
 //
@@ -876,7 +883,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.4x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.4x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 

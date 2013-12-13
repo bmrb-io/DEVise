@@ -4,7 +4,8 @@ Peptide-CGI 12.3.4
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
 
-(Nothing yet.)
+* Made changes to match the JavaScreen's change to a single, signed,
+jar file.
 
 
 Peptide-CGI 12.3.3
