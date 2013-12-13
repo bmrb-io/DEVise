@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2008
+#  (c) Copyright 2001-2013
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,6 +19,29 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14.18.5  2013/12/12 21:49:28  wenger
+#  JS signing:  Minor cleanups.
+#
+#  Revision 1.14.18.4  2013/11/27 23:36:13  wenger
+#  JS signing:  Added js_is_signed.pl to the JavaScreen release
+#  script.
+#
+#  Revision 1.14.18.3  2013/11/27 20:17:14  wenger
+#  JS signing:  Changed JS version to 5.14.3x_sign1; temporarily changed
+#  release.js to release things to JavaScreen.signed for testing,
+#  distribution gets stuff from there, too.
+#
+#  Revision 1.14.18.2  2013/11/26 19:34:22  wenger
+#  JS signing:  Release and install scripts now warn if jar file isn't
+#  signed.
+#
+#  Revision 1.14.18.1  2013/11/05 22:07:49  wenger
+#  JS signing:  Changed the JS to use a single jar file that includes
+#  the Jmol classes.
+#
+#  Revision 1.14  2008/03/06 18:37:19  wenger
+#  Added jsj to JavaScreen release.
+#
 #  Revision 1.13  2008/02/21 23:08:35  wenger
 #  Added new JavaScreen/html directory to JavaScreen release script.
 #
@@ -95,7 +118,7 @@ set dest = $desttop/JavaScreen
 #-----------------------------------------------------------
 # Make sure we have the files we need to do the release.
 
-set files = ($src/jsa1.jar $src/JavaScreen/jspop.class \
+set files = ($src/devise_js.jar $src/JavaScreen/jspop.class \
     $src/JavaScreen/jss.class $src/bin2/java $src/js_version)
 foreach file ($files)
   if (! -f $file) then
@@ -104,6 +127,19 @@ foreach file ($files)
     exit 1
   endif
 end
+
+set signed = `cd Java/JavaScreen; js_is_signed.pl`
+if (! $signed) then
+  echo ""
+  echo "Jar file is not signed"
+  echo -n "Are you sure you want to continue? [n] "
+
+  set answer = $<
+  if ($answer != y && $answer != Y) then
+    echo Aborted.
+    exit 1
+  endif
+endif
 
 #-----------------------------------------------------------
 # Confirm that we want to go ahead.
@@ -207,7 +243,7 @@ set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
     js.cgi check_connect check_jsall check_jspop jspop \
     js jsj js_cgi restart_jspop jspop.kill kill_jsall ports+files \
     get_timestamp run_top run_check jspop_savepid users.cfg install_js \
-    Tasvir js_log js_version)
+    Tasvir js_log js_version js_is_signed.pl)
 foreach file ($files)
   cp -p $file $dest
   chmod 755 $dest/$file

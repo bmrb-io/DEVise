@@ -1,0 +1,116 @@
+		To-do 14.002: JavaScreen Applet Signing
+				2013-12-11
+
+Currently three jar files: jsa1.jar, jsa2.jar, JmolApplet.jar.  Jsa1/jsa2
+is artifact from previous features -- could easily be combined.
+
+
+Options, from least to most work for us:
+1. Sign existing jar files (jsa1.jar, jsa2.jar, JmolApplet.jar).
+2. Combine everything into one big jar file that we sign.
+3. Jmol signs their jar file, we convert to the latest version and use
+   their signed jar file.
+Worst-case -- we disable Jmol.
+
+Would BMRB want to sponsor Jmol's cert if necessary?
+
+
+
+- Investigate how signing works
+- Get cert (or access to a cert we already have)
+Step 1 is maybe getting a really simple applet (e.g., Scribble)
+correctly signed.
+
+
+Make a sign target in JavaScreen makefile; release_js won't let you
+do release if jar files aren't signed.  (Can check with
+'jarsigner -verify <jar-file>'.)
+
+Make a branch for all of this.
+
+Our classes are not edu.wisc.cs... -- will that cause signing problems?
+
+Need to have people other than me be able to do the signing.
+
+New manifest attributes.  Argh -- will that work with old Jmol file?
+* permissions
+* codebase
+
+See http://docs.oracle.com/javase/tutorial/deployment/jar/manifestindex.html
+for info about using the manifest.
+
+Man -- are we going to have to make jar files with a different codebase
+value for each mirror?  Or can we use "*" for the value?  Or maybe we
+can specify multiple values?
+
+Can we just make one jar file and specify jsa or jsb in the html?
+
+Changes to jar file will require peptide-cgi changes to be closely
+coordinated.  Hmm -- I could release stuff with the jar file and manifest
+changes all at once...
+
+Incorrect codebase value doesn't seem to cause problems right now --
+need to test that...
+
+Cert must be *trusted*...
+
+Maybe have downloadable JS (non-applet)?
+
+Also changed Peptide-CGI to use new single jar file -- when releasing,
+release new JS first and leave old jar files in place, then release
+new Peptide-CGI.
+
+
+http://docs.oracle.com/javase/6/docs/technotes/guides/javaws/developersguide/development.html#signing
+has a section "Signing JAR Files With a Test Certificate" -- seems like
+this may be worth trying.
+
+Now I get a warning about Java not running the applet because it requests
+to be in the sandbox (which is what I thought I was supposed to do).
+This seems to have some info:
+http://stackoverflow.com/questions/18914650/can-you-sign-a-java-applet-but-keep-it-in-the-sandbox-not-give-it-full-access-t
+It kind of seems like the jvm doesn't like it if a signed applet requests
+to run in the sandbox -- WTF?!?
+
+Note: signed below is self-signed; running in Chrome on manta
+Signed	Jar perm	Html perm	Works/fails
+------	--------	---------	-----------
+no	all		not set		works
+no	all		sandbox		works
+yes	all		sandbox		fails
+yes	all		default		fails
+yes	sandbox		sandbox		fails
+yes	sandbox		default		fails
+yes	sandbox		all		fails
+yes	all		all		fails
+Okay, maybe the problem was not having the *.cs.wisc.edu instead of wisc.edu.
+
+Looks like you *do* need the permissions setting in the html as well.
+
+Note:  Codebase may need *.cs.wisc.edu or *.wisc.edu, not just cs.wisc.edu.
+
+
+Well, shit.  I'm thinking now that the cert I get has to be tied to as
+specific Java keystore:
+/p/devise/ext9/wenger3/devise_js_sign
+
+Put all of my little scripts for generating the keystores and everything
+into CVS...
+
+
+Stuff still to do as of 2013-12-11:
+x- Test "really" signed jar file on manatee.
+x- Add note to version history
+  x- JS
+  x- Peptide-cgi
+x- Test whether you really need 1.6 jarsigner.
+x- Make sure js_is_signed.pl gets into tarball.
+x- Email to Vincent and Michelle with details.
+x- Add signing step to release process documentation
+a- Clean up & merge code
+  a- JS
+  - Peptide-cgi
+?- Put jar signing documentation on my home page.
+x?- Email Linda.
+(probably more)
+

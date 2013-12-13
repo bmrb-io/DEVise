@@ -8,7 +8,9 @@ The following steps are necessary to build the JavaScreen:
 1) Check out the source code.
 2) Make a configuration file.
 3) Make the 'setup' target.
-4) Make the 'all' target.
+4) Make the 'jar' target.
+5) Make the 'all' target.
+6) Make the 'sign' target.
 
 
 *** Checkout, Configuration and Setup
@@ -44,6 +46,11 @@ we didn't initially set things up right to use packages.)
 If you want to end up with all of the jar and class files, make the targets
 'jar all' (in that order).  (You need to have both the jar file and the
 class files to do a JavaScreen release.)
+
+If doing anything besides just locally testing
+If you're going to release the client jar file (devise_js.jar) to the web
+(or just to /p/devise) you need to make the 'sign' target to sign the
+jar file.
 
 
 *** Running

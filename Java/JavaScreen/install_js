@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2008
+#  (c) Copyright 2001-2013
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -68,7 +68,7 @@ endif
 #TEMP -- bin2p/perl should be in this list, but -e test doesn't work for
 # a symlink that points to nothing (needed for BMRB install on yola/aden).
 # RKW 2001-11-01.
-set files = ( jsa1.jar jsa2.jar jsb1.jar jsb2.jar )
+set files = ( devise_js.jar )
 if (! $client_only) then
   set files = ($files JavaScreen/jspop.class JavaScreen/jss.class \
     JavaScreen/js.class bin/devised bin/Tasvir bin2/java \
@@ -80,6 +80,19 @@ foreach file ($files)
     exit 1
   endif
 end
+
+set signed = `js_is_signed.pl`
+if (! $signed) then
+  echo ""
+  echo "Jar file is not signed"
+  echo -n "Are you sure you want to continue? [n] "
+
+  set answer = $<
+  if ($answer != y && $answer != Y) then
+    echo Aborted.
+    exit 1
+  endif
+endif
 
 #-----------------------------------------------------------
 # Make sure we know which ID we're installing for.
@@ -155,7 +168,7 @@ if (! -d $jardir) then
   mkdir -p $jardir
   chmod 755 $jardir
 endif
-cp -p *.jar $jardir
+cp -p devise_js.jar $jardir
 chmod 644 $jardir/*.jar
 cp -p jsa.html $jardir
 cp -p jsb.html $jardir

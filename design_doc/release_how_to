@@ -36,7 +36,7 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
     - Make the 'release' and 'dyn_lib' targets.
 
 - Build/test JavaScreen:
-    - Build the JavaScreen (including jar files).
+    - Build the JavaScreen (including signing the client-side jar file).
 
     - Make sure JavaScreen help version matches the actual software.
 

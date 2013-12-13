@@ -18,7 +18,7 @@ sleep 8
 # here so we can get the follower's PID)
 unsetenv CLASSPATH
 set javaexec = `cat bin2/java`
-$javaexec -Xmx128M -cp .:JmolApplet.jar JavaScreen.js -autoplayback -clientlogclient_log.3 -playbackoriginal -screensize600x400 -cmdport6266 &
+$javaexec -Xmx128M -cp . JavaScreen.js -autoplayback -clientlogclient_log.3 -playbackoriginal -screensize600x400 -cmdport6266 &
 
 sleep 200
 

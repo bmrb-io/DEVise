@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2012
+// (c) Copyright 1999-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.157.6.1  2013/11/27 20:17:01  wenger
+// JS signing:  Changed JS version to 5.14.3x_sign1; temporarily changed
+// release.js to release things to JavaScreen.signed for testing,
+// distribution gets stuff from there, too.
+//
+// Revision 1.157  2012/05/08 18:04:08  wenger
+// Changed DEVise version to 1.11.3x1 and JavaScreen version to 5.14.3x1;
+// added 1.11.3 and 5.14.3 sections to the DEVise and JavaScreen version
+// histories; updated JavaScreen configuration files for data download
+// and devise@bmrb.wisc.edu email; added config file, etc., for compiling
+// DEVise on manatee.
+//
 // Revision 1.156  2012/04/30 23:36:41  wenger
 // Changed JavaScreen version to 5.14.2 for release; added data download
 // setup to standard CS config file.
@@ -988,7 +1000,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.3x1"/*TEMP*/);
+    public static final String VERSION = new String("5.14.3x2"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.0");
 

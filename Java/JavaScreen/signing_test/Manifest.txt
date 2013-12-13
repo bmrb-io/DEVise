@@ -1,0 +1,4 @@
+Permissions: sandbox
+Codebase: cs.wisc.edu
+Application-name: Scribble test
+

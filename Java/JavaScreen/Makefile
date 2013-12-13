@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-2011
+# (c) Copyright 1992-2013
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -21,7 +21,7 @@
 
 include Makefile.config
 
-JAVAC = $(JAVA_BIN3)/javac -d . -classpath .:JmolApplet.jar -source 1.3 -target 1.3
+JAVAC = $(JAVA_BIN3)/javac -d . -source 1.3 -target 1.3
 
 all: js jsa jspop jss circ_log
 js: js.class
@@ -83,42 +83,47 @@ appletclass: DEViseJSApplet.java
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
 
 jar:
-	make jara jarb jarjs
+	make jara
 	./js -version > js_version
 
 jara:
 	make classclean
-	-rm jsa1.jar jsa2.jar
-	make jsa
-	jar cf jsa1.jar  JavaScreen/jsa.class
-	rm JavaScreen/jsa.class
-	jar cf jsa2.jar JavaScreen/*.class JavaScreen/UI/*.class \
+	-rm devise_js.jar
+	make js jsa jsb
+	jar cfm devise_js.jar Manifest.txt \
+	    JavaScreen/*.class JavaScreen/UI/*.class \
  	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
  	    JavaScreen/resources/toolbar_cursors/*.png \
-	    JavaScreen/html/*.html
+	    JavaScreen/html/*.html \
+	    JmolApplet.class \
+	    org/jmol/*/*.class org/jmol/*/*/*.class org/jmol/*/*/*/*.class \
+	    org/jmol/*/*/*.txt org/jmol/*/*.properties \
+	    javax/*/*.class
 
-jarb:
-	make classclean
-	-rm jsb1.jar jsb2.jar
-	make jsb
-	jar cf jsb1.jar JavaScreen/jsb.class
-	rm JavaScreen/jsb.class
-	jar cf jsb2.jar JavaScreen/*.class JavaScreen/UI/*.class \
-	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
- 	    JavaScreen/resources/toolbar_cursors/*.png \
-	    JavaScreen/html/*.html
+# Note: with the current cert, this is not needed.
+realkey:
+	cert_scripts/create_real_keystore.csh
 
-jarjs:
-	make classclean
-	-rm js.jar
-	make js
-	jar cf js.jar JavaScreen/*.class JavaScreen/UI/*.class \
-	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
- 	    JavaScreen/resources/toolbar_cursors/*.png \
-	    JavaScreen/html/*.html
+testkey:
+	cert_scripts/create_test_keystore.csh
+
+print_cert:
+	keytool -storetype pkcs12 -keystore js_certs/uw_signing_chain.pfx \
+		-list -v
+
+# Note: with the current cert, this is not needed.
+import_cert:
+	cert_scripts/import_cert.csh
+
+sign:
+	jarsigner -storetype pkcs12 -keystore js_certs/uw_signing_chain.pfx \
+		devise_js.jar "university of wisconsin-madison's internet2 id"
+
+testsign:
+	jarsigner -keystore js_certs/js_test.jks devise_js.jar js_test
 
 clean: classclean
-	-rm jsa1.jar jsa2.jar jsb1.jar jsb2.jar js.jar
+	-rm devise_js.jar
 	-rm js_version
 
 classclean:
@@ -129,6 +134,10 @@ classclean:
 setup:
 	./setup
 	make -f Makefile.setup setup
+	jar xf JmolApplet.jar
+	# Note:  The path here should change if anyone else signs
+	# the jar files.
+	ln -s /u/w/e/wenger/.js_certs js_certs
 
 .PHONY: install
 install:
