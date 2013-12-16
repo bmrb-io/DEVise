@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.158  2013/12/13 21:50:43  wenger
+// Merged js_todo14_002_br_0 thru js_todo14_002_br_1 to trunk.
+//
 // Revision 1.157.6.1  2013/11/27 20:17:01  wenger
 // JS signing:  Changed JS version to 5.14.3x_sign1; temporarily changed
 // release.js to release things to JavaScreen.signed for testing,
@@ -1000,7 +1003,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.3x2"/*TEMP*/);
+    public static final String VERSION = new String("5.14.3");
 
     public static final String PROTOCOL_VERSION = new String("17.0");
 
