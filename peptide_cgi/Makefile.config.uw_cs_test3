@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2008-2012
+#  (c) Copyright 2008-2013
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -25,8 +25,8 @@
 
 #-----------------------------------------------------------
 # Directories for executables we need.
-JAVA_BIN = /s/std/bin
-PERL_BIN = /s/std/bin
+JAVA_BIN = /usr/bin
+PERL_BIN = /usr/bin
 
 #-----------------------------------------------------------
 # Where to find stuff on the web.

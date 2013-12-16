@@ -25,8 +25,8 @@
 
 #-----------------------------------------------------------
 # Directories for executables we need.
-JAVA_BIN = /s/java/bin
-PERL_BIN = /s/perl/bin
+JAVA_BIN = /usr/bin
+PERL_BIN = /usr/bin
 
 #-----------------------------------------------------------
 # Where to find stuff on the web.
