@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.330  2013/12/13 22:41:50  wenger
+// Merged s2d_single_jar_br_0 thru s2d_single_jar_br_1 to trunk.
+//
 // Revision 1.329  2013/12/01 03:39:01  wenger
 // Fixed problem with test_tar5 (seems like 15209 no longer references
 // a PDB file, so the test specifies it explicitly).
@@ -885,7 +888,7 @@ public class S2DMain {
 
     public static final String PEP_CGI_VERSION = "12.3.4x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
-    public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
+    public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
 
     // Default accession number to put into html forms (also see
     // html2/devise/peptide-cgi/bmrb_select.tmpl).

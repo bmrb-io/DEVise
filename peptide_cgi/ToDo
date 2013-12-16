@@ -879,10 +879,11 @@ Num Date        Status  Pri     Description
 				page all the same height(?). (elu/wenger)
 				(Done by wenger, 10/11/13)
 
-196 10/17/13	OPEN	1	Get Java applet signed (Java security warning
+196 10/17/13	DONE	1	Get Java applet signed (Java security warning
 				says unsigned apps will be blocked in the
 				future). (wenger)
 				(See design_doc/todo196)
+				(Done by wenger, 12/16/13)
 
 197 10/17/13	OPEN	2	Have help pages for the histogram
 				visualizations. (wenger)
