@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  2013/12/13 21:51:31  wenger
+#  Merged js_todo14_002_br_0 thru js_todo14_002_br_1 to trunk.
+#
 #  Revision 1.14.18.5  2013/12/12 21:49:28  wenger
 #  JS signing:  Minor cleanups.
 #
@@ -192,7 +195,7 @@ cp -p $src/JavaScreen/UI/*.class $classdir/UI
 
 echo ""
 echo "Releasing jar files"
-cp $src/*.jar $dest
+cp $src/devise_js.jar $dest
 
 #-----------------------------------------------------------
 # Set up the bin directory.
