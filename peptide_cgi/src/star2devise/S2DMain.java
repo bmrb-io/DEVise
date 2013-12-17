@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.331  2013/12/16 23:20:28  wenger
+// Updated JS client version, to-do list.
+//
 // Revision 1.330  2013/12/13 22:41:50  wenger
 // Merged s2d_single_jar_br_0 thru s2d_single_jar_br_1 to trunk.
 //
@@ -886,7 +889,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.4x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.4";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
 
