@@ -363,6 +363,14 @@ Combine bin_arch and dyn_lib_arch in release/distribution.
 Sign jar files for JavaScreen/Jmol.
 (Done by wenger, 12/13/13.)
 
+14.003 131216	OPEN	3
+Release_how_to needs lots of updating.  Probably needs to be split out
+into separate documents (or at least sections) for DEVise itself and the
+JavaScreen; also information about doing a JavaScreen client-only release
+(in other words, a release where only client-side code has changed since
+the last release).  (Also, the currently-documented procedure doesn't
+mesh very well with testing things with the Peptide-CGI release tests.)
+
 
 (add stuff from old to-do list?)
 (add stuff from my to-do list)
