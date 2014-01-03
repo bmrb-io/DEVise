@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.333  2013/12/18 21:28:47  wenger
+// Changed Peptide-CGI version to 12.3.5x1.
+//
 // Revision 1.332  2013/12/17 17:34:59  wenger
 // Changed Peptide-CGI version to 12.3.4 for release.
 //
@@ -892,7 +895,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.5x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.5x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
 

@@ -4,7 +4,8 @@ Peptide-CGI 12.3.5
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.3 or higher.)
 
-(Nothing yet.)
+* Changed "applet" to "object" in all html files that include the
+JavaScreen applet (matches current HTML standard).
 
 
 Peptide-CGI 12.3.4

@@ -86,9 +86,10 @@
   <br>
   <div class="content">
     <center>
-    <applet code="JavaScreen.jsa.class" archive="../../../devise_js.jar" width="400" height="30">
-      <param name="permissions" value="sandbox">
-      <param name="applet" value="JavaScreen.jsa">
+    <object type="application/x-java-applet" height="30" width="400">
+      <param name="code" value="JavaScreen.jsa" />
+      <param name="archive" value="../../../devise_js.jar" />
+      <param name="permissions" value="sandbox" />
       <param name="debug" value="0">
       <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">
       <param name="cmdport" value="6666">
@@ -103,7 +104,7 @@
       <p>If you are using IE 8, you may need to restart your browser to
       enable add-ons.</p>
       <hr>
-    </applet>
+    </object>
     </center>
     <h3>3D rendering by <a href="http://jmol.sourceforge.net/">Jmol</a></h3>
     <h3>

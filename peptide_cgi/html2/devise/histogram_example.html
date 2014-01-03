@@ -71,9 +71,10 @@
 <div class="content">
 
 <center>
-<applet code=JavaScreen.jsa.class archive="devise_js.jar" width="400" height="30">
-<param name="permissions" value="sandbox">
-<param name="applet" value="JavaScreen.jsa">
+<object type="application/x-java-applet" height="100" width="400">
+<param name="code" value="JavaScreen.jsa" />
+<param name="archive" value="devise_js.jar" />
+<param name="permissions" value="sandbox" />
 <param name="debug" value="0">
 <!-- <param name="session" value="bmrb/histogram_example.ds"> -->
 <param name="session" value="bmrb/histogram.ds">
@@ -88,7 +89,7 @@
 <p>If you are using IE 8, you may need to restart your browser to
 enable add-ons.</p>
 <hr>
-</applet>
+</object>
 </center>
 
 <p>
