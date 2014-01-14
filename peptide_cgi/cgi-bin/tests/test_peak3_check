@@ -1,0 +1,42 @@
+echo "Checking output files"
+
+set files = ( data_dir/16486am1.dat \
+	data_dir/16486amac1.dat \
+	data_dir/16486as1.dat \
+	data_dir/16486c1.dat \
+	data_dir/16486d1.dat \
+	data_dir/16486hc1.dat \
+	data_dir/16486hn1.dat \
+	data_dir/16486md.dat \
+	data_dir/16486p1.dat \
+	data_dir/16486pkli1.dat \
+	data_dir/16486pkli2.dat \
+	data_dir/16486pkli3.dat \
+	data_dir/16486pkli4.dat \
+	data_dir/16486rc1.dat \
+	data_dir/16486rl.dat \
+	html_dir/16486/16486am1.html \
+	html_dir/16486/16486as1.html \
+	html_dir/16486/16486c1.html \
+	html_dir/16486/16486d1.html \
+	html_dir/16486/16486hc1.html \
+	html_dir/16486/16486hn1.html \
+	html_dir/16486/16486p1.html \
+	html_dir/16486/16486y.html \
+	session_dir/16486/16486acdd \
+	session_dir/16486/16486am1.ds \
+	session_dir/16486/16486as1.ds \
+	session_dir/16486/16486c1.ds \
+	session_dir/16486/16486d1.ds \
+	session_dir/16486/16486hc1.ds \
+	session_dir/16486/16486hn1.ds \
+	session_dir/16486/16486p1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+#TEMPTEMP -- check pkl file contents once that's implemented

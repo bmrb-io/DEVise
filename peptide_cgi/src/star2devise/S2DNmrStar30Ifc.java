@@ -21,6 +21,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.27.4.1  2013/10/22 19:45:09  wenger
+// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
+//
+// Revision 1.27.2.3  2013/07/18 21:42:37  wenger
+// Cleaned up the spectral dim code.
+//
+// Revision 1.27.2.2  2013/07/16 22:54:56  wenger
+// Fixed up the frame details for peak lists.
+//
+// Revision 1.27.2.1  2013/06/21 21:58:45  wenger
+// More cleanup of assignment code.
+//
+// Revision 1.27  2013/04/19 19:28:47  wenger
+// Working on bug 141:  fixed problems with how we determine the polymer
+// type in S2DmmCifIfc.getBmrbResLists() (although this didn't fully fix
+// bug 141); also added code to print the entity assembly ID and chain ID
+// when we have a sequence mismatch (so it's easier to figure out what's
+// going on).
+//
 // Revision 1.26  2012/03/07 22:39:45  wenger
 // Fixed bug 133 (problem with getting the system name in NMR-STAR
 // 3.1 files).
@@ -535,6 +554,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	        tagName = T2_RELAX_DETAILS;
 	    } else if (frameCat.equals(ORDER_PARAMETERS)) {
 	        tagName = ORDER_PARAM_DETAILS;
+	    } else if (frameCat.equals(PEAK_LIST)) {
+	    	tagName = PEAK_LIST_DETAILS;
 	    }
 
 	    // Now get the frame details value.
@@ -566,11 +587,12 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	      getFrameName(frame) + ")");
         }
 
-	String result = null;
+	String result = "";
 
 	String[] catTags = {ATOM_COORD_SF_CAT, CHEM_SHIFT_SF_CAT,
 	  COUPLING_SF_CAT, DELTA_SHIFT_SF_CAT, HET_NOE_SF_CAT,
-	  T1_RELAX_SF_CAT, T2_RELAX_SF_CAT, ORDER_SF_CAT};
+	  T1_RELAX_SF_CAT, T2_RELAX_SF_CAT, ORDER_SF_CAT,
+	  PEAK_LIST_SF_CAT};
 
 	for (int index = 0; index < catTags.length; index++) {
 	    try {
@@ -942,9 +964,11 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
 	CHEM_SHIFT_AMBIG_CODE = "_Atom_chem_shift.Chem_shift_ambiguity_code";
         CHEM_SHIFT_ATOM_NAME = "_Atom_chem_shift.Atom_ID";
+        CHEM_SHIFT_ATOM_NAME = "_Atom_chem_shift.Atom_ID";
         CHEM_SHIFT_ATOM_TYPE = "_Atom_chem_shift.Atom_type";
 	CHEM_SHIFT_ENTITY_ASSEMBLY_ID = "_Atom_chem_shift.Entity_assembly_ID";
 	CHEM_SHIFT_ENTITY_ID = "_Atom_chem_shift.Entity_ID";
+	CHEM_SHIFT_ID = "_Atom_chem_shift.ID";
         CHEM_SHIFT_RES_LABEL = "_Atom_chem_shift.Comp_ID";
         CHEM_SHIFT_RES_SEQ_CODE = "_Atom_chem_shift.Seq_ID";
 	CHEM_SHIFT_SF_CAT = "_Assigned_chem_shift_list.Sf_category";
@@ -1020,6 +1044,16 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	SAMPLE_DETAILS = "_Sample.Details";
 	SEQ_SUBJ_LENGTH = "_Entity_db_link.Seq_subject_length";
 	SEQ_IDENTITY = "_Entity_db_link.Seq_identity";
+        SPEC_DIM_ID = "_Spectral_dim.ID";
+        SPEC_DIM_ATOM_TYPE = "_Spectral_dim.Atom_type";
+        SPEC_DIM_ISO_NUM = "_Spectral_dim.Atom_isotope_number";
+        SPEC_DIM_REGION = "_Spectral_dim.Spectral_region";
+        SPEC_DIM_MAG_LINK = "_Spectral_dim.Magnetization_linkage_ID";
+        SPEC_DIM_SWEEP_WIDTH = "_Spectral_dim.Sweep_width";
+        SPEC_DIM_ENCODING = "_Spectral_dim.Encoding_code";
+        SPEC_DIM_SOURCE_DIM = "_Spectral_dim.Encoded_source_dimension_ID";
+        SPEC_DIM_ENTRY_ID = "_Spectral_dim.Entry_ID";
+        SPEC_DIM_PEAK_LIST_ID = "_Spectral_dim.Spectral_peak_list_ID";
 
 	T1_ATOM_NAME = "_T1.Entry_atom_ID";
 	T1_ENTITY_ASSEMBLY_ID = "_T1.Entity_assembly_ID";

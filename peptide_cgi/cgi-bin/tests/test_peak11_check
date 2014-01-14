@@ -1,0 +1,20 @@
+echo "Checking output files"
+
+set files = ( 16275_peaks.str )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "16275_peaks.str"
+set line = '# Unable to get peak list values from save frame save_NOESY_peaks'
+source tests/check4line
+set line = '# Unable to get peak list values from save frame save_TOCSY_peaks'
+source tests/check4line
+set line = '# Unable to get peak list values from save frame save_15N_HSQC'
+source tests/check4line
+set line = '# Unable to get peak list values from save frame save_13C_HSQC'
+source tests/check4line

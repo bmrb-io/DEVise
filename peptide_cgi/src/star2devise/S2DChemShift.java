@@ -21,6 +21,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.37.8.1  2013/10/22 19:45:08  wenger
+// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
+//
+// Revision 1.37.6.1  2013/06/20 20:38:59  wenger
+// Dummy assignments for Cyana/xeasy implemented -- we need to read the
+// chem shift save frame to make them work for real...
+//
+// Revision 1.37  2012/03/12 01:08:48  wenger
+// Merged vis_page_fix_base thru vis_page_fix_br_1 to trunk (includes
+// fixing of some tests to be more general).
+//
 // Revision 1.36.6.1  2012/01/20 21:00:03  wenger
 // Got a bunch of the visualization summary page menus working.
 //
@@ -435,7 +446,7 @@ public class S2DChemShift {
     //-------------------------------------------------------------------
     /**
      * Get experimental values needed for chemical shift output from
-     * the given STAR file ane frame.
+     * the given STAR file and frame.
      * @param The NMR-STAR file
      * @param The frame containing chemical shifts
      * @param The entity assembly ID we're currently processing

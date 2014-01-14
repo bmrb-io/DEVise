@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2011
+// (c) Copyright 2000-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.22.4.1  2013/10/22 19:45:08  wenger
+// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
+//
+// Revision 1.22.2.1  2013/05/20 23:53:01  wenger
+// We now partially create the NMR-STAR output containing the peak lists.
+//
+// Revision 1.22  2012/12/06 01:14:07  wenger
+// We now get mmCIF files from the "divided" rather than "all" directory.
+//
 // Revision 1.21  2011/10/31 20:18:37  wenger
 // In the S2 predicted vs. experimental visualizations the secondary
 // structures are now obtained from DSSP output files instead of from the
@@ -233,6 +242,7 @@ public class S2DNames
     public static final String LACS_POINT_SUFFIX = LACS_SUFFIX + "p";
     public static final String MODELS_SUFFIX = "_models";
     public static final String ORDER_SUFFIX = "o";
+    public static final String PEAKLIST_SUFFIX = "pkl";
     public static final String PERCENT_ASSIGN_SUFFIX = "p";
     public static final String PISTACHIO_ATOMIC_COORD_SUFFIX = "psac";
     public static final String PISTACHIO_SUMMARY_DATA_SUFFIX = "psmd";

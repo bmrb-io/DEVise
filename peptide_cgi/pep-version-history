@@ -1,8 +1,13 @@
 			Peptide-CGI Version History
 
-Peptide-CGI 12.3.5
+Peptide-CGI 12.4.0
 ------------------
-(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.3 or higher.)
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+
+* Added support for peak list processing.
+
+* Made all Peptide-CGI output files world-writeable, so things will
+work better with different users running the program.
 
 * Changed "applet" to "object" in all html files that include the
 JavaScreen applet (matches current HTML standard).

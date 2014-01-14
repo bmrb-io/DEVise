@@ -1,0 +1,92 @@
+echo "Checking output files"
+
+set files = ( 16806_peaks.str )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "16806_peaks.str"
+set line = '^save_spectral_peak_list_1'
+source tests/check4line
+set line = '2   C   13   Methyls   .   40   .   .   16806   1'
+source tests/check4line
+set line = '2   $CYANA    .   .   16806   1'
+source tests/check4line
+
+set line = '6 . . 16806 1'
+source tests/check4line
+set line = '7 4490000.0 . volume 16806 1'
+source tests/check4line
+
+set line = '5 2 13.103 ? ? ? ? ? ? ? ? ? ? ? ? ? 16806 1'
+source tests/check4line
+
+set line = '2 1 ? ? ? ? 9.211 ? ? ? ? ? ? ? ? 400 ? . . . 1 ? ? 16806 1'
+source tests/check4line
+set line = '876 3 ? ? ? ? 0.923 ? ? ? ? ? ? ? ? 233 ? . . . 1 ? ? 16806 1'
+source tests/check4line
+
+
+set line = 'save_spectral_peak_list_2'
+source tests/check4line
+set line = "2   N   15   'amide + sidechain'    .   100   .   .   16806   2"
+source tests/check4line
+
+set line = '1 2130000.0 . volume 16806 2'
+source tests/check4line
+set line = '1529 140000.0 . volume 16806 2'
+source tests/check4line
+
+set line = '1 1 9.865 ? ? ? ? ? ? ? ? ? ? ? ? ? 16806 2'
+source tests/check4line
+set line = '1529 3 7.956 ? ? ? ? ? ? ? ? ? ? ? ? ? 16806 2'
+source tests/check4line
+
+set line = '1 1 ? ? ? ? 9.865 ? ? ? ? ? ? ? ? 425 ? . . . 1 ? ? 16806 2'
+source tests/check4line
+set line = '1529 3 ? ? ? ? 7.956 ? ? ? ? ? ? ? ? 761 ? . . . 1 ? ? 16806 2'
+source tests/check4line
+
+
+set line = 'save_spectral_peak_list_3'
+source tests/check4line
+set line = '499 328000.0 . volume 16806 3'
+source tests/check4line
+# Peak w/o assignments should still show up here.
+set line = '499 4 -2.0 ? ? ? ? ? ? ? ? ? ? ? ? ? 16806 3'
+source tests/check4line
+set line = '497 4 ? ? ? ? -2.0 ? ? ? ? ? ? ? ? 777 ? . . . 1 ? ? 16806 3'
+source tests/check4line
+
+
+set line = 'save_spectral_peak_list_4'
+source tests/check4line
+set line = '607 568000.0 . volume 16806 4'
+source tests/check4line
+set line = '607 4 -2.0 ? ? ? ? ? ? ? ? ? ? ? ? ? 16806 4'
+source tests/check4line
+set line = '607 4 ? ? ? ? -2.0 ? ? ? ? ? ? ? ? 232 ? . . . 1 ? ? 16806 4'
+source tests/check4line
+
+
+set line = 'save_spectral_peak_list_5'
+source tests/check4line
+set line = '489 126000.0 . volume 16806 5'
+source tests/check4line
+set line = '489 4 -2.0 ? ? ? ? ? ? ? ? ? ? ? ? ? 16806 5'
+source tests/check4line
+set line = '489 4 ? ? ? ? -2.0 ? ? ? ? ? ? ? ? 584 ? . . . 1 ? ? 16806 5'
+source tests/check4line
+
+
+set line = 'save_spectral_peak_list_6'
+source tests/check4line
+set line = '341 62800.0 . volume 16806 6'
+source tests/check4line
+# Peak w/o assignments should still show up here.
+set line = '341 4 -2.0 ? ? ? ? ? ? ? ? ? ? ? ? ? 16806 6'
+source tests/check4line

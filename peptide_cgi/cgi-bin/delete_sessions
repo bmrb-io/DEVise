@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2010
+#  (c) Copyright 2001-2013
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -56,3 +56,5 @@ if (-e $sess_dir/vis_server/$name) then
   echo "removing $html_dir/$name/*" >>& $outfile
   rm -f $html_dir/$name/* >>& $outfile
 endif
+
+chmod 666 $outfile

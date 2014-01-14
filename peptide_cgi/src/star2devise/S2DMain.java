@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2013
+// (c) Copyright 2000-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,8 +19,13 @@
 // ------------------------------------------------------------------------
 
 // $Id$
+// $Id$
 
 // $Log$
+// Revision 1.334  2014/01/03 18:57:30  wenger
+// Peptide-CGI to-do 198:  Changed "applet" to "object" (and related
+// changes) in all released HTML files.
+//
 // Revision 1.333  2013/12/18 21:28:47  wenger
 // Changed Peptide-CGI version to 12.3.5x1.
 //
@@ -39,6 +44,28 @@
 //
 // Revision 1.328.4.1  2013/11/27 19:06:29  wenger
 // JS signing:  Changed Peptide-CGI version to 12.3.4x_sign1.
+//
+// Revision 1.328.2.6  2014/01/14 01:09:22  wenger
+// Peak lists:  More cleanups -- I think this is now ready to merge to
+// the trunk.
+//
+// Revision 1.328.2.5  2014/01/12 03:40:52  wenger
+// Peak lists:  Various cleanup to code and tests.
+//
+// Revision 1.328.2.4  2014/01/10 00:32:34  wenger
+// Peak lists:  Started creating a simple DEVise peak list visualization
+// -- not very far along yet.  I want to clean things up and merge to the
+// trunk before I do much more on this.
+//
+// Revision 1.328.2.3  2013/11/19 21:35:35  wenger
+// Peptide-CGI peak lists:  Minor updates; hopefully ready for another
+// peak list release.
+//
+// Revision 1.328.2.2  2013/10/24 16:33:17  wenger
+// Changed version to x9 to make a new tarball.
+//
+// Revision 1.328.2.1  2013/10/22 19:45:08  wenger
+// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
 //
 // Revision 1.328  2013/10/18 17:11:41  wenger
 // Changed version to 12.3.4.
@@ -62,6 +89,51 @@
 //
 // Revision 1.323  2013/05/28 20:24:54  wenger
 // Fixed test_tar5 -- data apparently changed.
+//
+// Revision 1.322.2.12  2013/08/28 22:41:15  wenger
+// Split up writePeakList() into separate methods for NMR-STAR and
+// DEVise output.
+//
+// Revision 1.322.2.11  2013/08/21 23:40:42  wenger
+// Okay, parsing of ambiguous Sparky assignments seems to be working
+// -- committing current version w/o cleanup.
+//
+// Revision 1.322.2.10  2013/08/09 14:46:46  wenger
+// Added peaklist_setup target to set up permissions correctly for peak
+// list install; fixed Makefile.config.bmrb.share (had mail header
+// before).
+//
+// Revision 1.322.2.9  2013/07/30 22:39:37  wenger
+// Better error messages if the peak processing doesn't work.
+//
+// Revision 1.322.2.8  2013/07/26 20:51:38  wenger
+// Added bmrb_share configuration; removed comment line from peak output
+// file.
+//
+// Revision 1.322.2.7  2013/07/25 18:11:19  wenger
+// 1-letter to 3-letter amino acid translation working for peak lists.
+//
+// Revision 1.322.2.6  2013/06/20 20:39:00  wenger
+// Dummy assignments for Cyana/xeasy implemented -- we need to read the
+// chem shift save frame to make them work for real...
+//
+// Revision 1.322.2.5  2013/06/20 17:41:51  wenger
+// Added master peak table to output.
+//
+// Revision 1.322.2.4  2013/05/20 23:53:01  wenger
+// We now partially create the NMR-STAR output containing the peak lists.
+//
+// Revision 1.322.2.3  2013/05/16 21:05:07  wenger
+// Added -peakonly flag to s2d; started on code to get peak values from
+// individual tags, and restructuring for -peakonly or "normal" modes;
+// added some new peak list tests.
+//
+// Revision 1.322.2.2  2013/04/22 02:54:15  wenger
+// Added preliminary version of S2DPeakList class.
+//
+// Revision 1.322.2.1  2013/04/19 21:51:26  wenger
+// Started on peak list coding (on branch):  we find the peak list
+// frames (for both 2.1 and 3.1 files).
 //
 // Revision 1.322  2013/04/19 19:28:47  wenger
 // Working on bug 141:  fixed problems with how we determine the polymer
@@ -895,7 +967,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.5x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.0x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
 
@@ -1049,6 +1121,7 @@ public class S2DMain {
     private boolean _doProteinCheck = true;
 
     private boolean _runScripts = true;
+    private boolean _peakOnly = false;
 
     private boolean _savedResList = false;
 
@@ -1838,6 +1911,8 @@ public class S2DMain {
 	    "to be processed\n" +
           "    -pdbid <value>\n" +
           "        the PDB ID to process (e.g., 1dfv)\n" +
+          "    -peakonly\n" +
+	  "        do peak list processing only\n" +
 	  "    -rr_file <filename>\n" +
 	  "        file containing remediated restraint data\n" +
 	  "    -s2_frame_index <value>\n" +
@@ -2248,6 +2323,9 @@ public class S2DMain {
 		    _pdbIds.addElement(_cmdPdbId);
 		    _csrPdbIds.addElement(_cmdPdbId);
 		}
+
+	    } else if ("-peakonly".equals(args[index])) {
+	        _peakOnly = true;
 
 	    } else if ("-rr_file".equals(args[index])) {
 	        index++;
@@ -3557,6 +3635,16 @@ public class S2DMain {
 
         //TEMP -- do I really want to skip stuff if I get an error?
 
+	if (_peakOnly) {
+	    if (doDebugOutput(2)) S2DUtils.printMemory(
+	      "Before savePeakLists()");
+            savePeakLists(star);
+	    if (_extraGC) System.gc();
+	    if (doDebugOutput(2)) S2DUtils.printMemory(
+	      "After savePeakLists()");
+	    return;
+	}
+
 	if (doDebugOutput(2)) S2DUtils.printMemory(
 	  "Before saveAllResidueLists()");
 
@@ -3606,6 +3694,10 @@ public class S2DMain {
         saveS2Params(star);
 	if (_extraGC) System.gc();
 	if (doDebugOutput(2)) S2DUtils.printMemory("After saveS2Params()");
+
+        savePeakLists(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory("After savePeakLists()");
 
         save3DDataSources();
 	if (_extraGC) System.gc();
@@ -4108,6 +4200,36 @@ public class S2DMain {
 	        frameIndex++;
 	    }
         }
+    }
+
+    //-------------------------------------------------------------------
+    // Note: this can be tested with 17038.
+    private void savePeakLists(S2DNmrStarIfc star) throws S2DException
+    {
+        if (doDebugOutput(3)) {
+	    System.out.println("  S2DMain.savePeakLists()");
+	}
+
+	Enumeration frameList = star.getDataFramesByCat(
+	  star.PEAK_LIST_SF_CAT, star.PEAK_LIST);
+
+	int frameIndex = 1;
+        while (frameList.hasMoreElements()) {
+	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+	    try {
+	        saveFramePeakList(star, frame, frameIndex);
+	    } catch(S2DException ex) {
+		System.err.println("Exception saving peak list " +
+		  "values for frame " + star.getFrameName(frame) +
+		  ": " + ex.toString());
+	    }
+	    frameIndex++;
+        }
+
+	if (_peakOnly && frameIndex == 1) {
+	    throw new S2DError(
+	      "-peakonly flag was specified, but no peak list save frames exist");
+	}
     }
 
     //-------------------------------------------------------------------
@@ -4637,6 +4759,36 @@ public class S2DMain {
 	      star.getDataPolymerType(frame, entityID));
 	} finally {
 	    _summary.endFrame();
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Save the peak list for one save frame.
+    private void saveFramePeakList(S2DNmrStarIfc star, SaveFrameNode frame,
+      int frameIndex) throws S2DException
+    {
+        if (doDebugOutput(4)) {
+	    System.out.println("    S2DMain.saveFramePeakList(" +
+	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	}
+
+	//
+	// Create an S2DPeakList object.
+	//
+	S2DPeakList peakList = new S2DPeakList(_name, _longName, star,
+	  frame, _dataDir, _sessionDir, _summary, _peakOnly);
+
+	//
+	// Now go ahead and calculate and write out the peak list values.
+	//
+	try {
+	    peakList.writePeakList(frameIndex);
+/*TEMP -- for DEVise visualizations
+	    peakList.addPeakList(_dataSets, frameIndex,
+	      star.getDataPolymerType(frame, entityID));
+TEMP*/
+	} finally {
+	    //TEMP _summary.endFrame();
 	}
     }
 

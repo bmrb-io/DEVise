@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2012
+// (c) Copyright 2000-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -31,6 +31,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.29.8.1  2013/10/22 19:45:09  wenger
+// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
+//
+// Revision 1.29.6.1  2013/06/06 19:31:42  wenger
+// Changed the mode to make more use of the S2DUtils.string2Double()
+// and S2DUtils.string2Int() methods.
+//
+// Revision 1.29  2012/03/12 01:08:48  wenger
+// Merged vis_page_fix_base thru vis_page_fix_br_1 to trunk (includes
+// fixing of some tests to be more general).
+//
 // Revision 1.28.8.2  2012/01/20 21:23:13  wenger
 // Make some fixes to the T1/T2 relaxation menus.
 //
@@ -687,7 +698,7 @@ public class S2DSummaryHtml {
 	} else {
 	    str2 = str1.substring(0, index2);
 	}
-        int result = Integer.parseInt(str2);
+        int result = S2DUtils.string2Int(str2);
 
 	return result;
     }

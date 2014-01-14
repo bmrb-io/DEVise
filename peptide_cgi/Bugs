@@ -672,6 +672,16 @@ Num Date        Status  Description
 			generated unless you do 'force reprocessing' (at
 			least for 5991). (wenger)
 
+147 11/20/13	OPEN	Peak list processing of 18526 may not work: took
+			a really long time and didn't recognize the format,
+			even though it seems like it should have. (wenger)
+
+148 11/20/13	OPEN	Peak list processing of 15337 fails with an array
+			out of bounds exception. (wenger)
+
+149 1/13/14	OPEN	Should test_peak11 (2D Sparky without peak height)
+			work at all? (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

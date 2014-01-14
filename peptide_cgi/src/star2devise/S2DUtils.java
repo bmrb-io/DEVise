@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.28.16.1  2013/10/22 19:45:09  wenger
+// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
+//
+// Revision 1.28.14.2  2013/06/06 18:17:03  wenger
+// Most of the way to parsing Sparky assignments; added
+// S2DUtils.string2Int() -- I'm committing now because I'm going to change
+// a bunch of the code to use string2Int and string2Double.
+//
+// Revision 1.28.14.1  2013/05/21 17:44:26  wenger
+// We now produce NMR-STAR output when matching the first pattern.
+//
+// Revision 1.28  2011/05/19 19:46:10  wenger
+// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
+//
 // Revision 1.27.2.2  2011/04/06 19:53:36  wenger
 // We now create the specific html files for the s2predicted visualizations.
 //
@@ -93,6 +107,46 @@ public class S2DUtils
 
     //===================================================================
     // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
+    // Parses a string, returning a double value.  On a parse error, the
+    // result is set to 0.0 and an error message is printed.
+    //TEMP -- use this other places
+    public static double string2Double(String str)
+    {
+        double result;
+
+	try {
+	    result = Double.parseDouble(str);
+
+	} catch (NumberFormatException ex) {
+	    result = 0.0;
+	    System.err.println("Error parsing double value: " +
+	      ex.toString() + " (returning value " + result + ")");
+	}
+
+	return result;
+    }
+
+    //-------------------------------------------------------------------
+    // Parses a string, returning an integer value.  On a parse error, the
+    // result is set to 0 and an error message is printed.
+    //TEMP -- use this other places
+    public static int string2Int(String str)
+    {
+        int result;
+
+	try {
+	    result = Integer.parseInt(str);
+
+	} catch (NumberFormatException ex) {
+	    result = 0;
+	    System.err.println("Error parsing integer value: " +
+	      ex.toString() + " (returning value " + result + ")");
+	}
+
+	return result;
+    }
 
     //-------------------------------------------------------------------
     public static String[] createStringArray(int size, String value)

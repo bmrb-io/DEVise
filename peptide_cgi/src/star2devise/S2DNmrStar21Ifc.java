@@ -20,6 +20,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.26.2.1  2013/10/22 19:45:08  wenger
+// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
+//
+// Revision 1.26  2013/08/16 22:56:22  wenger
+// We now test for Peptide-CGI version 3.1 before 2.1 and 3.0, and
+// don't do subsequent tests if the first one passes, to reduce
+// spurious warnings on the s2d output.
+//
+// Revision 1.25.2.2  2013/05/07 15:33:48  wenger
+// We now print out the peak text value for testing; added more peak tests.
+//
+// Revision 1.25.2.1  2013/04/19 21:51:26  wenger
+// Started on peak list coding (on branch):  we find the peak list
+// frames (for both 2.1 and 3.1 files).
+//
 // Revision 1.25  2013/04/19 19:28:47  wenger
 // Working on bug 141:  fixed problems with how we determine the polymer
 // type in S2DmmCifIfc.getBmrbResLists() (although this didn't fully fix
@@ -691,6 +706,10 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	ORDER_SF_CAT = "_Saveframe_category";
 	ORDER_VALUE = "_S2_value";
 	ORDER_VALUE_ERR = "_S2_value_fit_error";
+
+	PEAK_LIST = "spectral_peak_list";
+	PEAK_LIST_SF_CAT = "_Saveframe_category";
+	PEAK_LIST_TEXT = "_Text_data";
 
 	RNA = "RNA";
 

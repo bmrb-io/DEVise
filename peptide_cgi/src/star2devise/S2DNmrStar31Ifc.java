@@ -20,6 +20,26 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.22.1  2013/10/22 19:45:09  wenger
+// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
+//
+// Revision 1.11.20.4  2013/07/25 21:50:23  wenger
+// Various peak list cleanups; added test_peak9 to test conversion on
+// a format we don't recognize.
+//
+// Revision 1.11.20.3  2013/07/16 22:54:56  wenger
+// Fixed up the frame details for peak lists.
+//
+// Revision 1.11.20.2  2013/05/07 15:33:48  wenger
+// We now print out the peak text value for testing; added more peak tests.
+//
+// Revision 1.11.20.1  2013/04/19 21:51:26  wenger
+// Started on peak list coding (on branch):  we find the peak list
+// frames (for both 2.1 and 3.1 files).
+//
+// Revision 1.11  2010/12/07 17:41:15  wenger
+// Did another version history purge.
+//
 // Revision 1.10  2010/11/01 00:51:12  wenger
 // Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
 //
@@ -143,6 +163,12 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
 	ORDER_SF_CAT = "_Order_parameter_list.Sf_category";
 	ORDER_VALUE = "_Order_param.Order_param_val";
 	ORDER_VALUE_ERR = "_Order_param.Order_param_val_fit_err";
+
+	PEAK_LIST = "spectral_peak_list";
+	PEAK_LIST_DETAILS = "_Spectral_peak_list.Details";
+	PEAK_LIST_ID = "_Peak_general_char.Peak_ID";
+	PEAK_LIST_SF_CAT = "_Spectral_peak_list.Sf_category";
+	PEAK_LIST_TEXT = "_Spectral_peak_list.Text_data";
 
 	T1_ATOM_NAME = "_T1.Atom_ID";
 	T1_RES_SEQ_CODE = "_T1.Comp_index_ID";

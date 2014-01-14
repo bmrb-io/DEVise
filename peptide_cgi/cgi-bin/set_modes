@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2010
+#  (c) Copyright 2001-2013
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -64,6 +64,10 @@ if (-e session_dir/vis_server/$name) then
 endif
 chmod 777 $html_dir >>& $outfile
 chmod 666 $html_dir/* >>& $outfile
-chmod 777 $html_dir"tmp"*
-echo $html_dir"tmp"
-chmod 666 $html_dir"tmp"*/*
+chmod 777 $html_dir"tmp"* >>& $outfile
+echo $html_dir"tmp" >>& $outfile
+chmod 666 $html_dir"tmp"*/* >>& $outfile
+chmod 666 tmp/s2d.$name.warn >>& $outfile
+chmod 666 tmp/s2d.$name.err >>& $outfile
+chmod 666 tmp/s2d.log >>& $outfile
+chmod 666 $outfile

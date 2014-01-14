@@ -91,6 +91,11 @@ do_testsetup:
 	cd test_data; ln -s ../prototype/data/*.dat .
 	cd test_session; ln -s ../prototype/session/*.ds .
 
+peaklist_setup:
+	chmod g+rwx cgi-bin
+	chmod g+rwx cgi-bin/tmp
+	chmod g+rwx test_html test_data test_session
+
 # Goofiness here is because we don't want to use Gnu make's .PHONY feature.
 install: do_install histogram_install uvd_install
 do_install: 
@@ -241,6 +246,7 @@ cgi-bin/bin:
 tmp: cgi-bin/tmp
 cgi-bin/tmp:
 	mkdir cgi-bin/tmp
+	chmod a+rwx cgi-bin/tmp
 
 vur_config:
 	-rm -f $(VUR_CONFIG_FILE)

@@ -25,6 +25,40 @@
 // $Id$
 
 // $Log$
+// Revision 1.25.4.1  2013/10/22 19:45:09  wenger
+// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
+//
+// Revision 1.25.2.7  2013/07/25 21:50:23  wenger
+// Various peak list cleanups; added test_peak9 to test conversion on
+// a format we don't recognize.
+//
+// Revision 1.25.2.6  2013/07/24 20:42:28  wenger
+// All peak save frame values except the peak list text tag are now copied
+// to the output file.
+//
+// Revision 1.25.2.5  2013/07/18 21:42:37  wenger
+// Cleaned up the spectral dim code.
+//
+// Revision 1.25.2.4  2013/07/16 22:54:56  wenger
+// Fixed up the frame details for peak lists.
+//
+// Revision 1.25.2.3  2013/06/21 21:58:46  wenger
+// More cleanup of assignment code.
+//
+// Revision 1.25.2.2  2013/05/07 15:33:48  wenger
+// We now print out the peak text value for testing; added more peak tests.
+//
+// Revision 1.25.2.1  2013/04/19 21:51:26  wenger
+// Started on peak list coding (on branch):  we find the peak list
+// frames (for both 2.1 and 3.1 files).
+//
+// Revision 1.25  2013/04/19 19:28:47  wenger
+// Working on bug 141:  fixed problems with how we determine the polymer
+// type in S2DmmCifIfc.getBmrbResLists() (although this didn't fully fix
+// bug 141); also added code to print the entity assembly ID and chain ID
+// when we have a sequence mismatch (so it's easier to figure out what's
+// going on).
+//
 // Revision 1.24  2010/12/07 17:41:16  wenger
 // Did another version history purge.
 //
@@ -86,6 +120,7 @@ public abstract class S2DStarIfc {
     public String CHEM_SHIFT_ATOM_TYPE = "";
     public String CHEM_SHIFT_ENTITY_ASSEMBLY_ID = "";
     public String CHEM_SHIFT_ENTITY_ID = "";
+    public String CHEM_SHIFT_ID = "";
     public String CHEM_SHIFT_RES_LABEL = "";
     public String CHEM_SHIFT_RES_SEQ_CODE = "";
     public String CHEM_SHIFT_VALUE = "";
@@ -195,6 +230,11 @@ public abstract class S2DStarIfc {
     public String ORDER_VALUE = "";
     public String ORDER_VALUE_ERR = "";
 
+    public String PEAK_LIST = "";
+    public String PEAK_LIST_DETAILS = "";
+    public String PEAK_LIST_ID = "";
+    public String PEAK_LIST_SF_CAT = "";
+    public String PEAK_LIST_TEXT = "";
     public String POLYMER = "";
     public String POLYPEPTIDE = "";
 
@@ -208,6 +248,16 @@ public abstract class S2DStarIfc {
     public String SAVEFRAME_PREFIX = "";
     public String SEQ_SUBJ_LENGTH = "";
     public String SEQ_IDENTITY = "";
+    public String SPEC_DIM_ID = "";
+    public String SPEC_DIM_ATOM_TYPE = "";
+    public String SPEC_DIM_ISO_NUM = "";
+    public String SPEC_DIM_REGION = "";
+    public String SPEC_DIM_MAG_LINK = "";
+    public String SPEC_DIM_SWEEP_WIDTH = "";
+    public String SPEC_DIM_ENCODING = "";
+    public String SPEC_DIM_SOURCE_DIM = "";
+    public String SPEC_DIM_ENTRY_ID = "";
+    public String SPEC_DIM_PEAK_LIST_ID = "";
 
     public String T1_ATOM_NAME = "";
     public String T1_ENTITY_ASSEMBLY_ID = "";
@@ -523,7 +573,7 @@ public abstract class S2DStarIfc {
     }
 
     //-------------------------------------------------------------------
-    public String getFrameName(SaveFrameNode frame)
+    public static String getFrameName(SaveFrameNode frame)
     {
         return (frame != null) ? frame.getLabel() : "null";
     }
@@ -589,6 +639,26 @@ public abstract class S2DStarIfc {
         }
 
         return result;
+    }
+
+    //-------------------------------------------------------------------
+    // Remove the given tag from the given save frame.
+    public static void removeTag(StarNode frame, String tagName)
+      throws S2DException
+    {
+        //TEMP -- what happens if you pass a name that's really a loop?
+        VectorCheckType list = frame.searchByName(tagName);
+        if (list.size() == 1) {
+            DataItemNode node = (DataItemNode)list.firstElement();
+	    ((SaveFrameNode)frame).removeElement(node);
+        } else {
+	    String msg = "Expected one value for " + tagName + "; got " +
+	                  list.size();
+	    if (frame instanceof SaveFrameNode) {
+	        msg += " in frame " + getFrameName((SaveFrameNode)frame);
+	    }
+	    throw new S2DError(msg);
+        }
     }
 
     //-------------------------------------------------------------------

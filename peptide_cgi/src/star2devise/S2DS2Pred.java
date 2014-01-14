@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2011-2012
+// (c) Copyright 2011-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.8.1  2013/10/22 19:45:09  wenger
+// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
+//
+// Revision 1.5.6.1  2013/06/06 19:31:42  wenger
+// Changed the mode to make more use of the S2DUtils.string2Double()
+// and S2DUtils.string2Int() methods.
+//
+// Revision 1.5  2012/01/27 23:19:37  wenger
+// Added the -s2p_name and -dyn_movie_demo arguments and generate_movies
+// script to allow generation of visualizations for demo dynamics movies.
+//
 // Revision 1.4  2011/10/10 23:43:39  wenger
 // Reduced edited movie time from .1 to .02, and set the resolution to
 // 400x400 to speed up generation time (just took 2:44 in a test).
@@ -151,7 +162,7 @@ public class S2DS2Pred {
 		    }
 		    S2PData data = new S2PData();
 		    data._pdbId = matcher.group(1).toUpperCase();
-		    data._frameIndex = Integer.parseInt(matcher.group(2));
+		    data._frameIndex = S2DUtils.string2Int(matcher.group(2));
 		    s2PredData.addElement(data);
 		}
 	    }
@@ -161,7 +172,6 @@ public class S2DS2Pred {
 	    throw new S2DError("Error (" + ex.toString() +
 	      ") reading s2predict output");
 	}
-
 
 	return s2PredData;
     }

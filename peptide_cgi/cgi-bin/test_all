@@ -14,8 +14,9 @@ my $do_tar = 0;
 my $do_dist = 0;
 my $do_mult = 0;
 my $do_s2p = 0;
+my $do_peak = 0;
 
-my $usage = "Usage: test_all [-sparta] [-tar] [-dist] [-mult] [-s2p]";
+my $usage = "Usage: test_all [-sparta] [-tar] [-dist] [-mult] [-s2p] [-peak]";
 
 my $arg;
 while ($arg = shift) {
@@ -34,6 +35,9 @@ while ($arg = shift) {
   } elsif ($arg eq -s2p) {
     $do_all = 0;
     $do_s2p = 1;
+  } elsif ($arg eq -peak) {
+    $do_all = 0;
+    $do_peak = 1;
   } elsif ($arg eq -usage) {
      print "$usage\n";
      exit 0;
@@ -231,6 +235,26 @@ if (($do_all != 0) or ($do_s2p != 0)) {
   RunTest("test_s2p3");
   RunTest("test_s2p4");
   RunTest("test_s2p5");
+}
+
+if (($do_all != 0) or ($do_peak != 0)) {
+  RunTest("test_peak1");
+  RunTest("test_peak1_21");
+  RunTest("test_peak2");
+  #TEMP? RunTest("test_peak2_21");
+  RunTest("test_peak3");
+  RunTest("test_peak4");
+  RunTest("test_peak5");
+  RunTest("test_peak6");
+  RunTest("test_peak7");
+  RunTest("test_peak8");
+  RunTest("test_peak9");
+  RunTest("test_peak10");
+  RunTest("test_peak11");
+  RunTest("test_peak12");
+  RunTest("test_peak13");
+  RunTest("test_peak14");
+  RunTest("test_peak15");
 }
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)

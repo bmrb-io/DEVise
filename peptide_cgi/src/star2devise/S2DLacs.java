@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005-2010
+// (c) Copyright 2005-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.9.14.1  2013/10/22 19:45:08  wenger
+// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
+//
+// Revision 1.9.12.1  2013/06/06 19:31:42  wenger
+// Changed the mode to make more use of the S2DUtils.string2Double()
+// and S2DUtils.string2Int() methods.
+//
+// Revision 1.9  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.8.14.1  2011/09/21 20:46:10  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -192,25 +203,25 @@ public class S2DLacs {
 	_yCoordName = star.getTagValue(frame, star.LACS_Y_NAME);
 
 	//TEMP -- catch NumberFormatExceptions here and report details?
-	_line1._point1._x = Double.parseDouble(star.getTagValue(frame,
+	_line1._point1._x = S2DUtils.string2Double(star.getTagValue(frame,
 	  star.LACS_LINE1_X1));
-	_line1._point1._y = Double.parseDouble(star.getTagValue(frame,
+	_line1._point1._y = S2DUtils.string2Double(star.getTagValue(frame,
 	  star.LACS_LINE1_Y1));
-	_line1._point2._x = Double.parseDouble(star.getTagValue(frame,
+	_line1._point2._x = S2DUtils.string2Double(star.getTagValue(frame,
 	  star.LACS_LINE1_X2));
-	_line1._point2._y = Double.parseDouble(star.getTagValue(frame,
+	_line1._point2._y = S2DUtils.string2Double(star.getTagValue(frame,
 	  star.LACS_LINE1_Y2));
 
-	_line2._point1._x = Double.parseDouble(star.getTagValue(frame,
+	_line2._point1._x = S2DUtils.string2Double(star.getTagValue(frame,
 	  star.LACS_LINE2_X1));
-	_line2._point1._y = Double.parseDouble(star.getTagValue(frame,
+	_line2._point1._y = S2DUtils.string2Double(star.getTagValue(frame,
 	  star.LACS_LINE2_Y1));
-	_line2._point2._x = Double.parseDouble(star.getTagValue(frame,
+	_line2._point2._x = S2DUtils.string2Double(star.getTagValue(frame,
 	  star.LACS_LINE2_X2));
-	_line2._point2._y = Double.parseDouble(star.getTagValue(frame,
+	_line2._point2._y = S2DUtils.string2Double(star.getTagValue(frame,
 	  star.LACS_LINE2_Y2));
 
-	_yOffset = Double.parseDouble(star.getTagValue(frame,
+	_yOffset = S2DUtils.string2Double(star.getTagValue(frame,
 	  star.LACS_Y_OFFSET));
 
 	calculateLines();

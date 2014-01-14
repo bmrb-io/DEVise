@@ -1,0 +1,28 @@
+#! /bin/csh -f
+
+# Tests BMRB 16486 (has comments in peak list).
+
+set result = 0
+
+rm -r -f */16486*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -name 16486 -file test_data/bmr16486.str -force -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/test_peak3.out
+
+
+source tests/test_peak3_check
+
+
+echo -n "Test_peak3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
