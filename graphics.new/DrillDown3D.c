@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2001-2006
+  (c) Copyright 2001-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -24,6 +24,13 @@
   $Id$
 
   $Log$
+  Revision 1.6.8.1  2014/01/17 21:46:31  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.6  2006/12/08 16:24:49  wenger
+  Merged V1_8b0_br_1 thru V1_8b0_br_2 to the trunk (took some manual
+  changes to merge the DEViseCanvas.java stuff correctly).
+
   Revision 1.5.2.1  2006/12/07 22:09:14  wenger
   Fixed bug 929 (drill-down on view with empty data source causes crash)
   and associated bugs in the JavaScreen client.
@@ -311,24 +318,23 @@ DrillDown3D::PrintTData(Coord gdX, Coord gdY, Coord gdZ, char *tData)
         _results.AddArg("");
     }
 
-    const int bufSize = 128;
-    char attrBuf[bufSize];
+    char attrBuf[128];
     int formatted;
 
-    formatted = snprintf(attrBuf, bufSize, "x: %g", gdX);
-    checkAndTermBuf(attrBuf, bufSize, formatted);
+    formatted = snprintf(attrBuf, sizeof(attrBuf), "x: %g", gdX);
+    checkAndTermBuf2(attrBuf, formatted);
     _results.AddArg(attrBuf);
 
-    formatted = snprintf(attrBuf, bufSize, "y: %g", gdY);
-    checkAndTermBuf(attrBuf, bufSize, formatted);
+    formatted = snprintf(attrBuf, sizeof(attrBuf), "y: %g", gdY);
+    checkAndTermBuf2(attrBuf, formatted);
     _results.AddArg(attrBuf);
 
-    formatted = snprintf(attrBuf, bufSize, "z: %g", gdZ);
-    checkAndTermBuf(attrBuf, bufSize, formatted);
+    formatted = snprintf(attrBuf, sizeof(attrBuf), "z: %g", gdZ);
+    checkAndTermBuf2(attrBuf, formatted);
     _results.AddArg(attrBuf);
 
     for (int index = 0; index < _attrs->NumAttrs(); index++) {
-	_recInterp->PrintAttr(attrBuf, bufSize, index, true);
+	_recInterp->PrintAttr(attrBuf, sizeof(attrBuf), index, true);
 	_results.AddArg(attrBuf);
     }
 

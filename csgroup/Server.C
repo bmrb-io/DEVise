@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.36.4.1  2014/01/17 21:46:00  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.36  2008/10/13 19:45:34  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.35  2008/09/11 20:55:23  wenger
   A few more compile warning fixes...
 
@@ -315,12 +321,11 @@ Server::Server(const char *name, int image_port,
       clnt_port);
 #endif
 #if defined(DEBUG_LOG)
-    const int bufLen = 256;
-	char logBuf[bufLen];
-	int formatted = snprintf(logBuf, bufLen,
+	char logBuf[256];
+	int formatted = snprintf(logBuf, sizeof(logBuf),
 	  "Server::Server(%s, %d, %d, %d)\n", name, image_port, swt_port,
       clnt_port);
-    checkAndTermBuf(logBuf, bufLen, formatted);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -625,8 +630,10 @@ void Server::WaitForConnection()
 			return;
 		} else if (fdReadyCount == 0) {
 			char errBuf[1024];
-		    sprintf(errBuf, "Last client command more than %d minutes ago; "
+		    int formatted = snprintf(errBuf, sizeof(errBuf),
+			  "Last client command more than %d minutes ago; "
 			  "server exiting\n", Init::ClientTimeout());
+			checkAndTermBuf2(errBuf, formatted);
 			reportErrNosys(errBuf);
 			Exit::DoExit(0);
 		}
@@ -712,14 +719,23 @@ Server::writeInteger(int fd, int num)
 	char format[128];
 	int	retval;
 
-	sprintf(format, "%%-%dd",SLOTNUMSIZE);
+	int formatted = snprintf(format, sizeof(format), "%%-%dd",SLOTNUMSIZE);
+	if (checkAndTermBuf2(format, formatted) != StatusOk) {
+	    reportErrNosys("Buffer overflow!");
+		Exit::DoExit(0);
+	}
 
-	sprintf(buf,format,num);
+	formatted = snprintf(buf, sizeof(buf), format, num);
+	if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+	    reportErrNosys("Buffer overflow!");
+		Exit::DoExit(0);
+	}
 	int nbytes = write(fd, buf, SLOTNUMSIZE);
-	if (nbytes == SLOTNUMSIZE)
+	if (nbytes == SLOTNUMSIZE) {
 		retval = 1;
-	else
+	} else {
 		retval = -1;
+	}
 
 	return retval;
 }
@@ -815,7 +831,11 @@ Server::WaitForImageportConnection()
 			//send confirmation to JAVA Client
 			char buf[128];
 			char* argv[1]={buf};
-			sprintf(buf, "%s", retval);
+			int formatted = snprintf(buf, sizeof(buf), "%s", retval);
+			if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+			    reportErrNosys("Buffer overflow!");
+				Exit::DoExit(1);
+			}
 			ReturnVal(slotno, API_JAVACMD, 1, &argv[0], false);
 #endif // USE_START_PROTOCOL
 		}
@@ -939,7 +959,9 @@ void Server::ReadCmd()
     if (numFds < 0)
     {
 		char errBuf[MAXPATHLEN + 256];
-		sprintf(errBuf, "select() failed at %s: %d", __FILE__, __LINE__);
+		int formatted = snprintf(errBuf, sizeof(errBuf),
+		  "select() failed at %s: %d", __FILE__, __LINE__);
+		checkAndTermBuf2(errBuf, formatted);
 		perror(errBuf);
 		return;
     } else if (numFds == 0) {
@@ -1504,7 +1526,11 @@ ControlChannel::ControlChannel()
 
 	pid = getpid();
 	gethostname(_hostname, MAXNAMELEN);
-	sprintf(buf,"%s%ld",_hostname,(long)pid);
+	int formatted = snprintf(buf, sizeof(buf), "%s%ld", _hostname, (long)pid);
+	if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+	    reportErrNosys("Buffer overflow!");
+		Exit::DoExit(1);
+	}
 	_key = new CSgroupKey(buf, SERVERTAG);
 	_controlgkp = _key->toGroupKey();
 	

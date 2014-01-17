@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5.14.1  2014/01/17 21:46:30  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.5  2003/01/13 19:25:21  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.4.14.1  2002/09/20 20:49:02  wenger
   More Purifying -- there are now NO leaks when you open and close
   a session!!
@@ -40,6 +46,7 @@
 #include "Exit.h"
 #include "Bitmap.h"
 #include "DevError.h"
+#include "Util.h"
 
 /**************************************************************
 Create a new bitmap
@@ -49,7 +56,9 @@ Bitmap::Bitmap(int numBits)
 {
   if (numBits <= 0) {
 	char errBuf[1024];
-    sprintf(errBuf, "Bitmap::Bitmap: numBits %d <= 0\n", numBits);
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Bitmap::Bitmap: numBits %d <= 0\n", numBits);
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
@@ -72,7 +81,9 @@ void Bitmap::SetBit(int bitNum)
 {
   if (bitNum < 0 || bitNum >= _numBits) {
 	char errBuf[1024];
-    sprintf(errBuf, "Bitmap::SetBit: invalid bit %d\n", bitNum);
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Bitmap::SetBit: invalid bit %d\n", bitNum);
+    checkAndTermBuf2(errBuf, formatted);
 	reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
@@ -91,7 +102,9 @@ void Bitmap::ClearBit(int bitNum)
 {
   if (bitNum < 0 || bitNum >= _numBits) {
 	char errBuf[1024];
-    sprintf(errBuf, "Bitmap::ClearBit: invalid bit %d\n", bitNum);
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Bitmap::ClearBit: invalid bit %d\n", bitNum);
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
@@ -110,7 +123,9 @@ Boolean Bitmap::TestBit(int bitNum)
 {
   if (bitNum < 0 || bitNum >= _numBits) {
 	char errBuf[1024];
-    sprintf(errBuf, "Bitmap::TestBit: invalid bit %d\n", bitNum);
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Bitmap::TestBit: invalid bit %d\n", bitNum);
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
     Exit::DoExit(1);
   }

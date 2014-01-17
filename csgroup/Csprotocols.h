@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.11.4.1  2014/01/17 21:45:59  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.11  2008/10/13 19:45:34  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.10  2005/12/06 20:01:10  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -172,6 +178,7 @@ class TokenList
 {
 	private:
 		char*	listbuf;
+		int		buflen;
 		int		listargs;
 	public:	
 		TokenList (char* list);

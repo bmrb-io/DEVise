@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.5.56.1  2014/01/17 21:46:00  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.5  1998/03/30 22:32:54  wenger
+  Merged fixes from collab_debug_br through collab_debug_br2 (not all
+  changes from branch were merged -- some were for debug only)
+  (committed stuff includes conditionaled-out debug code).
+
   Revision 1.4.2.1  1998/03/25 15:56:48  wenger
   Committing debug version of collaboration code.
 
@@ -74,6 +82,7 @@
 #include <fcntl.h>
 #include <stdarg.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include "colbrLog.h"
 #include "logfns.h"
@@ -105,7 +114,15 @@ TruncLog(char *log_name)
 	char	tmp_log_name[PATH_MAX];
 	int new_log_fd;
 
-	sprintf(tmp_log_name, "%s.tmp", log_name);
+	int formatted = snprintf(tmp_log_name, sizeof(tmp_log_name),
+	  "%s.tmp", log_name);
+	assert(formatted < (int)sizeof(tmp_log_name));//TEMP
+/*TEMP
+	if (checkAndTermBuf2(tmp_log_name, formatted) != StatusOk) {
+	    reportErrNosys("Buffer overflow!");
+		exit(1);
+	}
+TEMP*/
 	new_log_fd = open(tmp_log_name, O_RDWR | O_CREAT, 0600);
 	if (new_log_fd < 0) {
 		return new_log_fd;
@@ -136,7 +153,8 @@ LogState(int fd)
 	      memmove(GroupName->grpName, (entr->getKey())->data(),
 		      (entr->getKey())->size());
 	      gInfo = (GroupInfo *)(entr->getData())->data();
-	      strcpy(GroupName->grpPwd, gInfo->pwd);
+	      strncpy(GroupName->grpPwd, gInfo->pwd, sizeof(GroupName->grpPwd));
+		  GroupName->grpPwd[sizeof(GroupName->grpPwd)-1] = '\0';
 	      master = (DbEntry *)gInfo->leader ? 
 		       (DbEntry *)gInfo->leader->data() : (DbEntry*)NULL;
 	      servers = (Queue *)gInfo->followers;
@@ -257,7 +275,8 @@ ReconnectAll()
 	      memmove(GroupName->grpName, (entr->getKey())->data(),
 		      (entr->getKey())->size());
 	      gInfo = (GroupInfo *)(entr->getData())->data();
-	      strcpy(GroupName->grpPwd, gInfo->pwd);
+	      strncpy(GroupName->grpPwd, gInfo->pwd, sizeof(GroupName->grpPwd));
+		  GroupName->grpPwd[sizeof(GroupName->grpPwd)-1] = '\0';
 	      master = (DbEntry *)gInfo->leader ? 
 		       (DbEntry *)gInfo->leader->data() : (DbEntry*)NULL;
 	      servers = (Queue *)gInfo->followers;

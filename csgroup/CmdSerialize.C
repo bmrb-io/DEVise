@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.9.4.1  2014/01/17 21:45:59  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.9  2008/10/13 19:45:34  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.8  2008/09/10 17:49:43  wenger
   Got DEVise to compile on moray at BMRB (gcc 4.3.0) (compiling in the
   linux_amd64 directory) -- still lots of warnings, though.
@@ -58,6 +64,8 @@
 #include <assert.h>
 #include "devise_varargs.h"
 #include "CmdSerialize.h"
+#include "Util.h"
+#include "DevError.h"
 
 // a serializable type is
 // (i) an atomic type (typeId, length, value)
@@ -80,7 +88,14 @@ Serializable::raw_serialize(int arg)
 {
 	string	tempStr;
 	char buf[Serializable::INT_SIZE+1];
-	sprintf(buf, "%-d%s", arg, intMarker);
+	int formatted = snprintf(buf, sizeof(buf), "%-d%s", arg, intMarker);
+	assert(formatted < (int)sizeof(buf));//TEMP
+/*TEMP
+	if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+		reportErrNosys("Command buffer overflow");
+		Exit::DoExit(1);
+	}
+TEMP*/
 	tempStr = string(buf);
 	return tempStr;
 }
@@ -90,7 +105,14 @@ Serializable::serialize(int arg)
 {
 	string typeStr= raw_serialize(Serializable::TYP_INT);
 	char	buf[128];
-	sprintf(buf,"%d", arg);
+	int formatted = snprintf(buf, sizeof(buf), "%d", arg);
+	assert(formatted < (int)sizeof(buf));//TEMP
+/*TEMP
+	if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+		reportErrNosys("Command buffer overflow");
+		Exit::DoExit(1);
+	}
+TEMP*/
 	string valStr = string(buf);
 	string lenStr = raw_serialize(valStr.length());
 	return typeStr + lenStr + valStr;
@@ -101,7 +123,14 @@ Serializable::serialize(long arg)
 {
 	string typeStr= raw_serialize(Serializable::TYP_LONG);
 	char	buf[128];
-	sprintf(buf,"%ld", arg);
+	int formatted = snprintf(buf, sizeof(buf), "%ld", arg);
+	assert(formatted < (int)sizeof(buf));//TEMP
+/*TEMP
+	if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+		reportErrNosys("Command buffer overflow");
+		Exit::DoExit(1);
+	}
+TEMP*/
 	string valStr = string(buf);
 	string lenStr = raw_serialize(valStr.length());
 	return typeStr + lenStr + valStr;
@@ -115,7 +144,14 @@ Serializable::serialize(bool arg)
 
 	string typeStr= raw_serialize(Serializable::TYP_BOOL);
 	char	buf[32];
-	sprintf(buf,"%d", arg);
+	int formatted = snprintf(buf, sizeof(buf), "%d", arg);
+	assert(formatted < (int)sizeof(buf));//TEMP
+/*TEMP
+	if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+		reportErrNosys("Command buffer overflow");
+		Exit::DoExit(1);
+	}
+TEMP*/
 	string valStr = string(buf);
 	string lenStr = raw_serialize(valStr.length());
 	return typeStr + lenStr + valStr;
@@ -126,7 +162,14 @@ Serializable::serialize(char arg)
 {
 	string typeStr= raw_serialize(Serializable::TYP_CHAR);
 	char	buf[2];
-	sprintf(buf,"%c", arg);
+	int formatted = snprintf(buf, sizeof(buf), "%c", arg);
+	assert(formatted < (int)sizeof(buf));//TEMP
+/*TEMP
+	if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+		reportErrNosys("Command buffer overflow");
+		Exit::DoExit(1);
+	}
+TEMP*/
 	string valStr = string(buf);
 	string lenStr = raw_serialize(valStr.length());
 	return typeStr + lenStr + valStr;
@@ -146,7 +189,14 @@ Serializable::serialize(float arg)
 {
 	string typeStr= raw_serialize(Serializable::TYP_FLOAT);
 	char buf[128];
-	sprintf(buf, "%f", arg);
+	int formatted = snprintf(buf, sizeof(buf), "%f", arg);
+	assert(formatted < (int)sizeof(buf));//TEMP
+/*TEMP
+	if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+		reportErrNosys("Command buffer overflow");
+		Exit::DoExit(1);
+	}
+TEMP*/
 	string valStr = string(buf);
 	string lenStr = raw_serialize(valStr.length());
 	return typeStr + lenStr + valStr;

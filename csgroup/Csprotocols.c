@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.10.4.1  2014/01/17 21:45:59  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.10  2008/10/13 19:45:34  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.9  2005/12/06 20:01:10  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -68,6 +74,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #include "Csprotocols.h"
 #include "ServerAPI.h"
 #include "devise_varargs.h"
@@ -170,8 +177,15 @@ ServerServerProt::setControl(int args, ...)
 		{
 			char	*cmd;
 			cmd = va_arg(pvar, char*);
-			strcat(buf, cmd);
-			strcat(buf, ControlSeperator);
+            int formatted = snprintf(buf, sizeof(buf), "%s%s", cmd,
+			  ControlSeperator);
+            assert(formatted < (int)sizeof(buf));//TEMP
+/*TEMP
+	        if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+	            reportErrNosys("Buffer overflow!");
+		        exit(1);
+	        }
+TEMP*/
 		}
 		va_end(pvar);
 	
@@ -267,8 +281,10 @@ TokenList::TokenList(char* list)
 {
 	if (list != NULL)
 	{
-		listbuf = new char[strlen(list)+1];
-		strcpy(listbuf, list);
+		buflen = MAX(strlen(list)+1, 4);
+		listbuf = new char[buflen];
+		strncpy(listbuf, list, buflen);
+		listbuf[buflen-1] = '\0'; // ensure termination
 		getNumber();
 	}
 }
@@ -278,7 +294,14 @@ TokenList::setNumber(int num)
 	char ch;
 
 	ch = listbuf[3];
-	sprintf(listbuf,"%-3d",num);
+	int formatted = snprintf(listbuf, buflen, "%-3d", num);
+    assert(formatted < buflen);//TEMP
+/*TEMP
+	if (checkAndTermBuf(listbuf, buflen, formatted) != StatusOk) {
+	    reportErrNosys("Buffer overflow!");
+		exit(1);
+	}
+TEMP*/
 	listbuf[3] = ch;
 	return num;
 }
@@ -299,12 +322,20 @@ TokenList::appendToken(char* token)
 	if (token !=NULL)
 	{
 		char*	oldstr = listbuf;
-		if (listbuf == NULL)
+		if (listbuf == NULL) {
 			return -1;
-		listbuf = new char[strlen(listbuf)+1+strlen(token)+1];
-		strcpy(listbuf, oldstr);
-		strcat(listbuf," ");
-		strcat(listbuf,token);
+		}
+		buflen = MAX(strlen(listbuf)+1+strlen(token)+1, 4);
+		listbuf = new char[buflen];
+        int formatted = snprintf(listbuf, buflen, "%s %s", oldstr, token);
+        assert(formatted < buflen);//TEMP
+/*TEMP
+	    if (checkAndTermBuf(listbuf, buflen, formatted) != StatusOk) {
+	        reportErrNosys("Buffer overflow!");
+		    exit(1);
+	    }
+TEMP*/
+
 		delete oldstr;
 		setNumber(++listargs);
 	}
@@ -329,8 +360,16 @@ TokenList::TokenList(int args, ...)
 	else
 	{
 		listargs = 0;
-		listbuf = new char[4];
-		sprintf(listbuf,"%-3d",0);
+		buflen = 4;
+		listbuf = new char[buflen];
+		int formatted = snprintf(listbuf, buflen, "%-3d", 0);
+        assert(formatted < buflen);//TEMP
+/*TEMP
+	    if (checkAndTermBuf(listbuf, buflen, formatted) != StatusOk) {
+	        reportErrNosys("Buffer overflow!");
+		    exit(1);
+	    }
+TEMP*/
 	}
 }
 
@@ -353,15 +392,30 @@ TokenList::ProcessList(int args, char** argv)
 	buf = new char [len];
 
 	// print all the tokens into one string
-	sprintf(buf, "%-3d", args);   
+	int formatted = snprintf(buf, len, "%-3d", args);   
+    assert(formatted < len);//TEMP
+/*TEMP
+	if (checkAndTermBuf(buf, len, formatted) != StatusOk) {
+	    reportErrNosys("Buffer overflow!");
+		exit(1);
+	}
+TEMP*/
 
 	int	curpos = 2;
 	for (i=0; i<args; ++i)
 	{
 		buf[curpos++] = ' ';
-		sprintf(buf+curpos, argv[i]);
+		int formatted = snprintf(buf+curpos, len-curpos, argv[i]);
+        assert(formatted < len-curpos);//TEMP
+/*TEMP
+	    if (checkAndTermBuf(buf, len-curpos, formatted) != StatusOk) {
+	        reportErrNosys("Buffer overflow!");
+		    exit(1);
+	    }
+TEMP*/
 		curpos += strlen(argv[i]);
 	}
+	buflen = len;
 	listbuf = buf;
 	listargs = args;
 }
@@ -379,8 +433,16 @@ TokenList::toTclList(char*& buf)
 	}
 	else
 	{
-		buf = new char[strlen(listbuf)];
-		sprintf(buf,"{%s}",listbuf+3);
+		int len = strlen(listbuf);
+		buf = new char[len];
+		int formatted = snprintf(buf, len, "{%s}", listbuf+3);
+        assert(formatted < len);//TEMP
+/*TEMP
+	    if (checkAndTermBuf(buf, len, formatted) != StatusOk) {
+	        reportErrNosys("Buffer overflow!");
+		    exit(1);
+	    }
+TEMP*/
 	}
 	return buf;
 } 

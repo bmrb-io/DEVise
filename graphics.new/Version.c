@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.107  2013/10/03 22:20:45  wenger
+  Changed DEVise version to 1.11.5x1.
+
   Revision 1.106  2013/10/02 21:36:21  wenger
   Changed version to 1.11.4 for release; updated release_tst script
   to include rhel6.
@@ -637,7 +640,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.5x1";//TEMP
+static const char *	version = "1.11.5x2";//TEMP
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2013";

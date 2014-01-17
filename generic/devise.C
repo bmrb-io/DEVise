@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  2013/09/20 16:53:57  wenger
+  Merged devise_1_11_3_centos6_br_2 thru devise_1_11_3_centos6_br_3 to trunk.
+
   Revision 1.26  2013/06/13 22:03:04  wenger
   Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
 
@@ -34,6 +37,9 @@
   return an error code up the call stack) -- MappingInterp now uses
   this functionality.  Working on sprintf->snprintf conversion in
   GDataSock (not finished).
+
+  Revision 1.24.12.1  2014/01/17 21:46:12  wenger
+  Fixed a bunch of possible buffer overflows.
 
   Revision 1.24  2005/12/06 20:02:51  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
@@ -207,7 +213,11 @@
 #include "Version.h"
 #include "Util.h"
 
+// Because we can't call Exit::DoAbort() here...
 #if defined(DOASSERT)
+#  undef DOASSERT
+#endif
+#ifdef DOASSERT
 #  undef DOASSERT
 #endif
 #define  DOASSERT(c,r) {if (!(c)) DoAbort(r); } 

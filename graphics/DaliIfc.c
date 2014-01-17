@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  2013/09/20 16:54:02  wenger
+  Merged devise_1_11_3_centos6_br_2 thru devise_1_11_3_centos6_br_3 to trunk.
+
   Revision 1.21  2013/06/13 22:03:10  wenger
   Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
 
@@ -33,6 +36,9 @@
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
   compile on RHEL5...
+
+  Revision 1.20.4.1  2014/01/17 21:46:22  wenger
+  Fixed a bunch of possible buffer overflows.
 
   Revision 1.20  2008/09/11 20:28:04  wenger
   Committed more of the "easy" compile warning fixes.
@@ -236,37 +242,56 @@ DaliIfc::ShowImage(const char *daliServer, Drawable win, int centerX,
     fullfile = RemoveEnvFromPath(filename);
   }
 
-  sprintf(commandBuf, "show %s 0x%lx %d %d %d %d -dither -xbacking -nosubwin"
+  int formatted = snprintf(commandBuf, sizeof(commandBuf),
+    "show %s 0x%lx %d %d %d %d -dither -xbacking -nosubwin"
     " -showafter 0 -sync 0",
     fullfile, (long) win, topLeftX, topLeftY, botRightX, botRightY);
+  if (checkAndTermBuf2(commandBuf, formatted) != StatusOk) {
+    result = StatusFailed;
+  }
   FreeString(fullfile);
-  if (!maintainAspect) strcat(commandBuf, " -noaspect");
-  if (image != NULL)
-  {
+  if (!maintainAspect) {
+    if (nice_strncat(commandBuf, " -noaspect", sizeof(commandBuf))
+        != StatusOk) {
+      result = StatusFailed;
+    }
+  }
+
+  if (image != NULL) {
     char bytesBuf[DALI_MAX_STR_LENGTH];
-    sprintf(bytesBuf, " -bytes %d\n", imageLen);
-    strcat(commandBuf, bytesBuf);
-  }
-  else
-  {
-    strcat(commandBuf, "\n");
+    formatted = snprintf(bytesBuf, sizeof(bytesBuf), " -bytes %d\n", imageLen);
+    if (checkAndTermBuf2(bytesBuf, formatted) != StatusOk) {
+      result = StatusFailed;
+    }
+    if (nice_strncat(commandBuf, bytesBuf, sizeof(commandBuf)) != StatusOk) {
+      result = StatusFailed;
+    }
+  } else {
+    if (nice_strncat(commandBuf, "\n", sizeof(commandBuf)) != StatusOk) {
+      result = StatusFailed;
+    }
   }
 
-  double timeout = (image == NULL) ? 5.0 : 30.0;
-  timeout *= timeoutFactor;
-  result += ConnectAndSend(daliServer, commandBuf, imageLen, image, replyBuf,
-    timeout);
+  if (result.IsComplete()) {
+    double timeout = (image == NULL) ? 5.0 : 30.0;
+    timeout *= timeoutFactor;
+    result += ConnectAndSend(daliServer, commandBuf, imageLen, image, replyBuf,
+      timeout);
+  }
 
-  if (result.IsComplete())
-  {
+  if (result.IsComplete()) {
     int numColors;
     sscanf(replyBuf, "%*s %d %d", &handle, &numColors);
 
 #if 0
 // We can't free images immediately becaues they'll be erased.
-    sprintf(commandBuf, "free %d\n", handle);
-    result += ConnectAndSend(daliServer, commandBuf, 0, (char *) NULL,
-      replyBuf);
+    formatted = snprintf(commandBuf, sizeof(commandBuf), "free %d\n", handle);
+    if (checkAndTermBuf2(commandBuf, formatted) != StatusOk) {
+      result = StatusFailed;
+    } else {
+      result += ConnectAndSend(daliServer, commandBuf, 0, (char *) NULL,
+        replyBuf);
+    }
 #endif
   }
 
@@ -305,33 +330,45 @@ DaliIfc::PSShowImage(const char *daliServer, int width, int height,
     fullfile = RemoveEnvFromPath(filename);
   }
 
-  sprintf(commandBuf, "psshow %s - -width %d -height %d", fullfile, width,
+  int formatted = snprintf(commandBuf, sizeof(commandBuf),
+    "psshow %s - -width %d -height %d", fullfile, width,
     height);
-  FreeString(fullfile);
-  if (!maintainAspect) strcat(commandBuf, " -noaspect");
-  if (image != NULL)
-  {
-    char bytesBuf[DALI_MAX_STR_LENGTH];
-    sprintf(bytesBuf, " -bytes %d\n", imageLen);
-    strcat(commandBuf, bytesBuf);
+  if (checkAndTermBuf2(commandBuf, formatted) != StatusOk) {
+    result = StatusFailed;
   }
-  else
-  {
-    strcat(commandBuf, "\n");
+  FreeString(fullfile);
+  if (!maintainAspect) {
+    if (nice_strncat(commandBuf, " -noaspect", sizeof(commandBuf))
+        != StatusOk) {
+      result = StatusFailed;
+    }
+  }
+
+  if (image != NULL) {
+    char bytesBuf[DALI_MAX_STR_LENGTH];
+    formatted = snprintf(bytesBuf, sizeof(bytesBuf), " -bytes %d\n", imageLen);
+    if (checkAndTermBuf2(bytesBuf, formatted) != StatusOk) {
+      result = StatusFailed;
+    }
+    if (nice_strncat(commandBuf, bytesBuf, sizeof(commandBuf)) != StatusOk) {
+      result = StatusFailed;
+    }
+  } else {
+    if (nice_strncat(commandBuf, "\n", sizeof(commandBuf)) != StatusOk) {
+      result = StatusFailed;
+    }
   }
 
   int fd;
   result += OpenConnection(daliServer, fd);
 
-  if (result.IsComplete())
-  {
+  if (result.IsComplete()) {
     double timeout = (image == NULL) ? 5.0 : 30.0;
     timeout *= timeoutFactor;
     result += SendCommand(fd, commandBuf, imageLen, image, replyBuf, timeout);
   }
 
-  if (result.IsComplete())
-  {
+  if (result.IsComplete()) {
     int numBytes;
     sscanf(replyBuf, "%*s %d", &numBytes);
     result += ReadImage(fd, numBytes, printfile);
@@ -363,9 +400,13 @@ DaliIfc::FreeImage(const char *daliServer, int handle)
   char commandBuf[DALI_MAX_STR_LENGTH];
   char replyBuf[DALI_MAX_STR_LENGTH];
 
-  sprintf(commandBuf, "free %d\n", handle);
-
-  result += ConnectAndSend(daliServer, commandBuf, 0, NULL, replyBuf, 5.0);
+  int formatted = snprintf(commandBuf, sizeof(commandBuf), "free %d\n",
+    handle);
+  if (checkAndTermBuf2(commandBuf, formatted) != StatusOk) {
+    result = StatusFailed;
+  } else {
+    result += ConnectAndSend(daliServer, commandBuf, 0, NULL, replyBuf, 5.0);
+  }
 
 #if PRINT_DALI_STATUS
   if (ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf,
@@ -393,7 +434,11 @@ DaliIfc::FreeWindowImages(const char *daliServer, Drawable win)
   char commandBuf[DALI_MAX_STR_LENGTH];
   char replyBuf[DALI_MAX_STR_LENGTH];
 
-  sprintf(commandBuf, "wapply 0x%lx free .\n", (long) win);
+  int formatted = snprintf(commandBuf, sizeof(commandBuf),
+    "wapply 0x%lx free .\n", (long) win);
+  if (checkAndTermBuf2(commandBuf, formatted) != StatusOk ) {
+    result = StatusFailed;
+  }
 
   int fd;
   result += OpenConnection(daliServer, fd);
@@ -614,7 +659,9 @@ SendCommand(int fd, const char *commandBuf, int imageLen, const char *image,
 #if defined(DEBUG_LOG)
   {
     char logBuf[MAXPATHLEN * 2];
-    sprintf(logBuf, "Tasvir command: <%s>\n", commandBuf);
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+      "Tasvir command: <%s>\n", commandBuf);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
   }
 #endif
@@ -669,14 +716,18 @@ SendCommand(int fd, const char *commandBuf, int imageLen, const char *image,
     }
     else if (!strncmp(replyBuf, errStr, strlen(errStr)))
     {
-      sprintf(_errBuf, "Error from Tasvir server: %s",
+      int formatted = snprintf(_errBuf, sizeof(_errBuf),
+          "Error from Tasvir server: %s",
           &replyBuf[strlen(errStr)]);
+      checkAndTermBuf2(_errBuf, formatted);
       reportError(_errBuf, devNoSyserr);
       result = StatusFailed;
     }
     else
     {
-      sprintf(_errBuf, "Can't understand reply from Tasvir (%s)", replyBuf);
+      int formatted = snprintf(_errBuf, sizeof(_errBuf),
+        "Can't understand reply from Tasvir (%s)", replyBuf);
+      checkAndTermBuf2(_errBuf, formatted);
       reportError(_errBuf, devNoSyserr);
       result = StatusFailed;
     }
@@ -808,7 +859,9 @@ WaitForReply(char *buf, int fd, int bufSize, double timeout)
 #if defined(DEBUG_LOG)
   if (result.IsComplete()) {
     char logBuf[1024];
-    sprintf(logBuf, "Tasvir reply: <%s>\n", buf);
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+      "Tasvir reply: <%s>\n", buf);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
   }
 #endif
@@ -849,8 +902,9 @@ ReadImage(int fd, int numBytes, FILE *printfile)
     if (bytesRead > 0) {
       bytesWritten = fwrite(buffer, 1, bytesRead, printfile);
       if (bytesWritten != bytesRead) {
-        sprintf(_errBuf, "Only %d of %d bytes written", bytesWritten,
-	    bytesRead);
+        int formatted = snprintf(_errBuf, sizeof(_errBuf),
+	    "Only %d of %d bytes written", bytesWritten, bytesRead);
+	checkAndTermBuf2(_errBuf, formatted);
         reportErrSys(_errBuf);
         result += StatusFailed;
       }
@@ -859,7 +913,9 @@ ReadImage(int fd, int numBytes, FILE *printfile)
   }
 
   if (bytesLeft != 0) {
-    sprintf(_errBuf, "%d of %d bytes missing", bytesLeft, numBytes);
+    int formatted = snprintf(_errBuf, sizeof(_errBuf),
+        "%d of %d bytes missing", bytesLeft, numBytes);
+    checkAndTermBuf2(_errBuf, formatted);
     reportErrNosys(_errBuf);
   }
 

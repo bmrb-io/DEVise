@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  2013/09/20 16:53:57  wenger
+  Merged devise_1_11_3_centos6_br_2 thru devise_1_11_3_centos6_br_3 to trunk.
+
   Revision 1.14  2013/06/13 22:03:04  wenger
   Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
 
@@ -26,6 +29,9 @@
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
   compile on RHEL5...
+
+  Revision 1.13.46.1  2014/01/17 21:46:12  wenger
+  Fixed a bunch of possible buffer overflows.
 
   Revision 1.13  1999/11/30 22:27:53  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
@@ -89,7 +95,12 @@
 #include "ClientAPI.h"
 #include "DeviseBatchClient.h"
 #include "Version.h"
+#include "Util.h"
 
+// Because we can't call Exit::DoAbort() here...
+#ifdef DOASSERT
+#  undef DOASSERT
+#endif
 #define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
 //#define DEBUG
 
@@ -124,10 +135,11 @@ int ExecuteCommands()
   FILE *fp = stdin;
 
   const int MAXARGC = 64;
+  const int ARGSIZE = 64;
   char *argv[MAXARGC];
   int i;
   for(i = 0; i < MAXARGC; i++) {
-    argv[i] = new char [64];
+    argv[i] = new char [ARGSIZE];
     DOASSERT(argv[i], "Out of memory");
   }
 
@@ -135,8 +147,19 @@ int ExecuteCommands()
   printf("Setting server to batch mode\n");
 #endif
 
-  strcpy(argv[0], "setBatchMode");
-  strcpy(argv[1], "1");
+#if 0 //TEMP
+  if (nice_strncpy(argv[0], "setBatchMode", ARGSIZE) != StatusOk) {
+    fprintf(stderr, "Buffer overflow!");
+    return -1;
+  }
+  if (nice_strncpy(argv[1], "1", ARGSIZE) != StatusOk) {
+    fprintf(stderr, "Buffer overflow!");
+    return -1;
+  }
+#else //TEMP
+  strncpy(argv[0], "setBatchMode", ARGSIZE);
+  strncpy(argv[1], "1", ARGSIZE);
+#endif //TEMP
   if (DEViseCmd(2, argv) < 0) {
     fprintf(stderr, "Error setting server to batch mode\n");
     return -1;

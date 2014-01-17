@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2003
+  (c) Copyright 1999-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.6.4.1  2014/01/17 21:46:31  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.6  2008/01/24 22:08:32  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.5  2005/12/06 20:03:58  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -198,13 +204,12 @@ DupElim::DrawSymbol(void *gdataRec)
 
     if (pixX < -MAXSHORT || pixX > MAXSHORT || pixY < -MAXSHORT ||
         pixY > MAXSHORT) {
-      const int bufLen = 1024;
-      char buf[bufLen];
-      int formatted = snprintf(buf, bufLen,
+      char buf[1024];
+      int formatted = snprintf(buf, sizeof(buf),
           "Warning: pixel value overflow (%g or %g) in view: %s "
 	  "(duplicate symbols may be drawn)", pixX, pixY,
 	  _viewName);
-      checkAndTermBuf(buf, bufLen, formatted);
+      checkAndTermBuf2(buf, formatted);
       reportErrNosys(buf);
     } else {
       HashObj ho;

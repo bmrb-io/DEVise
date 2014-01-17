@@ -1,5 +1,5 @@
 /* 
-** Copyright 1997 Collaborator Design Team
+** Copyright 1997-2010 Collaborator Design Team
 ** 
 ** Permission to use, copy, modify, and distribute this software and its
 ** documentation for any purpose and without fee is hereby granted,
@@ -31,6 +31,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  2013/09/20 16:53:57  wenger
+  Merged devise_1_11_3_centos6_br_2 thru devise_1_11_3_centos6_br_3 to trunk.
+
   Revision 1.8  2013/06/13 22:03:04  wenger
   Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
 
@@ -41,6 +44,9 @@
   Changes to get DEVise to compile/link on CentOS6 (with comments for
   a bunch of unfixed warnings); minor mods to get this version to also
   compile on RHEL5...
+
+  Revision 1.7.54.1  2014/01/17 21:46:12  wenger
+  Fixed a bunch of possible buffer overflows.
 
   Revision 1.7  1998/08/21 22:16:40  wenger
   Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
@@ -81,6 +87,8 @@
 #include <ctype.h>
 #include <tcl.h>
 #include <tk.h>
+#include <assert.h>
+#include "Util.h"
 
 char TclFileName[20] = "colbr.tcl";
 Tcl_Interp *interp;
@@ -228,12 +236,22 @@ main(int argc, char *argv[])
 		libdir = getenv ("DEVISE_LIB");
 		if (libdir != NULL)
 		{
-			sprintf(pathname, "%s/%s",libdir, TclFileName);
-		}
-		else
-		{
+			int formatted = snprintf(pathname, sizeof(pathname),
+			  "%s/%s",libdir, TclFileName);
+			assert(formatted < (int)sizeof(pathname));//TEMP
+		    //TEMP if (checkAndTermBuf2(pathname, formatted) != StatusOk) {
+			    //TEMP goto error;
+			//TEMP }
+		} else {
 			fprintf(stderr, "Undefined environment variable DEVISE_LIB\n");
-			strcpy(pathname, TclFileName);
+#if 0 //TEMP
+			if (nice_strncpy(pathname, TclFileName, sizeof(pathname))
+			  != StatusOk) {
+			    goto error;
+			}
+#else //TEMP
+			strncpy(pathname, TclFileName, sizeof(pathname));
+#endif //TEMP
 		}
 
 		//Tcl_FindExecutable(argv[0]);

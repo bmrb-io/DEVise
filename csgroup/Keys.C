@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.6.4.1  2014/01/17 21:46:00  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.6  2008/01/24 22:08:05  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.5  2005/12/06 20:01:10  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -49,6 +55,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <string.h>
+#include <assert.h>
 #include "keys.h"
 // assume the key is composed of two strings
 CSgroupKey::CSgroupKey()
@@ -88,7 +95,15 @@ CSgroupKey::CSgroupKey(GroupKey *gkp)
 		int		keysize;
 		keysize = sizeof(GroupKey);
 		_cskey = new char[keysize +1];
-		sprintf(_cskey,"%s%c%s",_gkp->grpName,seperator,_gkp->grpPwd);
+		int formatted = snprintf(_cskey, keysize+1, "%s%c%s",
+		  _gkp->grpName, seperator, _gkp->grpPwd);
+		assert(formatted < keysize+1);//TEMP
+/*TEMP
+	    if (checkAndTermBuf(_cskey, keysize+1, formatted) != StatusOk) {
+		    reportErrNosys("Buffer overflow!");
+			exit(1);
+		}
+TEMP*/
 	}
 }
 CSgroupKey::CSgroupKey(const char* grpname, const char* passwd)
@@ -100,8 +115,16 @@ void
 CSgroupKey::analyse2Str(const char*grpname, const char* passwd)
 {
 	char	*temp;
-	temp = new char[strlen(grpname)+strlen(passwd)+2];
-	sprintf(temp,"%s%c%s",grpname,seperator,passwd);
+	int len = strlen(grpname)+strlen(passwd)+2;
+	temp = new char[len];
+	int formatted = snprintf(temp, len, "%s%c%s", grpname, seperator, passwd);
+	assert(formatted < len);//TEMP
+/*TEMP
+	if (checkAndTermBuf(temp, len, formatted) != StatusOk) {
+	    reportErrNosys("Buffer overflow!");
+		exit(1);
+	}
+TEMP*/
 	analyseStr(temp);
 	delete temp;
 }	
@@ -130,8 +153,10 @@ CSgroupKey::analyseStr(const char* cskey)
 			if (i<keysize)
 			{
 				cskeyTmp[i-1] = 0;
-				strcpy(_gkp->grpName, cskeyTmp);
-				strcpy(_gkp->grpPwd, cskeyTmp+i);
+				strncpy(_gkp->grpName, cskeyTmp, sizeof(_gkp->grpName));
+				_gkp->grpName[sizeof(_gkp->grpName)-1] = '\0';
+				strncpy(_gkp->grpPwd, cskeyTmp+i, sizeof(_gkp->grpPwd));
+				_gkp->grpPwd[sizeof(_gkp->grpPwd)-1] = '\0';
 				cskeyTmp[i-1] = seperator;
 				delete cskeyTmp;
 				return;

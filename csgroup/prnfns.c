@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.9.4.1  2014/01/17 21:46:00  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.9  2008/10/13 19:45:34  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.8  2005/12/06 20:01:13  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -101,6 +107,7 @@
 #if defined(SGI)
 #include <stdarg.h>
 #endif
+#include <assert.h>
 
 #include "devise_varargs.h"
 #include "prnfns.h"
@@ -160,26 +167,53 @@ prnBuf(int type, const char *format, ...) {
 	va_list pvar;
 	int code;
 
-	memset(command, 0, 2000);
+	int formatted;
+
+	memset(command, 0, sizeof(command));
 #ifdef __tcltk
 	switch(type) {
 		case PRN_HDG:
-			sprintf(command, "outputHdg {");
+			formatted = snprintf(command, sizeof(command), "outputHdg {");
 			break;
 		case PRN_BDG:
-			sprintf(command, "outputBdg {");
+			formatted = snprintf(command, sizeof(command), "outputBdg {");
 			break;
 		default:
 			return;
 	}
+	assert(formatted < (int)sizeof(command));//TEMP
+/*TEMP
+	if (checkAndTermBuf2(command, formatted) != StatusOk) {
+	    reportErrNosys("Buffer overflow!");
+		exit(1);
+	}
+TEMP*/
 #endif /* __tcltk */
 
 	va_start(pvar, format);
-	vsprintf(command+strlen(command), format, pvar);
+	char *ptr = command+strlen(command);
+	int bufferLeft = sizeof(command) - strlen(command);
+	formatted = vsnprintf(ptr, bufferLeft, format, pvar);
+	assert(formatted < bufferLeft);//TEMP
+/*TEMP
+	if (checkAndTermBuf(ptr, bufferLeft, formatted) != StatusOk) {
+	    reportErrNosys("Buffer overflow!");
+		exit(1);
+	}
+TEMP*/
 	va_end(pvar);
 
 #ifdef __tcltk
-	sprintf(command+strlen(command), "}");
+	ptr = command+strlen(command);
+	bufferLeft = sizeof(command) - strlen(command);
+	formatted = snprintf(ptr, bufferLeft, "}");
+	assert(formatted < bufferLeft);//TEMP
+/*TEMP
+	if (checkAndTermBuf(ptr, bufferLeft, formatted) != StatusOk) {
+	    reportErrNosys("Buffer overflow!");
+		exit(1);
+	}
+TEMP*/
 	code = Tcl_Eval(interp, command);
 #else
 	printf("%s", command);

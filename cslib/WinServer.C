@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.4.60.1  2014/01/17 21:46:06  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.4  1998/01/09 20:45:09  wenger
+  Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
+  previous merge.
+
   Revision 1.3  1998/01/07 19:27:54  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -61,6 +68,7 @@
 
 #include "WinServer.h"
 #include "machdep.h"
+#include "Util.h"
 
 #if defined(LINUX)
 #include <sys/time.h>
@@ -124,7 +132,9 @@ void WinServer::SingleStep()
     if (numFds < 0)
     {
         char errBuf[MAXPATHLEN + 256];
-        sprintf(errBuf, "select() failed at %s: %d", __FILE__, __LINE__);
+        int formatted = snprintf(errBuf, sizeof(errBuf),
+		  "select() failed at %s: %d", __FILE__, __LINE__);
+		checkAndTermBuf2(errBuf, formatted);
         perror(errBuf);
     }
     DOASSERT(numFds > 0, "Internal error");

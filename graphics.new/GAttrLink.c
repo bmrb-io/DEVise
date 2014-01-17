@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  2010/09/30 18:16:32  wenger
+  Fixing uninitialized memory error found by valgrind.
+
   Revision 1.5  2010/04/21 17:10:46  wenger
   Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
 
@@ -35,6 +38,9 @@
   Partially implemented the "All" option in GAttrLink -- a leader value
   of "All" will match all follower records (still needs a bunch of cleanup,
   and a command to turn it on and off).
+
+  Revision 1.4.4.1  2014/01/17 21:46:31  wenger
+  Fixed a bunch of possible buffer overflows.
 
   Revision 1.4  2008/01/24 22:08:32  wenger
   Got rid of a bunch of compile warnings.
@@ -421,8 +427,7 @@ GAttrLink::CheckAttrs()
   //
   // Check compatibility of leader and follower attributes.
   //
-  const int bufLen = 1024;
-  char errBuf[bufLen];
+  char errBuf[1024];
 
   // This had better be true!
   if (_masterView != NULL) {
@@ -435,10 +440,10 @@ GAttrLink::CheckAttrs()
       StringStorage *leaderStringTable = GetStringTable(tdMap,
           _leaderAttrName);
       if (attrInfo == NULL) {
-	int formatted = snprintf(errBuf, bufLen, "Warning: GAttr link "
+	int formatted = snprintf(errBuf, sizeof(errBuf), "Warning: GAttr link "
 	    "leader view %s has no values for leader attribute %s",
 	    _masterView->GetName(), _leaderAttrName);
-        checkAndTermBuf(errBuf, bufLen, formatted);
+        checkAndTermBuf2(errBuf, formatted);
 	reportErrNosys(errBuf);
 	result = false;
 
@@ -455,10 +460,10 @@ GAttrLink::CheckAttrs()
 	    attrList = tdMap->GDataAttrList();
 	    attrInfo = attrList->Find(_followerAttrName);
 	    if (attrInfo == NULL) {
-	      int formatted = snprintf(errBuf, bufLen, "Warning: GAttr link "
+	      int formatted = snprintf(errBuf, sizeof(errBuf), "Warning: GAttr link "
 	          "follower view %s has no values for follower attribute %s",
 	          view->GetName(), _followerAttrName);
-              checkAndTermBuf(errBuf, bufLen, formatted);
+              checkAndTermBuf2(errBuf, formatted);
 	      reportErrNosys(errBuf);
 	      result = false;
 
@@ -467,49 +472,49 @@ GAttrLink::CheckAttrs()
 
 	      if (leaderAttrType == StringAttr &&
 	          followerAttrType != StringAttr) {
-		int formatted = snprintf(errBuf, bufLen, "Warning: GAttr "
+		int formatted = snprintf(errBuf, sizeof(errBuf), "Warning: GAttr "
 		    "link leader attribute (%s in %s) is string; follower "
 		    "attribute (%s in %s) is non-string -- link will "
 		    "probably not work correctly!!", _leaderAttrName,
 		    _masterView->GetName(), _followerAttrName,
 		    view->GetName());
-		checkAndTermBuf(errBuf, bufLen, formatted);
+		checkAndTermBuf2(errBuf, formatted);
 		reportErrNosys(errBuf);
 	        result = false;
 
 	      } else if (leaderAttrType != StringAttr &&
 	          followerAttrType == StringAttr) {
-		int formatted = snprintf(errBuf, bufLen, "Warning: GAttr "
+		int formatted = snprintf(errBuf, sizeof(errBuf), "Warning: GAttr "
 		    "link leader attribute (%s in %s) is non-string; follower "
 		    "attribute (%s in %s) is string -- link will "
 		    "probably not work correctly!!", _leaderAttrName,
 		    _masterView->GetName(), _followerAttrName,
 		    view->GetName());
-		checkAndTermBuf(errBuf, bufLen, formatted);
+		checkAndTermBuf2(errBuf, formatted);
 		reportErrNosys(errBuf);
 	        result = false;
 
 	      } else if (leaderAttrType == DateAttr &&
 	          followerAttrType != DateAttr) {
-		int formatted = snprintf(errBuf, bufLen, "Warning: GAttr "
+		int formatted = snprintf(errBuf, sizeof(errBuf), "Warning: GAttr "
 		    "link leader attribute (%s in %s) is date; follower "
 		    "attribute (%s in %s) is non-date -- link will "
 		    "probably not work correctly!!", _leaderAttrName,
 		    _masterView->GetName(), _followerAttrName,
 		    view->GetName());
-		checkAndTermBuf(errBuf, bufLen, formatted);
+		checkAndTermBuf2(errBuf, formatted);
 		reportErrNosys(errBuf);
 	        result = false;
 
 	      } else if (leaderAttrType != DateAttr &&
 	          followerAttrType == DateAttr) {
-		int formatted = snprintf(errBuf, bufLen, "Warning: GAttr "
+		int formatted = snprintf(errBuf, sizeof(errBuf), "Warning: GAttr "
 		    "link leader attribute (%s in %s) is non-date; follower "
 		    "attribute (%s in %s) is date -- link will "
 		    "probably not work correctly!!", _leaderAttrName,
 		    _masterView->GetName(), _followerAttrName,
 		    view->GetName());
-		checkAndTermBuf(errBuf, bufLen, formatted);
+		checkAndTermBuf2(errBuf, formatted);
 		reportErrNosys(errBuf);
 	        result = false;
 
@@ -524,13 +529,13 @@ GAttrLink::CheckAttrs()
                   StringStorage *followerStringTable = GetStringTable(
 		      tdMap, _followerAttrName);
 		  if (leaderStringTable != followerStringTable) {
-		    int formatted = snprintf(errBuf, bufLen, "Warning: "
+		    int formatted = snprintf(errBuf, sizeof(errBuf), "Warning: "
 		        "GAttr link leader (%s) and follower (%s) views "
 			"use different string tables for the linked "
 			"attributes (%s and %s; this may cause GAttrLink "
 			"to fail", _masterView->GetName(), view->GetName(),
 			_leaderAttrName, _followerAttrName);
-		    checkAndTermBuf(errBuf, bufLen, formatted);
+		    checkAndTermBuf2(errBuf, formatted);
 		    reportErrNosys(errBuf);
 		  }
 		}
@@ -669,11 +674,10 @@ GAttrLink::GetAttrValue(TDataMap *tdMap, const char *gDataRec,
   }
 
   if (badAttrName) {
-    const int bufLen = 1024;
-    char buf[bufLen];
-    int formatted = snprintf(buf, bufLen, "Invalid GData attribute name: %s",
-        attrName);
-    checkAndTermBuf(buf, bufLen, formatted);
+    char buf[1024];
+    int formatted = snprintf(buf, sizeof(buf),
+	    "Invalid GData attribute name: %s", attrName);
+    checkAndTermBuf2(buf, formatted);
     reportErrNosys(buf);
   }
 

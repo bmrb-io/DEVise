@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.22.54.1  2014/01/17 21:46:06  wenger
+  Fixed a bunch of possible buffer overflows.
+
+  Revision 1.22  1998/05/29 16:49:28  wenger
+  Fixed bug 358 (incorrect usage of colors).
+
   Revision 1.21  1998/02/19 23:24:19  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -153,6 +159,7 @@
 #include "ClientAPI.h"
 #include "DualWindowRep.h"
 #include "DualWindowRep.h"
+#include "Util.h"
 
 static char *_progName = 0;
 
@@ -260,7 +267,12 @@ class SampleWinServer : public WinServer {
 	    int dummy;
 	    char etk_script[FILENAME_MAX + 1];
 	    char *etk_argv[] = { "ABC", "123", "Do Re Mi" };
-	    sprintf(etk_script, "%s/ETkSample.tcl", current_dir);
+	    int formatted = snprintf(etk_script, sizeof(etk_script),
+		  "%s/ETkSample.tcl", current_dir);
+		if (checkAndTermBuf2(etk_script, formatted) != StatusOk) {
+		    reportErrNosys("Buffer overflow!");
+			Exit::DoExit(1);
+		}
 	    _winReps.GetWindowRep()->ETk_CreateWindow(w/2.0, h/2.0 + h/8.0,
 						      w/2.0 - 4.0, h/8.0,
 						      ETkIfc::Center,
@@ -287,7 +299,12 @@ class SampleWinServer : public WinServer {
 	/* draw a Tasvir image */
 	_winReps.GetWindowRep()->DaliFreeImages();
 	char image_name[FILENAME_MAX + 1];
-	sprintf(image_name, "%s/earth.gif", current_dir);
+	int formatted = snprintf(image_name, sizeof(image_name),
+	  "%s/earth.gif", current_dir);
+	if (checkAndTermBuf2(image_name, formatted) != StatusOk) {
+	    reportErrNosys("Buffer overflow!");
+		Exit::DoExit(1);
+	}
 	_winReps.GetWindowRep()->DaliShowImage(w/2.0 + w/4.0 + w/8.0, h/2.0,
 					       w/4.0 - 4.0, h/4.0 - 4.0,
 					       image_name,
