@@ -892,6 +892,13 @@ Num Date        Status  Pri     Description
 				pages using the JavaScreen. (wenger)
 				(Done by wenger, 1/3/14)
 
+199 1/24/14	ACTIVE	1	Improve error message for invalid accession
+				number. (elu/wenger)
+
+200 1/24/14	OPEN	4	Put all exceptions into a stack and then
+				print them in reverse order at the end.
+				(wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
