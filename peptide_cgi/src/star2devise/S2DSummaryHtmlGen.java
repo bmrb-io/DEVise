@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006-2013
+// (c) Copyright 2006-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -36,6 +36,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2013/10/11 21:13:54  wenger
+// Peptide-CGI to-do 195:  improved the appearance of the summary html
+// page; also the visualization selection pages and the histogram
+// index page.
+//
 // Revision 1.61  2013/10/09 21:20:39  wenger
 // Peptide-CGI to-do 194:  disabled thumbnail expanion in the html pages.
 //
@@ -710,7 +715,7 @@ public abstract class S2DSummaryHtmlGen {
 	    _writer.write("<form method=\"get\" name=\"get_by_bmrb\" action=\"" + S2DNames.CGI_URL + "\">\n");
 	    _writer.write("<label for=\"number\">Enter a BMRB accession number (e.g., " +
 	      defaultAccessionNum + ")\n");
-	    _writer.write("to generate visualizations for that entry</label>\n");
+	    _writer.write("to generate visualizations for that entry <b><font color=\"red\">(for released entries only)</font></b></label>\n");
 	    _writer.write("<p>\n");
 	    _writer.write("<input type=\"text\" name=\"number\" id=\"number\" size=\"5\" value=\"" +
 	      defaultAccessionNum + "\">\n");
@@ -860,8 +865,9 @@ TEMP?*/
 	            _writer.write("<label for=\"xbmrbid\">Enter a BMRB " +
 		      "accession number (e.g., " +
 		      S2DMain.DEFAULT_ACCESSION_NUM +
-		      ") for multi-entry " +
-		      "visualizations with this entry:</label>\n");
+		      ") for multi-entry visualizations with this entry " +
+		      "<b><font color=\"red\">(for released entries " +
+		      "only)</font></b>:</label>\n");
 	            _writer.write(
 		      "<input type=\"text\" name=\"xbmrbid\" size=\"5\">\n");
 	            if (_isUvd) {

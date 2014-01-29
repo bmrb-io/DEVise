@@ -12,6 +12,10 @@ work better with different users running the program.
 * Changed "applet" to "object" in all html files that include the
 JavaScreen applet (matches current HTML standard).
 
+* Added notes to html pages about entering accession numbers only for
+released entries; also improved error messages for bad accession numbers
+and made some general improvements to the error messages.
+
 
 Peptide-CGI 12.3.4
 ------------------

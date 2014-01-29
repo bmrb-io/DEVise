@@ -19,9 +19,11 @@
 // ------------------------------------------------------------------------
 
 // $Id$
-// $Id$
 
 // $Log$
+// Revision 1.335  2014/01/14 23:10:12  wenger
+// Merged peak_lists2_br_0 thru peak_lists2_br_3 to trunk.
+//
 // Revision 1.334  2014/01/03 18:57:30  wenger
 // Peptide-CGI to-do 198:  Changed "applet" to "object" (and related
 // changes) in all released HTML files.
@@ -967,7 +969,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.0x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.0x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
 
@@ -3372,7 +3374,7 @@ public class S2DMain {
 	            process1PDB(star, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
-		      " (" + ex.toString() + ")");
+		      " for coordinates (" + ex.toString() + ")");
 		    _summary.writeMessage("Unable to get atomic coordinates" +
 		      " from related PDB ID " + id, false);
 		}
@@ -3397,7 +3399,7 @@ public class S2DMain {
 	            process1TAR(null, null, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
-		      " (" + ex.toString() + ")");
+		      " for torsion angles (" + ex.toString() + ")");
 		    System.err.println("Unable to get RG torsion angle " +
 		      "restraints from related PDB ID " + id);
 		}
@@ -3423,7 +3425,7 @@ public class S2DMain {
 	            process1RRTAR(null, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
-		      " (" + ex.toString() + ")");
+		      " for torsion angles (" + ex.toString() + ")");
 		    System.err.println("Unable to get RR torsion angle " +
 		      "restraints from related PDB ID " + id);
 		}
@@ -3448,7 +3450,7 @@ public class S2DMain {
 	            process1DistR(null, null, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
-		      " (" + ex.toString() + ")");
+		      " for distance restraints (" + ex.toString() + ")");
 		    System.err.println("Unable to get RG distance " +
 		      "restraints from related PDB ID " + id);
 		}
@@ -3474,7 +3476,7 @@ public class S2DMain {
 	            process1RRDistR(null, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
-		      " (" + ex.toString() + ")");
+		      " for distance restraints (" + ex.toString() + ")");
 		    System.err.println("Unable to get RR distance " +
 		      "restraints from related PDB ID " + id);
 		}

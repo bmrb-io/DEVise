@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2012
+// (c) Copyright 2000-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2012/01/20 16:09:21  wenger
+// Merged s2d_mailfix_br_0 thru s2d_mailfix_br_1 to trunk.
+//
 // Revision 1.3.24.1  2012/01/09 22:32:30  wenger
 // S2d no longer sends error emails in a number of cases that are
 // instances of faulty inputs rather than actual software errors

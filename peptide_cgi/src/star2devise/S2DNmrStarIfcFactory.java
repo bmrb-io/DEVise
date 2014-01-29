@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2013
+// (c) Copyright 2000-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2013/08/16 22:56:22  wenger
+// We now test for Peptide-CGI version 3.1 before 2.1 and 3.0, and
+// don't do subsequent tests if the first one passes, to reduce
+// spurious warnings on the s2d output.
+//
 // Revision 1.5  2010/09/21 19:37:21  wenger
 // Added bug 117; temporarily removed some checks from test67 so it works
 // (related to bug 117); we now print the URL of the STAR files we use
@@ -180,10 +185,9 @@ public abstract class S2DNmrStarIfcFactory {
             throw new S2DError("Unable to get data in star file " +
               fileName);
 	} catch(Exception ex) {
-	    System.err.println("Exception (" + ex.toString() +
-	      ") parsing NMR-STAR file");
-	    String errMsg = "Unable to get data in star file " + fileName;
-	    System.err.println(errMsg);
+	    String errMsg = "Invalid accession number " + accessionNum +
+	      "; please make sure entry is released";
+	    errMsg += " (" + ex.toString() + ")";
             throw new S2DError(errMsg);
 	}
 
