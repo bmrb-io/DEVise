@@ -897,6 +897,7 @@ Num Date        Status  Pri     Description
 
 200 1/24/14	OPEN	4	Put all exceptions into a stack and then
 				print them in reverse order at the end.
+				(So top-level message is printed first.)
 				(wenger)
 
 * Status:
