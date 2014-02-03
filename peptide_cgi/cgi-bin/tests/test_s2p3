@@ -103,7 +103,7 @@ set line = "1 106 1.0 0.33378202"
 source tests/check4line
 
 set file = "html_dir/17306/17306y.html"
-set line = '<option value="http://.*/make_view?pdbid=2L6B&number=17306&do_s2p=2&coord_index=1&frame_index=1&size_str=">2L6B</option>'
+set line = '<option value="http://.*/make_view?pdbid=2L6B&amp;number=17306&amp;do_s2p=2&amp;coord_index=1&amp;frame_index=1&amp;size_str=">2L6B</option>'
 source tests/check4line
 
 

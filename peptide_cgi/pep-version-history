@@ -16,6 +16,8 @@ JavaScreen applet (matches current HTML standard).
 released entries; also improved error messages for bad accession numbers
 and made some general improvements to the error messages.
 
+* Fixed some html errors in Peptide-CGI pages.
+
 
 Peptide-CGI 12.3.4
 ------------------

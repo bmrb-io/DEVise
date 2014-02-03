@@ -36,6 +36,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2014/01/29 23:51:40  wenger
+// Added notes to html pages about entering accession numbers only for
+// released entries; also improved error messages for bad accession numbers
+// and made some general improvements to the error messages.
+//
 // Revision 1.62  2013/10/11 21:13:54  wenger
 // Peptide-CGI to-do 195:  improved the appearance of the summary html
 // page; also the visualization selection pages and the histogram
@@ -684,7 +689,7 @@ public abstract class S2DSummaryHtmlGen {
                 _writer.write("<h3 style=\"text-align:center;\">\n");
 	        _writer.write("<a href=\"../../../../data_library/" +
 	          "generate_summary.php?bmrbId=" + _name +
-	          "&chooseAccOrDep=useAcc\">Main entry page</a>\n");
+	          "&amp;chooseAccOrDep=useAcc\">Main entry page</a>\n");
                 _writer.write("</h3>\n");
                 _writer.write("</div>\n");
 	    }
@@ -848,7 +853,8 @@ TEMP?*/
 		    //TEMP -- we should get images here from the figures
 		    // directory...
 	            String imageDir = _isUvd ? "../.." : "..";
-		    _writer.write("<a class=\"thumbnail\"><img src=\"" + imageDir + "/two_entry_thumb.png\"></a>\n");
+		    _writer.write("<a class=\"thumbnail\"><img src=\"" +
+		      imageDir + "/two_entry_thumb.png\" alt=\"Two-entry example\"></a>\n");
 		    _writer.write("</td>\n");
 		    _writer.write("<th align=\"center\">\n");
 		    _writer.write("Multi-entry visualizations\n");
@@ -869,7 +875,7 @@ TEMP?*/
 		      "<b><font color=\"red\">(for released entries " +
 		      "only)</font></b>:</label>\n");
 	            _writer.write(
-		      "<input type=\"text\" name=\"xbmrbid\" size=\"5\">\n");
+		      "<input type=\"text\" name=\"xbmrbid\" id=\"xbmrbid\" size=\"5\">\n");
 	            if (_isUvd) {
 	                _writer.write("<input type=\"hidden\" name=\"file\" " +
 		          "value=\"" + (String)_localFiles.elementAt(0) +
@@ -877,8 +883,8 @@ TEMP?*/
 	                _writer.write("<input type=\"hidden\" name=\"name\" " +
 		          "value=\"" + _name + "\">\n");
 	            } else {
-	                _writer.write("<input type=\"hidden\" name=\"number\" " +
-	                  "id=\"number\" value=\"" + _name + "\">\n");
+	                _writer.write("<input type=\"hidden\" name=\"xbmrbid\" " +
+	                  "value=\"" + _name + "\">\n");
 	            }
 	            _writer.write("<input type=\"submit\" value=\"View data\">\n");
 	            _writer.write("</form>\n");
@@ -1308,13 +1314,13 @@ TEMP?*/
 
 	String value = "<option value=\"" + path + "?pdbid=" + pdbId;
 	if (_isUvd) {
-	    value += "&file=" + (String)_localFiles.elementAt(0) +
-	      "&name=" + _name;
+	    value += "&amp;file=" + (String)_localFiles.elementAt(0) +
+	      "&amp;name=" + _name;
 	} else {
-	    value += "&number=" + _name;
+	    value += "&amp;number=" + _name;
 	}
-	value += "&do_pdb=" + S2DMain.PDB_LEVEL_PROCESS +
-	  "&coord_index=" + frameIndex + "&size_str=" +
+	value += "&amp;do_pdb=" + S2DMain.PDB_LEVEL_PROCESS +
+	  "&amp;coord_index=" + frameIndex + "&amp;size_str=" +
 	  "\">" + linkStr + "</option>";
 	_coordInfo.put(frameIndex, value);
     }
@@ -1377,10 +1383,10 @@ TEMP?*/
 
 	String dataId;
 	if (_isUvd) {
-	    dataId = "&file=" + (String)_localFiles.elementAt(0) +
-	      "&name=" + _name;
+	    dataId = "&amp;file=" + (String)_localFiles.elementAt(0) +
+	      "&amp;name=" + _name;
 	} else {
-	    dataId = "&number=" + _name;
+	    dataId = "&amp;number=" + _name;
 	}
 
 	_maxChemShiftRefFrame = Math.max(_maxChemShiftRefFrame, frameIndex);
@@ -1388,20 +1394,20 @@ TEMP?*/
 	_csrPdbIdInfo.put(frameIndex, pdbId);
 
         String value = "<option value=\"" + path + "?pdbid=" + pdbId + dataId +
-	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
-	  frameIndex + "&csr_index=1" + "&size_str=" +
+	  "&amp;do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&amp;coord_index=" +
+	  frameIndex + "&amp;csr_index=1" + "&amp;size_str=" +
 	  "\">" + pdbId + " (difference histograms)</option>";
         _csrHistogramInfo.put(frameIndex, value);
 
         value = "<option value=\"" + path + "?pdbid=" + pdbId + dataId +
-	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
-	    frameIndex + "&csr_index=2" + "&size_str=" +
+	  "&amp;do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&amp;coord_index=" +
+	    frameIndex + "&amp;csr_index=2" + "&amp;size_str=" +
 	    "\">" + pdbId + " (differences by residue)</option>";
         _csrDiffsInfo.put(frameIndex, value);
 
         value = "<option value=\"" + path + "?pdbid=" + pdbId + dataId +
-	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
-	  frameIndex + "&csr_index=3" + "&size_str=" +
+	  "&amp;do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&amp;coord_index=" +
+	  frameIndex + "&amp;csr_index=3" + "&amp;size_str=" +
 	  "\">" + pdbId +
 	  " (observed vs. calculated chemical shift values)</option>";
         _csrScatterInfo.put(frameIndex, value);
@@ -1514,14 +1520,14 @@ TEMP?*/
 
 	String value = "<option value=\"" + path + "?pdbid=" + pdbId;
 	if (_isUvd) {
-	    value += "&file=" + (String)_localFiles.elementAt(0) +
-	      "&name=" + _name;
+	    value += "&amp;file=" + (String)_localFiles.elementAt(0) +
+	      "&amp;name=" + _name;
 	} else {
-	    value += "&number=" + _name;
+	    value += "&amp;number=" + _name;
 	}
-	value += "&do_s2p=" + S2DMain.S2PRED_LEVEL_PROCESS +
-	  "&coord_index=" + coordIndex + "&frame_index=" + frameIndex +
-	  "&size_str=" + "\">" + pdbId + "</option>";
+	value += "&amp;do_s2p=" + S2DMain.S2PRED_LEVEL_PROCESS +
+	  "&amp;coord_index=" + coordIndex + "&amp;frame_index=" + frameIndex +
+	  "&amp;size_str=" + "\">" + pdbId + "</option>";
 	_s2PredInfo.put(_s2PredCount, value);
     }
 
@@ -1585,22 +1591,22 @@ TEMP?*/
 	    if (isRR) {
 	        _maxRRDistRestrFrame = Math.max(_maxRRDistRestrFrame,
 	          frameIndex);
-	        doStr = "&do_rrdist=" + S2DMain.RRDISTR_LEVEL_PROCESS;
+	        doStr = "&amp;do_rrdist=" + S2DMain.RRDISTR_LEVEL_PROCESS;
 		info = _rrDistRestrInfo;
 	    } else {
 	        _maxDistRestrFrame = Math.max(_maxDistRestrFrame,
 	          frameIndex);
-	        doStr = "&do_dist=" + S2DMain.DISTR_LEVEL_PROCESS;
+	        doStr = "&amp;do_dist=" + S2DMain.DISTR_LEVEL_PROCESS;
 		info = _distRestrInfo;
 	    }
 
 //TEMP -- test vis server
 	    String value = "<option value=\"" + path + "?pdbid=" + pdbId;
 	    if (_isUvd) {
-	        value += "&file=" + (String)_localFiles.elementAt(0) +
-	          "&name=" + _name;
+	        value += "&amp;file=" + (String)_localFiles.elementAt(0) +
+	          "&amp;name=" + _name;
 	    } else {
-	        value += "&number=" + _name;
+	        value += "&amp;number=" + _name;
 	    }
 /* TEMP Haven't gotten passing the URL thru CGI to work yet.
 	    if (distRUrl != null) {
@@ -1608,11 +1614,11 @@ TEMP?*/
 		// passing thru CGI scripts.
 		distRUrl = S2DUtils.replace(distRUrl, "&", "#38");
 		distRUrl = S2DUtils.replace(distRUrl, "?", "#63");
-	    	value += "&dist_url=" + distRUrl;
+	    	value += "&amp;dist_url=" + distRUrl;
 	    }
 */
 	    value += doStr + 
-	      "&coord_index=" + frameIndex + "&size_str=" +
+	      "&amp;coord_index=" + frameIndex + "&amp;size_str=" +
 	      "\">" + linkStr + "</option>";
 	    info.put(frameIndex, value);
 	}
@@ -1676,22 +1682,22 @@ TEMP?*/
 	    if (isRR) {
 	        _maxRRTorsionAngleFrame = Math.max(_maxRRTorsionAngleFrame,
 	          frameIndex);
-	        doStr = "&do_rrtar=" + S2DMain.RRTAR_LEVEL_PROCESS;
+	        doStr = "&amp;do_rrtar=" + S2DMain.RRTAR_LEVEL_PROCESS;
 		info = _rrTorsionAngleInfo;
 	    } else {
 	        _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
 	          frameIndex);
-	        doStr = "&do_tar=" + S2DMain.TAR_LEVEL_PROCESS;
+	        doStr = "&amp;do_tar=" + S2DMain.TAR_LEVEL_PROCESS;
 		info = _torsionAngleInfo;
 	    }
 
 //TEMP -- test vis server
 	    String value = "<option value=\"" + path + "?pdbid=" + pdbId;
 	    if (_isUvd) {
-	        value += "&file=" + (String)_localFiles.elementAt(0) +
-	          "&name=" + _name;
+	        value += "&amp;file=" + (String)_localFiles.elementAt(0) +
+	          "&amp;name=" + _name;
 	    } else {
-	        value += "&number=" + _name;
+	        value += "&amp;number=" + _name;
 	    }
 /* TEMP Haven't gotten passing the URL thru CGI to work yet.
 	    if (tarUrl != null) {
@@ -1699,11 +1705,11 @@ TEMP?*/
 		// passing thru CGI scripts.
 		tarUrl = S2DUtils.replace(tarUrl, "&", "#38");
 		tarUrl = S2DUtils.replace(tarUrl, "?", "#63");
-	    	value += "&tar_url=" + tarUrl;
+	    	value += "&amp;tar_url=" + tarUrl;
 	    }
 */
 	    value += doStr + 
-	      "&coord_index=" + frameIndex + "&size_str=" +
+	      "&amp;coord_index=" + frameIndex + "&amp;size_str=" +
 	      "\">" + linkStr + "</option>";
 	    info.put(frameIndex, value);
 	}
@@ -1797,7 +1803,7 @@ TEMP?*/
       throws IOException
     {
         if (_maxChemShiftFrame > 0 && !writeNoData) {
-            writeDataTableStart("Chemical shift data", "cs_dist.png",
+            writeDataTableStart("Chemical shift data", "", "cs_dist.png",
 	      "cs_dist_thumb.png");
             writeFormStart("select_chem_shift_visualization");
 
@@ -1845,7 +1851,7 @@ TEMP?*/
     {
         if (_maxSpartaFrameIndex > 0 && !writeNoData) {
             writeDataTableStart("SPARTA back calculated chemical shift " +
-	      "deltas", "sparta.png", "sparta_thumb.png");
+	      "deltas", "", "sparta.png", "sparta_thumb.png");
             writeFormStart("select_sparta_visualization");
 
             for (int index = 1; index <= _maxSpartaFrameIndex; index++ ) {
@@ -1874,7 +1880,7 @@ TEMP?*/
       throws IOException
     {
         if (_maxRelaxFrame > 0 && !writeNoData) {
-            writeDataTableStart("T1/T2 relaxation", "t1.png",
+            writeDataTableStart("T1/T2 relaxation", "", "t1.png",
 	      "t1_thumb.png");
             writeFormStart("select_relax_visualization");
 
@@ -1915,7 +1921,7 @@ TEMP?*/
       throws IOException
     {
         if (_maxHetNOEFrame > 0 && !writeNoData) {
-            writeDataTableStart("Heteronuclear NOE", "het_noe.png",
+            writeDataTableStart("Heteronuclear NOE", "", "het_noe.png",
 	      "het_noe_thumb.png");
             writeFormStart("select_chem_hetnoe_visualization");
 
@@ -1938,7 +1944,7 @@ TEMP?*/
       throws IOException
     {
         if (_maxCouplingFrame > 0 && !writeNoData) {
-            writeDataTableStart("Coupling constants", "coupling.png",
+            writeDataTableStart("Coupling constants", "", "coupling.png",
 	      "coupling_thumb.png");
             writeFormStart("select_chem_coupling_visualization");
 
@@ -1962,9 +1968,10 @@ TEMP?*/
     {
         if (_maxCoordFrame > 0 && !writeNoData) {
             writeDataTableStart("NMR experimental data plots linked to " +
-	      "Jmol 3D structure visualization\n" +
-	      "<font color=\"red\">(note: processing may take several " +
-	      "minutes)</font>", "3d.png", "3d_thumb.png");
+	      "Jmol 3D structure visualization",
+	      "NMR experimental data plots linked to Jmol 3D structure " +
+	      "visualization <font color=\"red\">(note: processing may " +
+	      "take several minutes)</font>", "3d.png", "3d_thumb.png");
             writeFormStart("select_coord_shift_visualization");
 
             for (int index = 1; index <= _maxCoordFrame; index++ ) {
@@ -1988,7 +1995,8 @@ TEMP?*/
     {
         if (_maxChemShiftRefFrame > 0 && !writeNoData) {
             writeDataTableStart("Chemical shift referencing " +
-	      "visualizations " +
+	      "visualizations ",
+	      "Chemical shift referencing visualizations " +
 	      "<font color=\"red\">(note: processing may take several " +
 	      "minutes)</font>", "csr3.png", "csr3_thumb.png");
             writeFormStart("select_chemshiftref_visualization");
@@ -2014,10 +2022,11 @@ TEMP?*/
     protected void writeLacsTable(boolean writeNoData) throws IOException
     {
         if (_maxLacsFrame > 0 && !writeNoData) {
-            writeDataTableStart("<a target=\"lacs_ref\" " +
+            writeDataTableStart("Linear Analysis of Chemical Shifts",
+	      "<a target=\"lacs_ref\" " +
 	      "href=\"http://www.ncbi.nlm.nih.gov/pubmed/16041479\">" +
-	      "Linear Analysis of Chemical Shifts</a>", "lacs.png",
-	      "lacs_thumb.png");
+	      "Linear Analysis of Chemical Shifts</a>",
+	      "lacs.png", "lacs_thumb.png");
             writeFormStart("select_lacs_visualization");
 
             for (int index = 1; index <= _maxLacsFrame; index++ ) {
@@ -2043,7 +2052,7 @@ TEMP?*/
     {
         if (_s2PredCount > 0 && !writeNoData) {
             writeDataTableStart("S2 predicted vs. experimental",
-	      "s2pred.png", "s2pred_thumb.png");
+	      "", "s2pred.png", "s2pred_thumb.png");
             writeFormStart("select_s2pred_visualization");
 
             for (int index = 1; index <= _s2PredCount; index++ ) {
@@ -2065,7 +2074,7 @@ TEMP?*/
       throws IOException
     {
         if (_maxS2OrderFrame > 0 && !writeNoData) {
-            writeDataTableStart("S2 order parameters", "s2.png",
+            writeDataTableStart("S2 order parameters", "", "s2.png",
 	      "s2_thumb.png");
             writeFormStart("select_s2_visualization");
 
@@ -2090,9 +2099,9 @@ TEMP?*/
     {
     	if ((_maxDistRestrFrame > 0 || _maxRRDistRestrFrame > 0) &&
 	  !writeNoData) {
-            writeDataTableStart("Distance restraints " +
-	      "<font color=\"red\">(note: processing may take several " +
-	      "minutes)</font>",
+            writeDataTableStart("Distance restraints ",
+	      "Distance restraints <font color=\"red\">(note: " +
+	      "processing may take several minutes)</font>",
 	      "distance_restraint.png", "distance_restraint_thumb.png");
             writeFormStart("select_distance_restraint_visualization");
 
@@ -2129,9 +2138,9 @@ TEMP?*/
     {
     	if ((_maxTorsionAngleFrame > 0 || _maxRRTorsionAngleFrame > 0) &&
 	  !writeNoData) {
-            writeDataTableStart("Torsion angle restraints " +
-	      "<font color=\"red\">(note: processing may take several " +
-	      "minutes)</font>",
+            writeDataTableStart("Torsion angle restraints ",
+	      "Torsion angle restraints <font color=\"red\">(note: " +
+	      "processing may take several minutes)</font>",
 	      "torsion_angle.png", "torsion_angle_thumb.png");
             writeFormStart("select_torsion_angle_restraint_visualization");
 
@@ -2166,8 +2175,8 @@ TEMP?*/
     protected void write2EntryTable(boolean writeNoData) throws IOException
     {
 	if ((_maxEntry1Frame > 0 || _maxEntry2Frame > 0) &&!writeNoData) {
-            writeDataTableStart("Chemical shift data", "multi_entry_nh.png",
-	      "multi_entry_nh_thumb.png");
+            writeDataTableStart("Chemical shift data", "",
+	      "multi_entry_nh.png", "multi_entry_nh_thumb.png");
 
             writeFormStart("select_multi-entry_visualization");
 
@@ -2260,8 +2269,10 @@ TEMP?*/
 
     //-------------------------------------------------------------------
     // Write out the start of the table for a given "section" of data.
-    private void writeDataTableStart(String dataName, String image,
-      String thumbnail) throws IOException
+    // label is the label to put into the html file; if "", data name
+    // is used.
+    private void writeDataTableStart(String dataName, String label,
+      String image, String thumbnail) throws IOException
     {
 	if (_sectionCount % 2 == 0) {
 	    _writer.write("\n<tr>\n");
@@ -2270,6 +2281,7 @@ TEMP?*/
 	}
 	_sectionCount++;
 
+	String imgName = dataName + " example";
 	String figuresDir = (_isUvd ? "../" : "") + "../../figures/";
         _writer.write("<td width = \"50%\">\n");
         _writer.write("<table class=\"vis\">\n");
@@ -2277,11 +2289,15 @@ TEMP?*/
         _writer.write("    <td align=\"left\" rowspan=\"2\" width=\"120\">\n");
         _writer.write("      <a class=\"thumbnail\">" +
 	  "<img src=\"" + figuresDir + thumbnail +
-	  "\"></a>\n");
+	  "\" alt=\"" + imgName + "\"></a>\n");
         _writer.write("    </td>\n");
         _writer.write("    <th align=\"center\">\n");
 
-        _writer.write(dataName + "\n");
+	if (label.equals("")) {
+            _writer.write(dataName + "\n");
+	} else {
+            _writer.write(label + "\n");
+	}
 
         _writer.write("    </th>\n");
         _writer.write("  </tr>\n");

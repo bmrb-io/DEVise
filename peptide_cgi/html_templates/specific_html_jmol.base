@@ -88,9 +88,9 @@
   <div class="content">
     <center>
     <object type="application/x-java-applet" height="30" width="400">
-      <param name="code" value="JavaScreen.jsa" />
-      <param name="archive" value="../../../devise_js.jar" />
-      <param name="permissions" value="sandbox" />
+      <param name="code" value="JavaScreen.jsa">
+      <param name="archive" value="../../../devise_js.jar">
+      <param name="permissions" value="sandbox">
       <param name="debug" value="0">
       <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">
       <param name="cmdport" value="6666">

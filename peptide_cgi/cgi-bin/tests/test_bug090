@@ -138,9 +138,9 @@ source tests/check4line
 
 
 set file = "html_dir/15418/15418y.html"
-set line = '<option value="http://.*/make_view?pdbid=2JTT&number=15418&do_tar=3&coord_index=1&size_str=">2JTT (from restraints grid)</option>'
+set line = '<option value="http://.*/make_view?pdbid=2JTT&amp;number=15418&amp;do_tar=3&amp;coord_index=1&amp;size_str=">2JTT (from restraints grid)</option>'
 source tests/check4line
-set line = '<option value="http://.*/make_view?pdbid=2JTT&number=15418&do_rrtar=3&coord_index=1&size_str=">2JTT (from remediated restraints)</option>'
+set line = '<option value="http://.*/make_view?pdbid=2JTT&amp;number=15418&amp;do_rrtar=3&amp;coord_index=1&amp;size_str=">2JTT (from remediated restraints)</option>'
 source tests/check4line
 
 set file = "data_dir/15418md.dat"

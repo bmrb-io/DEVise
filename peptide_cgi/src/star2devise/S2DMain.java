@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.336  2014/01/29 23:51:40  wenger
+// Added notes to html pages about entering accession numbers only for
+// released entries; also improved error messages for bad accession numbers
+// and made some general improvements to the error messages.
+//
 // Revision 1.335  2014/01/14 23:10:12  wenger
 // Merged peak_lists2_br_0 thru peak_lists2_br_3 to trunk.
 //
@@ -969,7 +974,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.0x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.0x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
 
