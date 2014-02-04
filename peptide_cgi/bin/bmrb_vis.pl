@@ -20,6 +20,7 @@
 ############################################################
 
 use strict;
+use LWP;
 
 my $version = "0.9.0";
 
@@ -42,9 +43,47 @@ if (! -e $starfile) {
 
 print "Visualizing $starfile\n";
 
+my $file_contents;
+{
+	local $/=undef;
+	open FILE, "$starfile" or die "Couldn't open file: $!";
+	$file_contents = <FILE>;
+	close FILE;
+}
+
+# print "DIAG file_contents: $file_contents";#TEMP
+
 #TEMP -- do http post; print url; pass url to browser
 
 
+my $browser = LWP::UserAgent->new;
+# This is for testing.
+my $url = "http://manatee.bmrb.wisc.edu/vis_serv/srv.shtml";
+
+my $response = $browser->post($url,
+	[
+        'fileupl' => $file_contents,
+	]
+);
+
+if (! $response->is_success) {
+	print "POST failed\n";
+	my $foo = $response->status_line;
+	print "status_line: $foo\n";
+	die "ERROR";
+}
+my $bar = $response->content_type;
+print "DIAG content_type: $bar\n";
+$bar = $response->message;
+print "DIAG message: $bar\n";
+$bar = $response->content;
+print "DIAG content: $bar\n";
+$bar = $response->headers;
+print "DIAG headers: $bar\n";
+
+# TEMP: okay, content here is html; if we want a browser to actually
+# call this script, as opposed to using the script as a test, I guess we
+# send back the URL as opposed to the HTML.
 
 # TEMP: Info about http post in Perl
 # http://www.perl.com/pub/2002/08/20/perlandlwp.html
