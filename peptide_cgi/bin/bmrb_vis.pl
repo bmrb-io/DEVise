@@ -23,9 +23,8 @@
 #TEMPTEMP -- test what happens w/ bad data
 
 use strict;
-use LWP;
 
-my $version = "0.9.0";
+my $version = "0.9.1";
 
 if ($ARGV[0] eq "-usage") {
 	print "Usage:\n";
@@ -46,44 +45,14 @@ if (! -e $starfile) {
 
 print "Visualizing $starfile\n";
 
-my $file_contents;
-{
-	local $/=undef;
-	open FILE, "$starfile" or die "Couldn't open file: $!";
-	$file_contents = <FILE>;
-	close FILE;
-}
-
-# print "DIAG file_contents: $file_contents";#TEMP
-
 #TEMP -- do http post; print url; pass url to browser
 
-
-my $browser = LWP::UserAgent->new;
-# This is for testing.
-#TEMPTEMP? my $url = "http://manatee.bmrb.wisc.edu/vis_serv/srv.shtml";
 my $url = "http://manatee.bmrb.wisc.edu/vis_serv/srv.php";
 
-my $response = $browser->post($url,
-	[
-        'fileupl' => $file_contents,
-	]
-);
+my $command = "curl --form fileupl=@" . $starfile . " " . $url;
+my $response = `$command`;
 
-if (! $response->is_success) {
-	print "POST failed\n";
-	my $foo = $response->status_line;
-	print "status_line: $foo\n";
-	die "ERROR";
-}
-my $bar = $response->content_type;
-print "DIAG content_type: $bar\n";
-$bar = $response->message;
-print "DIAG message: $bar\n";
-$bar = $response->content;
-print "DIAG content: $bar\n";
-$bar = $response->headers;
-print "DIAG headers: $bar\n";
+print "DIAG response: $response\n";
 
 # TEMP: okay, content here is html; if we want a browser to actually
 # call this script, as opposed to using the script as a test, I guess we
@@ -92,6 +61,9 @@ print "DIAG headers: $bar\n";
 # TEMP: Info about http post in Perl
 # http://www.perl.com/pub/2002/08/20/perlandlwp.html
 # http://stackoverflow.com/questions/11264470/how-to-post-content-with-an-http-request-perl
+
+# Opening a browser in Perl
+# http://stackoverflow.com/questions/8867262/how-do-i-launch-the-default-web-browser-in-perl-on-any-operating-system
 
 # http://manatee.bmrb.wisc.edu/vis_serv/srv.shtml
 #
