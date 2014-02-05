@@ -19,6 +19,9 @@
 #
 ############################################################
 
+#TEMPTEMP -- test sticking html into browser
+#TEMPTEMP -- test what happens w/ bad data
+
 use strict;
 use LWP;
 
@@ -58,7 +61,8 @@ my $file_contents;
 
 my $browser = LWP::UserAgent->new;
 # This is for testing.
-my $url = "http://manatee.bmrb.wisc.edu/vis_serv/srv.shtml";
+#TEMPTEMP? my $url = "http://manatee.bmrb.wisc.edu/vis_serv/srv.shtml";
+my $url = "http://manatee.bmrb.wisc.edu/vis_serv/srv.php";
 
 my $response = $browser->post($url,
 	[
