@@ -28,6 +28,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2014/01/14 23:10:12  wenger
+// Merged peak_lists2_br_0 thru peak_lists2_br_3 to trunk.
+//
 // Revision 1.1.4.13  2014/01/14 01:09:22  wenger
 // Peak lists:  More cleanups -- I think this is now ready to merge to
 // the trunk.
@@ -1049,6 +1052,19 @@ TEMP*/
     private void writeStarPeakTable(FileWriter writer, int frameIndex)
       throws IOException
     {
+	//
+	// Don't write the loop if it will be empty.
+	//
+        if (doDebugOutput(24)) {
+	    System.out.println("Peak list count: " + _peaks.size());
+	}
+	if (_peaks.size() < 1) {
+	    return;
+	}
+
+	//
+	// Actually write the loop.
+	//
         writer.write("  loop_\n");
         writer.write("      _Peak.ID\n");
         writer.write("      _Peak.Figure_of_merit\n");
@@ -1070,6 +1086,19 @@ TEMP*/
     private void writeStarPeakInten(FileWriter writer, int frameIndex)
       throws IOException
     {
+	//
+	// Don't write the loop if it will be empty.
+	//
+        if (doDebugOutput(24)) {
+	    System.out.println("Peak list count: " + _peaks.size());
+	}
+	if (_peaks.size() < 1) {
+	    return;
+	}
+
+	//
+	// Actually write the loop.
+	//
         writer.write("  loop_\n");
         writer.write("      _Peak_general_char.Peak_ID\n");
         writer.write("      _Peak_general_char.Intensity_val\n");
@@ -1098,6 +1127,26 @@ TEMP*/
     private void writeStarPeakShifts(FileWriter writer, int frameIndex)
       throws IOException
     {
+	//
+	// Don't write the loop if it will be empty.
+	//
+	int shiftCount = 0;
+        for (int index = 0; index < _peaks.size(); index++) {
+	    PeakInfo pi = (PeakInfo)_peaks.get(index);
+	    if (pi._shifts != null) {
+		shiftCount += pi._shifts.length;
+	    }
+        }
+        if (doDebugOutput(24)) {
+	    System.out.println("Shift count: " + shiftCount);
+	}
+	if (shiftCount < 1) {
+	    return;
+	}
+
+	//
+	// Actually write the loop.
+	//
         writer.write("  loop_\n");
 	writer.write("      _Peak_char.Peak_ID\n");
 	writer.write("      _Peak_char.Spectral_dim_ID\n");
@@ -1162,6 +1211,33 @@ TEMP*/
 	      frameIndex + ")");
 	}
 
+	//
+	// Don't write the loop if it will be empty.
+	//
+	int assignCount = 0;
+        for (int peakNum = 0; peakNum < _peaks.size(); peakNum++) {
+	    PeakInfo pi = (PeakInfo)_peaks.get(peakNum);
+	    if (pi._assignments != null) {
+	        for (int dimId = 1;
+		  dimId <= pi._assignments._atomSets.length; dimId++) {
+	            // We may have less than four dimensions...
+		    AtomAmbigSet atomSet = pi._assignments._atomSets[dimId-1];
+		    if (atomSet != null) {
+			assignCount += atomSet._atoms.size();
+		    }
+		}
+	    }
+        }
+        if (doDebugOutput(24)) {
+	    System.out.println("Assignment count: " + assignCount);
+	}
+        if (assignCount < 1) {
+            return;
+        }
+
+	//
+	// Actually write the loop.
+	//
         writer.write("  loop_\n");
         writer.write("      _Assigned_peak_chem_shift.Peak_ID\n");
         writer.write("      _Assigned_peak_chem_shift.Spectral_dim_ID\n");

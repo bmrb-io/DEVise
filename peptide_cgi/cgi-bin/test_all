@@ -255,6 +255,7 @@ if (($do_all != 0) or ($do_peak != 0)) {
   RunTest("test_peak13");
   RunTest("test_peak14");
   RunTest("test_peak15");
+  RunTest("test_peak17");
 }
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)

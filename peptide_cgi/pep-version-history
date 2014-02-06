@@ -18,6 +18,8 @@ and made some general improvements to the error messages.
 
 * Fixed some html errors in Peptide-CGI pages.
 
+* Got rid of empty loops in the peak list output.
+
 
 Peptide-CGI 12.3.4
 ------------------

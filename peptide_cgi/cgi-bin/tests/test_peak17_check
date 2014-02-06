@@ -1,0 +1,20 @@
+echo "Checking output files"
+
+set files = ( 18032_peaks.str )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+# Make sure there are exactly 3 _Assigned_peak_chem_shift.Peak_ID loops.
+set count = `grep _Assigned_peak_chem_shift.Peak_ID 18032_peaks.str | wc | awk '{print $1}'`
+echo "loop count: $count"
+if ($count != "3") then
+  echo "There should be three _Assigned_peak_chem_shift.Peak_ID loops; found $count"
+  set result = 1
+end
+
+# Add more checks here?
