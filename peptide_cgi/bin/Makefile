@@ -16,6 +16,9 @@ testnofile:
 testbadfile:
 	bmrb_vis.pl Makefile
 
-curl:
+testopera:
+	bmrb_vis.pl -b opera ../cgi-bin/test_data/minimal_3.0.str
+
+testcurl:
 	curl --form fileupl=@../cgi-bin/test_data/minimal_3.0.str http://manatee.bmrb.wisc.edu/vis_serv/srv.php
 

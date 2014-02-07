@@ -19,25 +19,39 @@
 #
 ############################################################
 
-#TEMPTEMP -- test sticking html into browser
-#TEMPTEMP -- test what happens w/ bad data
-
 use strict;
 
-my $version = "0.9.1";
+my $version = "0.9.2";
+my $starfile;
+my $browser = "firefox"; # default
 
-if ($ARGV[0] eq "-usage") {
+my $arg = shift @ARGV;
+
+if (!defined $arg || $arg eq "-usage") {
 	print "Usage:\n";
-	print "    bmrb_vis.pl <nmr-star file>\n";
+	print "    bmrb_vis.pl [-b <browser>] <nmr-star file>\n";
 	print "    bmrb_vis.pl -usage\n";
 	print "    bmrb_vis.pl -v\n";
 	exit(0);
-} elsif ($ARGV[0] eq "-v") {
+} elsif ($arg eq "-v") {
 	print "$version\n";
 	exit(0);
+} elsif ($arg eq "-b") {
+	$arg = shift @ARGV;
+	if (!defined $arg) {
+		print "-b flag needs value!\n";
+		exit(1);
+	}
+	$browser = $arg;
+	$starfile = shift @ARGV;
+} else {
+	$starfile = $arg;
 }
 
-my $starfile = $ARGV[0];
+if (!defined $starfile) {
+	printf "No NMR-STAR file specified!\n";
+	exit(1);
+}
 
 if (! -e $starfile) {
 	die "Specified NMR-STAR file $starfile does not exist!\n";
@@ -45,28 +59,21 @@ if (! -e $starfile) {
 
 print "Visualizing $starfile\n";
 
-#TEMP -- do http post; print url; pass url to browser
-
 my $url = "http://manatee.bmrb.wisc.edu/vis_serv/srv.php";
-
 my $command = "curl --form fileupl=@" . $starfile . " " . $url;
 my $response = `$command`;
 
-print "DIAG response: $response\n";
+my $page;
+if ($response =~ /.*Location:\s*(\S*).*/) {
+	$page = $1;
+} else {
+	die "Didn't find Location in response: $response\n";
+}
 
-# TEMP: okay, content here is html; if we want a browser to actually
-# call this script, as opposed to using the script as a test, I guess we
-# send back the URL as opposed to the HTML.
+print "Visualization page: <$page>; paste this URL into your browser if the page is not shown automatically\n";
 
-# TEMP: Info about http post in Perl
-# http://www.perl.com/pub/2002/08/20/perlandlwp.html
-# http://stackoverflow.com/questions/11264470/how-to-post-content-with-an-http-request-perl
-
-# Opening a browser in Perl
-# http://stackoverflow.com/questions/8867262/how-do-i-launch-the-default-web-browser-in-perl-on-any-operating-system
-
-# http://manatee.bmrb.wisc.edu/vis_serv/srv.shtml
-#
-# Kent, the files are in /website/htdocs/vis_serv: srv.shtml and srv.php.
-#
-# You need to POST the file, input name is "fileupl", that's all.
+$command = $browser . " " . $page . " &";
+my $result = system($command);
+if ($result != 0) {
+	print "Error sending web page to browser $browser\n";
+}
