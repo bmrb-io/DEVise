@@ -21,7 +21,7 @@
 
 use strict;
 
-my $version = "0.9.2";
+my $version = "0.1.0";
 my $starfile;
 my $browser = "firefox"; # default
 
@@ -72,12 +72,11 @@ if ($response =~ /.*Location:\s*(\S*).*/) {
 
 print "Visualization page: <$page>; paste this URL into your browser if the page is not shown automatically\n";
 
-#TEMPTEMP -- do I need "&"?
 # Need to create command this way instead of as a single string to
 # bypass the shell (which gets goofed up by special characters in the
 # URL).
-my @command = ($browser, $page, "&");
-my $result = system(@command);
+my @bcommand = ($browser, $page);
+my $result = system(@bcommand);
 
 if ($result != 0) {
 	print "Error sending web page to browser $browser\n";
