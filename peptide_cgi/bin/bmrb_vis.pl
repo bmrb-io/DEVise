@@ -72,8 +72,13 @@ if ($response =~ /.*Location:\s*(\S*).*/) {
 
 print "Visualization page: <$page>; paste this URL into your browser if the page is not shown automatically\n";
 
-$command = $browser . " " . $page . " &";
-my $result = system($command);
+#TEMPTEMP -- do I need "&"?
+# Need to create command this way instead of as a single string to
+# bypass the shell (which gets goofed up by special characters in the
+# URL).
+my @command = ($browser, $page, "&");
+my $result = system(@command);
+
 if ($result != 0) {
 	print "Error sending web page to browser $browser\n";
 }
