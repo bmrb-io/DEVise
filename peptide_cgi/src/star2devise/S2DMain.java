@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.338  2014/02/06 22:52:16  wenger
+// Got rid of empty loops in the peak list output.
+//
 // Revision 1.337  2014/02/03 21:37:57  wenger
 // Fixed some html errors in Peptide-CGI pages (note: js_videos.html
 // still has errors related to embedding flash, and two-entry summary
@@ -979,7 +982,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.0x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.0";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
 
