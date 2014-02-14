@@ -1,0 +1,13 @@
+echo "Checking output files"
+
+set files = ( 15350_peaks.str )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+echo "Check not yet implemented"
+set result = 1
