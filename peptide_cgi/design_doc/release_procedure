@@ -44,7 +44,7 @@ TEMP -- may need more changes...
 
 - Announce the release to BMRB and mirrors.
 
-- Increment the version in the sources (11.0.2 -> 11.0.3x1, for example).
+- Increment the version in the sources (11.0.2 -> 11.0.3x0, for example).
 
 - Add a new section to pep-version-history.
 
