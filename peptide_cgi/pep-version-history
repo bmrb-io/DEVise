@@ -1,5 +1,12 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 12.4.1
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+
+(Nothing yet.)
+
+
 Peptide-CGI 12.4.0
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
@@ -17,8 +24,6 @@ released entries; also improved error messages for bad accession numbers
 and made some general improvements to the error messages.
 
 * Fixed some html errors in Peptide-CGI pages.
-
-* Got rid of empty loops in the peak list output.
 
 
 Peptide-CGI 12.3.4

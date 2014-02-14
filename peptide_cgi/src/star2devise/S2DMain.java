@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.339  2014/02/13 19:15:48  wenger
+// Changed version to 12.4.0 for peak list processing release (not
+// doing full pre-release testing).
+//
 // Revision 1.338  2014/02/06 22:52:16  wenger
 // Got rid of empty loops in the peak list output.
 //
@@ -982,7 +986,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.0";
+    public static final String PEP_CGI_VERSION = "12.4.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
 
