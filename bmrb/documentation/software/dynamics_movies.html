@@ -19,9 +19,34 @@ Dynamics movies
 
 TEMPTEMP -- add stuff here
 
+How to enable movies?:
+- Run generate_movies
+- Anything else?
 
 
+command-line flags
+what in session tells JS to enable buttons?
+how does this propagate through peptide-cgi?
 
+okay, yeah, I think there are special "hidden" views that have GData for
+the buttons -- if the movies are disabled, the session doesn't send GData
+to the JS for those views
+JS treats buttons specially and doesn't display them in the view
+"url_menu" in GData
+
+what are config knobs?
+does unedited movie have to exist for peptide-cgi to create button for
+edited movie?
+
+Note: working on this in $dev2/s2d_merge
+why don't movie buttons show up for 4267 or 15562?
+  it doesn't find the unedited movie
+why doesn't s2p session show up at all for 5154?
+  we don't even check for movies -- there's no predicted vs. experimental
+  S2 data
+  okay, looks like I have to change the url for the s2 predicted vs. experimental files...
+
+how to re-generate demo page at cs (use 2.1 files...)
 
 
 
