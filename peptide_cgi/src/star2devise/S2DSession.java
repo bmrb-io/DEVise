@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  2014/03/21 15:00:48  wenger
+// Made some fixes to the dynamics movie code.
+//
 // Revision 1.40  2013/07/17 22:33:41  wenger
 // Fixed error processing entry 5448 (has no chem shifts, etc., but
 // has links to PDB entries).
@@ -616,7 +619,7 @@ TEMP*/
 	    searchStrings[3] = "15536ss1-1";
 	    replaceStrings[3] = id1 + S2DNames.SEC_STRUCT_SUFFIX +
 	      frameIndex1 + "-1";
-	    searchStrings[4] = "http://condor.bmrb.wisc.edu/bbee/video/2JUO.mp4";
+	    searchStrings[4] = "http://condor.bmrb.wisc.edu/bbee/video/2JUO.mpg";
 	    replaceStrings[4] = S2DUtils.replace(_dynMovieUrl, "*",
 	      s2pPdbId.toUpperCase());
 	    searchStrings[5] = "http://pike.bmrb.wisc.edu?entry=2JUO&start_time=0&end_time=.1&material=Transparent&submitted=yes";
@@ -707,6 +710,11 @@ TEMP*/
                 for (int strNum = 0; strNum < searchStrings.length; strNum++) {
 		    if (searchStrings[strNum] != null &&
 		      line.indexOf(searchStrings[strNum]) >= 0) {
+		      if (doDebugOutput(14)) {
+		          System.out.println("Found string <" +
+			    searchStrings[strNum] + ">; replacing with <" +
+			    replaceStrings[strNum] + ">");
+			}
 	                line = S2DUtils.replace(line, searchStrings[strNum],
 		          replaceStrings[strNum]);
 			if (!allowMultipleReplace) {
