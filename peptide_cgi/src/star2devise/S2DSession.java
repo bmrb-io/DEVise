@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2013
+// (c) Copyright 2001-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  2013/07/17 22:33:41  wenger
+// Fixed error processing entry 5448 (has no chem shifts, etc., but
+// has links to PDB entries).
+//
 // Revision 1.39  2012/05/11 20:33:53  wenger
 // Changed dynamics movie defaults to devise=1 so Jon can mess with things
 // at his end w/o changing Peptide-CGI configuration; the generate_movies
@@ -198,7 +202,7 @@ public class S2DSession {
                 System.out.println("bmrb_mirror.dyn_movie_url " +
                   "property value not defined; using default");
             }
-            _dynMovieUrl = "http://condor.bmrb.wisc.edu/bbee/video/";
+            _dynMovieUrl = "http://144.92.217.22/videos/";
         }
 
         _dynMovieGenUrl = props.getProperty("bmrb_mirror.dyn_movie_gen_url");
@@ -207,7 +211,7 @@ public class S2DSession {
                 System.out.println("bmrb_mirror.dyn_movie_gen_url " +
                   "property value not defined; using default");
             }
-            _dynMovieGenUrl = "http://pike.bmrb.wisc.edu?entry=2JUO&start_time=0&end_time=.1&material=Transparent&submitted=yes";
+            _dynMovieGenUrl = "http://144.92.217.22?entry=*\\&devise=1\\&submitted=yes";
         }
 
 	String dynMovieTmp =
@@ -612,7 +616,7 @@ TEMP*/
 	    searchStrings[3] = "15536ss1-1";
 	    replaceStrings[3] = id1 + S2DNames.SEC_STRUCT_SUFFIX +
 	      frameIndex1 + "-1";
-	    searchStrings[4] = "http://condor.bmrb.wisc.edu/bbee/video/2JUO.mpg";
+	    searchStrings[4] = "http://condor.bmrb.wisc.edu/bbee/video/2JUO.mp4";
 	    replaceStrings[4] = S2DUtils.replace(_dynMovieUrl, "*",
 	      s2pPdbId.toUpperCase());
 	    searchStrings[5] = "http://pike.bmrb.wisc.edu?entry=2JUO&start_time=0&end_time=.1&material=Transparent&submitted=yes";
@@ -835,11 +839,18 @@ TEMP*/
     // Figure out whether a dynamics movie exists for the given PDB ID.
     static boolean dynMovieExists(String s2pPdbId)
     {
+        if (doDebugOutput(2)) {
+	    System.out.println("S2DSession.dynMovieExists(" +
+	      s2pPdbId + ")");
+	}
 	boolean result = true;
 
 	try {
 	    String urlName = S2DUtils.replace(_dynMovieUrl, "*",
 	      s2pPdbId.toUpperCase());
+            if (doDebugOutput(2)) {
+	        System.out.println("Dynamics movie URL: " + urlName);
+	    }
 	    URL url = new URL(urlName);
 	    HttpURLConnection connection =
 	      (HttpURLConnection)url.openConnection();
@@ -850,6 +861,11 @@ TEMP*/
 		  + ex.toString());
 	    }
 	    result = false;
+	}
+
+        if (doDebugOutput(2)) {
+	    System.out.println("S2DSession.dynMovieExists returns " +
+	      result);
 	}
 
         return result;
