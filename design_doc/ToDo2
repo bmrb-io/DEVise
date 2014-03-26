@@ -329,6 +329,13 @@ each direction. (wenger)
 The JavaScreen should probably quit after it gets a certain number of
 socket write errors. (wenger)
 
+12.004 3/26/14	OPEN	2
+We should have a better way of defining which ports the JS uses for
+its sockets.  (For example, we might want to use different ports on
+one site than on another.)  Right now it's really a pain because the
+port number is hard-coded in to the html files, and the ports+files
+script. (wenger)
+
 ...........................................................................
 SECTION 13 (JavaScreen, misc.)
 Number Date	Status  Pri
