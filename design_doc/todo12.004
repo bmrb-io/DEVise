@@ -16,4 +16,9 @@ The client side will be harder.  I think the ideal solution would be
 if the html can include a file from the client side that specifies
 which command port to use.  That file should be installed as part of
 the JavaScreen installation, not by Peptide-CGI or something like that.
-Will html import work for this?
+Will html import work for this?  (See
+http://www.html5rocks.com/en/tutorials/webcomponents/imports/)
+
+Hmm -- or would server-side includes work (see
+http://www.boutell.com/newfaq/creating/include.html)?  Sounds like they
+are a lot more widely-supported.
