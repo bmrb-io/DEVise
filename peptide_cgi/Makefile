@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2012
+#  (c) Copyright 2001-2014
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -97,7 +97,7 @@ peaklist_setup:
 	chmod g+rwx test_html test_data test_session
 
 # Goofiness here is because we don't want to use Gnu make's .PHONY feature.
-install: do_install histogram_install uvd_install
+install: do_install histogram_install uvd_install example_install
 do_install: 
 	./install $(DEV_DEMO_HOME) $(WWW_HOME) $(PEP_HOME) $(CGI_HOME) \
 	  $(PEP_SESSION_HOME) $(PEP_DATA_HOME) $(PEP_HTML_HOME) \
@@ -115,6 +115,13 @@ vur_install:
 uvd_install: do_install
 	./install_uvd $(UVD_SESSION_HOME) $(UVD_DATA_HOME) $(UVD_HTML_HOME) \
 	  $(UVD_DATA_UPLOAD) $(CGI_HOME)
+
+example_install:
+	./install_examples $(CGI_HOME)
+
+movie_install:
+	cp -p html/dynamics_movie_demo.html $(PEP_HTML_HOME)
+	cd $(CGI_HOME); ./generate_movies
 
 proto_install:
 	cp -p prototype/data/*.dat $(PEP_DATA_HOME)

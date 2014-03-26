@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2012
+#  (c) Copyright 2001-2014
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -63,6 +63,7 @@ peptide-cgi-setup:
 	  make -f Makefile.dist html_templates-setup; rm Makefile.dist
 	ln -s ../../install .
 	ln -s ../../install_histogram .
+	ln -s ../../install_examples .
 	ln -s ../../install_uvd .
 	mkdir session_templates; cd session_templates; \
 	  ln -s ../Makefile.dist .; \
