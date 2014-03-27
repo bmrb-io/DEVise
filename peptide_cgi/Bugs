@@ -685,6 +685,13 @@ Num Date        Status  Description
 150 2/14/14	OPEN	No error messages if Java and/or JavaScript turned
 			off in Firefox. (livny/wenger)
 
+151 3/27/14	OPEN	Suggested accession number in dynamics movie
+			visualization page is something like 17306_dyn_movie
+			(see http://devise.cs.wisc.edu/devise/test/
+			bmrb_test/devise/peptide-cgi/html/
+			17306_dyn_movie/17306_dyn_movies2p1-1.html).
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
