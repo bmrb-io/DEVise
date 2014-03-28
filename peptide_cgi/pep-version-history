@@ -4,7 +4,16 @@ Peptide-CGI 12.4.1
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
 
-(Nothing yet.)
+* Made some improvements to the dynamics movies setup.
+
+* Added configuration for new condor-websrv-7.cs.wisc.edu machine.
+
+* Added install targets for example visualizations and dynamics movies;
+example visualizations are automatically generated as part of the normal
+install. 
+
+* Added information about DSSP to the "S2 Predicted vs. Experimental
+Values" visualization help page.
 
 
 Peptide-CGI 12.4.0

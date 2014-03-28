@@ -902,10 +902,11 @@ Num Date        Status  Pri     Description
 				(So top-level message is printed first.)
 				(wenger)
 
-201 3/27/14	OPEN	1	Add info about secondary structures being
+201 3/27/14	DONE	1	Add info about secondary structures being
 				calculated to DSSP to the experimental vs.
 				calculated order param visualizations.
 				(elu/wenger)
+				(Done by wenger, 140328)
 
 202 3/27/14	OPEN	2	Peptide-CGI changes to match JavaScreen
 				to-do 12.004 (better port number config).
