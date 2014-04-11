@@ -1,0 +1,2080 @@
+data_16943
+
+save_entry_interview
+   _Entry_interview.Sf_category                        entry_interview
+   _Entry_interview.Sf_framecode                       entry_interview
+   _Entry_interview.Entry_ID                           16943
+   _Entry_interview.ID                                 1
+   _Entry_interview.Use_previous_BMRB_entry            .
+   _Entry_interview.Previous_BMRB_entry_used           .
+   _Entry_interview.Previous_BMRB_entry_owner          .
+   _Entry_interview.Structural_genomics                no
+   _Entry_interview.Ligands                            no
+   _Entry_interview.Non_standard_residues              no
+   _Entry_interview.Constraints                        no
+   _Entry_interview.Assigned_chem_shifts               yes
+   _Entry_interview.Coupling_constants                 yes
+   _Entry_interview.Auto_relaxation                    .
+   _Entry_interview.Tensor                             .
+   _Entry_interview.Interatomic_distance               .
+   _Entry_interview.Chem_shift_anisotropy              no
+   _Entry_interview.Heteronucl_NOEs                    no
+   _Entry_interview.Heteronucl_T1_relaxation           no
+   _Entry_interview.Heteronucl_T2_relaxation           no
+   _Entry_interview.Heteronucl_T1rho_relaxation        no
+   _Entry_interview.Order_parameters                   no
+   _Entry_interview.Dynamics_trajectory                .
+   _Entry_interview.Movie                              .
+   _Entry_interview.Residual_dipolar_couplings         no
+   _Entry_interview.H_exchange_rate                    no
+   _Entry_interview.H_exchange_protection_factors      no
+   _Entry_interview.Chem_rate_constants                .
+   _Entry_interview.Spectral_peak_lists                yes
+   _Entry_interview.Dipole_dipole_couplings            no
+   _Entry_interview.Quadrupolar_couplings              no
+   _Entry_interview.Homonucl_NOEs                      no
+   _Entry_interview.Dipole_dipole_relaxation           no
+   _Entry_interview.DD_cross_correlation               no
+   _Entry_interview.Dipole_CSA_cross_correlation       no
+   _Entry_interview.Binding_constants                  .
+   _Entry_interview.PKa_value_data_set                 no
+   _Entry_interview.D_H_fractionation_factors          no
+   _Entry_interview.Theoretical_chem_shifts            no
+   _Entry_interview.Spectral_density_values            no
+   _Entry_interview.Timedomain_data                    no
+   _Entry_interview.Molecular_interactions             no
+   _Entry_interview.Secondary_structure_orientations   no
+   _Entry_interview.Metabolite_coordinates             no
+   _Entry_interview.Mass_spec_data                     no
+   _Entry_interview.Other_kind_of_data                 no
+save_
+
+save_deposited_data_files
+   _Deposited_data_files.Sf_category                     deposited_data_files
+   _Deposited_data_files.Sf_framecode                    deposited_data_files
+   _Deposited_data_files.Entry_ID                        16943
+   _Deposited_data_files.ID                              1
+   _Deposited_data_files.Atomic_coordinate_file_name     deposit.pdb
+   _Deposited_data_files.Atomic_coordinate_file_syntax   pdb
+   _Deposited_data_files.Constraint_file_name            synpate_rama_rest.tbl
+   _Deposited_data_files.Constraint_file_syntax          .
+   _Deposited_data_files.Precheck_flag                   .
+   _Deposited_data_files.Validate_flag                   .
+
+   loop_
+      _Upload_data.Data_file_ID
+      _Upload_data.Data_file_name
+      _Upload_data.Data_file_Sf_category
+      _Upload_data.Data_file_syntax
+      _Upload_data.Data_file_immutable_flag
+      _Upload_data.Entry_ID
+      _Upload_data.Deposited_data_files_ID
+
+      1   deposit.pdb                                'Coordinate File'    pdb     .   16943   1
+      2   all.tbl                                    'Constraints File'   .       .   16943   1
+      3   synpate_rama_rest.tbl                      'NMR Data Upload'    other   .   16943   1
+      4   shifts.str                                 'NMR Data Upload'    other   .   16943   1
+      5   synpate_noe_all_cos_200ms_2_update_6.xpk   'NMR Data Upload'    other   .   16943   1
+      6   synpate_3Jcouplings.csv                    'NMR Data Upload'    other   .   16943   1
+   stop_
+save_
+
+save_entry_information
+   _Entry.Sf_category                        entry_information
+   _Entry.Sf_framecode                       entry_information
+   _Entry.ID                                 16943
+   _Entry.Title
+;
+Solution structure of the leader sequence of the patellamide precursor peptide, PatE1-34
+;
+   _Entry.Type                               macromolecule
+   _Entry.Version_type                       original
+   _Entry.Submission_date                    2010-05-21
+   _Entry.Accession_date                     2010-05-21
+   _Entry.Last_release_date                  .
+   _Entry.Original_release_date              .
+   _Entry.Origination                        author
+   _Entry.NMR_STAR_version                   3.0.9.13
+   _Entry.Original_NMR_STAR_version          3.0.9.13
+   _Entry.Experimental_method                NMR
+   _Entry.Experimental_method_subtype        SOLUTION
+   _Entry.Dep_release_code_coordinates       'HOLD FOR PUBLICATION'
+   _Entry.Dep_release_code_nmr_constraints   'HOLD FOR PUBLICATION'
+   _Entry.Dep_release_code_chemical_shifts   .
+   _Entry.Dep_release_code_nmr_exptl         'HOLD FOR PUBLICATION'
+   _Entry.Dep_release_code_sequence          'HOLD FOR RELEASE'
+   _Entry.CASP_target                        .
+   _Entry.Details
+;
+The Solution Conformation of the Leader Sequence of the Prepropeptide for the microcin-like Patellamide
+;
+   _Entry.Special_processing_instructions    .
+   _Entry.Update_BMRB_accession_code         .
+   _Entry.Replace_BMRB_accession_code        .
+   _Entry.Update_PDB_accession_code          .
+   _Entry.Replace_PDB_accession_code         .
+   _Entry.PDB_coordinate_file_version        .
+   _Entry.BMRB_update_details                .
+   _Entry.PDB_update_details                 .
+   _Entry.Release_request                    .
+   _Entry.Release_date_request               .
+   _Entry.Release_date_justification         .
+   _Entry.Status_code                        .
+   _Entry.Recvd_deposit_form                 .
+   _Entry.Date_deposition_form               .
+   _Entry.Recvd_coordinates                  .
+   _Entry.Date_coordinates                   .
+   _Entry.Recvd_nmr_constraints              .
+   _Entry.Date_nmr_constraints               .
+   _Entry.Recvd_chemical_shifts              .
+   _Entry.Date_chemical_shifts               .
+   _Entry.Recvd_manuscript                   .
+   _Entry.Date_manuscript                    .
+   _Entry.Recvd_author_approval              .
+   _Entry.Date_author_approval               .
+   _Entry.Recvd_initial_deposition_date      .
+   _Entry.PDB_date_submitted                 .
+   _Entry.Author_release_status_code         .
+   _Entry.Date_of_PDB_release                .
+   _Entry.Date_hold_coordinates              .
+   _Entry.Date_hold_nmr_constraints          .
+   _Entry.Date_hold_chemical_shifts          .
+   _Entry.PDB_deposit_site                   BMRB
+   _Entry.PDB_process_site                   RCSB
+   _Entry.BMRB_deposit_site                  BMRB
+   _Entry.BMRB_process_site                  BMRB
+   _Entry.BMRB_annotator                     .
+   _Entry.BMRB_internal_directory_name       .
+   _Entry.RCSB_annotator                     UNASSIGNED
+   _Entry.Author_approval_type               .
+   _Entry.Assigned_BMRB_ID                   16943
+   _Entry.Assigned_BMRB_deposition_code      2Z0R9U4
+   _Entry.Assigned_PDB_ID                    .
+   _Entry.Assigned_PDB_deposition_code       .
+   _Entry.Assigned_restart_ID                .
+
+   loop_
+      _Contact_person.ID
+      _Contact_person.Email_address
+      _Contact_person.Name_salutation
+      _Contact_person.Given_name
+      _Contact_person.Family_name
+      _Contact_person.Middle_initials
+      _Contact_person.Family_title
+      _Contact_person.Department_and_institution
+      _Contact_person.Mailing_address
+      _Contact_person.Address_1
+      _Contact_person.Address_2
+      _Contact_person.Address_3
+      _Contact_person.City
+      _Contact_person.State_province
+      _Contact_person.Country
+      _Contact_person.Postal_code
+      _Contact_person.Phone_number
+      _Contact_person.FAX_number
+      _Contact_person.Role
+      _Contact_person.Organization_type
+      _Contact_person.Entry_ID
+
+      1   garyt@bmb.leeds.ac.uk    Dr.     Gary     Thompson   .   .   .   .   'Astbury Centre for Structural Molecular Biology'   'University of Leeds'       .                          Leeds            Yorkshire   UK   'LS2 9JT'    '0113 343 3024'   .   investigator               academic   16943
+      2   m.jaspars@abdn.ac.uk     Prof.   Marcel   Jaspars    .   .   .   .   'Marine Biodiscovery Centre'                        'Department of Chemistry'   'University of Aberdeen'   Aberdeen         Scotland    UK   'AB25 2ZD'   '01224 555775'    .   'principal investigator'   academic   16943
+      3   w.houssen@abdn.ac.uk     Dr.     Wael     Houssen    .   .   .   .   'Marine Biodiscovery Centre'                        'Department of Chemistry'   'University of Aberdeen'   'Old Aberdeen'   Scotland    UK   'AB24 3UE'   '01224 272 895'   .   investigator               academic   16943
+      4   s.w.homans@leeds.ac.uk   Prof.   Steven   Homans     .   .   .   .   'Astbury Centre for Structural Molecular Biology'   'University of Leeds'       .                          Leeds            Yorkshire   UK   'LS2 9JT'    '0113 343 3125'   .   investigator               academic   16943
+      5   a.kalverda@leeds.ac.uk   Dr.     Arnout   Kalverda   .   .   .   .   'Astbury Centre for Structural Molecular Biology'   'University of Leeds'       .                          Leeds            Yorkshire   UK   'LS2 9JT'    '0113 343 7997'   .   investigator               academic   16943
+   stop_
+
+   loop_
+      _Entry_author.Ordinal
+      _Entry_author.Given_name
+      _Entry_author.Family_name
+      _Entry_author.First_initial
+      _Entry_author.Middle_initials
+      _Entry_author.Family_title
+      _Entry_author.Entry_ID
+
+      1   Wael     Houssen    .   E.   .   16943
+      2   Steven   Wright     .   H.   .   16943
+      3   Arnout   Kalverda   .   P.   .   16943
+      4   Gary     Thompson   .   S.   .   16943
+      5   Sharon   Kelly      .   M.   .   16943
+      6   Marcel   Jaspars    .   .    .   16943
+   stop_
+
+   loop_
+      _SG_project.SG_project_ID
+      _SG_project.Project_name
+      _SG_project.Full_name_of_center
+      _SG_project.Initial_of_center
+      _SG_project.Entry_ID
+
+      1   'not applicable'   'not applicable'   .   16943
+   stop_
+
+   loop_
+      _Entry_src.ID
+      _Entry_src.Project_name
+      _Entry_src.Organization_full_name
+      _Entry_src.Organization_initials
+      _Entry_src.Entry_ID
+
+      1   .   'Jaspars Group, Marine Biodiscovery Centre, University of Aberdeen'   .   16943
+      2   .   
+;
+NMR Facility Astbury Centre for Structural Molecular Biology, University of Leeds
+;
+                                                                                    .   16943
+      3   .   
+;
+BBSRC CD Service, Division of Molecular and Cellular Biology,  University of Glasgow
+;
+                                                                                    .   16943
+   stop_
+
+   loop_
+      _Struct_keywords.Keywords
+      _Struct_keywords.Text
+      _Struct_keywords.Entry_ID
+
+      'Cyclic peptides'                .   16943
+      PatE                             .   16943
+      Patellamides                     .   16943
+      Prochloron                       .   16943
+      'ribosomal peptide synthetase'   .   16943
+   stop_
+
+   loop_
+      _Data_set.Type
+      _Data_set.Count
+      _Data_set.Entry_ID
+
+      assigned_chemical_shifts   1   16943
+   stop_
+
+   loop_
+      _Datum.Type
+      _Datum.Count
+      _Datum.Entry_ID
+
+      '1H chemical shifts'   242   16943
+   stop_
+
+   loop_
+      _Release.Release_number
+      _Release.Format_type
+      _Release.Format_version
+      _Release.Date
+      _Release.Submission_date
+      _Release.Type
+      _Release.Author
+      _Release.Detail
+      _Release.Entry_ID
+
+      2   .   .   2010-09-15   2010-05-21   update     BMRB     'Complete entry citation'   16943
+      1   .   .   2010-08-19   2010-05-21   original   author   'original release'          16943
+   stop_
+save_
+
+save_publication
+   _Citation.Sf_category                  citations
+   _Citation.Sf_framecode                 publication
+   _Citation.Entry_ID                     16943
+   _Citation.ID                           1
+   _Citation.Class                        'entry citation'
+   _Citation.CAS_abstract_code            .
+   _Citation.MEDLINE_UI_code              .
+   _Citation.DOI                          .
+   _Citation.PubMed_ID                    20715266
+   _Citation.Full_citation                .
+   _Citation.Title
+;
+Solution structure of the leader sequence of the patellamide precursor peptide, PatE1-34.
+;
+   _Citation.Status                       published
+   _Citation.Type                         journal
+   _Citation.Journal_abbrev               Chembiochem
+   _Citation.Journal_name_full            'Chembiochem : a European journal of chemical biology'
+   _Citation.Journal_volume               11
+   _Citation.Journal_issue                13
+   _Citation.Journal_ASTM                 .
+   _Citation.Journal_ISSN                 .
+   _Citation.Journal_CSD                  .
+   _Citation.Book_title                   .
+   _Citation.Book_chapter_title           .
+   _Citation.Book_volume                  .
+   _Citation.Book_series                  .
+   _Citation.Book_publisher               .
+   _Citation.Book_publisher_city          .
+   _Citation.Book_ISBN                    .
+   _Citation.Conference_title             .
+   _Citation.Conference_site              .
+   _Citation.Conference_state_province    .
+   _Citation.Conference_country           .
+   _Citation.Conference_start_date        .
+   _Citation.Conference_end_date          .
+   _Citation.Conference_abstract_number   .
+   _Citation.Thesis_institution           .
+   _Citation.Thesis_institution_city      .
+   _Citation.Thesis_institution_country   .
+   _Citation.WWW_URL                      .
+   _Citation.Page_first                   1867
+   _Citation.Page_last                    1873
+   _Citation.Year                         2010
+   _Citation.Details                      .
+
+   loop_
+      _Citation_author.Ordinal
+      _Citation_author.Given_name
+      _Citation_author.Family_name
+      _Citation_author.First_initial
+      _Citation_author.Middle_initials
+      _Citation_author.Family_title
+      _Citation_author.Entry_ID
+      _Citation_author.Citation_ID
+
+      1   Wael      Houssen    .   E.   .   16943   1
+      2   Stephen   Wright     .   H.   .   16943   1
+      3   Arnout    Kalverda   .   P.   .   16943   1
+      4   Gary      Thompson   .   S.   .   16943   1
+      5   Sharon    Kelly      .   M.   .   16943   1
+      6   Marcel    Jaspars    .   .    .   16943   1
+   stop_
+
+   loop_
+      _Citation_keyword.Keyword
+      _Citation_keyword.Entry_ID
+      _Citation_keyword.Citation_ID
+
+      'Cyclic peptides'                16943   1
+      PatE                             16943   1
+      Patellamides                     16943   1
+      Prochloron                       16943   1
+      'ribosomal peptide synthetase'   16943   1
+   stop_
+save_
+
+save_assembly
+   _Assembly.Sf_category                       assembly
+   _Assembly.Sf_framecode                      assembly
+   _Assembly.Entry_ID                          16943
+   _Assembly.ID                                1
+   _Assembly.Name                              PatE1-34
+   _Assembly.BMRB_code                         .
+   _Assembly.Number_of_components              1
+   _Assembly.Organic_ligands                   .
+   _Assembly.Metal_ions                        .
+   _Assembly.Non_standard_bonds                .
+   _Assembly.Ambiguous_conformational_states   .
+   _Assembly.Ambiguous_chem_comp_sites         .
+   _Assembly.Molecules_in_chemical_exchange    .
+   _Assembly.Paramagnetic                      no
+   _Assembly.Thiol_state                       .
+   _Assembly.Molecular_mass                    .
+   _Assembly.Enzyme_commission_number          .
+   _Assembly.Details                           .
+   _Assembly.DB_query_date                     .
+   _Assembly.DB_query_revised_last_date        .
+
+   loop_
+      _Entity_assembly.ID
+      _Entity_assembly.Entity_assembly_name
+      _Entity_assembly.Entity_ID
+      _Entity_assembly.Entity_label
+      _Entity_assembly.Asym_ID
+      _Entity_assembly.PDB_chain_ID
+      _Entity_assembly.Experimental_data_reported
+      _Entity_assembly.Physical_state
+      _Entity_assembly.Conformational_isomer
+      _Entity_assembly.Chemical_exchange_state
+      _Entity_assembly.Magnetic_equivalence_group_code
+      _Entity_assembly.Role
+      _Entity_assembly.Details
+      _Entity_assembly.Entry_ID
+      _Entity_assembly.Assembly_ID
+
+      1   PatE1-34   1   $PatE1-34   A   .   yes   native   no   no   .   .   .   16943   1
+   stop_
+save_
+
+save_PatE1-34
+   _Entity.Sf_category                       entity
+   _Entity.Sf_framecode                      PatE1-34
+   _Entity.Entry_ID                          16943
+   _Entity.ID                                1
+   _Entity.BMRB_code                         .
+   _Entity.Name                              PatE1-34
+   _Entity.Type                              polymer
+   _Entity.Polymer_common_type               .
+   _Entity.Polymer_type                      polypeptide(L)
+   _Entity.Polymer_type_details              .
+   _Entity.Polymer_strand_ID                 A
+   _Entity.Polymer_seq_one_letter_code_can   .
+   _Entity.Polymer_seq_one_letter_code
+;
+MNKKNILPQQGQPVIRLTAG
+QLSSQLAELSEEAL
+;
+   _Entity.Target_identifier                 .
+   _Entity.Polymer_author_defined_seq        .
+   _Entity.Polymer_author_seq_details        .
+   _Entity.Ambiguous_conformational_states   no
+   _Entity.Ambiguous_chem_comp_sites         no
+   _Entity.Nstd_monomer                      no
+   _Entity.Nstd_chirality                    no
+   _Entity.Nstd_linkage                      no
+   _Entity.Nonpolymer_comp_ID                .
+   _Entity.Nonpolymer_comp_label             .
+   _Entity.Number_of_monomers                34
+   _Entity.Number_of_nonpolymer_components   .
+   _Entity.Paramagnetic                      no
+   _Entity.Thiol_state                       'all free'
+   _Entity.Src_method                        man
+   _Entity.Parent_entity_ID                  .
+   _Entity.Fragment                          'leader sequence of the patellamide-precursor peptide'
+   _Entity.Mutation                          .
+   _Entity.EC_number                         .
+   _Entity.Calc_isoelectric_point            .
+   _Entity.Formula_weight                    3709.285
+   _Entity.Formula_weight_exptl              .
+   _Entity.Formula_weight_exptl_meth         .
+   _Entity.Details                           .
+   _Entity.DB_query_date                     .
+   _Entity.DB_query_revised_last_date        .
+
+   loop_
+      _Entity_biological_function.Biological_function
+      _Entity_biological_function.Entry_ID
+      _Entity_biological_function.Entity_ID
+
+      'unknown function'   16943   1
+   stop_
+
+   loop_
+      _Entity_comp_index.ID
+      _Entity_comp_index.Auth_seq_ID
+      _Entity_comp_index.Comp_ID
+      _Entity_comp_index.Comp_label
+      _Entity_comp_index.Entry_ID
+      _Entity_comp_index.Entity_ID
+
+      1    .   MET   .    16943   1
+      2    .   ASN   .    16943   1
+      3    .   LYS   .    16943   1
+      4    .   LYS   .    16943   1
+      5    .   ASN   .    16943   1
+      6    .   ILE   .    16943   1
+      7    .   LEU   .    16943   1
+      8    .   PRO   .    16943   1
+      9    .   GLN   .    16943   1
+      10   .   GLN   .    16943   1
+      11   .   GLY   .    16943   1
+      12   .   GLN   .    16943   1
+      13   .   PRO   .    16943   1
+      14   .   VAL   .    16943   1
+      15   .   ILE   .    16943   1
+      16   .   ARG   .    16943   1
+      17   .   LEU   .    16943   1
+      18   .   THR   .    16943   1
+      19   .   ALA   .    16943   1
+      20   .   GLY   .    16943   1
+      21   .   GLN   .    16943   1
+      22   .   LEU   .    16943   1
+      23   .   SER   .    16943   1
+      24   .   SER   .    16943   1
+      25   .   GLN   .    16943   1
+      26   .   LEU   .    16943   1
+      27   .   ALA   .    16943   1
+      28   .   GLU   .    16943   1
+      29   .   LEU   .    16943   1
+      30   .   SER   .    16943   1
+      31   .   GLU   .    16943   1
+      32   .   GLU   .    16943   1
+      33   .   ALA   .    16943   1
+      34   .   LEU   .    16943   1
+   stop_
+
+   loop_
+      _Entity_poly_seq.Hetero
+      _Entity_poly_seq.Mon_ID
+      _Entity_poly_seq.Num
+      _Entity_poly_seq.Comp_index_ID
+      _Entity_poly_seq.Entry_ID
+      _Entity_poly_seq.Entity_ID
+
+      .   MET   1    1    16943   1
+      .   ASN   2    2    16943   1
+      .   LYS   3    3    16943   1
+      .   LYS   4    4    16943   1
+      .   ASN   5    5    16943   1
+      .   ILE   6    6    16943   1
+      .   LEU   7    7    16943   1
+      .   PRO   8    8    16943   1
+      .   GLN   9    9    16943   1
+      .   GLN   10   10   16943   1
+      .   GLY   11   11   16943   1
+      .   GLN   12   12   16943   1
+      .   PRO   13   13   16943   1
+      .   VAL   14   14   16943   1
+      .   ILE   15   15   16943   1
+      .   ARG   16   16   16943   1
+      .   LEU   17   17   16943   1
+      .   THR   18   18   16943   1
+      .   ALA   19   19   16943   1
+      .   GLY   20   20   16943   1
+      .   GLN   21   21   16943   1
+      .   LEU   22   22   16943   1
+      .   SER   23   23   16943   1
+      .   SER   24   24   16943   1
+      .   GLN   25   25   16943   1
+      .   LEU   26   26   16943   1
+      .   ALA   27   27   16943   1
+      .   GLU   28   28   16943   1
+      .   LEU   29   29   16943   1
+      .   SER   30   30   16943   1
+      .   GLU   31   31   16943   1
+      .   GLU   32   32   16943   1
+      .   ALA   33   33   16943   1
+      .   LEU   34   34   16943   1
+   stop_
+save_
+
+save_natural_source
+   _Entity_natural_src_list.Sf_category    natural_source
+   _Entity_natural_src_list.Sf_framecode   natural_source
+   _Entity_natural_src_list.Entry_ID       16943
+   _Entity_natural_src_list.ID             1
+
+   loop_
+      _Entity_natural_src.ID
+      _Entity_natural_src.Entity_ID
+      _Entity_natural_src.Entity_label
+      _Entity_natural_src.Entity_chimera_segment_ID
+      _Entity_natural_src.NCBI_taxonomy_ID
+      _Entity_natural_src.Type
+      _Entity_natural_src.Common
+      _Entity_natural_src.Organism_name_scientific
+      _Entity_natural_src.Organism_name_common
+      _Entity_natural_src.Organism_acronym
+      _Entity_natural_src.ICTVdb_decimal_code
+      _Entity_natural_src.Superkingdom
+      _Entity_natural_src.Kingdom
+      _Entity_natural_src.Genus
+      _Entity_natural_src.Species
+      _Entity_natural_src.Strain
+      _Entity_natural_src.Variant
+      _Entity_natural_src.Subvariant
+      _Entity_natural_src.Organ
+      _Entity_natural_src.Tissue
+      _Entity_natural_src.Tissue_fraction
+      _Entity_natural_src.Cell_line
+      _Entity_natural_src.Cell_type
+      _Entity_natural_src.ATCC_number
+      _Entity_natural_src.Organelle
+      _Entity_natural_src.Cellular_location
+      _Entity_natural_src.Fragment
+      _Entity_natural_src.Fraction
+      _Entity_natural_src.Secretion
+      _Entity_natural_src.Plasmid
+      _Entity_natural_src.Plasmid_details
+      _Entity_natural_src.Gene_mnemonic
+      _Entity_natural_src.Dev_stage
+      _Entity_natural_src.Details
+      _Entity_natural_src.Citation_ID
+      _Entity_natural_src.Citation_label
+      _Entity_natural_src.Entry_ID
+      _Entity_natural_src.Entity_natural_src_list_ID
+
+      1   1   $PatE1-34   .   13110   organism   .   'Lissoclinum patella'   Tunicates   .   .   Eukaryota   Metazoa   Lissoclinum   patella   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   'natural product'   .   .    16943   1
+   stop_
+save_
+
+save_experimental_source
+   _Entity_experimental_src_list.Sf_category    experimental_source
+   _Entity_experimental_src_list.Sf_framecode   experimental_source
+   _Entity_experimental_src_list.Entry_ID       16943
+   _Entity_experimental_src_list.ID             1
+
+   loop_
+      _Entity_experimental_src.ID
+      _Entity_experimental_src.Entity_ID
+      _Entity_experimental_src.Entity_label
+      _Entity_experimental_src.Entity_chimera_segment_ID
+      _Entity_experimental_src.Production_method
+      _Entity_experimental_src.Host_org_scientific_name
+      _Entity_experimental_src.Host_org_name_common
+      _Entity_experimental_src.Host_org_details
+      _Entity_experimental_src.Host_org_NCBI_taxonomy_ID
+      _Entity_experimental_src.Host_org_genus
+      _Entity_experimental_src.Host_org_species
+      _Entity_experimental_src.Host_org_strain
+      _Entity_experimental_src.Host_org_variant
+      _Entity_experimental_src.Host_org_subvariant
+      _Entity_experimental_src.Host_org_organ
+      _Entity_experimental_src.Host_org_tissue
+      _Entity_experimental_src.Host_org_tissue_fraction
+      _Entity_experimental_src.Host_org_cell_line
+      _Entity_experimental_src.Host_org_cell_type
+      _Entity_experimental_src.Host_org_cellular_location
+      _Entity_experimental_src.Host_org_organelle
+      _Entity_experimental_src.Host_org_gene
+      _Entity_experimental_src.Host_org_culture_collection
+      _Entity_experimental_src.Host_org_ATCC_number
+      _Entity_experimental_src.Vector_type
+      _Entity_experimental_src.PDBview_host_org_vector_name
+      _Entity_experimental_src.PDBview_plasmid_name
+      _Entity_experimental_src.Vector_name
+      _Entity_experimental_src.Vector_details
+      _Entity_experimental_src.Vendor_name
+      _Entity_experimental_src.Host_org_dev_stage
+      _Entity_experimental_src.Details
+      _Entity_experimental_src.Citation_ID
+      _Entity_experimental_src.Citation_label
+      _Entity_experimental_src.Entry_ID
+      _Entity_experimental_src.Entity_experimental_src_list_ID
+
+      1   1   $PatE1-34   .   'chemical synthesis'   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   
+;
+synthesized on an Applied Biosystems Pioneer peptide synthesizer (Foster City, CA), which automates the Fmoc-continuous flow method. The C-terminal amino acid was supplied coupled to a PEG-PS support and the amino acids were sequentially coupled after removal of the Fmoc-blocking group at each cycle. The reagents used were 20% piperidine in DMF for the de-blocking and HATU for the coupling steps as recommended by the manufacturer. The peptide was cleaved and deprotected from the PEG-PS support by treating with TFA reagent (1.76 mL TFA, 100 mg DTT, 40  L triisopropylsilane and 100  L water) for approximately 4 hours followed by precipitation and partial purification with tert-butylmethylether.The crude peptide (74 mg) was dissolved in 6 mL of 0.1% TFA/10% acetonitrile (v/v) in water and purified by HPLC on a Jupiter  Proteo column (10 x 250 mm, RP-C12, 4  m particle size, 90-angstrom  pore size, Phenomenex) connected to an Agilent 1100 series binary pump and monitored using an Agilent photodiode array detector. Detection was carried out at 214 nm.
+Purification was first carried out using a gradient (0 % to 100 % v/v over 1 hr) of solvent B [0.085 % TFA /70 % acetonitrile (v/v) in water] in solvent A [0.1 % TFA (v/v) in water] with a flow rate of 2 mL/min. Three major fractions (A, B and C) of repeated injections (500 &#956;L) were collected and concentrated under vacuum at 4 degrees C. Fraction B, which contained the target peptide, was further purified using the same HPLC column and 34% solvent B in solvent A as a mobile phase at a flow rate of 2 mL/min to afford 3 mg of the pure target peptide.  The identity of the purified target peptide was confirmed by ES-IT-MSn using an Agilent 1100 Series LC/MSD Trap XCT in positive mode
+;
+                                                                                                                                                                 .   .    16943   1
+   stop_
+save_
+
+save_sample_1
+   _Sample.Sf_category                      sample
+   _Sample.Sf_framecode                     sample_1
+   _Sample.Entry_ID                         16943
+   _Sample.ID                               1
+   _Sample.Type                             solution
+   _Sample.Sub_type                         .
+   _Sample.Details                          '50% TFE-d2 - 50% H2O sample'
+   _Sample.Aggregate_sample_number          .
+   _Sample.Solvent_system                   trifluoroethanol/water
+   _Sample.Preparation_date                 .
+   _Sample.Preparation_expiration_date      .
+   _Sample.Polycrystallization_protocol     .
+   _Sample.Single_crystal_protocol          .
+   _Sample.Crystal_grow_apparatus           .
+   _Sample.Crystal_grow_atmosphere          .
+   _Sample.Crystal_grow_details             .
+   _Sample.Crystal_grow_method              .
+   _Sample.Crystal_grow_method_cit_ID       .
+   _Sample.Crystal_grow_pH                  .
+   _Sample.Crystal_grow_pH_range            .
+   _Sample.Crystal_grow_pressure            .
+   _Sample.Crystal_grow_pressure_esd        .
+   _Sample.Crystal_grow_seeding             .
+   _Sample.Crystal_grow_seeding_cit_ID      .
+   _Sample.Crystal_grow_temp                .
+   _Sample.Crystal_grow_temp_details        .
+   _Sample.Crystal_grow_temp_esd            .
+   _Sample.Crystal_grow_time                .
+   _Sample.Oriented_sample_prep_protocol    .
+   _Sample.Lyophilization_cryo_protectant   .
+   _Sample.Storage_protocol                 .
+
+   loop_
+      _Sample_component.ID
+      _Sample_component.Mol_common_name
+      _Sample_component.Isotopic_labeling
+      _Sample_component.Assembly_ID
+      _Sample_component.Assembly_label
+      _Sample_component.Entity_ID
+      _Sample_component.Entity_label
+      _Sample_component.Product_ID
+      _Sample_component.Type
+      _Sample_component.Concentration_val
+      _Sample_component.Concentration_val_min
+      _Sample_component.Concentration_val_max
+      _Sample_component.Concentration_val_units
+      _Sample_component.Concentration_val_err
+      _Sample_component.Vendor
+      _Sample_component.Vendor_product_name
+      _Sample_component.Vendor_product_code
+      _Sample_component.Entry_ID
+      _Sample_component.Sample_ID
+
+      1   H2O                  'natural abundance'   .   .    .   .           .   .   50    .   .   %    1     .   .   .   16943   1
+      2   TFE                  '[U-100% 2H]'         .   .    .   .           .   .   50    .   .   %    1     .   .   .   16943   1
+      3   'sodium chloride'    'natural abundance'   .   .    .   .           .   .   100   .   .   mM   1     .   .   .   16943   1
+      4   'sodium phosphate'   'natural abundance'   .   .    .   .           .   .   20    .   .   mM   1     .   .   .   16943   1
+      5   PatE1-34             'natural abundance'   .   .    1   $PatE1-34   .   .   1     .   .   mM   0.1   .   .   .   16943   1
+   stop_
+save_
+
+save_sample_conditions_1
+   _Sample_condition_list.Sf_category    sample_conditions
+   _Sample_condition_list.Sf_framecode   sample_conditions_1
+   _Sample_condition_list.Entry_ID       16943
+   _Sample_condition_list.ID             1
+   _Sample_condition_list.Details        'conditions for all measurements'
+
+   loop_
+      _Sample_condition_variable.Type
+      _Sample_condition_variable.Val
+      _Sample_condition_variable.Val_err
+      _Sample_condition_variable.Val_units
+      _Sample_condition_variable.Entry_ID
+      _Sample_condition_variable.Sample_condition_list_ID
+
+      'ionic strength'   0.160   0.001   M     16943   1
+      pH                 5.7     0.05    pH    16943   1
+      pressure           1       .       atm   16943   1
+      temperature        25      0.1     298   16943   1
+   stop_
+save_
+
+save_ARIA
+   _Software.Sf_category    software
+   _Software.Sf_framecode   ARIA
+   _Software.Entry_ID       16943
+   _Software.ID             1
+   _Software.Name           ARIA
+   _Software.Version        2.2u3
+   _Software.Details
+;
+local modifications for correct import of nmrview data files with mutiple assignments etc
+;
+
+   loop_
+      _Vendor.Name
+      _Vendor.Address
+      _Vendor.Electronic_address
+      _Vendor.Entry_ID
+      _Vendor.Software_ID
+
+
+;
+Linge, O'Donoghue and Nilges
+;
+          
+;
+Nilges Group
+Institut Pasteur    
+Unit  de Bioinformatique Structurale    
+25-28 rue du Dr Roux    
+F-75724 Paris CEDEX 15    
+France
+;
+              nilges@pasteur.fr.   16943   1
+   stop_
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      'chemical shift assignment'   16943   1
+      'structure solution'          16943   1
+   stop_
+save_
+
+save_ccpn_analysis
+   _Software.Sf_category    software
+   _Software.Sf_framecode   ccpn_analysis
+   _Software.Entry_ID       16943
+   _Software.ID             2
+   _Software.Name           ccpn_analysis
+   _Software.Version        1.15
+   _Software.Details        'updated to latest point release'
+
+   loop_
+      _Vendor.Name
+      _Vendor.Address
+      _Vendor.Electronic_address
+      _Vendor.Entry_ID
+      _Vendor.Software_ID
+
+      'ccpn, cambridge'   .   ccpn@mole.bio.cam.ac.uk.   16943   2
+   stop_
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      'chemical shift assignment'   16943   2
+      'data analysis'               16943   2
+      'peak picking'                16943   2
+   stop_
+save_
+
+save_CNS
+   _Software.Sf_category    software
+   _Software.Sf_framecode   CNS
+   _Software.Entry_ID       16943
+   _Software.ID             3
+   _Software.Name           CNS
+   _Software.Version        1.1
+   _Software.Details        .
+
+   loop_
+      _Vendor.Name
+      _Vendor.Address
+      _Vendor.Electronic_address
+      _Vendor.Entry_ID
+      _Vendor.Software_ID
+
+      'Brunger, Adams, Clore, Gros, Nilges and Read'   .   .   16943   3
+   stop_
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      refinement             16943   3
+      'structure solution'   16943   3
+   stop_
+save_
+
+save_NMRPipe
+   _Software.Sf_category    software
+   _Software.Sf_framecode   NMRPipe
+   _Software.Entry_ID       16943
+   _Software.ID             4
+   _Software.Name           NMRPipe
+   _Software.Version        '3.0 Rev 2007.068.09.07'
+   _Software.Details        .
+
+   loop_
+      _Vendor.Name
+      _Vendor.Address
+      _Vendor.Electronic_address
+      _Vendor.Entry_ID
+      _Vendor.Software_ID
+
+      'Delaglio, Grzesiek, Vuister, Zhu, Pfeifer and Bax'   
+;
+Software Science Consultant
+  13840 Grey Colt Drive 
+  North Potomac MD 20878 USA
+;
+                                                                delaglio@nmrscience.com   16943   4
+   stop_
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      processing   16943   4
+   stop_
+save_
+
+save_spectrometer_1
+   _NMR_spectrometer.Sf_category      NMR_spectrometer
+   _NMR_spectrometer.Sf_framecode     spectrometer_1
+   _NMR_spectrometer.Entry_ID         16943
+   _NMR_spectrometer.ID               1
+   _NMR_spectrometer.Details          .
+   _NMR_spectrometer.Manufacturer     Varian
+   _NMR_spectrometer.Model            INOVA
+   _NMR_spectrometer.Serial_number    .
+   _NMR_spectrometer.Field_strength   600
+save_
+
+save_NMR_spectrometer_list
+   _NMR_spectrometer_list.Sf_category    NMR_spectrometer_list
+   _NMR_spectrometer_list.Sf_framecode   NMR_spectrometer_list
+   _NMR_spectrometer_list.Entry_ID       16943
+   _NMR_spectrometer_list.ID             1
+
+   loop_
+      _NMR_spectrometer_view.ID
+      _NMR_spectrometer_view.Name
+      _NMR_spectrometer_view.Manufacturer
+      _NMR_spectrometer_view.Model
+      _NMR_spectrometer_view.Serial_number
+      _NMR_spectrometer_view.Field_strength
+      _NMR_spectrometer_view.Details
+      _NMR_spectrometer_view.Citation_ID
+      _NMR_spectrometer_view.Citation_label
+      _NMR_spectrometer_view.Entry_ID
+      _NMR_spectrometer_view.NMR_spectrometer_list_ID
+
+      1   spectrometer_1   Varian   INOVA   .   600   .   .   .    16943   1
+   stop_
+save_
+
+save_experiment_list
+   _Experiment_list.Sf_category    experiment_list
+   _Experiment_list.Sf_framecode   experiment_list
+   _Experiment_list.Entry_ID       16943
+   _Experiment_list.ID             1
+   _Experiment_list.Details        .
+
+   loop_
+      _Experiment.ID
+      _Experiment.Name
+      _Experiment.Raw_data_flag
+      _Experiment.NMR_spec_expt_ID
+      _Experiment.NMR_spec_expt_label
+      _Experiment.MS_expt_ID
+      _Experiment.MS_expt_label
+      _Experiment.SAXS_expt_ID
+      _Experiment.SAXS_expt_label
+      _Experiment.FRET_expt_ID
+      _Experiment.FRET_expt_label
+      _Experiment.EMR_expt_ID
+      _Experiment.EMR_expt_label
+      _Experiment.Sample_ID
+      _Experiment.Sample_label
+      _Experiment.Sample_state
+      _Experiment.Sample_volume
+      _Experiment.Sample_volume_units
+      _Experiment.Sample_condition_list_ID
+      _Experiment.Sample_condition_list_label
+      _Experiment.Sample_spinning_rate
+      _Experiment.Sample_angle
+      _Experiment.NMR_tube_type
+      _Experiment.NMR_spectrometer_ID
+      _Experiment.NMR_spectrometer_label
+      _Experiment.NMR_spectrometer_probe_ID
+      _Experiment.NMR_spectrometer_probe_label
+      _Experiment.NMR_spectral_processing_ID
+      _Experiment.NMR_spectral_processing_label
+      _Experiment.Mass_spectrometer_ID
+      _Experiment.Mass_spectrometer_label
+      _Experiment.Xray_instrument_ID
+      _Experiment.Xray_instrument_label
+      _Experiment.Fluorescence_instrument_ID
+      _Experiment.Fluorescence_instrument_label
+      _Experiment.EMR_instrument_ID
+      _Experiment.EMR_instrument_label
+      _Experiment.Chromatographic_system_ID
+      _Experiment.Chromatographic_system_label
+      _Experiment.Chromatographic_column_ID
+      _Experiment.Chromatographic_column_label
+      _Experiment.Entry_ID
+      _Experiment.Experiment_list_ID
+
+      1   '2D 1H-1H WCOSY'            no   .   .    .   .    .   .    .   .    .   .    1   $sample_1   isotropic   .   .   1   $sample_conditions_1   .   .   .   1   $spectrometer_1   .   .    .   .    .   .    .   .    .   .    .   .    .   .    .   .    16943   1
+      2   '2D 1H-1H TOCSY 40ms mix'   no   .   .    .   .    .   .    .   .    .   .    1   $sample_1   isotropic   .   .   1   $sample_conditions_1   .   .   .   1   $spectrometer_1   .   .    .   .    .   .    .   .    .   .    .   .    .   .    .   .    16943   1
+      3   '2D 1H-1H NOESY 60ms mix'   no   .   .    .   .    .   .    .   .    .   .    1   $sample_1   isotropic   .   .   1   $sample_conditions_1   .   .   .   1   $spectrometer_1   .   .    .   .    .   .    .   .    .   .    .   .    .   .    .   .    16943   1
+      4   '2D 1H-1H TOCSY 80ms mix'   no   .   .    .   .    .   .    .   .    .   .    1   $sample_1   isotropic   .   .   1   $sample_conditions_1   .   .   .   1   $spectrometer_1   .   .    .   .    .   .    .   .    .   .    .   .    .   .    .   .    16943   1
+      5   'D 1H-1H NOESY 120ms mix'   no   .   .    .   .    .   .    .   .    .   .    1   $sample_1   isotropic   .   .   1   $sample_conditions_1   .   .   .   1   $spectrometer_1   .   .    .   .    .   .    .   .    .   .    .   .    .   .    .   .    16943   1
+      6   'D 1H-1H NOESY 200ms mix'   no   .   .    .   .    .   .    .   .    .   .    1   $sample_1   isotropic   .   .   1   $sample_conditions_1   .   .   .   1   $spectrometer_1   .   .    .   .    .   .    .   .    .   .    .   .    .   .    .   .    16943   1
+      7   'D 1H-1H NOESY 300ms mix'   no   .   .    .   .    .   .    .   .    .   .    1   $sample_1   isotropic   .   .   1   $sample_conditions_1   .   .   .   1   $spectrometer_1   .   .    .   .    .   .    .   .    .   .    .   .    .   .    .   .    16943   1
+   stop_
+save_
+
+save_chemical_shift_reference_1
+   _Chem_shift_reference.Sf_category              chem_shift_reference
+   _Chem_shift_reference.Sf_framecode             chemical_shift_reference_1
+   _Chem_shift_reference.Entry_ID                 16943
+   _Chem_shift_reference.ID                       1
+   _Chem_shift_reference.Proton_shifts_flag       'yes with IUPAC referencing'
+   _Chem_shift_reference.Carbon_shifts_flag       no
+   _Chem_shift_reference.Nitrogen_shifts_flag     no
+   _Chem_shift_reference.Phosphorus_shifts_flag   no
+   _Chem_shift_reference.Other_shifts_flag        no
+   _Chem_shift_reference.Details                  .
+
+   loop_
+      _Chem_shift_ref.Atom_type
+      _Chem_shift_ref.Atom_isotope_number
+      _Chem_shift_ref.Mol_common_name
+      _Chem_shift_ref.Atom_group
+      _Chem_shift_ref.Concentration_val
+      _Chem_shift_ref.Concentration_units
+      _Chem_shift_ref.Solvent
+      _Chem_shift_ref.Rank
+      _Chem_shift_ref.Chem_shift_units
+      _Chem_shift_ref.Chem_shift_val
+      _Chem_shift_ref.Ref_method
+      _Chem_shift_ref.Ref_type
+      _Chem_shift_ref.Indirect_shift_ratio
+      _Chem_shift_ref.External_ref_loc
+      _Chem_shift_ref.External_ref_sample_geometry
+      _Chem_shift_ref.External_ref_axis
+      _Chem_shift_ref.Indirect_shift_ratio_cit_ID
+      _Chem_shift_ref.Indirect_shift_ratio_cit_label
+      _Chem_shift_ref.Ref_correction_type
+      _Chem_shift_ref.Correction_val
+      _Chem_shift_ref.Correction_val_cit_ID
+      _Chem_shift_ref.Correction_val_cit_label
+      _Chem_shift_ref.Entry_ID
+      _Chem_shift_ref.Chem_shift_reference_ID
+
+      H   1   CF3CHDOH   'methyl protons'   .   .   .   .   ppm   3.88   internal   direct   1.000000000   .   .   .   .   .    .   .   .   .    16943   1
+   stop_
+save_
+
+save_assigned_chem_shift_list_1
+   _Assigned_chem_shift_list.Sf_category                   assigned_chemical_shifts
+   _Assigned_chem_shift_list.Sf_framecode                  assigned_chem_shift_list_1
+   _Assigned_chem_shift_list.Entry_ID                      16943
+   _Assigned_chem_shift_list.ID                            1
+   _Assigned_chem_shift_list.Data_file_name                shifts.str
+   _Assigned_chem_shift_list.Sample_condition_list_ID      1
+   _Assigned_chem_shift_list.Sample_condition_list_label   $sample_conditions_1
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_label    $chemical_shift_reference_1
+   _Assigned_chem_shift_list.Chem_shift_1H_err             0.006
+   _Assigned_chem_shift_list.Chem_shift_13C_err            .
+   _Assigned_chem_shift_list.Chem_shift_15N_err            .
+   _Assigned_chem_shift_list.Chem_shift_31P_err            .
+   _Assigned_chem_shift_list.Chem_shift_2H_err             .
+   _Assigned_chem_shift_list.Chem_shift_19F_err            .
+   _Assigned_chem_shift_list.Error_derivation_method       'approximate average of statistics from multiply defined shifts'
+   _Assigned_chem_shift_list.Details                       .
+   _Assigned_chem_shift_list.Text_data_format              .
+   _Assigned_chem_shift_list.Text_data                     .
+
+   loop_
+      _Chem_shift_experiment.Experiment_ID
+      _Chem_shift_experiment.Experiment_name
+      _Chem_shift_experiment.Sample_ID
+      _Chem_shift_experiment.Sample_label
+      _Chem_shift_experiment.Sample_state
+      _Chem_shift_experiment.Entry_ID
+      _Chem_shift_experiment.Assigned_chem_shift_list_ID
+
+      1   '2D 1H-1H WCOSY'            .   .    .   16943   1
+      2   '2D 1H-1H TOCSY 40ms mix'   .   .    .   16943   1
+      3   '2D 1H-1H NOESY 60ms mix'   .   .    .   16943   1
+      4   '2D 1H-1H TOCSY 80ms mix'   .   .    .   16943   1
+      5   'D 1H-1H NOESY 120ms mix'   .   .    .   16943   1
+      6   'D 1H-1H NOESY 200ms mix'   .   .    .   16943   1
+      7   'D 1H-1H NOESY 300ms mix'   .   .    .   16943   1
+   stop_
+
+   loop_
+      _Chem_shift_software.Software_ID
+      _Chem_shift_software.Software_label
+      _Chem_shift_software.Method_ID
+      _Chem_shift_software.Method_label
+      _Chem_shift_software.Entry_ID
+      _Chem_shift_software.Assigned_chem_shift_list_ID
+
+      2   $ccpn_analysis   .   .    16943   1
+   stop_
+
+   loop_
+      _Atom_chem_shift.ID
+      _Atom_chem_shift.Assembly_atom_ID
+      _Atom_chem_shift.Entity_assembly_ID
+      _Atom_chem_shift.Entity_ID
+      _Atom_chem_shift.Comp_index_ID
+      _Atom_chem_shift.Seq_ID
+      _Atom_chem_shift.Comp_ID
+      _Atom_chem_shift.Atom_ID
+      _Atom_chem_shift.Atom_type
+      _Atom_chem_shift.Atom_isotope_number
+      _Atom_chem_shift.Val
+      _Atom_chem_shift.Val_err
+      _Atom_chem_shift.Assign_fig_of_merit
+      _Atom_chem_shift.Ambiguity_code
+      _Atom_chem_shift.Occupancy
+      _Atom_chem_shift.Resonance_ID
+      _Atom_chem_shift.Auth_entity_assembly_ID
+      _Atom_chem_shift.Auth_asym_ID
+      _Atom_chem_shift.Auth_seq_ID
+      _Atom_chem_shift.Auth_comp_ID
+      _Atom_chem_shift.Auth_atom_ID
+      _Atom_chem_shift.PDB_record_ID
+      _Atom_chem_shift.PDB_model_num
+      _Atom_chem_shift.PDB_strand_ID
+      _Atom_chem_shift.PDB_ins_code
+      _Atom_chem_shift.PDB_residue_no
+      _Atom_chem_shift.PDB_residue_name
+      _Atom_chem_shift.PDB_atom_name
+      _Atom_chem_shift.Original_PDB_strand_ID
+      _Atom_chem_shift.Original_PDB_residue_no
+      _Atom_chem_shift.Original_PDB_residue_name
+      _Atom_chem_shift.Original_PDB_atom_name
+      _Atom_chem_shift.Details
+      _Atom_chem_shift.Entry_ID
+      _Atom_chem_shift.Assigned_chem_shift_list_ID
+
+      1     .   1   1   1    1    MET   HA     H   1   4.129   0.006   .   1   .   .   .   .   1    M   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      2     .   1   1   1    1    MET   HB2    H   1   2.158   0.006   .   1   .   .   .   .   1    M   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      3     .   1   1   1    1    MET   HB3    H   1   2.170   0.006   .   1   .   .   .   .   1    M   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      4     .   1   1   1    1    MET   HG2    H   1   2.578   0.006   .   1   .   .   .   .   1    M   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      5     .   1   1   1    1    MET   HG3    H   1   2.590   0.006   .   1   .   .   .   .   1    M   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      6     .   1   1   2    2    ASN   H      H   1   8.750   0.006   .   1   .   .   .   .   2    N   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      7     .   1   1   2    2    ASN   HA     H   1   4.796   0.006   .   1   .   .   .   .   2    N   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      8     .   1   1   2    2    ASN   HB2    H   1   2.799   0.006   .   1   .   .   .   .   2    N   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      9     .   1   1   2    2    ASN   HB3    H   1   2.865   0.006   .   1   .   .   .   .   2    N   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      10    .   1   1   2    2    ASN   HD21   H   1   7.526   0.006   .   1   .   .   .   .   2    N   HD21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      11    .   1   1   2    2    ASN   HD22   H   1   6.773   0.006   .   1   .   .   .   .   2    N   HD22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      12    .   1   1   3    3    LYS   H      H   1   8.352   0.006   .   1   .   .   .   .   3    K   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      13    .   1   1   3    3    LYS   HA     H   1   4.243   0.006   .   1   .   .   .   .   3    K   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      14    .   1   1   3    3    LYS   HB2    H   1   1.755   0.006   .   1   .   .   .   .   3    K   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      15    .   1   1   3    3    LYS   HB3    H   1   1.863   0.006   .   1   .   .   .   .   3    K   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      16    .   1   1   3    3    LYS   HD2    H   1   1.692   0.006   .   1   .   .   .   .   3    K   HD1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      17    .   1   1   3    3    LYS   HD3    H   1   1.692   0.006   .   1   .   .   .   .   3    K   HD2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      18    .   1   1   3    3    LYS   HE2    H   1   2.998   0.006   .   1   .   .   .   .   3    K   HE1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      19    .   1   1   3    3    LYS   HE3    H   1   2.998   0.006   .   1   .   .   .   .   3    K   HE2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      20    .   1   1   3    3    LYS   HG2    H   1   1.411   0.006   .   2   .   .   .   .   3    K   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      21    .   1   1   3    3    LYS   HG3    H   1   1.461   0.006   .   2   .   .   .   .   3    K   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      22    .   1   1   4    4    LYS   H      H   1   8.139   0.006   .   1   .   .   .   .   4    K   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      23    .   1   1   4    4    LYS   HA     H   1   4.262   0.006   .   1   .   .   .   .   4    K   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      24    .   1   1   4    4    LYS   HB2    H   1   1.752   0.006   .   1   .   .   .   .   4    K   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      25    .   1   1   4    4    LYS   HB3    H   1   1.802   0.006   .   1   .   .   .   .   4    K   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      26    .   1   1   4    4    LYS   HD2    H   1   1.674   0.006   .   1   .   .   .   .   4    K   HD1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      27    .   1   1   4    4    LYS   HD3    H   1   1.680   0.006   .   1   .   .   .   .   4    K   HD2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      28    .   1   1   4    4    LYS   HE2    H   1   2.982   0.006   .   1   .   .   .   .   4    K   HE1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      29    .   1   1   4    4    LYS   HE3    H   1   2.985   0.006   .   1   .   .   .   .   4    K   HE2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      30    .   1   1   4    4    LYS   HG2    H   1   1.395   0.006   .   1   .   .   .   .   4    K   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      31    .   1   1   4    4    LYS   HG3    H   1   1.439   0.006   .   1   .   .   .   .   4    K   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      32    .   1   1   5    5    ASN   H      H   1   8.147   0.006   .   1   .   .   .   .   5    N   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      33    .   1   1   5    5    ASN   HA     H   1   4.728   0.006   .   1   .   .   .   .   5    N   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      34    .   1   1   5    5    ASN   HB2    H   1   2.707   0.006   .   1   .   .   .   .   5    N   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      35    .   1   1   5    5    ASN   HB3    H   1   2.809   0.006   .   1   .   .   .   .   5    N   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      36    .   1   1   5    5    ASN   HD21   H   1   7.413   0.006   .   1   .   .   .   .   5    N   HD21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      37    .   1   1   5    5    ASN   HD22   H   1   6.666   0.006   .   1   .   .   .   .   5    N   HD22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      38    .   1   1   6    6    ILE   H      H   1   7.706   0.006   .   1   .   .   .   .   6    I   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      39    .   1   1   6    6    ILE   HA     H   1   4.205   0.006   .   1   .   .   .   .   6    I   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      40    .   1   1   6    6    ILE   HB     H   1   1.877   0.006   .   1   .   .   .   .   6    I   HB     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      41    .   1   1   6    6    ILE   HD11   H   1   0.830   0.006   .   1   .   .   .   .   6    I   HD11   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      42    .   1   1   6    6    ILE   HD12   H   1   0.830   0.006   .   1   .   .   .   .   6    I   HD12   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      43    .   1   1   6    6    ILE   HD13   H   1   0.830   0.006   .   1   .   .   .   .   6    I   HD13   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      44    .   1   1   6    6    ILE   HG12   H   1   1.141   0.006   .   1   .   .   .   .   6    I   HG11   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      45    .   1   1   6    6    ILE   HG13   H   1   1.427   0.006   .   1   .   .   .   .   6    I   HG12   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      46    .   1   1   6    6    ILE   HG21   H   1   0.883   0.006   .   1   .   .   .   .   6    I   HG21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      47    .   1   1   6    6    ILE   HG22   H   1   0.883   0.006   .   1   .   .   .   .   6    I   HG22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      48    .   1   1   6    6    ILE   HG23   H   1   0.883   0.006   .   1   .   .   .   .   6    I   HG23   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      49    .   1   1   7    7    LEU   H      H   1   7.841   0.006   .   1   .   .   .   .   7    L   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      50    .   1   1   7    7    LEU   HA     H   1   4.647   0.006   .   1   .   .   .   .   7    L   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      51    .   1   1   7    7    LEU   HB2    H   1   1.618   0.006   .   1   .   .   .   .   7    L   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      52    .   1   1   7    7    LEU   HB3    H   1   1.637   0.006   .   1   .   .   .   .   7    L   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      53    .   1   1   7    7    LEU   HD11   H   1   0.917   0.006   .   1   .   .   .   .   7    L   HD11   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      54    .   1   1   7    7    LEU   HD12   H   1   0.917   0.006   .   1   .   .   .   .   7    L   HD12   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      55    .   1   1   7    7    LEU   HD13   H   1   0.917   0.006   .   1   .   .   .   .   7    L   HD13   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      56    .   1   1   7    7    LEU   HD21   H   1   0.902   0.006   .   1   .   .   .   .   7    L   HD21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      57    .   1   1   7    7    LEU   HD22   H   1   0.902   0.006   .   1   .   .   .   .   7    L   HD22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      58    .   1   1   7    7    LEU   HD23   H   1   0.902   0.006   .   1   .   .   .   .   7    L   HD23   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      59    .   1   1   7    7    LEU   HG     H   1   1.554   0.006   .   1   .   .   .   .   7    L   HG     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      60    .   1   1   8    8    PRO   HA     H   1   4.372   0.006   .   1   .   .   .   .   8    P   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      61    .   1   1   8    8    PRO   HB2    H   1   1.925   0.006   .   1   .   .   .   .   8    P   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      62    .   1   1   8    8    PRO   HB3    H   1   2.267   0.006   .   1   .   .   .   .   8    P   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      63    .   1   1   8    8    PRO   HD2    H   1   3.630   0.006   .   1   .   .   .   .   8    P   HD1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      64    .   1   1   8    8    PRO   HD3    H   1   3.797   0.006   .   1   .   .   .   .   8    P   HD2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      65    .   1   1   8    8    PRO   HG2    H   1   1.995   0.006   .   1   .   .   .   .   8    P   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      66    .   1   1   8    8    PRO   HG3    H   1   2.047   0.006   .   1   .   .   .   .   8    P   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      67    .   1   1   9    9    GLN   H      H   1   8.408   0.006   .   1   .   .   .   .   9    Q   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      68    .   1   1   9    9    GLN   HA     H   1   4.226   0.006   .   1   .   .   .   .   9    Q   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      69    .   1   1   9    9    GLN   HB2    H   1   1.992   0.006   .   2   .   .   .   .   9    Q   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      70    .   1   1   9    9    GLN   HB3    H   1   2.110   0.006   .   1   .   .   .   .   9    Q   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      71    .   1   1   9    9    GLN   HE21   H   1   7.348   0.006   .   1   .   .   .   .   9    Q   HE21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      72    .   1   1   9    9    GLN   HE22   H   1   6.506   0.006   .   1   .   .   .   .   9    Q   HE22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      73    .   1   1   9    9    GLN   HG2    H   1   2.380   0.006   .   1   .   .   .   .   9    Q   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      74    .   1   1   9    9    GLN   HG3    H   1   2.377   0.006   .   1   .   .   .   .   9    Q   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      75    .   1   1   10   10   GLN   H      H   1   8.202   0.006   .   1   .   .   .   .   10   Q   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      76    .   1   1   10   10   GLN   HA     H   1   4.278   0.006   .   1   .   .   .   .   10   Q   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      77    .   1   1   10   10   GLN   HB2    H   1   2.063   0.006   .   2   .   .   .   .   10   Q   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      78    .   1   1   10   10   GLN   HB3    H   1   2.136   0.006   .   2   .   .   .   .   10   Q   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      79    .   1   1   10   10   GLN   HG2    H   1   2.351   0.006   .   1   .   .   .   .   10   Q   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      80    .   1   1   10   10   GLN   HG3    H   1   2.351   0.006   .   1   .   .   .   .   10   Q   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      81    .   1   1   11   11   GLY   H      H   1   8.150   0.006   .   1   .   .   .   .   11   G   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      82    .   1   1   11   11   GLY   HA2    H   1   3.866   0.006   .   1   .   .   .   .   11   G   HA1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      83    .   1   1   11   11   GLY   HA3    H   1   3.974   0.006   .   1   .   .   .   .   11   G   HA2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      84    .   1   1   12   12   GLN   H      H   1   7.967   0.006   .   1   .   .   .   .   12   Q   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      85    .   1   1   12   12   GLN   HA     H   1   4.456   0.006   .   1   .   .   .   .   12   Q   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      86    .   1   1   12   12   GLN   HB2    H   1   2.048   0.006   .   2   .   .   .   .   12   Q   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      87    .   1   1   12   12   GLN   HB3    H   1   2.139   0.006   .   1   .   .   .   .   12   Q   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      88    .   1   1   12   12   GLN   HG2    H   1   2.408   0.006   .   1   .   .   .   .   12   Q   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      89    .   1   1   12   12   GLN   HG3    H   1   2.424   0.006   .   2   .   .   .   .   12   Q   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      90    .   1   1   13   13   PRO   HA     H   1   4.313   0.006   .   1   .   .   .   .   13   P   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      91    .   1   1   13   13   PRO   HB2    H   1   1.897   0.006   .   2   .   .   .   .   13   P   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      92    .   1   1   13   13   PRO   HB3    H   1   2.281   0.006   .   2   .   .   .   .   13   P   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      93    .   1   1   13   13   PRO   HD2    H   1   3.714   0.006   .   2   .   .   .   .   13   P   HD1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      94    .   1   1   13   13   PRO   HD3    H   1   3.776   0.006   .   2   .   .   .   .   13   P   HD2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      95    .   1   1   13   13   PRO   HG2    H   1   1.996   0.006   .   2   .   .   .   .   13   P   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      96    .   1   1   13   13   PRO   HG3    H   1   2.075   0.006   .   2   .   .   .   .   13   P   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      97    .   1   1   14   14   VAL   H      H   1   7.602   0.006   .   1   .   .   .   .   14   V   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      98    .   1   1   14   14   VAL   HA     H   1   3.829   0.006   .   1   .   .   .   .   14   V   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      99    .   1   1   14   14   VAL   HB     H   1   2.125   0.006   .   1   .   .   .   .   14   V   HB     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      100   .   1   1   14   14   VAL   HG11   H   1   0.996   0.006   .   2   .   .   .   .   14   V   HG11   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      101   .   1   1   14   14   VAL   HG12   H   1   0.996   0.006   .   2   .   .   .   .   14   V   HG12   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      102   .   1   1   14   14   VAL   HG13   H   1   0.996   0.006   .   2   .   .   .   .   14   V   HG13   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      103   .   1   1   14   14   VAL   HG21   H   1   0.922   0.006   .   2   .   .   .   .   14   V   HG21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      104   .   1   1   14   14   VAL   HG22   H   1   0.922   0.006   .   2   .   .   .   .   14   V   HG22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      105   .   1   1   14   14   VAL   HG23   H   1   0.922   0.006   .   1   .   .   .   .   14   V   HG23   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      106   .   1   1   15   15   ILE   H      H   1   7.700   0.006   .   1   .   .   .   .   15   I   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      107   .   1   1   15   15   ILE   HA     H   1   3.849   0.006   .   1   .   .   .   .   15   I   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      108   .   1   1   15   15   ILE   HB     H   1   1.934   0.006   .   1   .   .   .   .   15   I   HB     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      109   .   1   1   15   15   ILE   HD11   H   1   0.833   0.006   .   2   .   .   .   .   15   I   HD11   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      110   .   1   1   15   15   ILE   HD12   H   1   0.833   0.006   .   2   .   .   .   .   15   I   HD12   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      111   .   1   1   15   15   ILE   HD13   H   1   0.833   0.006   .   2   .   .   .   .   15   I   HD13   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      112   .   1   1   15   15   ILE   HG12   H   1   1.187   0.006   .   2   .   .   .   .   15   I   HG11   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      113   .   1   1   15   15   ILE   HG13   H   1   1.546   0.006   .   2   .   .   .   .   15   I   HG12   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      114   .   1   1   15   15   ILE   HG21   H   1   0.894   0.006   .   2   .   .   .   .   15   I   HG21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      115   .   1   1   15   15   ILE   HG22   H   1   0.894   0.006   .   2   .   .   .   .   15   I   HG22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      116   .   1   1   15   15   ILE   HG23   H   1   0.894   0.006   .   2   .   .   .   .   15   I   HG23   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      117   .   1   1   16   16   ARG   H      H   1   7.858   0.006   .   1   .   .   .   .   16   R   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      118   .   1   1   16   16   ARG   HA     H   1   4.100   0.006   .   1   .   .   .   .   16   R   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      119   .   1   1   16   16   ARG   HB2    H   1   1.849   0.006   .   2   .   .   .   .   16   R   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      120   .   1   1   16   16   ARG   HB3    H   1   1.854   0.006   .   2   .   .   .   .   16   R   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      121   .   1   1   16   16   ARG   HD2    H   1   3.148   0.006   .   2   .   .   .   .   16   R   HD1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      122   .   1   1   16   16   ARG   HD3    H   1   3.161   0.006   .   2   .   .   .   .   16   R   HD2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      123   .   1   1   16   16   ARG   HE     H   1   7.144   0.006   .   1   .   .   .   .   16   R   HE     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      124   .   1   1   16   16   ARG   HG2    H   1   1.633   0.006   .   2   .   .   .   .   16   R   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      125   .   1   1   16   16   ARG   HG3    H   1   1.687   0.006   .   2   .   .   .   .   16   R   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      126   .   1   1   17   17   LEU   H      H   1   8.107   0.006   .   1   .   .   .   .   17   L   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      127   .   1   1   17   17   LEU   HA     H   1   4.250   0.006   .   1   .   .   .   .   17   L   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      128   .   1   1   17   17   LEU   HB2    H   1   1.598   0.006   .   2   .   .   .   .   17   L   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      129   .   1   1   17   17   LEU   HB3    H   1   1.782   0.006   .   2   .   .   .   .   17   L   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      130   .   1   1   17   17   LEU   HD11   H   1   0.866   0.006   .   2   .   .   .   .   17   L   HD11   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      131   .   1   1   17   17   LEU   HD12   H   1   0.866   0.006   .   2   .   .   .   .   17   L   HD12   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      132   .   1   1   17   17   LEU   HD13   H   1   0.866   0.006   .   2   .   .   .   .   17   L   HD13   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      133   .   1   1   17   17   LEU   HD21   H   1   0.857   0.006   .   2   .   .   .   .   17   L   HD21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      134   .   1   1   17   17   LEU   HD22   H   1   0.857   0.006   .   2   .   .   .   .   17   L   HD22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      135   .   1   1   17   17   LEU   HD23   H   1   0.857   0.006   .   2   .   .   .   .   17   L   HD23   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      136   .   1   1   18   18   THR   H      H   1   7.982   0.006   .   1   .   .   .   .   18   T   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      137   .   1   1   18   18   THR   HA     H   1   4.115   0.006   .   1   .   .   .   .   18   T   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      138   .   1   1   18   18   THR   HB     H   1   4.332   0.006   .   1   .   .   .   .   18   T   HB     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      139   .   1   1   18   18   THR   HG21   H   1   1.232   0.006   .   2   .   .   .   .   18   T   HG21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      140   .   1   1   18   18   THR   HG22   H   1   1.232   0.006   .   2   .   .   .   .   18   T   HG22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      141   .   1   1   18   18   THR   HG23   H   1   1.232   0.006   .   2   .   .   .   .   18   T   HG23   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      142   .   1   1   19   19   ALA   H      H   1   8.452   0.006   .   1   .   .   .   .   19   A   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      143   .   1   1   19   19   ALA   HA     H   1   4.120   0.006   .   1   .   .   .   .   19   A   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      144   .   1   1   19   19   ALA   HB1    H   1   1.457   0.006   .   2   .   .   .   .   19   A   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      145   .   1   1   19   19   ALA   HB2    H   1   1.457   0.006   .   1   .   .   .   .   19   A   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      146   .   1   1   19   19   ALA   HB3    H   1   1.457   0.006   .   1   .   .   .   .   19   A   HB3    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      147   .   1   1   20   20   GLY   H      H   1   8.243   0.006   .   1   .   .   .   .   20   G   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      148   .   1   1   20   20   GLY   HA2    H   1   3.853   0.006   .   1   .   .   .   .   20   G   HA1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      149   .   1   1   20   20   GLY   HA3    H   1   3.896   0.006   .   1   .   .   .   .   20   G   HA2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      150   .   1   1   21   21   GLN   H      H   1   8.033   0.006   .   1   .   .   .   .   21   Q   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      151   .   1   1   21   21   GLN   HA     H   1   4.177   0.006   .   1   .   .   .   .   21   Q   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      152   .   1   1   21   21   GLN   HB2    H   1   2.165   0.006   .   2   .   .   .   .   21   Q   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      153   .   1   1   21   21   GLN   HB3    H   1   2.237   0.006   .   2   .   .   .   .   21   Q   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      154   .   1   1   21   21   GLN   HG2    H   1   2.444   0.006   .   2   .   .   .   .   21   Q   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      155   .   1   1   21   21   GLN   HG3    H   1   2.456   0.006   .   2   .   .   .   .   21   Q   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      156   .   1   1   22   22   LEU   H      H   1   8.321   0.006   .   1   .   .   .   .   22   L   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      157   .   1   1   22   22   LEU   HA     H   1   4.175   0.006   .   1   .   .   .   .   22   L   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      158   .   1   1   22   22   LEU   HB2    H   1   1.628   0.006   .   2   .   .   .   .   22   L   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      159   .   1   1   22   22   LEU   HB3    H   1   1.747   0.006   .   2   .   .   .   .   22   L   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      160   .   1   1   22   22   LEU   HD11   H   1   0.877   0.006   .   2   .   .   .   .   22   L   HD11   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      161   .   1   1   22   22   LEU   HD12   H   1   0.877   0.006   .   2   .   .   .   .   22   L   HD12   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      162   .   1   1   22   22   LEU   HD13   H   1   0.877   0.006   .   1   .   .   .   .   22   L   HD13   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      163   .   1   1   22   22   LEU   HD21   H   1   0.862   0.006   .   2   .   .   .   .   22   L   HD21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      164   .   1   1   22   22   LEU   HD22   H   1   0.862   0.006   .   2   .   .   .   .   22   L   HD22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      165   .   1   1   22   22   LEU   HD23   H   1   0.862   0.006   .   2   .   .   .   .   22   L   HD23   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      166   .   1   1   23   23   SER   H      H   1   8.174   0.006   .   1   .   .   .   .   23   S   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      167   .   1   1   23   23   SER   HA     H   1   4.186   0.006   .   1   .   .   .   .   23   S   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      168   .   1   1   23   23   SER   HB2    H   1   3.956   0.006   .   2   .   .   .   .   23   S   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      169   .   1   1   23   23   SER   HB3    H   1   4.009   0.006   .   2   .   .   .   .   23   S   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      170   .   1   1   24   24   SER   H      H   1   7.808   0.006   .   2   .   .   .   .   24   S   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      171   .   1   1   24   24   SER   HA     H   1   4.317   0.006   .   2   .   .   .   .   24   S   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      172   .   1   1   24   24   SER   HB2    H   1   4.003   0.006   .   2   .   .   .   .   24   S   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      173   .   1   1   24   24   SER   HB3    H   1   4.021   0.006   .   2   .   .   .   .   24   S   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      174   .   1   1   25   25   GLN   H      H   1   7.922   0.006   .   2   .   .   .   .   25   Q   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      175   .   1   1   25   25   GLN   HA     H   1   4.275   0.006   .   1   .   .   .   .   25   Q   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      176   .   1   1   25   25   GLN   HB2    H   1   2.150   0.006   .   2   .   .   .   .   25   Q   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      177   .   1   1   25   25   GLN   HB3    H   1   2.179   0.006   .   2   .   .   .   .   25   Q   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      178   .   1   1   25   25   GLN   HG2    H   1   2.421   0.006   .   1   .   .   .   .   25   Q   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      179   .   1   1   25   25   GLN   HG3    H   1   2.430   0.006   .   2   .   .   .   .   25   Q   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      180   .   1   1   26   26   LEU   H      H   1   7.891   0.006   .   2   .   .   .   .   26   L   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      181   .   1   1   26   26   LEU   HA     H   1   4.278   0.006   .   2   .   .   .   .   26   L   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      182   .   1   1   26   26   LEU   HB2    H   1   1.745   0.006   .   2   .   .   .   .   26   L   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      183   .   1   1   26   26   LEU   HB3    H   1   1.754   0.006   .   2   .   .   .   .   26   L   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      184   .   1   1   26   26   LEU   HD11   H   1   0.872   0.006   .   2   .   .   .   .   26   L   HD11   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      185   .   1   1   26   26   LEU   HD12   H   1   0.872   0.006   .   2   .   .   .   .   26   L   HD12   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      186   .   1   1   26   26   LEU   HD13   H   1   0.872   0.006   .   2   .   .   .   .   26   L   HD13   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      187   .   1   1   26   26   LEU   HD21   H   1   0.859   0.006   .   2   .   .   .   .   26   L   HD21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      188   .   1   1   26   26   LEU   HD22   H   1   0.859   0.006   .   2   .   .   .   .   26   L   HD22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      189   .   1   1   26   26   LEU   HD23   H   1   0.859   0.006   .   2   .   .   .   .   26   L   HD23   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      190   .   1   1   26   26   LEU   HG     H   1   1.579   0.006   .   2   .   .   .   .   26   L   HG     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      191   .   1   1   27   27   ALA   H      H   1   7.659   0.006   .   2   .   .   .   .   27   A   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      192   .   1   1   27   27   ALA   HA     H   1   4.298   0.006   .   2   .   .   .   .   27   A   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      193   .   1   1   27   27   ALA   HB1    H   1   1.430   0.006   .   2   .   .   .   .   27   A   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      194   .   1   1   27   27   ALA   HB2    H   1   1.430   0.006   .   2   .   .   .   .   27   A   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      195   .   1   1   27   27   ALA   HB3    H   1   1.430   0.006   .   2   .   .   .   .   27   A   HB3    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      196   .   1   1   28   28   GLU   H      H   1   7.752   0.006   .   1   .   .   .   .   28   E   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      197   .   1   1   28   28   GLU   HA     H   1   4.312   0.006   .   1   .   .   .   .   28   E   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      198   .   1   1   28   28   GLU   HB2    H   1   2.039   0.006   .   2   .   .   .   .   28   E   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      199   .   1   1   28   28   GLU   HB3    H   1   2.244   0.006   .   1   .   .   .   .   28   E   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      200   .   1   1   28   28   GLU   HG2    H   1   2.449   0.006   .   2   .   .   .   .   28   E   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      201   .   1   1   28   28   GLU   HG3    H   1   2.486   0.006   .   2   .   .   .   .   28   E   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      202   .   1   1   29   29   LEU   H      H   1   7.995   0.006   .   1   .   .   .   .   29   L   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      203   .   1   1   29   29   LEU   HA     H   1   4.351   0.006   .   1   .   .   .   .   29   L   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      204   .   1   1   29   29   LEU   HB2    H   1   1.602   0.006   .   1   .   .   .   .   29   L   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      205   .   1   1   29   29   LEU   HB3    H   1   1.637   0.006   .   1   .   .   .   .   29   L   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      206   .   1   1   29   29   LEU   HD11   H   1   0.893   0.006   .   1   .   .   .   .   29   L   HD11   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      207   .   1   1   29   29   LEU   HD12   H   1   0.893   0.006   .   1   .   .   .   .   29   L   HD12   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      208   .   1   1   29   29   LEU   HD13   H   1   0.893   0.006   .   1   .   .   .   .   29   L   HD13   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      209   .   1   1   29   29   LEU   HD21   H   1   0.867   0.006   .   2   .   .   .   .   29   L   HD21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      210   .   1   1   29   29   LEU   HD22   H   1   0.867   0.006   .   2   .   .   .   .   29   L   HD22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      211   .   1   1   29   29   LEU   HD23   H   1   0.867   0.006   .   1   .   .   .   .   29   L   HD23   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      212   .   1   1   30   30   SER   H      H   1   8.079   0.006   .   1   .   .   .   .   30   S   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      213   .   1   1   30   30   SER   HA     H   1   4.453   0.006   .   1   .   .   .   .   30   S   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      214   .   1   1   30   30   SER   HB2    H   1   3.872   0.006   .   1   .   .   .   .   30   S   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      215   .   1   1   30   30   SER   HB3    H   1   3.905   0.006   .   1   .   .   .   .   30   S   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      216   .   1   1   31   31   GLU   H      H   1   8.070   0.006   .   1   .   .   .   .   31   E   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      217   .   1   1   31   31   GLU   HA     H   1   4.425   0.006   .   1   .   .   .   .   31   E   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      218   .   1   1   31   31   GLU   HB2    H   1   1.989   0.006   .   1   .   .   .   .   31   E   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      219   .   1   1   31   31   GLU   HB3    H   1   2.261   0.006   .   1   .   .   .   .   31   E   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      220   .   1   1   31   31   GLU   HG2    H   1   2.396   0.006   .   1   .   .   .   .   31   E   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      221   .   1   1   31   31   GLU   HG3    H   1   2.395   0.006   .   2   .   .   .   .   31   E   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      222   .   1   1   32   32   GLU   H      H   1   8.025   0.006   .   1   .   .   .   .   32   E   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      223   .   1   1   32   32   GLU   HA     H   1   4.376   0.006   .   1   .   .   .   .   32   E   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      224   .   1   1   32   32   GLU   HB2    H   1   1.947   0.006   .   2   .   .   .   .   32   E   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      225   .   1   1   32   32   GLU   HB3    H   1   2.165   0.006   .   2   .   .   .   .   32   E   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      226   .   1   1   32   32   GLU   HG2    H   1   2.366   0.006   .   2   .   .   .   .   32   E   HG1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      227   .   1   1   32   32   GLU   HG3    H   1   2.381   0.006   .   2   .   .   .   .   32   E   HG2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      228   .   1   1   33   33   ALA   H      H   1   7.978   0.006   .   1   .   .   .   .   33   A   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      229   .   1   1   33   33   ALA   HA     H   1   4.285   0.006   .   1   .   .   .   .   33   A   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      230   .   1   1   33   33   ALA   HB1    H   1   1.339   0.006   .   2   .   .   .   .   33   A   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      231   .   1   1   33   33   ALA   HB2    H   1   1.339   0.006   .   2   .   .   .   .   33   A   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      232   .   1   1   33   33   ALA   HB3    H   1   1.339   0.006   .   2   .   .   .   .   33   A   HB3    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      233   .   1   1   34   34   LEU   H      H   1   7.765   0.006   .   1   .   .   .   .   34   L   HN     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      234   .   1   1   34   34   LEU   HA     H   1   4.313   0.006   .   1   .   .   .   .   34   L   HA     .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      235   .   1   1   34   34   LEU   HB2    H   1   1.590   0.006   .   2   .   .   .   .   34   L   HB1    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      236   .   1   1   34   34   LEU   HB3    H   1   1.625   0.006   .   2   .   .   .   .   34   L   HB2    .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      237   .   1   1   34   34   LEU   HD11   H   1   0.887   0.006   .   2   .   .   .   .   34   L   HD11   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      238   .   1   1   34   34   LEU   HD12   H   1   0.887   0.006   .   2   .   .   .   .   34   L   HD12   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      239   .   1   1   34   34   LEU   HD13   H   1   0.887   0.006   .   2   .   .   .   .   34   L   HD13   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      240   .   1   1   34   34   LEU   HD21   H   1   0.855   0.006   .   2   .   .   .   .   34   L   HD21   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      241   .   1   1   34   34   LEU   HD22   H   1   0.855   0.006   .   2   .   .   .   .   34   L   HD22   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+      242   .   1   1   34   34   LEU   HD23   H   1   0.855   0.006   .   2   .   .   .   .   34   L   HD23   .   .   .   .   .   .   .   .   .   .   .   .   16943   1
+   stop_
+save_
+
+
+save_peak_list_1
+   _Spectral_peak_list.Sf_category                    spectral_peak_list
+   _Spectral_peak_list.Sf_framecode                   peak_list_1
+   _Spectral_peak_list.Entry_ID                       16943
+   _Spectral_peak_list.ID                             1
+   _Spectral_peak_list.Data_file_name                 synpate_noe_all_cos_200ms_2_update_6.xpk
+   _Spectral_peak_list.Sample_ID                      1
+   _Spectral_peak_list.Sample_label                   $sample_1 
+   _Spectral_peak_list.Sample_condition_list_ID       1
+   _Spectral_peak_list.Sample_condition_list_label    $sample_conditions_1 
+   _Spectral_peak_list.Experiment_ID                  ?
+   _Spectral_peak_list.Experiment_name                ?
+   _Spectral_peak_list.Number_of_spectral_dimensions  ?
+   _Spectral_peak_list.Details                        .
+   _Spectral_peak_list.Text_data_format               text
+   _Spectral_peak_list.Text_data
+;
+label dataset sw sf
+1H1 1H2 
+None
+{2399.82 } {6492.45 }
+{599.7880 } {599.7880 }
+ 1H1.L  1H1.P  1H1.W  1H1.B  1H1.E  1H1.J  1H1.U  1H1.L  1H2.P  1H2.W  1H2.B  1H2.E  1H2.J  1H2.U  vol  int  stat  comment  flag0 
+1  {7.HN}   7.840   0.050   0.050   ?   0.000   {?}   {7.HA}   4.647   0.050   0.050   ?   0.000   {?}  24187563.75000 2814273.25000 1 {?} 0
+2  {30.HN}   8.087   0.050   0.050   ?   0.000   {?}   {30.HA}   4.458   0.050   0.050   ?   0.000   {?}  144701113.00000 16825156.00000 1 {?} 0
+3  {29.HN}   7.997   0.050   0.050   ?   0.000   {?}   {30.HA}   4.455   0.050   0.050   ?   0.000   {?}  14129129.62500 1685282.00000 1 {?} 0
+4  {12.HN}   7.967   0.050   0.050   ?   0.000   {?}   {12.HA}   4.456   0.050   0.050   ?   0.000   {?}  63757535.50000 7420432.50000 1 {?} 0
+5  {10.HN}   8.207   0.050   0.050   ?   0.000   {?}   {8.HA}   4.380   0.050   0.050   ?   0.000   {?}  17982490.12500 2100314.25000 1 {?} 0
+8  {32.HN}   8.027   0.050   0.050   ?   0.000   {?}   {32.HA}   4.380   0.050   0.050   ?   0.000   {?}  32635962.75000 3882139.75000 1 {?} 0
+9  {9.HN}   8.412   0.050   0.050   ?   0.000   {?}   {8.HA}   4.371   0.050   0.050   ?   0.000   {?}  94639907.00000 10895174.00000 1 {?} 0
+13  {30.HN}   8.084   0.050   0.050   ?   0.000   {?}   {29.HA}   4.351   0.050   0.050   ?   0.000   {?}  111071392.00000 12770232.00000 1 {?} 0
+15  {29.HN}   7.992   0.050   0.050   ?   0.000   {?}   {29.HA}   4.343   0.050   0.050   ?   0.000   {?}  85632171.00000 9853430.00000 1 {?} 0
+16  {19.HN}   8.454   0.050   0.050   ?   0.000   {?}   {18.HB}   4.335   0.050   0.050   ?   0.000   {?}  58511340.50000 6819484.00000 1 {?} 0
+19  {20.HN}   8.243   0.050   0.050   ?   0.000   {?}   {18.HB}   4.319   0.050   0.050   ?   0.000   {?}  16612442.37500 1975637.62500 1 {?} 0
+20  {17.HN}   8.110   0.050   0.050   ?   0.000   {?}   {13.HA}   4.318   0.050   0.050   ?   0.000   {?}  29884822.25000 3497418.50000 1 {?} 0
+22  {16.HN}   7.860   0.050   0.050   ?   0.000   {?}   {13.HA}   4.317   0.050   0.050   ?   0.000   {?}  27477853.50000 3152287.50000 1 {?} 0
+23  {24.HN}   7.809   0.050   0.050   ?   0.000   {?}   {24.HA}   4.318   0.050   0.050   ?   0.000   {?}  96578091.00000 11185994.00000 1 {?} 0
+24  {14.HN}   7.602   0.050   0.050   ?   0.000   {?}   {13.HA}   4.318   0.050   0.050   ?   0.000   {?}  42474432.00000 4979556.50000 1 {?} 0
+29  {34.HN 34.HN}   7.759   0.050   0.050   ?   0.000   {?}   {34.HA 33.HA}   4.296   0.050   0.050   ?   0.000   {?}  185249520.00000 21366318.00000 1 {?} 0
+30  {}   7.707   0.050   0.050   ?   0.000   {?}   {}   4.297   0.050   0.050   ?   0.000   {?}  27394383.75000 3180099.75000 1 {?} 0
+31  {27.HN}   7.661   0.050   0.050   ?   0.000   {?}   {27.HA}   4.292   0.050   0.050   ?   0.000   {?}  126360121.00000 14381559.00000 1 {?} 0
+34  {25.HN}   7.919   0.050   0.050   ?   0.000   {?}   {25.HA}   4.277   0.050   0.050   ?   0.000   {?}  100621455.00000 11480636.00000 1 {?} 0
+35  {26.HN}   7.897   0.050   0.050   ?   0.000   {?}   {26.HA}   4.278   0.050   0.050   ?   0.000   {?}  115146382.00000 13101945.00000 1 {?} 0
+36  {10.HN}   8.204   0.050   0.050   ?   0.000   {?}   {10.HA}   4.270   0.050   0.050   ?   0.000   {?}  97247555.00000 11045447.00000 1 {?} 0
+38  {21.HN}   8.036   0.050   0.050   ?   0.000   {?}   {17.HA}   4.269   0.050   0.050   ?   0.000   {?}  21355320.75000 2455787.00000 1 {?} 0
+40  {29.HN 29.HN}   7.988   0.050   0.050   ?   0.000   {?}   {25.HA 26.HA}   4.272   0.050   0.050   ?   0.000   {?}  66646364.50000 7561134.00000 1 {?} 0
+41  {11.HN}   8.148   0.050   0.050   ?   0.000   {?}   {10.HA}   4.263   0.050   0.050   ?   0.000   {?}  247574712.00000 28678816.00000 1 {?} 0
+44  {3.HN}   8.359   0.050   0.050   ?   0.000   {?}   {3.HA}   4.248   0.050   0.050   ?   0.000   {?}  41748218.50000 4968312.00000 1 {?} 0
+45  {20.HN}   8.244   0.050   0.050   ?   0.000   {?}   {17.HA}   4.252   0.050   0.050   ?   0.000   {?}  31615231.00000 3687969.50000 1 {?} 0
+47  {17.HN}   8.112   0.050   0.050   ?   0.000   {?}   {17.HA}   4.252   0.050   0.050   ?   0.000   {?}  77986448.00000 8960101.00000 1 {?} 0
+49  {10.HN}   8.204   0.050   0.050   ?   0.000   {?}   {9.HA}   4.228   0.050   0.050   ?   0.000   {?}  98346957.00000 11249649.00000 1 {?} 0
+51  {9.HN}   8.415   0.050   0.050   ?   0.000   {?}   {9.HA}   4.224   0.050   0.050   ?   0.000   {?}  43299299.50000 5035778.50000 1 {?} 0
+55  {6.HN}   7.708   0.050   0.050   ?   0.000   {?}   {6.HA}   4.213   0.050   0.050   ?   0.000   {?}  27294513.00000 3260091.75000 1 {?} 0
+56  {7.HN}   7.845   0.050   0.050   ?   0.000   {?}   {6.HA}   4.205   0.050   0.050   ?   0.000   {?}  100994685.00000 11390457.00000 1 {?} 0
+59  {26.HN 26.HN 26.HN}   7.897   0.050   0.050   ?   0.000   {?}   {23.HA 22.HA 21.HA}   4.190   0.050   0.050   ?   0.000   {?}  34104727.25000 3952713.75000 1 {?} 0
+61  {25.HN 25.HN 25.HN}   7.916   0.050   0.050   ?   0.000   {?}   {23.HA 21.HA 22.HA}   4.186   0.050   0.050   ?   0.000   {?}  36374318.75000 4101190.50000 1 {?} 0
+62  {24.HN}   7.810   0.050   0.050   ?   0.000   {?}   {23.HA}   4.186   0.050   0.050   ?   0.000   {?}  70021823.50000 8045379.50000 1 {?} 0
+64  {23.HN}   8.175   0.050   0.050   ?   0.000   {?}   {23.HA}   4.184   0.050   0.050   ?   0.000   {?}  117247906.00000 13625467.00000 1 {?} 0
+66  {22.HN 22.HN}   8.324   0.050   0.050   ?   0.000   {?}   {22.HA 21.HA}   4.176   0.050   0.050   ?   0.000   {?}  86338945.00000 9926796.00000 1 {?} 0
+67  {21.HN}   8.034   0.050   0.050   ?   0.000   {?}   {21.HA}   4.176   0.050   0.050   ?   0.000   {?}  77383674.50000 8804813.00000 1 {?} 0
+72  {2.HN}   8.747   0.050   0.050   ?   0.000   {?}   {1.HA}   4.130   0.050   0.050   ?   0.000   {?}  66293140.50000 7761290.50000 1 {?} 0
+73  {19.HN}   8.453   0.050   0.050   ?   0.000   {?}   {19.HA}   4.119   0.050   0.050   ?   0.000   {?}  104569747.00000 12097063.00000 1 {?} 0
+74  {20.HN}   8.244   0.050   0.050   ?   0.000   {?}   {19.HA}   4.120   0.050   0.050   ?   0.000   {?}  43991221.50000 5133480.50000 1 {?} 0
+75  {23.HN}   8.174   0.050   0.050   ?   0.000   {?}   {19.HA}   4.118   0.050   0.050   ?   0.000   {?}  18017036.12500 2106620.25000 1 {?} 0
+76  {18.HN}   7.984   0.050   0.050   ?   0.000   {?}   {18.HA}   4.115   0.050   0.050   ?   0.000   {?}  56505033.50000 6491486.50000 1 {?} 0
+77  {17.HN}   8.111   0.050   0.050   ?   0.000   {?}   {16.HA}   4.099   0.050   0.050   ?   0.000   {?}  40455943.50000 4747216.50000 1 {?} 0
+78  {16.HN}   7.858   0.050   0.050   ?   0.000   {?}   {16.HA}   4.099   0.050   0.050   ?   0.000   {?}  57810026.00000 6715801.00000 1 {?} 0
+79  {25.HN}   7.917   0.050   0.050   ?   0.000   {?}   {24.HB2}   4.022   0.050   0.050   ?   0.000   {?}  23574411.00000 2715013.00000 1 {?} 0
+80  {23.HN}   8.174   0.050   0.050   ?   0.000   {?}   {23.HB2}   4.000   0.050   0.050   ?   0.000   {?}  67411196.50000 7740496.50000 1 {?} 0
+82  {25.HN}   7.918   0.050   0.050   ?   0.000   {?}   {24.HB1}   4.002   0.050   0.050   ?   0.000   {?}  23325803.25000 2669121.50000 1 {?} 0
+83  {24.HN}   7.810   0.050   0.050   ?   0.000   {?}   {24.HB#}   4.003   0.050   0.050   ?   0.000   {?}  99158696.00000 11306236.00000 1 {?} 0
+89  {12.HN}   7.967   0.050   0.050   ?   0.000   {?}   {11.HA2}   3.973   0.050   0.050   ?   0.000   {?}  52738583.00000 6090553.00000 1 {?} 0
+91  {11.HN}   8.152   0.050   0.050   ?   0.000   {?}   {11.HA2}   3.972   0.050   0.050   ?   0.000   {?}  76266832.00000 8714388.00000 1 {?} 0
+92  {23.HN}   8.173   0.050   0.050   ?   0.000   {?}   {23.HB1}   3.958   0.050   0.050   ?   0.000   {?}  68596154.00000 7774255.00000 1 {?} 0
+97  {30.HN}   8.084   0.050   0.050   ?   0.000   {?}   {30.HB2}   3.900   0.050   0.050   ?   0.000   {?}  48380002.00000 5560095.00000 1 {?} 0
+98  {21.HN}   8.033   0.050   0.050   ?   0.000   {?}   {20.HA2}   3.900   0.050   0.050   ?   0.000   {?}  41634645.75000 4925794.00000 1 {?} 0
+99  {20.HN}   8.244   0.050   0.050   ?   0.000   {?}   {20.HA2}   3.883   0.050   0.050   ?   0.000   {?}  129823893.00000 14809713.00000 1 {?} 0
+101  {30.HN}   8.084   0.050   0.050   ?   0.000   {?}   {30.HB1}   3.885   0.050   0.050   ?   0.000   {?}  49266588.50000 5586349.00000 1 {?} 0
+104  {11.HN}   8.150   0.050   0.050   ?   0.000   {?}   {11.HA1}   3.863   0.050   0.050   ?   0.000   {?}  78028205.00000 8923448.00000 1 {?} 0
+105  {21.HN}   8.033   0.050   0.050   ?   0.000   {?}   {20.HA1}   3.865   0.050   0.050   ?   0.000   {?}  40498473.00000 4638542.50000 1 {?} 0
+106  {12.HN}   7.970   0.050   0.050   ?   0.000   {?}   {11.HA1}   3.862   0.050   0.050   ?   0.000   {?}  56188976.50000 6464067.00000 1 {?} 0
+107  {20.HN}   8.244   0.050   0.050   ?   0.000   {?}   {20.HA1}   3.859   0.050   0.050   ?   0.000   {?}  131337786.00000 14955755.00000 1 {?} 0
+110  {19.HN}   8.455   0.050   0.050   ?   0.000   {?}   {15.HA}   3.847   0.050   0.050   ?   0.000   {?}  17766736.12500 2121207.50000 1 {?} 0
+111  {17.HN 17.HN}   8.112   0.050   0.050   ?   0.000   {?}   {15.HA 14.HA}   3.851   0.050   0.050   ?   0.000   {?}  34442035.25000 3985587.50000 1 {?} 0
+112  {16.HN}   7.861   0.050   0.050   ?   0.000   {?}   {15.HA}   3.848   0.050   0.050   ?   0.000   {?}  45170860.00000 5213704.00000 1 {?} 0
+113  {15.HN 15.HN}   7.701   0.050   0.050   ?   0.000   {?}   {15.HA 14.HA}   3.840   0.050   0.050   ?   0.000   {?}  79901618.00000 9154291.00000 1 {?} 0
+114  {14.HN}   7.603   0.050   0.050   ?   0.000   {?}   {14.HA}   3.832   0.050   0.050   ?   0.000   {?}  53812932.00000 6197973.50000 1 {?} 0
+116  {12.HN}   7.967   0.050   0.050   ?   0.000   {?}   {13.HD2}   3.770   0.050   0.050   ?   0.000   {?}  29999308.25000 3428809.00000 1 {?} 0
+117  {12.HN}   7.969   0.050   0.050   ?   0.000   {?}   {13.HD1}   3.721   0.050   0.050   ?   0.000   {?}  30766146.50000 3533409.25000 1 {?} 0
+118  {14.HN}   7.604   0.050   0.050   ?   0.000   {?}   {13.HD1}   3.713   0.050   0.050   ?   0.000   {?}  18880578.50000 2199266.75000 1 {?} 0
+119  {}   7.160   0.050   0.050   ?   0.000   {?}   {}   3.152   0.050   0.050   ?   0.000   {?}  75955351.50000 8742740.00000 1 {?} 0
+120  {2.HN}   8.754   0.050   0.050   ?   0.000   {?}   {2.HB2}   2.869   0.050   0.050   ?   0.000   {?}  14654307.75000 1688289.62500 1 {?} 0
+122  {5.HN}   8.149   0.050   0.050   ?   0.000   {?}   {5.HB2}   2.807   0.050   0.050   ?   0.000   {?}  24708898.25000 2913883.25000 1 {?} 0
+124  {2.HN}   8.746   0.050   0.050   ?   0.000   {?}   {2.HB1}   2.793   0.050   0.050   ?   0.000   {?}  18078152.62500 2168004.00000 1 {?} 0
+125  {3.HN}   8.353   0.050   0.050   ?   0.000   {?}   {2.HB1}   2.792   0.050   0.050   ?   0.000   {?}  13526081.87500 1610606.25000 1 {?} 0
+126  {5.HN}   8.150   0.050   0.050   ?   0.000   {?}   {5.HB1}   2.710   0.050   0.050   ?   0.000   {?}  34755642.25000 3978549.75000 1 {?} 0
+128  {}   7.414   0.050   0.050   ?   0.000   {?}   {}   2.709   0.050   0.050   ?   0.000   {?}  16346439.12500 1960523.00000 1 {?} 0
+129  {}   7.753   0.050   0.050   ?   0.000   {?}   {}   2.486   0.050   0.050   ?   0.000   {?}  36784763.25000 4198856.00000 1 {?} 0
+131  {29.HN}   7.998   0.050   0.050   ?   0.000   {?}   {28.HG1}   2.451   0.050   0.050   ?   0.000   {?}  89855090.00000 10183677.00000 1 {?} 0
+132  {25.HN}   7.923   0.050   0.050   ?   0.000   {?}   {25.HG#}   2.428   0.050   0.050   ?   0.000   {?}  52621568.50000 6026565.00000 1 {?} 0
+133  {12.HN}   7.967   0.050   0.050   ?   0.000   {?}   {12.HG#}   2.416   0.050   0.050   ?   0.000   {?}  53829759.00000 6170060.50000 1 {?} 0
+134  {}   7.279   0.050   0.050   ?   0.000   {?}   {}   2.412   0.050   0.050   ?   0.000   {?}  27426810.25000 3176508.50000 1 {?} 0
+135  {}   6.542   0.050   0.050   ?   0.000   {?}   {}   2.412   0.050   0.050   ?   0.000   {?}  16593692.00000 2002505.62500 1 {?} 0
+136  {}   6.526   0.050   0.050   ?   0.000   {?}   {}   2.413   0.050   0.050   ?   0.000   {?}  15267225.87500 1853696.87500 1 {?} 0
+138  {31.HN}   8.076   0.050   0.050   ?   0.000   {?}   {31.HG#}   2.402   0.050   0.050   ?   0.000   {?}  46375109.50000 5280093.50000 1 {?} 0
+140  {}   8.028   0.050   0.050   ?   0.000   {?}   {}   2.396   0.050   0.050   ?   0.000   {?}  143218123.00000 16389283.00000 1 {?} 0
+141  {}   6.510   0.050   0.050   ?   0.000   {?}   {}   2.383   0.050   0.050   ?   0.000   {?}  17435478.25000 2078528.00000 1 {?} 0
+142  {9.HN}   8.408   0.050   0.050   ?   0.000   {?}   {9.HG#}   2.379   0.050   0.050   ?   0.000   {?}  23684178.75000 2742883.00000 1 {?} 0
+143  {}   7.986   0.050   0.050   ?   0.000   {?}   {}   2.372   0.050   0.050   ?   0.000   {?}  79281108.00000 9048975.00000 1 {?} 0
+144  {}   7.350   0.050   0.050   ?   0.000   {?}   {}   2.376   0.050   0.050   ?   0.000   {?}  21632979.50000 2520006.50000 1 {?} 0
+145  {10.HN 10.HN 10.HN 10.HN}   8.206   0.050   0.050   ?   0.000   {?}   {9.HG2 10.HG2 10.HG1 9.HG1}   2.365   0.050   0.050   ?   0.000   {?}  38160133.25000 4348600.00000 1 {?} 0
+146  {}   7.291   0.050   0.050   ?   0.000   {?}   {}   2.363   0.050   0.050   ?   0.000   {?}  20641178.00000 2418227.50000 1 {?} 0
+148  {31.HN}   8.076   0.050   0.050   ?   0.000   {?}   {31.HB2}   2.263   0.050   0.050   ?   0.000   {?}  23821448.75000 2801758.00000 1 {?} 0
+150  {}   7.750   0.050   0.050   ?   0.000   {?}   {}   2.250   0.050   0.050   ?   0.000   {?}  22684528.50000 2688667.00000 1 {?} 0
+151  {21.HN}   8.033   0.050   0.050   ?   0.000   {?}   {21.HB2}   2.232   0.050   0.050   ?   0.000   {?}  71402082.00000 8133783.50000 1 {?} 0
+153  {22.HN}   8.323   0.050   0.050   ?   0.000   {?}   {21.HB2}   2.226   0.050   0.050   ?   0.000   {?}  23958149.75000 2741113.75000 1 {?} 0
+159  {25.HN}   7.925   0.050   0.050   ?   0.000   {?}   {25.HB#}   2.161   0.050   0.050   ?   0.000   {?}  76520063.00000 8704568.00000 1 {?} 0
+160  {21.HN}   8.034   0.050   0.050   ?   0.000   {?}   {21.HB1}   2.154   0.050   0.050   ?   0.000   {?}  65593504.00000 7464597.50000 1 {?} 0
+161  {22.HN}   8.326   0.050   0.050   ?   0.000   {?}   {21.HB1}   2.148   0.050   0.050   ?   0.000   {?}  26245917.00000 3060070.75000 1 {?} 0
+162  {12.HN}   7.968   0.050   0.050   ?   0.000   {?}   {12.HB2}   2.143   0.050   0.050   ?   0.000   {?}  58341466.50000 6641242.00000 1 {?} 0
+163  {11.HN}   8.152   0.050   0.050   ?   0.000   {?}   {10.HB2}   2.132   0.050   0.050   ?   0.000   {?}  22530553.75000 2637223.25000 1 {?} 0
+164  {}   8.141   0.050   0.050   ?   0.000   {?}   {}   2.131   0.050   0.050   ?   0.000   {?}  21283169.25000 2511393.25000 1 {?} 0
+165  {}   7.700   0.050   0.050   ?   0.000   {?}   {}   2.129   0.050   0.050   ?   0.000   {?}  36842102.75000 4298983.50000 1 {?} 0
+166  {}   7.601   0.050   0.050   ?   0.000   {?}   {}   2.128   0.050   0.050   ?   0.000   {?}  70987559.00000 8235455.00000 1 {?} 0
+167  {10.HN 10.HN}   8.204   0.050   0.050   ?   0.000   {?}   {10.HB2 9.HB2}   2.126   0.050   0.050   ?   0.000   {?}  54227459.00000 6154844.50000 1 {?} 0
+169  {9.HN}   8.407   0.050   0.050   ?   0.000   {?}   {9.HB2}   2.116   0.050   0.050   ?   0.000   {?}  22455541.75000 2597157.00000 1 {?} 0
+170  {10.HN}   8.204   0.050   0.050   ?   0.000   {?}   {10.HB1}   2.068   0.050   0.050   ?   0.000   {?}  58611570.00000 6688559.00000 1 {?} 0
+171  {11.HN}   8.150   0.050   0.050   ?   0.000   {?}   {10.HB1}   2.063   0.050   0.050   ?   0.000   {?}  15509203.12500 1794036.12500 1 {?} 0
+172  {12.HN}   7.968   0.050   0.050   ?   0.000   {?}   {12.HB1}   2.051   0.050   0.050   ?   0.000   {?}  70300247.00000 8021346.50000 1 {?} 0
+174  {}   7.750   0.050   0.050   ?   0.000   {?}   {}   2.039   0.050   0.050   ?   0.000   {?}  43969845.50000 5071486.50000 1 {?} 0
+176  {9.HN}   8.406   0.050   0.050   ?   0.000   {?}   {9.HB1}   1.991   0.050   0.050   ?   0.000   {?}  36064648.50000 4158674.25000 1 {?} 0
+178  {31.HN}   8.075   0.050   0.050   ?   0.000   {?}   {31.HB1}   1.987   0.050   0.050   ?   0.000   {?}  46431571.00000 5490323.00000 1 {?} 0
+180  {32.HN}   8.028   0.050   0.050   ?   0.000   {?}   {32.HB1}   1.947   0.050   0.050   ?   0.000   {?}  31558146.25000 3814707.25000 1 {?} 0
+181  {}   7.702   0.050   0.050   ?   0.000   {?}   {}   1.931   0.050   0.050   ?   0.000   {?}  78933636.00000 8975547.00000 1 {?} 0
+182  {9.HN}   8.412   0.050   0.050   ?   0.000   {?}   {8.HB1}   1.911   0.050   0.050   ?   0.000   {?}  14379202.62500 1673270.87500 1 {?} 0
+183  {}   7.601   0.050   0.050   ?   0.000   {?}   {}   1.907   0.050   0.050   ?   0.000   {?}  24162255.50000 2811931.50000 1 {?} 0
+184  {}   7.718   0.050   0.050   ?   0.000   {?}   {}   1.883   0.050   0.050   ?   0.000   {?}  45078704.00000 5205606.50000 1 {?} 0
+185  {}   7.162   0.050   0.050   ?   0.000   {?}   {}   1.880   0.050   0.050   ?   0.000   {?}  14145542.25000 1660982.37500 1 {?} 0
+187  {}   8.133   0.050   0.050   ?   0.000   {?}   {}   1.865   0.050   0.050   ?   0.000   {?}  31290716.00000 3571395.75000 1 {?} 0
+188  {17.HN}   8.113   0.050   0.050   ?   0.000   {?}   {16.HB2}   1.866   0.050   0.050   ?   0.000   {?}  39982365.00000 4544087.00000 1 {?} 0
+189  {3.HN}   8.355   0.050   0.050   ?   0.000   {?}   {3.HB2}   1.860   0.050   0.050   ?   0.000   {?}  17987205.00000 2093521.62500 1 {?} 0
+190  {}   7.860   0.050   0.050   ?   0.000   {?}   {}   1.862   0.050   0.050   ?   0.000   {?}  97197657.00000 11008909.00000 1 {?} 0
+193  {17.HN}   8.110   0.050   0.050   ?   0.000   {?}   {17.HB2}   1.784   0.050   0.050   ?   0.000   {?}  74740106.50000 8565735.00000 1 {?} 0
+194  {}   8.074   0.050   0.050   ?   0.000   {?}   {}   1.779   0.050   0.050   ?   0.000   {?}  15329770.25000 1771033.25000 1 {?} 0
+195  {18.HN}   7.985   0.050   0.050   ?   0.000   {?}   {17.HB2}   1.780   0.050   0.050   ?   0.000   {?}  28516697.75000 3293739.50000 1 {?} 0
+200  {}   8.136   0.050   0.050   ?   0.000   {?}   {}   1.763   0.050   0.050   ?   0.000   {?}  71646484.50000 8169890.00000 1 {?} 0
+201  {}   7.855   0.050   0.050   ?   0.000   {?}   {}   1.763   0.050   0.050   ?   0.000   {?}  16884270.12500 2045370.00000 1 {?} 0
+203  {3.HN}   8.352   0.050   0.050   ?   0.000   {?}   {3.HB1}   1.751   0.050   0.050   ?   0.000   {?}  49125618.50000 5601338.50000 1 {?} 0
+206  {}   7.660   0.050   0.050   ?   0.000   {?}   {}   1.752   0.050   0.050   ?   0.000   {?}  29949971.25000 3418854.50000 1 {?} 0
+208  {23.HN}   8.174   0.050   0.050   ?   0.000   {?}   {22.HB2}   1.746   0.050   0.050   ?   0.000   {?}  43864069.00000 4995238.00000 1 {?} 0
+209  {}   7.893   0.050   0.050   ?   0.000   {?}   {}   1.746   0.050   0.050   ?   0.000   {?}  133924045.00000 15224084.00000 1 {?} 0
+210  {22.HN}   8.325   0.050   0.050   ?   0.000   {?}   {22.HB2}   1.739   0.050   0.050   ?   0.000   {?}  78201851.00000 8934367.00000 1 {?} 0
+212  {17.HN}   8.111   0.050   0.050   ?   0.000   {?}   {16.HG2}   1.708   0.050   0.050   ?   0.000   {?}  50217746.50000 5817203.00000 1 {?} 0
+214  {}   7.161   0.050   0.050   ?   0.000   {?}   {}   1.696   0.050   0.050   ?   0.000   {?}  16536099.50000 1992222.62500 1 {?} 0
+216  {}   7.854   0.050   0.050   ?   0.000   {?}   {}   1.686   0.050   0.050   ?   0.000   {?}  51132441.00000 5879572.00000 1 {?} 0
+220  {10.HN}   8.200   0.050   0.050   ?   0.000   {?}   {7.HB2}   1.643   0.050   0.050   ?   0.000   {?}  13132326.62500 1609095.37500 1 {?} 0
+222  {22.HN}   8.326   0.050   0.050   ?   0.000   {?}   {22.HB1}   1.630   0.050   0.050   ?   0.000   {?}  33605951.00000 3866847.75000 1 {?} 0
+223  {23.HN}   8.176   0.050   0.050   ?   0.000   {?}   {22.HB1}   1.630   0.050   0.050   ?   0.000   {?}  32540671.00000 3791799.75000 1 {?} 0
+224  {}   7.158   0.050   0.050   ?   0.000   {?}   {}   1.621   0.050   0.050   ?   0.000   {?}  13709701.75000 1586179.00000 1 {?} 0
+225  {}   7.849   0.050   0.050   ?   0.000   {?}   {}   1.618   0.050   0.050   ?   0.000   {?}  60076966.50000 6859588.00000 1 {?} 0
+226  {17.HN}   8.108   0.050   0.050   ?   0.000   {?}   {17.HB1}   1.609   0.050   0.050   ?   0.000   {?}  47096555.00000 5408779.50000 1 {?} 0
+228  {29.HN}   7.994   0.050   0.050   ?   0.000   {?}   {29.HB1}   1.609   0.050   0.050   ?   0.000   {?}  94500664.00000 10807234.00000 1 {?} 0
+230  {}   8.098   0.050   0.050   ?   0.000   {?}   {}   1.599   0.050   0.050   ?   0.000   {?}  43651760.00000 5101937.50000 1 {?} 0
+231  {}   8.086   0.050   0.050   ?   0.000   {?}   {}   1.597   0.050   0.050   ?   0.000   {?}  36717079.00000 4259496.50000 1 {?} 0
+234  {}   7.755   0.050   0.050   ?   0.000   {?}   {}   1.597   0.050   0.050   ?   0.000   {?}  21562093.50000 2658868.25000 1 {?} 0
+235  {}   7.733   0.050   0.050   ?   0.000   {?}   {}   1.595   0.050   0.050   ?   0.000   {?}  12565445.12500 1599358.75000 1 {?} 0
+236  {}   7.926   0.050   0.050   ?   0.000   {?}   {}   1.582   0.050   0.050   ?   0.000   {?}  18121692.00000 2115130.75000 1 {?} 0
+237  {}   7.894   0.050   0.050   ?   0.000   {?}   {}   1.580   0.050   0.050   ?   0.000   {?}  44334750.50000 5079769.50000 1 {?} 0
+238  {}   7.658   0.050   0.050   ?   0.000   {?}   {}   1.578   0.050   0.050   ?   0.000   {?}  19864213.12500 2416658.25000 1 {?} 0
+239  {}   7.846   0.050   0.050   ?   0.000   {?}   {}   1.563   0.050   0.050   ?   0.000   {?}  33093140.00000 3779489.25000 1 {?} 0
+241  {}   7.701   0.050   0.050   ?   0.000   {?}   {}   1.552   0.050   0.050   ?   0.000   {?}  44235973.50000 5024436.00000 1 {?} 0
+242  {19.HN}   8.453   0.050   0.050   ?   0.000   {?}   {19.HB#}   1.459   0.050   0.050   ?   0.000   {?}  138423038.00000 16077880.00000 1 {?} 0
+243  {20.HN}   8.246   0.050   0.050   ?   0.000   {?}   {19.HB#}   1.461   0.050   0.050   ?   0.000   {?}  58358558.50000 6706079.50000 1 {?} 0
+244  {3.HN}   8.364   0.050   0.050   ?   0.000   {?}   {3.HG2}   1.457   0.050   0.050   ?   0.000   {?}  23516771.00000 2740296.00000 1 {?} 0
+245  {}   8.132   0.050   0.050   ?   0.000   {?}   {}   1.451   0.050   0.050   ?   0.000   {?}  14285891.50000 1670318.75000 1 {?} 0
+246  {}   8.144   0.050   0.050   ?   0.000   {?}   {}   1.441   0.050   0.050   ?   0.000   {?}  18553393.37500 2193583.25000 1 {?} 0
+247  {}   7.757   0.050   0.050   ?   0.000   {?}   {}   1.431   0.050   0.050   ?   0.000   {?}  40814774.50000 4681936.00000 1 {?} 0
+248  {}   7.717   0.050   0.050   ?   0.000   {?}   {}   1.434   0.050   0.050   ?   0.000   {?}  24936427.75000 2862478.75000 1 {?} 0
+249  {}   7.705   0.050   0.050   ?   0.000   {?}   {}   1.431   0.050   0.050   ?   0.000   {?}  27822506.50000 3258698.75000 1 {?} 0
+250  {}   7.660   0.050   0.050   ?   0.000   {?}   {}   1.433   0.050   0.050   ?   0.000   {?}  144494677.00000 16663616.00000 1 {?} 0
+251  {33.HN}   7.985   0.050   0.050   ?   0.000   {?}   {33.HB#}   1.340   0.050   0.050   ?   0.000   {?}  33062211.00000 3825714.25000 1 {?} 0
+252  {19.HN}   8.449   0.050   0.050   ?   0.000   {?}   {18.HG2#}   1.233   0.050   0.050   ?   0.000   {?}  19914293.75000 2316220.75000 1 {?} 0
+253  {18.HN}   7.980   0.050   0.050   ?   0.000   {?}   {18.HG2#}   1.234   0.050   0.050   ?   0.000   {?}  32382154.25000 3764092.00000 1 {?} 0
+254  {}   7.704   0.050   0.050   ?   0.000   {?}   {}   1.178   0.050   0.050   ?   0.000   {?}  35090174.25000 3981954.00000 1 {?} 0
+255  {}   7.706   0.050   0.050   ?   0.000   {?}   {}   1.165   0.050   0.050   ?   0.000   {?}  34881222.75000 3982405.50000 1 {?} 0
+256  {}   7.602   0.050   0.050   ?   0.000   {?}   {}   0.998   0.050   0.050   ?   0.000   {?}  57188451.00000 6633528.00000 1 {?} 0
+257  {}   7.696   0.050   0.050   ?   0.000   {?}   {}   0.991   0.050   0.050   ?   0.000   {?}  14135614.37500 1684794.87500 1 {?} 0
+258  {}   7.600   0.050   0.050   ?   0.000   {?}   {}   0.924   0.050   0.050   ?   0.000   {?}  23690412.25000 2725731.50000 1 {?} 0
+259  {}   7.854   0.050   0.050   ?   0.000   {?}   {}   0.892   0.050   0.050   ?   0.000   {?}  43590399.50000 5053964.00000 1 {?} 0
+260  {}   7.704   0.050   0.050   ?   0.000   {?}   {}   0.893   0.050   0.050   ?   0.000   {?}  45451838.00000 5205656.00000 1 {?} 0
+261  {}   7.704   0.050   0.050   ?   0.000   {?}   {}   0.880   0.050   0.050   ?   0.000   {?}  43776305.00000 5069598.50000 1 {?} 0
+262  {}   8.146   0.050   0.050   ?   0.000   {?}   {}   0.875   0.050   0.050   ?   0.000   {?}  15232870.37500 1775942.37500 1 {?} 0
+263  {}   8.036   0.050   0.050   ?   0.000   {?}   {}   0.871   0.050   0.050   ?   0.000   {?}  13605131.75000 1604571.50000 1 {?} 0
+264  {}   7.891   0.050   0.050   ?   0.000   {?}   {}   0.871   0.050   0.050   ?   0.000   {?}  39028441.50000 4490147.00000 1 {?} 0
+265  {22.HN 22.HN}   8.325   0.050   0.050   ?   0.000   {?}   {22.HD2# 22.HD1#}   0.869   0.050   0.050   ?   0.000   {?}  24229397.00000 2877158.25000 1 {?} 0
+266  {23.HN 23.HN}   8.177   0.050   0.050   ?   0.000   {?}   {22.HD1# 22.HD2#}   0.870   0.050   0.050   ?   0.000   {?}  18297249.50000 2175660.00000 1 {?} 0
+267  {}   8.108   0.050   0.050   ?   0.000   {?}   {}   0.869   0.050   0.050   ?   0.000   {?}  29733847.50000 3416885.75000 1 {?} 0
+268  {29.HN}   7.993   0.050   0.050   ?   0.000   {?}   {29.HD2#}   0.870   0.050   0.050   ?   0.000   {?}  22420942.50000 2640064.75000 1 {?} 0
+269  {}   7.967   0.050   0.050   ?   0.000   {?}   {}   0.869   0.050   0.050   ?   0.000   {?}  20144977.50000 2362026.50000 1 {?} 0
+270  {}   7.662   0.050   0.050   ?   0.000   {?}   {}   0.870   0.050   0.050   ?   0.000   {?}  15044062.62500 1794163.62500 1 {?} 0
+272  {}   8.357   0.050   0.050   ?   0.000   {?}   {}   4.796   0.050   0.050   ?   0.000   {?}  83170776.00000 9512109.00000 1 {?} 0
+273  {19.HN}   8.453   0.050   0.050   ?   0.000   {?}   {20.HN}   8.241   0.050   0.050   ?   0.000   {?}  52998864.00000 6124954.50000 1 {?} 0
+274  {9.HN}   8.408   0.050   0.050   ?   0.000   {?}   {10.HN}   8.207   0.050   0.050   ?   0.000   {?}  38082308.25000 4440540.50000 1 {?} 0
+275  {19.HN}   8.453   0.050   0.050   ?   0.000   {?}   {18.HN}   7.983   0.050   0.050   ?   0.000   {?}  49241929.00000 5807987.00000 1 {?} 0
+276  {22.HN}   8.324   0.050   0.050   ?   0.000   {?}   {23.HN}   8.173   0.050   0.050   ?   0.000   {?}  68184451.50000 7915849.00000 1 {?} 0
+277  {3.HN}   8.353   0.050   0.050   ?   0.000   {?}   {4.HN}   8.144   0.050   0.050   ?   0.000   {?}  37007902.75000 4348093.50000 1 {?} 0
+279  {22.HN}   8.326   0.050   0.050   ?   0.000   {?}   {21.HN}   8.035   0.050   0.050   ?   0.000   {?}  58226905.00000 6714501.50000 1 {?} 0
+282  {20.HN}   8.244   0.050   0.050   ?   0.000   {?}   {21.HN}   8.033   0.050   0.050   ?   0.000   {?}  65197192.00000 7496264.00000 1 {?} 0
+283  {23.HN}   8.175   0.050   0.050   ?   0.000   {?}   {24.HN}   7.808   0.050   0.050   ?   0.000   {?}  61906646.00000 7231381.00000 1 {?} 0
+285  {5.HN}   8.151   0.050   0.050   ?   0.000   {?}   {6.HN}   7.710   0.050   0.050   ?   0.000   {?}  31319930.25000 3624742.75000 1 {?} 0
+286  {17.HN}   8.109   0.050   0.050   ?   0.000   {?}   {16.HN}   7.861   0.050   0.050   ?   0.000   {?}  49349040.00000 5806718.00000 1 {?} 0
+287  {11.HN}   8.149   0.050   0.050   ?   0.000   {?}   {12.HN}   7.980   0.050   0.050   ?   0.000   {?}  58141579.50000 6700624.00000 1 {?} 0
+289  {20.HN}   8.243   0.050   0.050   ?   0.000   {?}   {19.HN}   8.453   0.050   0.050   ?   0.000   {?}  50609832.50000 5802740.00000 1 {?} 0
+290  {10.HN}   8.202   0.050   0.050   ?   0.000   {?}   {9.HN}   8.405   0.050   0.050   ?   0.000   {?}  37656592.25000 4430500.50000 1 {?} 0
+291  {4.HN}   8.145   0.050   0.050   ?   0.000   {?}   {3.HN}   8.351   0.050   0.050   ?   0.000   {?}  43397941.00000 5131756.00000 1 {?} 0
+292  {23.HN}   8.175   0.050   0.050   ?   0.000   {?}   {22.HN}   8.324   0.050   0.050   ?   0.000   {?}  75685309.50000 8758538.00000 1 {?} 0
+293  {21.HN}   8.032   0.050   0.050   ?   0.000   {?}   {22.HN}   8.325   0.050   0.050   ?   0.000   {?}  69965686.00000 8106569.50000 1 {?} 0
+294  {21.HN}   8.036   0.050   0.050   ?   0.000   {?}   {20.HN}   8.243   0.050   0.050   ?   0.000   {?}  68321170.00000 7840641.50000 1 {?} 0
+295  {18.HN}   7.985   0.050   0.050   ?   0.000   {?}   {19.HN}   8.452   0.050   0.050   ?   0.000   {?}  47819217.50000 5402183.00000 1 {?} 0
+296  {17.HN}   8.109   0.050   0.050   ?   0.000   {?}   {18.HN}   7.988   0.050   0.050   ?   0.000   {?}  84369609.00000 9533702.00000 1 {?} 0
+297  {18.HN}   7.990   0.050   0.050   ?   0.000   {?}   {17.HN}   8.097   0.050   0.050   ?   0.000   {?}  102978826.00000 11645836.00000 1 {?} 0
+298  {25.HN}   7.922   0.050   0.050   ?   0.000   {?}   {24.HN}   7.814   0.050   0.050   ?   0.000   {?}  81251440.00000 9161746.00000 1 {?} 0
+299  {16.HN}   7.853   0.050   0.050   ?   0.000   {?}   {15.HN}   7.707   0.050   0.050   ?   0.000   {?}  87667214.00000 10095456.00000 1 {?} 0
+300  {26.HN}   7.895   0.050   0.050   ?   0.000   {?}   {27.HN}   7.661   0.050   0.050   ?   0.000   {?}  72138512.50000 8278434.00000 1 {?} 0
+301  {24.HN}   7.808   0.050   0.050   ?   0.000   {?}   {25.HN}   7.917   0.050   0.050   ?   0.000   {?}  97862641.00000 11303055.00000 1 {?} 0
+302  {27.HN}   7.660   0.050   0.050   ?   0.000   {?}   {26.HN}   7.894   0.050   0.050   ?   0.000   {?}  83286876.00000 9597240.00000 1 {?} 0
+303  {15.HN}   7.705   0.050   0.050   ?   0.000   {?}   {16.HN}   7.853   0.050   0.050   ?   0.000   {?}  90163742.00000 10347607.00000 1 {?} 0
+304  {24.HN}   7.810   0.050   0.050   ?   0.000   {?}   {23.HN}   8.174   0.050   0.050   ?   0.000   {?}  66894978.50000 7808099.00000 1 {?} 0
+305  {16.HN}   7.859   0.050   0.050   ?   0.000   {?}   {17.HN}   8.110   0.050   0.050   ?   0.000   {?}  50619446.50000 5854783.00000 1 {?} 0
+306  {6.HN}   7.707   0.050   0.050   ?   0.000   {?}   {5.HN}   8.146   0.050   0.050   ?   0.000   {?}  32228890.25000 3850081.75000 1 {?} 0
+307  {14.HN}   7.602   0.050   0.050   ?   0.000   {?}   {15.HN}   7.692   0.050   0.050   ?   0.000   {?}  69372224.50000 7905530.50000 1 {?} 0
+308  {15.HN}   7.701   0.050   0.050   ?   0.000   {?}   {14.HN}   7.604   0.050   0.050   ?   0.000   {?}  71072454.50000 8004703.00000 1 {?} 0
+309  {27.HN}   7.661   0.050   0.050   ?   0.000   {?}   {28.HN}   7.733   0.050   0.050   ?   0.000   {?}  90407535.00000 10286077.00000 1 {?} 0
+310  {}   7.528   0.050   0.050   ?   0.000   {?}   {}   6.774   0.050   0.050   ?   0.000   {?}  592792036.00000 70976888.00000 1 {?} 0
+311  {}   7.255   0.050   0.050   ?   0.000   {?}   {}   6.729   0.050   0.050   ?   0.000   {?}  666448712.00000 80711608.00000 1 {?} 0
+312  {}   7.415   0.050   0.050   ?   0.000   {?}   {}   6.668   0.050   0.050   ?   0.000   {?}  609326184.00000 72213168.00000 1 {?} 0
+313  {}   7.284   0.050   0.050   ?   0.000   {?}   {}   6.549   0.050   0.050   ?   0.000   {?}  628471368.00000 72240192.00000 1 {?} 0
+314  {}   7.228   0.050   0.050   ?   0.000   {?}   {}   6.526   0.050   0.050   ?   0.000   {?}  214037962.00000 25062292.00000 1 {?} 0
+315  {}   7.146   0.050   0.050   ?   0.000   {?}   {}   6.513   0.050   0.050   ?   0.000   {?}  293802360.00000 34400260.00000 1 {?} 0
+316  {}   7.350   0.050   0.050   ?   0.000   {?}   {}   6.507   0.050   0.050   ?   0.000   {?}  326549296.00000 38471844.00000 1 {?} 0
+317  {}   6.774   0.050   0.050   ?   0.000   {?}   {}   7.528   0.050   0.050   ?   0.000   {?}  608377108.00000 73006264.00000 1 {?} 0
+318  {}   6.669   0.050   0.050   ?   0.000   {?}   {}   7.415   0.050   0.050   ?   0.000   {?}  578222272.00000 68285720.00000 1 {?} 0
+319  {}   6.507   0.050   0.050   ?   0.000   {?}   {}   7.349   0.050   0.050   ?   0.000   {?}  309556460.00000 36528616.00000 1 {?} 0
+320  {}   6.556   0.050   0.050   ?   0.000   {?}   {}   7.287   0.050   0.050   ?   0.000   {?}  500690904.00000 57290728.00000 1 {?} 0
+321  {}   6.546   0.050   0.050   ?   0.000   {?}   {}   7.282   0.050   0.050   ?   0.000   {?}  497516724.00000 56715188.00000 1 {?} 0
+322  {}   6.730   0.050   0.050   ?   0.000   {?}   {}   7.253   0.050   0.050   ?   0.000   {?}  678028088.00000 81747328.00000 1 {?} 0
+323  {}   6.525   0.050   0.050   ?   0.000   {?}   {}   7.226   0.050   0.050   ?   0.000   {?}  199549768.00000 23205490.00000 1 {?} 0
+324  {}   6.514   0.050   0.050   ?   0.000   {?}   {}   7.146   0.050   0.050   ?   0.000   {?}  278958906.00000 32717506.00000 1 {?} 0
+325  {}   8.747   0.050   0.050   ?   0.000   {?}   {}   4.722   0.050   0.050   ?   0.000   {?}  15477799.12500 1866901.50000 1 {?} 0
+326  {2.HN}   8.746   0.050   0.050   ?   0.000   {?}   {2.HA}   4.792   0.050   0.050   ?   0.000   {?}  12258514.62500 1501977.75000 1 {?} 0
+327  {2.HN}   8.749   0.050   0.050   ?   0.000   {?}   {1.HB1}   2.148   0.050   0.050   ?   0.000   {?}  7774766.06250 972660.75000 1 {?} 0
+328  {}   8.449   0.050   0.050   ?   0.000   {?}   {}   0.877   0.050   0.050   ?   0.000   {?}  10942573.37500 1319708.00000 1 {?} 0
+329  {9.HN}   8.409   0.050   0.050   ?   0.000   {?}   {8.HD1}   3.635   0.050   0.050   ?   0.000   {?}  9011854.62500 1079161.00000 1 {?} 0
+330  {28.HN}   7.750   0.050   0.050   ?   0.000   {?}   {28.HA}   4.293   0.050   0.050   ?   0.000   {?}  168030289.00000 19356046.00000 1 {?} 0
+331  {}   7.415   0.050   0.050   ?   0.000   {?}   {}   2.802   0.050   0.050   ?   0.000   {?}  9281642.43750 1102847.62500 1 {?} 0
+332  {}   7.530   0.050   0.050   ?   0.000   {?}   {}   2.871   0.050   0.050   ?   0.000   {?}  9120438.75000 1128932.25000 1 {?} 0
+333  {}   7.529   0.050   0.050   ?   0.000   {?}   {}   2.789   0.050   0.050   ?   0.000   {?}  10887747.25000 1336364.75000 1 {?} 0
+335  {}   7.754   0.050   0.050   ?   0.000   {?}   {}   2.448   0.050   0.050   ?   0.000   {?}  30618363.25000 3433871.25000 1 {?} 0
+336  {}   7.707   0.050   0.050   ?   0.000   {?}   {}   2.699   0.050   0.050   ?   0.000   {?}  8889969.93750 1073373.00000 1 {?} 0
+337  {29.HN}   7.998   0.050   0.050   ?   0.000   {?}   {28.HG2}   2.493   0.050   0.050   ?   0.000   {?}  82803133.00000 9396291.00000 1 {?} 0
+338  {}   7.602   0.050   0.050   ?   0.000   {?}   {}   2.293   0.050   0.050   ?   0.000   {?}  9791978.81250 1163543.00000 1 {?} 0
+340  {29.HN}   7.996   0.050   0.050   ?   0.000   {?}   {28.HB1}   2.052   0.050   0.050   ?   0.000   {?}  16989902.37500 1890065.50000 1 {?} 0
+341  {23.HN}   8.177   0.050   0.050   ?   0.000   {?}   {19.HB#}   1.457   0.050   0.050   ?   0.000   {?}  13082788.12500 1569814.00000 1 {?} 0
+342  {}   8.160   0.050   0.050   ?   0.000   {?}   {}   1.446   0.050   0.050   ?   0.000   {?}  13103339.37500 1554524.12500 1 {?} 0
+343  {}   7.229   0.050   0.050   ?   0.000   {?}   {}   2.429   0.050   0.050   ?   0.000   {?}  12959703.12500 1553951.00000 1 {?} 0
+344  {}   6.557   0.050   0.050   ?   0.000   {?}   {}   2.367   0.050   0.050   ?   0.000   {?}  12809739.75000 1531164.50000 1 {?} 0
+345  {}   7.529   0.050   0.050   ?   0.000   {?}   {}   3.233   0.050   0.050   ?   0.000   {?}  7132835.37500 878867.00000 1 {?} 0
+346  {12.HN}   7.974   0.050   0.050   ?   0.000   {?}   {11.HN}   8.138   0.050   0.050   ?   0.000   {?}  72094647.50000 8199864.50000 1 {?} 0
+347  {15.HN}   7.703   0.050   0.050   ?   0.000   {?}   {12.HA}   4.458   0.050   0.050   ?   0.000   {?}  11952865.12500 1404601.50000 1 {?} 0
+348  {18.HN}   7.984   0.050   0.050   ?   0.000   {?}   {15.HA}   3.850   0.050   0.050   ?   0.000   {?}  33815356.25000 3765668.00000 1 {?} 0
+349  {21.HN 21.HN}   8.033   0.050   0.050   ?   0.000   {?}   {19.HA 18.HA}   4.121   0.050   0.050   ?   0.000   {?}  31199556.00000 3525059.00000 1 {?} 0
+350  {22.HN 22.HN}   8.324   0.050   0.050   ?   0.000   {?}   {19.HA 18.HA}   4.124   0.050   0.050   ?   0.000   {?}  23636745.50000 2591849.75000 1 {?} 0
+351  {24.HN}   7.813   0.050   0.050   ?   0.000   {?}   {20.HA1}   3.850   0.050   0.050   ?   0.000   {?}  8713072.43750 1029786.87500 1 {?} 0
+352  {27.HN}   7.665   0.050   0.050   ?   0.000   {?}   {23.HA}   4.183   0.050   0.050   ?   0.000   {?}  7283718.62500 919388.56250 1 {?} 0
+353  {28.HN}   7.754   0.050   0.050   ?   0.000   {?}   {29.HN}   7.985   0.050   0.050   ?   0.000   {?}  23172549.50000 2726045.25000 1 {?} 0
+354  {28.HN}   7.754   0.050   0.050   ?   0.000   {?}   {27.HN}   7.660   0.050   0.050   ?   0.000   {?}  66233501.50000 7326889.00000 1 {?} 0
+356  {29.HN}   7.992   0.050   0.050   ?   0.000   {?}   {28.HN}   7.759   0.050   0.050   ?   0.000   {?}  17907384.62500 2218283.25000 1 {?} 0
+357  {31.HN 31.HN}   8.078   0.050   0.050   ?   0.000   {?}   {31.HA 30.HA}   4.454   0.050   0.050   ?   0.000   {?}  133788565.00000 15438355.00000 1 {?} 0
+358  {4.HN 4.HN}   8.137   0.050   0.050   ?   0.000   {?}   {4.HA 3.HA}   4.251   0.050   0.050   ?   0.000   {?}  188458500.00000 21227256.00000 1 {?} 0
+361  {}   8.112   0.050   0.050   ?   0.000   {?}   {}   2.148   0.050   0.050   ?   0.000   {?}  11977870.75000 1489084.50000 1 {?} 0
+362 {18.HB}   4.339   0.050   0.050   ?   0.000   {?}   {18.HA}   4.127   0.050   0.050   ?   0.000   {?}  16480853.75000 1949422.75000 1 {?} 0
+363 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+364 {24.HA}   4.321   0.050   0.050   ?   0.000   {?}   {24.HB#}   4.015   0.050   0.050   ?   0.000   {?}  39491049.00000 4594333.50000 1 {?} 0
+365 {8.HD2}   3.807   0.050   0.050   ?   0.000   {?}   {7.HA}   4.651   0.050   0.050   ?   0.000   {?}  81554162.00000 9380384.00000 1 {?} 0
+366 {8.HD1}   3.636   0.050   0.050   ?   0.000   {?}   {7.HA}   4.652   0.050   0.050   ?   0.000   {?}  59280440.50000 6792609.00000 1 {?} 0
+367 {13.HD2}   3.773   0.050   0.050   ?   0.000   {?}   {12.HA}   4.457   0.050   0.050   ?   0.000   {?}  57774452.50000 6602096.50000 1 {?} 0
+368 {13.HD1}   3.714   0.050   0.050   ?   0.000   {?}   {12.HA}   4.456   0.050   0.050   ?   0.000   {?}  51314093.50000 5818425.00000 1 {?} 0
+369 {18.HA}   4.116   0.050   0.050   ?   0.000   {?}   {18.HB}   4.330   0.050   0.050   ?   0.000   {?}  43435980.00000 4985683.00000 1 {?} 0
+370 {24.HB2}   4.018   0.050   0.050   ?   0.000   {?}   {24.HA}   4.318   0.050   0.050   ?   0.000   {?}  74649949.50000 8617123.00000 1 {?} 0
+371 {24.HB1}   3.988   0.050   0.050   ?   0.000   {?}   {24.HA}   4.317   0.050   0.050   ?   0.000   {?}  77788090.00000 9100378.00000 1 {?} 0
+372 {}   3.971   0.050   0.050   ?   0.000   {?}   {}   4.317   0.050   0.050   ?   0.000   {?}  58864148.00000 6749557.50000 1 {?} 0
+373 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+374 {23.HB2}   4.003   0.050   0.050   ?   0.000   {?}   {23.HA}   4.183   0.050   0.050   ?   0.000   {?}  101186087.00000 11632684.00000 1 {?} 0
+375 {23.HB1}   3.958   0.050   0.050   ?   0.000   {?}   {23.HA}   4.184   0.050   0.050   ?   0.000   {?}  96832445.00000 11167134.00000 1 {?} 0
+376 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+377 {8.HD1}   3.637   0.050   0.050   ?   0.000   {?}   {8.HD2}   3.811   0.050   0.050   ?   0.000   {?}  251823500.00000 28833220.00000 1 {?} 0
+378 {}   3.807   0.050   0.050   ?   0.000   {?}   {}   3.632   0.050   0.050   ?   0.000   {?}  264962602.00000 30318602.00000 1 {?} 0
+379 {25.HA}   4.280   0.050   0.050   ?   0.000   {?}   {25.HG#}   2.427   0.050   0.050   ?   0.000   {?}  16478467.12500 1918618.12500 1 {?} 0
+380 {}   4.173   0.050   0.050   ?   0.000   {?}   {}   2.438   0.050   0.050   ?   0.000   {?}  15947409.25000 1894607.62500 1 {?} 0
+381 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+382 {13.HA}   4.323   0.050   0.050   ?   0.000   {?}   {13.HB2}   2.282   0.050   0.050   ?   0.000   {?}  10991967.50000 1272564.50000 1 {?} 0
+383 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+384 {}   4.180   0.050   0.050   ?   0.000   {?}   {}   2.232   0.050   0.050   ?   0.000   {?}  24109493.50000 2740940.00000 1 {?} 0
+385 {}   4.174   0.050   0.050   ?   0.000   {?}   {}   2.215   0.050   0.050   ?   0.000   {?}  25618473.00000 3014060.75000 1 {?} 0
+386 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+387 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+388 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+389 {25.HA}   4.277   0.050   0.050   ?   0.000   {?}   {25.HB#}   2.161   0.050   0.050   ?   0.000   {?}  26457527.75000 3076025.25000 1 {?} 0
+390 {}   4.175   0.050   0.050   ?   0.000   {?}   {}   2.158   0.050   0.050   ?   0.000   {?}  35388854.75000 4095373.25000 1 {?} 0
+391 {1.HA}   4.131   0.050   0.050   ?   0.000   {?}   {1.HB#}   2.159   0.050   0.050   ?   0.000   {?}  19835320.00000 2370552.50000 1 {?} 0
+392 {}   4.231   0.050   0.050   ?   0.000   {?}   {}   2.122   0.050   0.050   ?   0.000   {?}  12132160.75000 1440479.00000 1 {?} 0
+393 {}   4.219   0.050   0.050   ?   0.000   {?}   {}   2.119   0.050   0.050   ?   0.000   {?}  14259294.37500 1677012.62500 1 {?} 0
+394 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+395 {10.HA}   4.278   0.050   0.050   ?   0.000   {?}   {10.HB1}   2.057   0.050   0.050   ?   0.000   {?}  13724784.50000 1639648.75000 1 {?} 0
+396 {}   4.228   0.050   0.050   ?   0.000   {?}   {}   2.377   0.050   0.050   ?   0.000   {?}  11202223.87500 1293915.00000 1 {?} 0
+397 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+398 {13.HA}   4.320   0.050   0.050   ?   0.000   {?}   {13.HB1}   1.902   0.050   0.050   ?   0.000   {?}  10082532.31250 1273916.87500 1 {?} 0
+399 {}   4.204   0.050   0.050   ?   0.000   {?}   {}   1.872   0.050   0.050   ?   0.000   {?}  13275696.12500 1615893.50000 1 {?} 0
+400 {}   4.098   0.050   0.050   ?   0.000   {?}   {}   1.862   0.050   0.050   ?   0.000   {?}  38909972.25000 4428945.00000 1 {?} 0
+401 {4.HA 4.HA}   4.267   0.050   0.050   ?   0.000   {?}   {4.HB1 26.HB1}   1.764   0.050   0.050   ?   0.000   {?}  30447254.25000 3495857.50000 1 {?} 0
+402 {}   4.249   0.050   0.050   ?   0.000   {?}   {}   1.761   0.050   0.050   ?   0.000   {?}  32366707.00000 3733731.00000 1 {?} 0
+403 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+404 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+405 {}   4.182   0.050   0.050   ?   0.000   {?}   {}   1.745   0.050   0.050   ?   0.000   {?}  46376775.00000 5403376.00000 1 {?} 0
+406 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+407 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+408 {}   4.174   0.050   0.050   ?   0.000   {?}   {}   1.628   0.050   0.050   ?   0.000   {?}  28696575.25000 3360544.25000 1 {?} 0
+409 {}   4.127   0.050   0.050   ?   0.000   {?}   {}   1.626   0.050   0.050   ?   0.000   {?}  17518149.50000 2041837.12500 1 {?} 0
+410 {}   4.110   0.050   0.050   ?   0.000   {?}   {}   1.624   0.050   0.050   ?   0.000   {?}  25667732.50000 2983730.00000 1 {?} 0
+411 {19.HA}   4.125   0.050   0.050   ?   0.000   {?}   {22.HB2}   1.744   0.050   0.050   ?   0.000   {?}  19760003.75000 2376803.50000 1 {?} 0
+412 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+413 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+414 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+415 {}   4.109   0.050   0.050   ?   0.000   {?}   {}   1.702   0.050   0.050   ?   0.000   {?}  17137217.75000 2029691.37500 1 {?} 0
+416 {}   4.123   0.050   0.050   ?   0.000   {?}   {}   1.460   0.050   0.050   ?   0.000   {?}  102331411.00000 11642086.00000 1 {?} 0
+417 {}   4.117   0.050   0.050   ?   0.000   {?}   {}   1.234   0.050   0.050   ?   0.000   {?}  56579770.50000 6474189.50000 1 {?} 0
+418 {27.HA}   4.301   0.050   0.050   ?   0.000   {?}   {27.HB#}   1.434   0.050   0.050   ?   0.000   {?}  33444876.75000 3867656.50000 1 {?} 0
+419 {18.HB}   4.336   0.050   0.050   ?   0.000   {?}   {18.HG2#}   1.231   0.050   0.050   ?   0.000   {?}  18644408.25000 2155260.50000 1 {?} 0
+420 {13.HA}   4.321   0.050   0.050   ?   0.000   {?}   {16.HG1}   1.616   0.050   0.050   ?   0.000   {?}  14150012.37500 1736601.25000 1 {?} 0
+421 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+422 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+423 {}   4.290   0.050   0.050   ?   0.000   {?}   {}   1.565   0.050   0.050   ?   0.000   {?}  12133508.62500 1461587.87500 1 {?} 0
+424 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+425 {}   4.263   0.050   0.050   ?   0.000   {?}   {}   1.617   0.050   0.050   ?   0.000   {?}  10334663.43750 1260262.62500 1 {?} 0
+426 {}   4.246   0.050   0.050   ?   0.000   {?}   {}   1.619   0.050   0.050   ?   0.000   {?}  12837057.12500 1594013.75000 1 {?} 0
+427 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+428 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+429 {}   4.202   0.050   0.050   ?   0.000   {?}   {}   0.871   0.050   0.050   ?   0.000   {?}  28103876.50000 3265962.75000 1 {?} 0
+430 {}   4.130   0.050   0.050   ?   0.000   {?}   {}   0.875   0.050   0.050   ?   0.000   {?}  18226922.25000 2170078.50000 1 {?} 0
+431 {}   4.116   0.050   0.050   ?   0.000   {?}   {}   0.873   0.050   0.050   ?   0.000   {?}  18090141.87500 2163554.00000 1 {?} 0
+432 {}   4.181   0.050   0.050   ?   0.000   {?}   {}   0.864   0.050   0.050   ?   0.000   {?}  44345596.50000 5072356.00000 1 {?} 0
+433 {17.HA 17.HA}   4.263   0.050   0.050   ?   0.000   {?}   {17.HD2# 17.HD1#}   0.855   0.050   0.050   ?   0.000   {?}  25941551.25000 2973324.75000 1 {?} 0
+434 {26.HA}   4.274   0.050   0.050   ?   0.000   {?}   {26.HD2#}   0.853   0.050   0.050   ?   0.000   {?}  26308521.25000 3054627.00000 1 {?} 0
+435 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+436 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+437 {}   3.637   0.050   0.050   ?   0.000   {?}   {}   0.903   0.050   0.050   ?   0.000   {?}  20518501.00000 2456141.75000 1 {?} 0
+438 {}   3.831   0.050   0.050   ?   0.000   {?}   {}   0.996   0.050   0.050   ?   0.000   {?}  72964236.00000 8408183.00000 1 {?} 0
+439 {}   3.834   0.050   0.050   ?   0.000   {?}   {}   0.914   0.050   0.050   ?   0.000   {?}  90866672.00000 10267196.00000 1 {?} 0
+440 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+441 {}   3.827   0.050   0.050   ?   0.000   {?}   {}   1.592   0.050   0.050   ?   0.000   {?}  42948480.50000 4822890.00000 1 {?} 0
+442 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+443 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+444 {}   3.632   0.050   0.050   ?   0.000   {?}   {}   1.552   0.050   0.050   ?   0.000   {?}  23102427.75000 2698830.50000 1 {?} 0
+445 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+446 {}   3.831   0.050   0.050   ?   0.000   {?}   {}   1.781   0.050   0.050   ?   0.000   {?}  28533512.75000 3242526.75000 1 {?} 0
+447 {}   3.830   0.050   0.050   ?   0.000   {?}   {}   2.127   0.050   0.050   ?   0.000   {?}  45883750.00000 5261259.00000 1 {?} 0
+448 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+449 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+450 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+451 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+452 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+453 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+454 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+455 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+456 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+457 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+458 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+459 {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+460  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+461  {}   3.719   0.050   0.050   ?   0.000   {?}   {}   2.071   0.050   0.050   ?   0.000   {?}  55303416.50000 6274152.50000 1 {?} 0
+462  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+463  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+464  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+465  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+466  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+467  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+468  {}   3.782   0.050   0.050   ?   0.000   {?}   {}   2.058   0.050   0.050   ?   0.000   {?}  62557635.00000 7159505.50000 1 {?} 0
+469  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+470  {}   3.781   0.050   0.050   ?   0.000   {?}   {}   2.012   0.050   0.050   ?   0.000   {?}  64445815.50000 7294210.50000 1 {?} 0
+471  {}   3.804   0.050   0.050   ?   0.000   {?}   {}   2.008   0.050   0.050   ?   0.000   {?}  61618042.00000 6951962.00000 1 {?} 0
+472  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+473  {}   3.842   0.050   0.050   ?   0.000   {?}   {}   1.930   0.050   0.050   ?   0.000   {?}  40051661.75000 4645194.50000 1 {?} 0
+474  {}   3.777   0.050   0.050   ?   0.000   {?}   {}   2.282   0.050   0.050   ?   0.000   {?}  17105802.75000 2030730.75000 1 {?} 0
+475  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+476  {}   3.815   0.050   0.050   ?   0.000   {?}   {}   2.272   0.050   0.050   ?   0.000   {?}  13254613.12500 1603186.50000 1 {?} 0
+477  {}   3.797   0.050   0.050   ?   0.000   {?}   {}   2.275   0.050   0.050   ?   0.000   {?}  16054995.75000 1924364.87500 1 {?} 0
+478  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+479  {}   3.712   0.050   0.050   ?   0.000   {?}   {}   2.276   0.050   0.050   ?   0.000   {?}  11241531.25000 1314869.00000 1 {?} 0
+480  {}   3.635   0.050   0.050   ?   0.000   {?}   {}   2.034   0.050   0.050   ?   0.000   {?}  34594549.25000 3924132.75000 1 {?} 0
+481  {}   3.779   0.050   0.050   ?   0.000   {?}   {}   0.994   0.050   0.050   ?   0.000   {?}  11183016.50000 1328932.12500 1 {?} 0
+482  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+483  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+484  {}   3.780   0.050   0.050   ?   0.000   {?}   {}   1.596   0.050   0.050   ?   0.000   {?}  12187818.37500 1422020.75000 1 {?} 0
+485  {}   3.782   0.050   0.050   ?   0.000   {?}   {}   1.916   0.050   0.050   ?   0.000   {?}  25298691.25000 2943837.00000 1 {?} 0
+486  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+487  {}   3.637   0.050   0.050   ?   0.000   {?}   {}   1.925   0.050   0.050   ?   0.000   {?}  15189336.75000 1749867.25000 1 {?} 0
+488  {}   3.155   0.050   0.050   ?   0.000   {?}   {}   1.856   0.050   0.050   ?   0.000   {?}  28752040.50000 3305364.75000 1 {?} 0
+489  {}   3.153   0.050   0.050   ?   0.000   {?}   {}   1.694   0.050   0.050   ?   0.000   {?}  39148466.25000 4519101.50000 1 {?} 0
+490  {}   2.982   0.050   0.050   ?   0.000   {?}   {}   1.684   0.050   0.050   ?   0.000   {?}  86926624.00000 9950171.00000 1 {?} 0
+491  {}   3.153   0.050   0.050   ?   0.000   {?}   {}   1.625   0.050   0.050   ?   0.000   {?}  46888114.50000 5403356.00000 1 {?} 0
+492  {}   2.161   0.050   0.050   ?   0.000   {?}   {}   1.949   0.050   0.050   ?   0.000   {?}  297795518.00000 33700704.00000 1 {?} 0
+493  {}   2.242   0.050   0.050   ?   0.000   {?}   {}   2.038   0.050   0.050   ?   0.000   {?}  361841332.00000 40931516.00000 1 {?} 0
+494  {}   2.256   0.050   0.050   ?   0.000   {?}   {}   2.000   0.050   0.050   ?   0.000   {?}  377202716.00000 42907712.00000 1 {?} 0
+495  {}   2.274   0.050   0.050   ?   0.000   {?}   {}   1.906   0.050   0.050   ?   0.000   {?}  326164204.00000 37138660.00000 1 {?} 0
+496  {}   2.369   0.050   0.050   ?   0.000   {?}   {}   2.159   0.050   0.050   ?   0.000   {?}  477676244.00000 54460288.00000 1 {?} 0
+497  {}   2.398   0.050   0.050   ?   0.000   {?}   {}   2.264   0.050   0.050   ?   0.000   {?}  501231084.00000 58028840.00000 1 {?} 0
+498  {}   2.423   0.050   0.050   ?   0.000   {?}   {}   2.199   0.050   0.050   ?   0.000   {?}  213554554.00000 24369442.00000 1 {?} 0
+499  {}   2.422   0.050   0.050   ?   0.000   {?}   {}   2.167   0.050   0.050   ?   0.000   {?}  221783332.00000 25087270.00000 1 {?} 0
+500  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+501  {}   1.996   0.050   0.050   ?   0.000   {?}   {}   2.265   0.050   0.050   ?   0.000   {?}  374903104.00000 42895552.00000 1 {?} 0
+502  {}   2.047   0.050   0.050   ?   0.000   {?}   {}   2.251   0.050   0.050   ?   0.000   {?}  368284888.00000 41832232.00000 1 {?} 0
+503  {}   1.963   0.050   0.050   ?   0.000   {?}   {}   2.165   0.050   0.050   ?   0.000   {?}  250023794.00000 29199450.00000 1 {?} 0
+504  {}   1.949   0.050   0.050   ?   0.000   {?}   {}   2.165   0.050   0.050   ?   0.000   {?}  274254594.00000 32068200.00000 1 {?} 0
+505  {}   1.910   0.050   0.050   ?   0.000   {?}   {}   2.274   0.050   0.050   ?   0.000   {?}  290777888.00000 32940634.00000 1 {?} 0
+506  {}   2.157   0.050   0.050   ?   0.000   {?}   {}   2.416   0.050   0.050   ?   0.000   {?}  233904324.00000 26402090.00000 1 {?} 0
+507  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+508  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+509  {}   2.156   0.050   0.050   ?   0.000   {?}   {}   2.368   0.050   0.050   ?   0.000   {?}  321631540.00000 36057524.00000 1 {?} 0
+510  {}   2.266   0.050   0.050   ?   0.000   {?}   {}   2.397   0.050   0.050   ?   0.000   {?}  356639764.00000 40498720.00000 1 {?} 0
+511  {}   2.402   0.050   0.050   ?   0.000   {?}   {}   2.023   0.050   0.050   ?   0.000   {?}  139882204.00000 15984890.00000 1 {?} 0
+512  {}   2.385   0.050   0.050   ?   0.000   {?}   {}   1.994   0.050   0.050   ?   0.000   {?}  168631406.00000 19318742.00000 1 {?} 0
+513  {}   2.372   0.050   0.050   ?   0.000   {?}   {}   1.988   0.050   0.050   ?   0.000   {?}  151477583.00000 17147392.00000 1 {?} 0
+514  {}   2.447   0.050   0.050   ?   0.000   {?}   {}   2.243   0.050   0.050   ?   0.000   {?}  159308312.00000 18210098.00000 1 {?} 0
+515  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+516  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+517  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+518  {}   1.998   0.050   0.050   ?   0.000   {?}   {}   2.384   0.050   0.050   ?   0.000   {?}  116853079.00000 13360077.00000 1 {?} 0
+519  {}   2.491   0.050   0.050   ?   0.000   {?}   {}   2.253   0.050   0.050   ?   0.000   {?}  74379758.00000 8499447.00000 1 {?} 0
+520  {}   2.477   0.050   0.050   ?   0.000   {?}   {}   2.251   0.050   0.050   ?   0.000   {?}  67881667.50000 7761311.50000 1 {?} 0
+521  {}   2.447   0.050   0.050   ?   0.000   {?}   {}   2.049   0.050   0.050   ?   0.000   {?}  78033488.00000 8908783.00000 1 {?} 0
+522  {}   2.055   0.050   0.050   ?   0.000   {?}   {}   2.419   0.050   0.050   ?   0.000   {?}  81795811.00000 9548568.00000 1 {?} 0
+523  {}   2.493   0.050   0.050   ?   0.000   {?}   {}   2.042   0.050   0.050   ?   0.000   {?}  42605285.00000 4888087.00000 1 {?} 0
+524  {}   2.169   0.050   0.050   ?   0.000   {?}   {}   2.561   0.050   0.050   ?   0.000   {?}  44323337.00000 5328153.50000 1 {?} 0
+525  {}   2.573   0.050   0.050   ?   0.000   {?}   {}   2.171   0.050   0.050   ?   0.000   {?}  25471972.75000 3005123.75000 1 {?} 0
+526  {}   2.559   0.050   0.050   ?   0.000   {?}   {}   2.170   0.050   0.050   ?   0.000   {?}  27744063.50000 3390739.00000 1 {?} 0
+527  {}   2.422   0.050   0.050   ?   0.000   {?}   {}   0.859   0.050   0.050   ?   0.000   {?}  14595030.25000 1850197.62500 1 {?} 0
+528  {}   2.122   0.050   0.050   ?   0.000   {?}   {}   0.997   0.050   0.050   ?   0.000   {?}  37288147.75000 4353856.50000 1 {?} 0
+529  {}   2.111   0.050   0.050   ?   0.000   {?}   {}   0.998   0.050   0.050   ?   0.000   {?}  37867676.00000 4439302.00000 1 {?} 0
+530  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+531  {}   2.123   0.050   0.050   ?   0.000   {?}   {}   0.926   0.050   0.050   ?   0.000   {?}  68742700.00000 8048063.50000 1 {?} 0
+532  {}   2.084   0.050   0.050   ?   0.000   {?}   {}   0.924   0.050   0.050   ?   0.000   {?}  24233399.12500 3224907.25000 1 {?} 0
+533  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+534  {}   1.917   0.050   0.050   ?   0.000   {?}   {}   0.895   0.050   0.050   ?   0.000   {?}  56550609.50000 6727488.50000 1 {?} 0
+535  {}   1.869   0.050   0.050   ?   0.000   {?}   {}   0.872   0.050   0.050   ?   0.000   {?}  53306215.50000 6148049.00000 1 {?} 0
+536  {}   1.753   0.050   0.050   ?   0.000   {?}   {}   0.869   0.050   0.050   ?   0.000   {?}  224569340.00000 25384758.00000 1 {?} 0
+537  {}   1.733   0.050   0.050   ?   0.000   {?}   {}   0.869   0.050   0.050   ?   0.000   {?}  237705918.00000 27365182.00000 1 {?} 0
+538  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+539  {}   1.622   0.050   0.050   ?   0.000   {?}   {}   0.871   0.050   0.050   ?   0.000   {?}  214753600.00000 24255794.00000 1 {?} 0
+540  {}   1.603   0.050   0.050   ?   0.000   {?}   {}   0.869   0.050   0.050   ?   0.000   {?}  198126848.00000 22247284.00000 1 {?} 0
+541  {}   1.578   0.050   0.050   ?   0.000   {?}   {}   0.863   0.050   0.050   ?   0.000   {?}  148328594.00000 17045150.00000 1 {?} 0
+542  {}   1.549   0.050   0.050   ?   0.000   {?}   {}   1.187   0.050   0.050   ?   0.000   {?}  126704749.00000 14534293.00000 1 {?} 0
+543  {}   1.428   0.050   0.050   ?   0.000   {?}   {}   1.140   0.050   0.050   ?   0.000   {?}  162841242.00000 18403114.00000 1 {?} 0
+544  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+545  {}   1.681   0.050   0.050   ?   0.000   {?}   {}   1.449   0.050   0.050   ?   0.000   {?}  313416008.00000 35763364.00000 1 {?} 0
+546  {}   1.466   0.050   0.050   ?   0.000   {?}   {}   1.685   0.050   0.050   ?   0.000   {?}  261744930.00000 29662390.00000 1 {?} 0
+547  {}   1.234   0.050   0.050   ?   0.000   {?}   {}   0.873   0.050   0.050   ?   0.000   {?}  59272047.00000 6957351.50000 1 {?} 0
+548  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+549  {}   1.187   0.050   0.050   ?   0.000   {?}   {}   1.551   0.050   0.050   ?   0.000   {?}  120308658.00000 13730735.00000 1 {?} 0
+550  {}   1.151   0.050   0.050   ?   0.000   {?}   {}   1.429   0.050   0.050   ?   0.000   {?}  158871016.00000 18361058.00000 1 {?} 0
+551  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+552  {}   1.136   0.050   0.050   ?   0.000   {?}   {}   0.844   0.050   0.050   ?   0.000   {?}  134342286.00000 15641872.00000 1 {?} 0
+553  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+554  {}   0.900   0.050   0.050   ?   0.000   {?}   {}   1.185   0.050   0.050   ?   0.000   {?}  47598152.00000 5684254.50000 1 {?} 0
+555  {}   0.890   0.050   0.050   ?   0.000   {?}   {}   1.183   0.050   0.050   ?   0.000   {?}  51351851.50000 6129318.00000 1 {?} 0
+556  {}   0.880   0.050   0.050   ?   0.000   {?}   {}   1.231   0.050   0.050   ?   0.000   {?}  47043487.50000 5407664.50000 1 {?} 0
+557  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+558  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+559  {}   0.839   0.050   0.050   ?   0.000   {?}   {}   1.141   0.050   0.050   ?   0.000   {?}  213126222.00000 24505190.00000 1 {?} 0
+560  {}   0.834   0.050   0.050   ?   0.000   {?}   {}   1.426   0.050   0.050   ?   0.000   {?}  104124032.00000 12198807.00000 1 {?} 0
+561  {}   0.835   0.050   0.050   ?   0.000   {?}   {}   1.554   0.050   0.050   ?   0.000   {?}  117190341.00000 13557204.00000 1 {?} 0
+562  {}   0.862   0.050   0.050   ?   0.000   {?}   {}   1.614   0.050   0.050   ?   0.000   {?}  222851962.00000 25297020.00000 1 {?} 0
+563  {}   0.906   0.050   0.050   ?   0.000   {?}   {}   1.656   0.050   0.050   ?   0.000   {?}  202569256.00000 23199850.00000 1 {?} 0
+564  {}   0.881   0.050   0.050   ?   0.000   {?}   {}   1.735   0.050   0.050   ?   0.000   {?}  315769892.00000 35805692.00000 1 {?} 0
+565  {}   0.862   0.050   0.050   ?   0.000   {?}   {}   1.719   0.050   0.050   ?   0.000   {?}  323025068.00000 37041592.00000 1 {?} 0
+566  {}   0.891   0.050   0.050   ?   0.000   {?}   {}   1.596   0.050   0.050   ?   0.000   {?}  192781606.00000 21859038.00000 1 {?} 0
+567  {}   0.901   0.050   0.050   ?   0.000   {?}   {}   1.935   0.050   0.050   ?   0.000   {?}  124757050.00000 14981947.00000 1 {?} 0
+568  {}   0.880   0.050   0.050   ?   0.000   {?}   {}   1.879   0.050   0.050   ?   0.000   {?}  125886277.00000 15270917.00000 1 {?} 0
+569  {}   0.836   0.050   0.050   ?   0.000   {?}   {}   1.878   0.050   0.050   ?   0.000   {?}  36986235.50000 4426425.00000 1 {?} 0
+570  {}   0.930   0.050   0.050   ?   0.000   {?}   {}   2.128   0.050   0.050   ?   0.000   {?}  109155443.00000 12741967.00000 1 {?} 0
+571  {}   1.005   0.050   0.050   ?   0.000   {?}   {}   2.128   0.050   0.050   ?   0.000   {?}  77260296.50000 9180584.00000 1 {?} 0
+572  {}   1.869   0.050   0.050   ?   0.000   {?}   {}   3.154   0.050   0.050   ?   0.000   {?}  36839333.50000 4200160.00000 1 {?} 0
+573  {}   1.839   0.050   0.050   ?   0.000   {?}   {}   3.154   0.050   0.050   ?   0.000   {?}  27953782.50000 3203620.50000 1 {?} 0
+574  {}   1.698   0.050   0.050   ?   0.000   {?}   {}   3.155   0.050   0.050   ?   0.000   {?}  51644770.50000 5893360.00000 1 {?} 0
+575  {}   1.633   0.050   0.050   ?   0.000   {?}   {}   3.155   0.050   0.050   ?   0.000   {?}  41585366.50000 4742013.50000 1 {?} 0
+576  {}   1.621   0.050   0.050   ?   0.000   {?}   {}   3.155   0.050   0.050   ?   0.000   {?}  47131812.00000 5451823.50000 1 {?} 0
+577  {}   1.688   0.050   0.050   ?   0.000   {?}   {}   2.981   0.050   0.050   ?   0.000   {?}  81841209.00000 9465898.00000 1 {?} 0
+578  {}   0.894   0.050   0.050   ?   0.000   {?}   {}   3.629   0.050   0.050   ?   0.000   {?}  15171913.37500 1903579.37500 1 {?} 0
+579  {}   0.906   0.050   0.050   ?   0.000   {?}   {}   3.629   0.050   0.050   ?   0.000   {?}  17088150.37500 2133732.75000 1 {?} 0
+580  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+581  {}   1.547   0.050   0.050   ?   0.000   {?}   {}   3.632   0.050   0.050   ?   0.000   {?}  14185027.62500 1701645.50000 1 {?} 0
+582  {}   1.591   0.050   0.050   ?   0.000   {?}   {}   3.650   0.050   0.050   ?   0.000   {?}  12220649.00000 1514657.12500 1 {?} 0
+583  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+584  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+585  {}   1.918   0.050   0.050   ?   0.000   {?}   {}   3.632   0.050   0.050   ?   0.000   {?}  13746850.25000 1628210.50000 1 {?} 0
+586  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+587  {}   2.003   0.050   0.050   ?   0.000   {?}   {}   3.648   0.050   0.050   ?   0.000   {?}  28195796.25000 3340471.75000 1 {?} 0
+588  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+589  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+590  {}   2.051   0.050   0.050   ?   0.000   {?}   {}   3.634   0.050   0.050   ?   0.000   {?}  32828648.75000 3779498.50000 1 {?} 0
+591  {8.HB2}   2.273   0.050   0.050   ?   0.000   {?}   {8.HD2}   3.801   0.050   0.050   ?   0.000   {?}  17353732.25000 2020918.75000 1 {?} 0
+592  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+593  {}   2.273   0.050   0.050   ?   0.000   {?}   {}   3.709   0.050   0.050   ?   0.000   {?}  10875564.87500 1337699.00000 1 {?} 0
+594  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+595  {14.HB}   2.123   0.050   0.050   ?   0.000   {?}   {14.HA}   3.831   0.050   0.050   ?   0.000   {?}  33834795.00000 3974634.25000 1 {?} 0
+596  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+597  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+598  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+599  {}   2.095   0.050   0.050   ?   0.000   {?}   {}   3.785   0.050   0.050   ?   0.000   {?}  38252887.50000 4638260.00000 1 {?} 0
+600  {}   2.093   0.050   0.050   ?   0.000   {?}   {}   3.711   0.050   0.050   ?   0.000   {?}  35524605.00000 4238644.50000 1 {?} 0
+601  {13.HG2}   2.077   0.050   0.050   ?   0.000   {?}   {13.HD2}   3.783   0.050   0.050   ?   0.000   {?}  56941987.00000 6701904.00000 1 {?} 0
+602  {}   2.077   0.050   0.050   ?   0.000   {?}   {}   3.712   0.050   0.050   ?   0.000   {?}  48132813.00000 5554278.50000 1 {?} 0
+603  {}   2.068   0.050   0.050   ?   0.000   {?}   {}   3.711   0.050   0.050   ?   0.000   {?}  48129664.00000 5530541.50000 1 {?} 0
+604  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+605  {8.HG2}   2.055   0.050   0.050   ?   0.000   {?}   {8.HD2}   3.787   0.050   0.050   ?   0.000   {?}  59472752.00000 6822523.50000 1 {?} 0
+606  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+607  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+608  {8.HG1}   1.996   0.050   0.050   ?   0.000   {?}   {8.HD2}   3.793   0.050   0.050   ?   0.000   {?}  60309326.00000 6878008.00000 1 {?} 0
+609  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+610  {}   2.009   0.050   0.050   ?   0.000   {?}   {}   3.711   0.050   0.050   ?   0.000   {?}  33711941.00000 3976524.50000 1 {?} 0
+611  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+612  {8.HB1}   1.914   0.050   0.050   ?   0.000   {?}   {8.HD2}   3.809   0.050   0.050   ?   0.000   {?}  29864540.00000 3474804.75000 1 {?} 0
+613  {17.HB2}   1.781   0.050   0.050   ?   0.000   {?}   {14.HA}   3.832   0.050   0.050   ?   0.000   {?}  14603218.87500 1741200.12500 1 {?} 0
+614  {}   1.615   0.050   0.050   ?   0.000   {?}   {}   3.826   0.050   0.050   ?   0.000   {?}  23336409.25000 2698986.25000 1 {?} 0
+615  {15.HG12}   1.548   0.050   0.050   ?   0.000   {?}   {15.HA}   3.835   0.050   0.050   ?   0.000   {?}  13660996.37500 1620705.87500 1 {?} 0
+616  {17.HB1}   1.594   0.050   0.050   ?   0.000   {?}   {14.HA}   3.832   0.050   0.050   ?   0.000   {?}  17124899.37500 1992741.50000 1 {?} 0
+617  {}   1.580   0.050   0.050   ?   0.000   {?}   {}   3.831   0.050   0.050   ?   0.000   {?}  16133731.87500 1883390.00000 1 {?} 0
+618  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+619  {18.HG2#}   1.236   0.050   0.050   ?   0.000   {?}   {15.HA}   3.843   0.050   0.050   ?   0.000   {?}  16912411.62500 2047327.25000 1 {?} 0
+620  {15.HG11}   1.197   0.050   0.050   ?   0.000   {?}   {15.HA}   3.851   0.050   0.050   ?   0.000   {?}  12570488.25000 1471877.25000 1 {?} 0
+621  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+622  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+623  {14.HG1#}   1.002   0.050   0.050   ?   0.000   {?}   {14.HA}   3.829   0.050   0.050   ?   0.000   {?}  78266878.00000 9048428.00000 1 {?} 0
+624  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+625  {14.HG2#}   0.930   0.050   0.050   ?   0.000   {?}   {14.HA}   3.832   0.050   0.050   ?   0.000   {?}  64328024.50000 7523755.00000 1 {?} 0
+626  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+627  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+628  {15.HG2#}   0.893   0.050   0.050   ?   0.000   {?}   {15.HA}   3.843   0.050   0.050   ?   0.000   {?}  79024053.00000 9087588.00000 1 {?} 0
+629  {17.HD1# 17.HD2#}   0.864   0.050   0.050   ?   0.000   {?}   {14.HA 14.HA}   3.827   0.050   0.050   ?   0.000   {?}  31761537.25000 3683741.25000 1 {?} 0
+630  {15.HD1#}   0.836   0.050   0.050   ?   0.000   {?}   {15.HA}   3.843   0.050   0.050   ?   0.000   {?}  36759394.00000 4470768.50000 1 {?} 0
+631  {}   0.857   0.050   0.050   ?   0.000   {?}   {}   3.908   0.050   0.050   ?   0.000   {?}  16545407.00000 1940171.00000 1 {?} 0
+632  {}   0.865   0.050   0.050   ?   0.000   {?}   {}   3.955   0.050   0.050   ?   0.000   {?}  21340605.50000 2523764.00000 1 {?} 0
+633  {}   0.901   0.050   0.050   ?   0.000   {?}   {}   3.978   0.050   0.050   ?   0.000   {?}  13460161.00000 1586151.00000 1 {?} 0
+634  {}   0.928   0.050   0.050   ?   0.000   {?}   {}   3.973   0.050   0.050   ?   0.000   {?}  9839874.81250 1162511.00000 1 {?} 0
+635  {}   0.874   0.050   0.050   ?   0.000   {?}   {}   4.041   0.050   0.050   ?   0.000   {?}  10442350.50000 1269553.87500 1 {?} 0
+636  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+637  {}   0.858   0.050   0.050   ?   0.000   {?}   {}   4.043   0.050   0.050   ?   0.000   {?}  9418311.68750 1169351.62500 1 {?} 0
+638  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+639  {22.HD1# 22.HD2#}   0.876   0.050   0.050   ?   0.000   {?}   {22.HA 22.HA}   4.191   0.050   0.050   ?   0.000   {?}  118162898.00000 13395099.00000 1 {?} 0
+640  {}   0.862   0.050   0.050   ?   0.000   {?}   {}   4.182   0.050   0.050   ?   0.000   {?}  140263515.00000 16088843.00000 1 {?} 0
+641  {26.HD2# 26.HD1#}   0.856   0.050   0.050   ?   0.000   {?}   {26.HA 26.HA}   4.275   0.050   0.050   ?   0.000   {?}  212420004.00000 24204146.00000 1 {?} 0
+642  {29.HD2#}   0.867   0.050   0.050   ?   0.000   {?}   {29.HA}   4.345   0.050   0.050   ?   0.000   {?}  70554537.00000 8160727.00000 1 {?} 0
+643  {29.HD1#}   0.901   0.050   0.050   ?   0.000   {?}   {29.HA}   4.342   0.050   0.050   ?   0.000   {?}  37420060.75000 4308028.50000 1 {?} 0
+644  {18.HG2#}   1.235   0.050   0.050   ?   0.000   {?}   {18.HB}   4.334   0.050   0.050   ?   0.000   {?}  188447190.00000 21560824.00000 1 {?} 0
+645  {18.HG2#}   1.237   0.050   0.050   ?   0.000   {?}   {18.HA}   4.116   0.050   0.050   ?   0.000   {?}  113758953.00000 13088525.00000 1 {?} 0
+646  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+647  {33.HB#}   1.338   0.050   0.050   ?   0.000   {?}   {33.HA}   4.279   0.050   0.050   ?   0.000   {?}  24970982.00000 3135332.25000 1 {?} 0
+648  {}   0.849   0.050   0.050   ?   0.000   {?}   {}   4.456   0.050   0.050   ?   0.000   {?}  17649219.87500 2105210.75000 1 {?} 0
+649  {}   0.835   0.050   0.050   ?   0.000   {?}   {}   4.457   0.050   0.050   ?   0.000   {?}  15745357.50000 1966418.87500 1 {?} 0
+650  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+651  {7.HD2#}   0.895   0.050   0.050   ?   0.000   {?}   {7.HA}   4.650   0.050   0.050   ?   0.000   {?}  62034978.50000 7264882.50000 1 {?} 0
+652  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+653  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+654  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+655  {27.HB#}   1.429   0.050   0.050   ?   0.000   {?}   {27.HA}   4.299   0.050   0.050   ?   0.000   {?}  183110400.00000 20888344.00000 1 {?} 0
+656  {19.HB#}   1.458   0.050   0.050   ?   0.000   {?}   {19.HA}   4.120   0.050   0.050   ?   0.000   {?}  235541840.00000 27171430.00000 1 {?} 0
+657  {7.HG}   1.553   0.050   0.050   ?   0.000   {?}   {7.HA}   4.650   0.050   0.050   ?   0.000   {?}  28453281.00000 3283784.75000 1 {?} 0
+658  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+659  {7.HB1}   1.613   0.050   0.050   ?   0.000   {?}   {7.HA}   4.652   0.050   0.050   ?   0.000   {?}  30493325.25000 3543811.50000 1 {?} 0
+660  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+661  {7.HB2}   1.656   0.050   0.050   ?   0.000   {?}   {7.HA}   4.651   0.050   0.050   ?   0.000   {?}  16045217.50000 1847506.75000 1 {?} 0
+662  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+663  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+664  {29.HB1}   1.600   0.050   0.050   ?   0.000   {?}   {29.HA}   4.346   0.050   0.050   ?   0.000   {?}  61075759.00000 7015483.00000 1 {?} 0
+665  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+666  {26.HG}   1.598   0.050   0.050   ?   0.000   {?}   {26.HA}   4.274   0.050   0.050   ?   0.000   {?}  62144671.00000 7183958.50000 1 {?} 0
+667  {26.HG}   1.577   0.050   0.050   ?   0.000   {?}   {26.HA}   4.276   0.050   0.050   ?   0.000   {?}  63854316.50000 7468306.50000 1 {?} 0
+668  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+669  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+670  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+671  {22.HB1}   1.629   0.050   0.050   ?   0.000   {?}   {22.HA}   4.170   0.050   0.050   ?   0.000   {?}  50187335.00000 5817124.50000 1 {?} 0
+672  {16.HG1}   1.627   0.050   0.050   ?   0.000   {?}   {16.HA}   4.118   0.050   0.050   ?   0.000   {?}  41274408.50000 4724567.50000 1 {?} 0
+673  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+674  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+675  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+676  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+677  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+678  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+679  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+680  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+681  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+682  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+683  {16.HG2}   1.701   0.050   0.050   ?   0.000   {?}   {16.HA}   4.106   0.050   0.050   ?   0.000   {?}  30904682.25000 3573441.25000 1 {?} 0
+684  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+685  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+686  {26.HB1 26.HB2 22.HB2}   1.752   0.050   0.050   ?   0.000   {?}   {21.HA 22.HA 23.HA}   4.179   0.050   0.050   ?   0.000   {?}  68725265.50000 7911843.00000 1 {?} 0
+687  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+688  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+689  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+690  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+691  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+692  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+693  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+694  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+695  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+696  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+697  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+698  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+699  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+700  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+701  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+702  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+703  {8.HB1}   1.924   0.050   0.050   ?   0.000   {?}   {8.HA}   4.367   0.050   0.050   ?   0.000   {?}  32898783.75000 3778018.50000 1 {?} 0
+704  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+705  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+706  {13.HB1}   1.908   0.050   0.050   ?   0.000   {?}   {13.HA}   4.332   0.050   0.050   ?   0.000   {?}  30380974.00000 3469254.25000 1 {?} 0
+707  {16.HB2}   1.878   0.050   0.050   ?   0.000   {?}   {13.HA}   4.325   0.050   0.050   ?   0.000   {?}  29037043.25000 3411267.00000 1 {?} 0
+708  {6.HB}   1.875   0.050   0.050   ?   0.000   {?}   {6.HA}   4.213   0.050   0.050   ?   0.000   {?}  40103911.50000 4845895.00000 1 {?} 0
+709  {16.HB2}   1.870   0.050   0.050   ?   0.000   {?}   {16.HA}   4.095   0.050   0.050   ?   0.000   {?}  54355024.50000 6300532.50000 1 {?} 0
+710  {16.HB1}   1.854   0.050   0.050   ?   0.000   {?}   {16.HA}   4.096   0.050   0.050   ?   0.000   {?}  50048386.00000 5795897.50000 1 {?} 0
+711  {26.HB2 26.HB1 4.HB1 26.HB2 26.HB1 4.HB1}   1.757   0.050   0.050   ?   0.000   {?}   {4.HA 4.HA 4.HA 26.HA 26.HA 26.HA}   4.266   0.050   0.050   ?   0.000   {?}  98210377.00000 11287276.00000 1 {?} 0
+712  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+713  {12.HB1}   2.052   0.050   0.050   ?   0.000   {?}   {12.HA}   4.462   0.050   0.050   ?   0.000   {?}  34255167.00000 3966695.25000 1 {?} 0
+714  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+715  {12.HB2}   2.137   0.050   0.050   ?   0.000   {?}   {12.HA}   4.461   0.050   0.050   ?   0.000   {?}  37288579.25000 4324349.50000 1 {?} 0
+716  {9.HB1}   2.002   0.050   0.050   ?   0.000   {?}   {9.HA}   4.226   0.050   0.050   ?   0.000   {?}  25775428.50000 3070219.75000 1 {?} 0
+717  {10.HB1}   2.062   0.050   0.050   ?   0.000   {?}   {10.HA}   4.288   0.050   0.050   ?   0.000   {?}  53169288.00000 6207962.50000 1 {?} 0
+718  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+719  {15.HB}   1.931   0.050   0.050   ?   0.000   {?}   {12.HA}   4.464   0.050   0.050   ?   0.000   {?}  17736543.87500 2107765.75000 1 {?} 0
+720  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+721  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+722  {31.HB1}   2.002   0.050   0.050   ?   0.000   {?}   {31.HA}   4.422   0.050   0.050   ?   0.000   {?}  16601293.87500 1961632.00000 1 {?} 0
+723  {8.HG1}   1.995   0.050   0.050   ?   0.000   {?}   {8.HA}   4.366   0.050   0.050   ?   0.000   {?}  25378160.75000 2949857.25000 1 {?} 0
+724  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+725  {13.HG1}   2.002   0.050   0.050   ?   0.000   {?}   {13.HA}   4.331   0.050   0.050   ?   0.000   {?}  22825297.00000 2593093.00000 1 {?} 0
+726  {8.HG2}   2.048   0.050   0.050   ?   0.000   {?}   {8.HA}   4.366   0.050   0.050   ?   0.000   {?}  22868631.50000 2649191.25000 1 {?} 0
+727  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+728  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+729  {32.HB2}   2.161   0.050   0.050   ?   0.000   {?}   {32.HA}   4.376   0.050   0.050   ?   0.000   {?}  23205096.75000 2676031.25000 1 {?} 0
+730  {25.HB1}   2.149   0.050   0.050   ?   0.000   {?}   {25.HA}   4.275   0.050   0.050   ?   0.000   {?}  74845694.50000 8615270.00000 1 {?} 0
+731  {10.HB2}   2.138   0.050   0.050   ?   0.000   {?}   {10.HA}   4.268   0.050   0.050   ?   0.000   {?}  70902020.50000 8223154.00000 1 {?} 0
+732  {21.HB1 25.HB1 25.HB2}   2.157   0.050   0.050   ?   0.000   {?}   {21.HA 22.HA 23.HA}   4.180   0.050   0.050   ?   0.000   {?}  62230241.00000 7224944.00000 1 {?} 0
+733  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+734  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+735  {21.HB2}   2.231   0.050   0.050   ?   0.000   {?}   {21.HA}   4.170   0.050   0.050   ?   0.000   {?}  43958417.50000 5108619.00000 1 {?} 0
+736  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+737  {25.HB2}   2.188   0.050   0.050   ?   0.000   {?}   {25.HA}   4.275   0.050   0.050   ?   0.000   {?}  59136201.00000 6817838.50000 1 {?} 0
+738  {8.HB2}   2.269   0.050   0.050   ?   0.000   {?}   {8.HA}   4.367   0.050   0.050   ?   0.000   {?}  69870089.50000 8015594.00000 1 {?} 0
+739  {13.HB2}   2.274   0.050   0.050   ?   0.000   {?}   {13.HA}   4.316   0.050   0.050   ?   0.000   {?}  67111329.00000 7742489.50000 1 {?} 0
+740  {28.HB2}   2.242   0.050   0.050   ?   0.000   {?}   {28.HA}   4.291   0.050   0.050   ?   0.000   {?}  51125860.00000 5874428.50000 1 {?} 0
+741  {32.HG1}   2.366   0.050   0.050   ?   0.000   {?}   {32.HA}   4.385   0.050   0.050   ?   0.000   {?}  24186647.25000 2799832.00000 1 {?} 0
+742  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+743  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+744  {9.HG#}   2.378   0.050   0.050   ?   0.000   {?}   {9.HA}   4.224   0.050   0.050   ?   0.000   {?}  46930093.50000 5452553.50000 1 {?} 0
+745  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+746  {10.HG2}   2.372   0.050   0.050   ?   0.000   {?}   {10.HA}   4.266   0.050   0.050   ?   0.000   {?}  36433243.25000 4275760.50000 1 {?} 0
+747  {21.HG#}   2.440   0.050   0.050   ?   0.000   {?}   {21.HA}   4.180   0.050   0.050   ?   0.000   {?}  33742598.50000 3934095.25000 1 {?} 0
+748  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+749  {28.HG1}   2.437   0.050   0.050   ?   0.000   {?}   {28.HA}   4.285   0.050   0.050   ?   0.000   {?}  64019826.50000 7436807.00000 1 {?} 0
+750  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+751  {25.HG#}   2.424   0.050   0.050   ?   0.000   {?}   {25.HA}   4.277   0.050   0.050   ?   0.000   {?}  65851123.50000 7644892.00000 1 {?} 0
+752  {28.HG2}   2.489   0.050   0.050   ?   0.000   {?}   {28.HA}   4.287   0.050   0.050   ?   0.000   {?}  29873963.00000 3658378.00000 1 {?} 0
+753  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+754  {12.HG#}   2.414   0.050   0.050   ?   0.000   {?}   {12.HA}   4.459   0.050   0.050   ?   0.000   {?}  44753100.50000 5230658.50000 1 {?} 0
+755  {31.HG#}   2.401   0.050   0.050   ?   0.000   {?}   {31.HA}   4.435   0.050   0.050   ?   0.000   {?}  40654345.00000 4715659.50000 1 {?} 0
+756  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+757  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+758  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+759  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+760  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+761  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+762  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+763  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+764  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+765  {}   4.224   0.050   0.050   ?   0.000   {?}   {}   2.008   0.050   0.050   ?   0.000   {?}  9622078.00000 1136846.75000 1 {?} 0
+766  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+767  {}   0.858   0.050   0.050   ?   0.000   {?}   {}   2.440   0.050   0.050   ?   0.000   {?}  23534701.50000 2836783.75000 1 {?} 0
+768  {}   0.849   0.050   0.050   ?   0.000   {?}   {}   2.439   0.050   0.050   ?   0.000   {?}  24230745.50000 2882370.50000 1 {?} 0
+769  {}   0.857   0.050   0.050   ?   0.000   {?}   {}   2.199   0.050   0.050   ?   0.000   {?}  22098377.00000 2602108.75000 1 {?} 0
+770  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+771  {}   1.452   0.050   0.050   ?   0.000   {?}   {}   0.846   0.050   0.050   ?   0.000   {?}  45975090.00000 5465314.00000 1 {?} 0
+772  {2.HB2}   2.869   0.050   0.050   ?   0.000   {?}   {2.HA}   4.796   0.050   0.050   ?   0.000   {?}  19039085.12500 2239635.50000 1 {?} 0
+773  {2.HB1}   2.801   0.050   0.050   ?   0.000   {?}   {2.HA}   4.793   0.050   0.050   ?   0.000   {?}  21645428.25000 2539569.75000 1 {?} 0
+774  {5.HB2}   2.805   0.050   0.050   ?   0.000   {?}   {5.HA}   4.727   0.050   0.050   ?   0.000   {?}  19026490.75000 2260495.25000 1 {?} 0
+775  {5.HB1}   2.725   0.050   0.050   ?   0.000   {?}   {5.HA}   4.736   0.050   0.050   ?   0.000   {?}  17705537.50000 2034541.00000 1 {?} 0
+776  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+777  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+778  {16.HB1}   1.857   0.050   0.050   ?   0.000   {?}   {13.HA}   4.324   0.050   0.050   ?   0.000   {?}  17989454.00000 2154438.00000 1 {?} 0
+779  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+780  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+781  {10.HG1}   2.357   0.050   0.050   ?   0.000   {?}   {10.HA}   4.270   0.050   0.050   ?   0.000   {?}  33364183.75000 3674115.00000 1 {?} 0
+782  {4.HB2}   1.798   0.050   0.050   ?   0.000   {?}   {4.HA}   4.258   0.050   0.050   ?   0.000   {?}  48205376.50000 5425234.00000 1 {?} 0
+783  {4.HD#}   1.679   0.050   0.050   ?   0.000   {?}   {4.HA}   4.264   0.050   0.050   ?   0.000   {?}  26612741.75000 3239893.50000 1 {?} 0
+784  {26.HA}   4.283   0.050   0.050   ?   0.000   {?}   {26.HG}   1.581   0.050   0.050   ?   0.000   {?}  12900906.37500 1486027.00000 1 {?} 0
+785  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+786  {16.HD#}   3.158   0.050   0.050   ?   0.000   {?}   {16.HA}   4.105   0.050   0.050   ?   0.000   {?}  13292526.25000 1536111.00000 1 {?} 0
+787  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+788  {}   2.146   0.050   0.050   ?   0.000   {?}   {}   3.979   0.050   0.050   ?   0.000   {?}  10316174.37500 1284218.12500 1 {?} 0
+789  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+790  {}   2.132   0.050   0.050   ?   0.000   {?}   {}   3.986   0.050   0.050   ?   0.000   {?}  10504930.62500 1254514.62500 1 {?} 0
+791  {14.HB}   2.121   0.050   0.050   ?   0.000   {?}   {11.HA2}   3.982   0.050   0.050   ?   0.000   {?}  8590408.00000 1027516.75000 1 {?} 0
+792  {}   0.000   0.000   0.000   ?   0.000   {?}   {}   0.000   0.000   0.000   ?   0.000   {?}  0.00000 0.00000 -1 {?} 0
+793  {}   1.616   0.050   0.050   ?   0.000   {?}   {}   4.009   0.050   0.050   ?   0.000   {?}  7833804.75000 934618.37500 1 {?} 0
+794  {}   1.597   0.050   0.050   ?   0.000   {?}   {}   4.008   0.050   0.050   ?   0.000   {?}  8123007.50000 986536.12500 1 {?} 0
+795  {}   1.598   0.050   0.050   ?   0.000   {?}   {}   3.989   0.050   0.050   ?   0.000   {?}  7638367.62500 932623.68750 1 {?} 0
+796  {}   1.618   0.050   0.050   ?   0.000   {?}   {}   3.984   0.050   0.050   ?   0.000   {?}  8710060.87500 1018023.18750 1 {?} 0
+797  {}   1.455   0.050   0.050   ?   0.000   {?}   {}   4.010   0.050   0.050   ?   0.000   {?}  9185759.56250 1140389.75000 1 {?} 0
+798  {}   1.466   0.050   0.050   ?   0.000   {?}   {}   3.844   0.050   0.050   ?   0.000   {?}  11002993.43750 1368402.62500 1 {?} 0
+799  {}   1.454   0.050   0.050   ?   0.000   {?}   {}   3.841   0.050   0.050   ?   0.000   {?}  12767561.25000 1562374.12500 1 {?} 0
+800  {}   4.278   0.050   0.050   ?   0.000   {?}   {}   2.242   0.050   0.050   ?   0.000   {?}  9318029.06250 1045786.62500 1 {?} 0
+801  {}   4.323   0.050   0.050   ?   0.000   {?}   {}   1.438   0.050   0.050   ?   0.000   {?}  15317186.00000 1704421.87500 1 {?} 0
+802  {}   4.175   0.050   0.050   ?   0.000   {?}   {}   2.174   0.050   0.050   ?   0.000   {?}  31460572.25000 3631351.75000 1 {?} 0
+803  {}   4.116   0.050   0.050   ?   0.000   {?}   {}   2.219   0.050   0.050   ?   0.000   {?}  9927642.06250 1092642.75000 1 {?} 0
+804  {}   7.661   0.050   0.050   ?   0.000   {?}   {}   4.319   0.050   0.050   ?   0.000   {?}  76801421.50000 8673896.00000 1 {?} 0
+805  {}   7.897   0.050   0.050   ?   0.000   {?}   {}   4.177   0.050   0.050   ?   0.000   {?}  31229938.25000 3465191.25000 1 {?} 0
+806  {}   7.897   0.050   0.050   ?   0.000   {?}   {}   4.018   0.050   0.050   ?   0.000   {?}  12239293.25000 1359107.75000 1 {?} 0
+807  {}   7.895   0.050   0.050   ?   0.000   {?}   {}   2.429   0.050   0.050   ?   0.000   {?}  18953518.62500 2200040.25000 1 {?} 0
+808  {}   7.895   0.050   0.050   ?   0.000   {?}   {}   2.160   0.050   0.050   ?   0.000   {?}  41605668.00000 4748667.00000 1 {?} 0
+809  {}   7.916   0.050   0.050   ?   0.000   {?}   {}   4.177   0.050   0.050   ?   0.000   {?}  34436204.75000 3837118.00000 1 {?} 0
+810  {}   7.917   0.050   0.050   ?   0.000   {?}   {}   0.872   0.050   0.050   ?   0.000   {?}  19061540.62500 2205849.50000 1 {?} 0
+811  {}   7.811   0.050   0.050   ?   0.000   {?}   {}   0.872   0.050   0.050   ?   0.000   {?}  11177200.75000 1331016.87500 1 {?} 0
+812  {}   8.173   0.050   0.050   ?   0.000   {?}   {}   3.883   0.050   0.050   ?   0.000   {?}  33103065.75000 3673598.50000 1 {?} 0
+813  {}   8.175   0.050   0.050   ?   0.000   {?}   {}   3.855   0.050   0.050   ?   0.000   {?}  32122781.25000 3579474.75000 1 {?} 0
+814  {}   8.244   0.050   0.050   ?   0.000   {?}   {}   4.099   0.050   0.050   ?   0.000   {?}  28084945.50000 3286359.50000 1 {?} 0
+815  {24.HB2}   4.019   0.050   0.050   ?   0.000   {?}   {21.HA 22.HA}   4.182   0.050   0.050   ?   0.000   {?}  79944781.00000 9179021.00000 1 {?} 0
+816  {25.HB2}   2.170   0.050   0.050   ?   0.000   {?}   {22.HA 21.HA}   4.181   0.050   0.050   ?   0.000   {?}  50074720.00000 5770226.00000 1 {?} 0
+817  {}   2.042   0.050   0.050   ?   0.000   {?}   {}   4.275   0.050   0.050   ?   0.000   {?}  33040810.25000 3844530.25000 1 {?} 0
+818  {}   3.964   0.050   0.050   ?   0.000   {?}   {}   3.878   0.050   0.050   ?   0.000   {?}  550722744.00000 62110124.00000 1 {?} 0
+819  {}   4.298   0.050   0.050   ?   0.000   {?}   {}   7.752   0.050   0.050   ?   0.000   {?}  31797992.25000 3715309.25000 1 {?} 0
+820  {25.HA 26.HA}   4.274   0.050   0.050   ?   0.000   {?}   {28.HN}   7.750   0.050   0.050   ?   0.000   {?}  17065139.12500 2014337.25000 1 {?} 0
+
+;
+
+save_
+

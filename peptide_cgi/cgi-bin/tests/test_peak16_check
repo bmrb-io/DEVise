@@ -9,5 +9,67 @@ foreach file ($files)
   endif
 end
 
-echo "Check not yet implemented"
-set result = 1
+set file = "15350_peaks.str"
+set line = '^save_spectral_peak_list_1'
+source tests/check4line
+set line  = '9   $NMRView    .   .   15350   1'
+source tests/check4line
+
+set line  = '1 . . 15350 1'
+source tests/check4line
+set line = '1247 . . 15350 1'
+source tests/check4line
+
+set line = '1 41.3034 . volume 15350 1'
+source tests/check4line
+set line = '1247 0.0 . volume 15350 1'
+source tests/check4line
+
+
+set line = '^save_spectral_peak_list_2'
+source tests/check4line
+set line = '9   $NMRView    .   .   15350   2'
+source tests/check4line
+set line = '1 . . 15350 2'
+source tests/check4line
+set line = '10 . . 15350 2'
+source tests/check4line
+set line = '1 4.4087 . volume 15350 2'
+source tests/check4line
+set line = '10 0.0182 . volume 15350 2'
+source tests/check4line
+
+
+set line = '^save_spectral_peak_list_3'
+source tests/check4line
+set line = '9   $NMRView    .   .   15350   3'
+source tests/check4line
+set line = '1 . . 15350 3'
+source tests/check4line
+set line = '245 . . 15350 3'
+source tests/check4line
+
+set line = '1 0.6043 . volume 15350 3'
+source tests/check4line
+set line = '245 1.9482 . volume 15350 3'
+source tests/check4line
+
+
+set line = '^save_spectral_peak_list_4'
+source tests/check4line
+set line = '9   $NMRView    .   .   15350   4'
+source tests/check4line
+
+set line = '1 . . 15350 4'
+source tests/check4line
+set line = '1038 . . 15350 4'
+source tests/check4line
+
+set line = '1 0.0306 . volume 15350 4'
+source tests/check4line
+set line = '1038 12.8522 . volume 15350 4'
+source tests/check4line
+
+
+echo "TEMPTEMP -- checks are not yet complete!"
+#TEMPTEMP -- add chem shift checks

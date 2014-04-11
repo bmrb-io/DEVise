@@ -1,0 +1,28 @@
+echo "Checking output files"
+
+set files = ( 11036_peaks.str )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "11036_peaks.str"
+set line = '^save_spectral_peak_list_1'
+source tests/check4line
+set line = '9   $NMRView    .   .   11036   1'
+source tests/check4line
+set line = '1 . . 11036 1'
+source tests/check4line
+set line = '3356 . . 11036 1'
+source tests/check4line
+set line = '1 194.4839 . volume 11036 1'
+source tests/check4line
+set line = '3352 3.2897 . volume 11036 1'
+source tests/check4line
+set line = '3356 0.0 . volume 11036 1'
+source tests/check4line
+
+#TEMPTEMP -- should we eventually have assignments here?

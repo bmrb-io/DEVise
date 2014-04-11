@@ -21,6 +21,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.341  2014/03/21 15:00:47  wenger
+// Made some fixes to the dynamics movie code.
+//
+// Revision 1.340.2.3  2014/04/11 20:27:27  wenger
+// Changed version to 12.4.1nmrview_x3 to differentiate from the
+// previous version I installed at BMRB.
+//
+// Revision 1.340.2.2  2014/03/12 16:54:24  wenger
+// NMRView peak list processing:  made a bunch of cleanups for a
+// preliminary release (still need to add assignment checks to the
+// relevant tests).
+//
+// Revision 1.340.2.1  2014/02/17 22:43:17  wenger
+// Split S2DPeakList.getPeakTextValues() into several smaller methods
+// to make things cleaner as I add support for NMRView peak lists.
+//
 // Revision 1.340  2014/02/14 21:47:48  wenger
 // Changed version to 12.4.1x1 and added 12.4.1 section in version history.
 //
@@ -989,7 +1005,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.1x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.1x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
 

@@ -1,0 +1,78 @@
+echo "Checking output files"
+
+set files = ( 15434_peaks.str )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "15434_peaks.str"
+set line = '^save_spectral_peak_list_1'
+source tests/check4line
+set line = '9   $NMRView    .   .   15434   1'
+source tests/check4line
+set line = '1 . . 15434 1'
+source tests/check4line
+set line = '1107 . . 15434 1'
+source tests/check4line
+set line = '1 24.725 . volume 15434 1'
+source tests/check4line
+set line = '1107 -9.619 . volume 15434 1'
+source tests/check4line
+
+set line = '^save_spectral_peak_list_2'
+source tests/check4line
+set line = '9   $NMRView    .   .   11036   2'
+source tests/check4line
+set line = '1 . . 15434 2'
+source tests/check4line
+set line = '993 . . 15434 2'
+source tests/check4line
+set line = '1 -0.86 . volume 15434 2'
+source tests/check4line
+set line = '993 -22.802 . volume 15434 2'
+source tests/check4line
+
+set line = '^save_spectral_peak_list_3'
+source tests/check4line
+set line = '9   $NMRView    .   .   11036   3'
+source tests/check4line
+set line = '1 . . 15434 3'
+source tests/check4line
+set line = '2426 . . 15434 3'
+source tests/check4line
+set line = '1 839.453 . volume 15434 3'
+source tests/check4line
+set line = '2426 -7.448 . volume 15434 3'
+source tests/check4line
+
+set line = '^save_spectral_peak_list_4'
+source tests/check4line
+set line = '9   $NMRView    .   .   11036   4'
+source tests/check4line
+set line = '1 . . 15434 4'
+source tests/check4line
+set line = '1164 . . 15434 4'
+source tests/check4line
+set line = '1 2.446 . volume 15434 4'
+source tests/check4line
+set line = '1164 2.28 . volume 15434 4'
+source tests/check4line
+
+set line = '^save_spectral_peak_list_5'
+source tests/check4line
+set line = '9   $NMRView    .   .   11036   5'
+source tests/check4line
+set line = '3 . . 15434 5'
+source tests/check4line
+set line = '391 . . 15434 5'
+source tests/check4line
+set line = '3 179.05901 . volume 15434 5'
+source tests/check4line
+set line = '391 316.15161 . volume 15434 5'
+source tests/check4line
+
+#TEMPTEMP -- should we eventually have assignments here?

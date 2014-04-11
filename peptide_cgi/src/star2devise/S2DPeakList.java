@@ -28,6 +28,55 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.2.11  2014/04/11 18:28:30  wenger
+// Peak list processing now works for 2D NMRView peak lists; improved
+// peak list-related error and warning messages.
+//
+// Revision 1.3.2.10  2014/03/12 16:54:24  wenger
+// NMRView peak list processing:  made a bunch of cleanups for a
+// preliminary release (still need to add assignment checks to the
+// relevant tests).
+//
+// Revision 1.3.2.9  2014/03/07 20:50:15  wenger
+// NMRView peak list processing now includes chemical shifts and assignments
+// (need to do a bunch of checking on this; also, assignments need to be
+// converted from the author residue numbers to the BMRB residue numbers).
+//
+// Revision 1.3.2.8  2014/03/06 18:11:44  wenger
+// NMRView peak numbers are now based on the peak numbers in the
+// peak text.
+//
+// Revision 1.3.2.7  2014/03/05 23:13:13  wenger
+// NMRView peak list processing can now handle 3 or 4 dimensions -- added
+// test_peak19 and corresponding data.
+//
+// Revision 1.3.2.6  2014/03/04 17:55:57  wenger
+// Made the NMRView peak list processing more flexible -- test_peak18
+// now works.
+//
+// Revision 1.3.2.5  2014/03/01 00:40:09  wenger
+// Added output checking for test_peak16; slight mods to code to get
+// peak numbers right.
+//
+// Revision 1.3.2.4  2014/02/19 20:18:33  wenger
+// Added a new NmrView peak list file generated "manually" from entry
+// 11036 and the associated .xpk file; many of the lines fail the current
+// parsing code.
+//
+// Revision 1.3.2.3  2014/02/19 19:15:52  wenger
+// We now output peak volumes for NmrView peak lists; also fixed a typo
+// in the Xeasy code (didn't affect function).
+//
+// Revision 1.3.2.2  2014/02/19 16:42:09  wenger
+// First version of pattern that recognizes NMRView peak list data lines.
+//
+// Revision 1.3.2.1  2014/02/17 22:43:17  wenger
+// Split S2DPeakList.getPeakTextValues() into several smaller methods
+// to make things cleaner as I add support for NMRView peak lists.
+//
+// Revision 1.3  2014/02/06 22:52:16  wenger
+// Got rid of empty loops in the peak list output.
+//
 // Revision 1.2  2014/01/14 23:10:12  wenger
 // Merged peak_lists2_br_0 thru peak_lists2_br_3 to trunk.
 //
@@ -282,6 +331,14 @@ public class S2DPeakList {
     // text field.
     private boolean _gotTagVals = false;
 
+    // Patterns for matching peak list text lines.
+    Pattern _sparkyPat;
+    Pattern _xeasyPat;
+    Pattern _nmrviewPat1;
+    Pattern _nmrviewPat2;
+    // TEMP: What should this be set to when we're done with the header??
+    int _nmrviewState = 0;
+
     // True iff we got peak values from the peak text field (in other
     // words, we successfully matched lines in the peak text field
     // to our expected formats).
@@ -492,7 +549,7 @@ TEMP*/
 		      polymerType == S2DResidues.POLYMER_TYPE_DNA ||
 		      polymerType == S2DResidues.POLYMER_TYPE_RNA) {
 		        if (eaFrame != null) {
-		            throw new S2DError("Found more than one " +
+		            throw new S2DError("Error (peak list): found more than one " +
 			      "entity assembly frame for a polymer; don't " +
 			      "know which one to use for peak list");
 			} else {
@@ -506,7 +563,8 @@ TEMP*/
 	   _residues = _star.getResidues(eaFrame, 1);
 
 	} catch(S2DException ex) {
-	    System.err.println("Error getting residues: " + ex.toString());
+	    System.err.println("Error (peak list) getting residues: " +
+	      ex.toString());
 	}
     }
 
@@ -528,6 +586,9 @@ TEMP*/
     //-------------------------------------------------------------------
     // Get peak list values from the _Spectral_peak_list.Text_data tag.
     // Returns true if successful, false otherwise.
+    // TEMP -- should I be using
+    // _Spectral_peak_list.Number_of_spectral_dimensions? (hmm -- for
+    // some peak list save frames, it's ".")
     private void getPeakTextValues(SaveFrameNode frame) throws S2DException
     {
         if (doDebugOutput(20)) {
@@ -552,6 +613,42 @@ TEMP*/
 	//
 	// Parse the peak text value.
 	//
+    	createPatterns();
+
+	int peakId = 1;
+
+        String lines[] = peakListText.split("\n");
+	for (int index = 0; index < lines.length; index++) {
+            if (doDebugOutput(24)) {
+	        System.out.println("line: " + lines[index]);
+	    }
+
+	    try {
+	        if (_nmrviewState > 0) {
+	    	    // processNmrViewHdr(lines[index]);
+	        } else if (matchLine(lines[index], peakId)) {
+	    	    ++peakId;
+	        }
+	    } catch(Exception ex) {
+	        System.err.println("Warning (peak list): exception (" + ex.toString() +
+		  " processing line " + lines[index]);
+	    }
+	}
+
+	if (!_gotTextVals) {
+	    System.err.println(
+	      "Warning (peak list):  no peak list pattern matches found in peak " +
+	      "text for save frame " + _frameName +
+	      "; probably an unsupported peak format");
+	}
+    }
+
+    //-------------------------------------------------------------------
+    private void createPatterns()
+    {
+	String ws = "\\s*";
+	// Note:  spaces are part of floatPat and so on to make it easier
+	// to set things up for a variable number of repetitions.
 	String floatPat = "(-?\\d+\\.\\d+\\s+)";
 	String intPat = "(-?\\d+\\s+)";
 	String alphaPat = "([a-zA-Z-]\\s+)";
@@ -562,18 +659,18 @@ TEMP*/
 
 	// Note:  entry 16647 will match this pattern.
 	// This is Sparky.
-	Pattern sparkyPat = Pattern.compile("\\s*" + assignPat + "?" +
+	_sparkyPat = Pattern.compile(ws + assignPat + "?" +
 	  floatPat + floatPat + floatPat + "?" + floatPat + "?" +
 	  intPat + ".*");
         if (doDebugOutput(20)) {
-	    System.out.println("sparkyPat <" + sparkyPat + ">");
+	    System.out.println("_sparkyPat <" + _sparkyPat + ">");
 	}
 
 	// Regex pattern for Cyana/xeasy -- matches 2D, 3D, and 4D.
 	// 2D example: test_peak10 (entry 15025).
 	// 3D example: test_peak7 (entry 16576).
 	// 4D example: test_peak13 (entry 16806).
-	Pattern xeasyPat = Pattern.compile("\\s*" + intPat +
+	_xeasyPat = Pattern.compile(ws + intPat +
 	  floatPat + floatPat + floatPat + "?" + floatPat + "?" + // chem shifts
 	  intPat + alphaPat +
 	  expPat + // peak volume
@@ -581,66 +678,100 @@ TEMP*/
 	  intPat + intPat + intPat + "?" + intPat + "?" + // assignments
 	  "(-?\\d+)" + "?" + ".*");
         if (doDebugOutput(20)) {
-	    System.out.println("xeasyPat <" + xeasyPat + ">");
+	    System.out.println("_xeasyPat <" + _xeasyPat + ">");
 	}
 
-	boolean anyLineMatched = false;
-	int peakId = 1;
+	// Regex patterns for NMRView
+	_nmrviewPat1 = Pattern.compile("label dataset sw sf");
+        if (doDebugOutput(20)) {
+	    System.out.println("_nmrviewPat1 <" + _nmrviewPat1 + ">");
+	}
 
-        String lines[] = peakListText.split("\n");
-	for (int index = 0; index < lines.length; index++) {
-            if (doDebugOutput(24)) {
-	        System.out.println("line: " + lines[index]);
+	String qb = "(\\{\\S*}\\s+)";
+	String nvAtomPat = "(" + qb + floatPat + floatPat +
+	  floatPat + "(\\S+\\s+)" + floatPat + qb + ")";
+	_nmrviewPat2 = Pattern.compile(ws + intPat + nvAtomPat +
+	  nvAtomPat + nvAtomPat + "?" + nvAtomPat + "?" + 
+	  floatPat + floatPat +
+	  intPat + qb + "(-?\\d+)" +
+	  "(.*)");
+        if (doDebugOutput(20)) {
+	    System.out.println("_nmrviewPat2 <" + _nmrviewPat2 + ">");
+	}
+    }
+ 
+    //-------------------------------------------------------------------
+    // Process one line of peak list text.
+    // Returns true iff the line matches one of the patterns we're
+    // looking for.
+    private boolean matchLine(String line, int peakId)
+    {
+    	boolean result = false;
+
+	// Get rid of the "?-?-?", etc, in some Sparky lines.  Doing
+	// it separately avoids adding more complication to the regex.
+	String line2 = stripSparkyQs(line);
+
+	Matcher sparkyMatch = _sparkyPat.matcher(line2);
+	Matcher xeasyMatch = _xeasyPat.matcher(line2);
+	Matcher nmrviewMatch1 = _nmrviewPat1.matcher(line2);
+	Matcher nmrviewMatch2 = _nmrviewPat2.matcher(line2);
+
+	int matchCount = 0;
+	if (sparkyMatch.matches()) {
+	    matchCount++;
+            if (doDebugOutput(22)) {
+	        System.out.println("  _sparkyPat matches line: " +
+	          line);
 	    }
+	    processSparkyMatch(sparkyMatch, peakId);
+	    result = true;
 
-	    // Get rid of the "?-?-?", etc, in some Sparky lines.  Doing
-	    // it separately avoids adding more complication to the regex.
-	    String line = stripSparkyQs(lines[index]);
-
-	    Matcher sparkyMatch = sparkyPat.matcher(line);
-	    Matcher xeasyMatch = xeasyPat.matcher(line);
-
-	    int matchCount = 0;
-	    if (sparkyMatch.matches()) {
-		matchCount++;
-                if (doDebugOutput(22)) {
-	            System.out.println("  sparkyPat matches line: " +
-		      lines[index]);
-		}
-		processSparkyMatch(sparkyMatch, peakId);
-		peakId++;
-
-	    } else if (xeasyMatch.matches()) {
-		matchCount++;
-                if (doDebugOutput(22)) {
-	            System.out.println("  xeasyPat matches line: " +
-		      lines[index]);
-		}
-		processXeasyMatch(xeasyMatch, peakId);
-		peakId++;
-
-	    } else {
-                if (doDebugOutput(20)) {
-		    System.out.println("No match for line: " + lines[index]);
-		}
+	} else if (xeasyMatch.matches()) {
+	    matchCount++;
+            if (doDebugOutput(22)) {
+	        System.out.println("  _xeasyPat matches line: " +
+		  line);
 	    }
+	    processXeasyMatch(xeasyMatch, peakId);
+	    result = true;
 
-	    if (matchCount > 1) {
-	        S2DWarning warning = new S2DWarning("Warning: " +
-	          _frameName + "matched multiple patterns");
-	        System.out.println(warning.toString());
+/* Ignore the NMRView header for now.  wenger 2014-03-10
+	} else if (nmrviewMatch1.matches()) {
+	    matchCount++;
+            if (doDebugOutput(22)) {
+	        System.out.println("  _nmrviewPat1 matches line: " +
+		  line);
 	    }
-	    if (matchCount > 0) {
-	    	_gotTextVals = true;
+	    ++_nmrviewState;
+	    result = true;
+*/
+
+	} else if (nmrviewMatch2.matches()) {
+	    matchCount++;
+            if (doDebugOutput(22)) {
+	        System.out.println("  _nmrviewPat2 matches line: " +
+		  line);
+	    }
+	    processNmrviewData(nmrviewMatch2, peakId);
+	    result = true;
+
+	} else {
+            if (doDebugOutput(20)) {
+		System.out.println("No match for line: " + line);
 	    }
 	}
 
-	if (!_gotTextVals) {
-	    System.err.println(
-	      "Warning:  no peak list pattern matches found in peak " +
-	      "text for save frame " + _frameName +
-	      "; probably an unsupported peak format");
+	if (matchCount > 1) {
+	    S2DWarning warning = new S2DWarning("Warning (peak list): " +
+	      _frameName + "matched multiple patterns");
+	    System.out.println(warning.toString());
 	}
+	if (matchCount > 0) {
+	    _gotTextVals = true;
+	}
+
+    	return result;
     }
 
     //-------------------------------------------------------------------
@@ -649,6 +780,8 @@ TEMP*/
     // more complicated...
     private String stripSparkyQs(String line)
     {
+	//TEMP -- should I make all of these patterns class variables so
+	//TEMP they only get compiled once per run?
 	Pattern qPat = Pattern.compile("\\s*(\\?-\\?(-\\?){0,2})(.*)");
 	Matcher qMatch = qPat.matcher(line);
 	if (qMatch.matches()) {
@@ -663,6 +796,7 @@ TEMP*/
     private void processSparkyMatch(Matcher sparkyMatch, int peakId)
     {
         if (doDebugOutput(23)) {
+	    System.out.println("processSparkyMatch()");
             printMatch(sparkyMatch);
 	}
 
@@ -696,12 +830,13 @@ TEMP*/
     private void processXeasyMatch(Matcher xeasyMatch, int peakId)
     {
         if (doDebugOutput(23)) {
+	    System.out.println("processXeasyMatch()");
 	    printMatch(xeasyMatch);
 	}
 
 	PeakInfo peakInfo = new PeakInfo();
 	_peaks.add(peakInfo);
-	peakInfo._peakId = peakId++;
+	peakInfo._peakId = peakId;
 	peakInfo._inten = S2DUtils.string2Double(xeasyMatch.group(8));
 	peakInfo._method = "volume";
 
@@ -723,6 +858,56 @@ TEMP*/
 	        xeasyMatch.group(17), xeasyMatch.group(18),
 		xeasyMatch.group(19));
         }
+    }
+
+    //-------------------------------------------------------------------
+    // Get data from an NmrView peak list data (not header) line.
+    private void processNmrviewData(Matcher nmrviewMatch, int peakId)
+    {
+        if (doDebugOutput(23)) {
+	    System.out.println("processNmrviewData(" + peakId + ")");
+	    printMatch(nmrviewMatch);
+	}
+	
+	PeakInfo peakInfo = new PeakInfo();
+	_peaks.add(peakInfo);
+	peakInfo._peakId =
+	  S2DUtils.string2Int(nmrviewMatch.group(1).trim()) + 1;
+	//TEMP -- make sure this really is volume
+	peakInfo._inten = S2DUtils.string2Double(nmrviewMatch.group(
+	  nmrviewMatch.groupCount()-5));
+	peakInfo._method = "volume";
+
+	int shiftCount = 0;
+	//TEMP -- make sure these are the right groups!!
+	if (nmrviewMatch.group(4) != null) ++shiftCount;
+	if (nmrviewMatch.group(12) != null) ++shiftCount;
+	if (nmrviewMatch.group(20) != null) ++shiftCount;
+	if (nmrviewMatch.group(28) != null) ++shiftCount;
+	peakInfo._shifts = new double[shiftCount];
+	if (nmrviewMatch.group(4) != null) {
+	    peakInfo._shifts[0] =
+	      S2DUtils.string2Double(nmrviewMatch.group(4));
+	}
+	if (nmrviewMatch.group(12) != null) {
+	    peakInfo._shifts[1] =
+	      S2DUtils.string2Double(nmrviewMatch.group(12));
+	}
+	if (nmrviewMatch.group(20) != null) {
+	    peakInfo._shifts[2] =
+	      S2DUtils.string2Double(nmrviewMatch.group(20));
+	}
+	if (nmrviewMatch.group(28) != null) {
+	    peakInfo._shifts[3] =
+	      S2DUtils.string2Double(nmrviewMatch.group(28));
+	}
+	//TEMP -- looks like chem shift is the one after the atom name
+	PeakAssignment assign = new PeakAssignment();
+	assign._atomSets[0] = parseNmrviewAtom(nmrviewMatch.group(3));
+	assign._atomSets[1] = parseNmrviewAtom(nmrviewMatch.group(11));
+	assign._atomSets[2] = parseNmrviewAtom(nmrviewMatch.group(19));
+	assign._atomSets[3] = parseNmrviewAtom(nmrviewMatch.group(27));
+	peakInfo._assignments = assign;
     }
 
     //-------------------------------------------------------------------
@@ -789,7 +974,7 @@ TEMP*/
 	    result._atomSets[3] = parseSparkyAtomSet(matcher.group(10),
 	      result._atomSets[2]);
 	} else {
-	    System.out.println("Warning: pattern <" + pat +
+	    System.out.println("Warning (peak list): pattern <" + pat +
 	      "> doesn't match assignment string <" + assignments + ">");
 	}
 
@@ -900,7 +1085,7 @@ TEMP*/
 	    }
 
 	} else {
-	    System.out.println("Warning: pattern <" + pat +
+	    System.out.println("Warning (peak list): pattern <" + pat +
 	      "> doesn't match atom string <" + atomStr + ">");
 	}
 
@@ -927,7 +1112,7 @@ TEMP*/
 
 	return result;
     }
-
+ 
     //-------------------------------------------------------------------
     // Make a 1-letter amino acid name into a 3-letter name.
     private String make3Letter(String aminoAcid)
@@ -945,7 +1130,7 @@ TEMP*/
 	    }
 
 	} catch(S2DException ex) {
-	    System.err.println("Error translating amino acid string: " +
+	    System.err.println("Error (peak list) translating amino acid string: " +
 	      ex.toString());
 	    result = "???";
 	}
@@ -970,6 +1155,38 @@ TEMP*/
 	AtomInfo atom = new AtomInfo();
 	atom._authAtomNum = atomId.trim();
 	result._atoms.add(atom);
+
+	return result;
+    }
+
+    //-------------------------------------------------------------------
+    private AtomAmbigSet parseNmrviewAtom(String atomId)
+    {
+        if (doDebugOutput(23)) {
+	    System.out.println("parseNmrviewAtom(" + atomId + ")");
+	}
+
+	AtomAmbigSet result = null;
+
+    	if (atomId == null) {
+	    return null;
+	}
+
+	Pattern pat = Pattern.compile("\\{(\\d+)\\.(.+)\\}");
+	if (doDebugOutput(24)) {
+	    System.out.println("NmrView atom pattern: <" + pat + ">");
+	}
+	Matcher matcher = pat.matcher(atomId.trim());
+	if (matcher.matches()) {
+	    if (doDebugOutput(24)) {
+	        printMatch(matcher);
+	    }
+	    AtomInfo atom = new AtomInfo();
+	    atom._residueNum = S2DUtils.string2Int(matcher.group(1));
+	    atom._atomName = matcher.group(2);
+	    result = new AtomAmbigSet();
+	    result._atoms.add(atom);
+	}
 
 	return result;
     }

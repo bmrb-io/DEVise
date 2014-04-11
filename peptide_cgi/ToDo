@@ -912,6 +912,11 @@ Num Date        Status  Pri     Description
 				to-do 12.004 (better port number config).
 				(wenger)
 
+203 4/11/14	OPEN	3	Deal with atom assignments like this:
+				{25.HA 26.HA} in NMRView peak lists
+				(see bmr16943_3.str.with-peaklist).
+				(wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
