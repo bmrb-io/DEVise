@@ -110,7 +110,7 @@ COMMITTING AND MERGING
 
     * Tag the trunk; for example:
 
-        % cvs tage <name>_br_1-pre-merge
+        % cvs tag <name>_br_1-pre-merge
 
     * Tag the branch; for example:
 
