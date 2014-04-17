@@ -692,6 +692,9 @@ Num Date        Status  Description
 			17306_dyn_movie/17306_dyn_movies2p1-1.html).
 			(wenger)
 
+152 4/17/14	OPEN	http://devise-test.cs.wisc.edu/devise/bmrb2/bmrb/devise/peptide-cgi/html/15418/15418+4099y.html
+			has an html validation error. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
