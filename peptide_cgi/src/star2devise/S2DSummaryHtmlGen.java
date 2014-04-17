@@ -36,6 +36,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.64  2014/02/03 21:37:58  wenger
+// Fixed some html errors in Peptide-CGI pages (note: js_videos.html
+// still has errors related to embedding flash, and two-entry summary
+// page has one error).
+//
 // Revision 1.63  2014/01/29 23:51:40  wenger
 // Added notes to html pages about entering accession numbers only for
 // released entries; also improved error messages for bad accession numbers
@@ -883,7 +888,7 @@ TEMP?*/
 	                _writer.write("<input type=\"hidden\" name=\"name\" " +
 		          "value=\"" + _name + "\">\n");
 	            } else {
-	                _writer.write("<input type=\"hidden\" name=\"xbmrbid\" " +
+	                _writer.write("<input type=\"hidden\" name=\"number\" " +
 	                  "value=\"" + _name + "\">\n");
 	            }
 	            _writer.write("<input type=\"submit\" value=\"View data\">\n");

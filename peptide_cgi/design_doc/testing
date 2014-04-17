@@ -11,6 +11,8 @@ TEMPTEMP -- add testing of data download, especially for histograms!!
 
 TEMPTEMP -- add stuff about testing js collab & keyboard links
 
+TEMPTEMP -- add testing visualization server + released multi-entry vis
+
 The following testing steps must be done:
 
 - Run make_view manually in cgi-bin.  Make sure it doesn't generate any

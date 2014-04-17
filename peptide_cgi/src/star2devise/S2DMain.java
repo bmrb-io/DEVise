@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.342  2014/04/11 21:49:12  wenger
+// Merged nmrview_peaks_br_0 thru nmrview_peaks_br_1 to trunk.
+//
 // Revision 1.341  2014/03/21 15:00:47  wenger
 // Made some fixes to the dynamics movie code.
 //
@@ -1005,7 +1008,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.1x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.1";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
 
