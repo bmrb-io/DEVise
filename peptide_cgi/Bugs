@@ -695,6 +695,9 @@ Num Date        Status  Description
 152 4/17/14	OPEN	http://devise-test.cs.wisc.edu/devise/bmrb2/bmrb/devise/peptide-cgi/html/15418/15418+4099y.html
 			has an html validation error. (wenger)
 
+153 4/18/14	OPEN	test_s2p5 fails on pacu (the do_s2p line is not
+			generated). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
