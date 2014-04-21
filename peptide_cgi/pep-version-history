@@ -1,8 +1,17 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 12.4.2
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.3 or higher.)
+(Not yet released.)
+
+(Nothing yet.)
+
+
 Peptide-CGI 12.4.1
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.3 or higher.)
+(Released 2014-04-21.)
 
 * Made some improvements to the dynamics movies setup.
 
@@ -21,8 +30,9 @@ Values" visualization help page.
 Peptide-CGI 12.4.0
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.3 or higher.)
+(Released for peak list extraction only.)
 
-* Added support for peak list processing.
+* Added support for peak list processing (Sparky and XEASY).
 
 * Made all Peptide-CGI output files world-writeable, so things will
 work better with different users running the program.
@@ -40,6 +50,7 @@ and made some general improvements to the error messages.
 Peptide-CGI 12.3.4
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.3 or higher.)
+(Released 2013-12-18.)
 
 * Made changes to match the JavaScreen's change to a single, signed,
 jar file.
@@ -48,6 +59,7 @@ jar file.
 Peptide-CGI 12.3.3
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2013-10-17.)
 
 * Moved the "chemical shift data" section to the first position in
 visualization summary pages (to-do 192); also changed visualization
@@ -77,6 +89,7 @@ number becomes the default in the forms associated with that entry.
 Peptide-CGI 12.3.2
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2013-02-14.)
 
 * Changed histogram image on home page to link to histogram selection
 page, instead of the single-protein examples; the "main" examples page
@@ -89,6 +102,7 @@ example sessions.
 Peptide-CGI 12.3.1
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2013-01-16.)
 
 * Cleaned up "temporary" fix for histogram drill-down links (moved the
 histogram html files up one directory so that the relative links work).
@@ -99,6 +113,7 @@ histogram html files up one directory so that the relative links work).
 Peptide-CGI 12.3.0
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2012-12-13.)
 
 * Disabled back calculated chemical shift referencing visualizations,
 because these are now considered obsolete.
@@ -136,6 +151,7 @@ prefilled.
 Peptide-CGI 12.2.2
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2012-03-29.)
 
 * In the visualization summary pages, selecting a visualization in
 a menu now immediately goes to that visualization, without having to
@@ -148,6 +164,7 @@ red to make them more visible.
 Peptide-CGI 12.2.1
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2012-03-19.)
 
 * Converted visualization summary pages from tables to menus so the
 page layout is more compact.
@@ -159,6 +176,7 @@ page layout is more compact.
 Peptide-CGI 12.2.0
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2012-02-09.)
 
 * Changed all visualization-related pages to the new color scheme and
 layout.
