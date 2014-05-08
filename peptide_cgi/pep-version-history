@@ -5,7 +5,8 @@ Peptide-CGI 12.4.2
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.3 or higher.)
 (Not yet released.)
 
-(Nothing yet.)
+* Multiple sets of peaks in a single save frame now cause an explicit
+fatal error (to-do 206).
 
 
 Peptide-CGI 12.4.1

@@ -28,6 +28,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2014/04/11 21:49:12  wenger
+// Merged nmrview_peaks_br_0 thru nmrview_peaks_br_1 to trunk.
+//
 // Revision 1.3.2.11  2014/04/11 18:28:30  wenger
 // Peak list processing now works for 2D NMRView peak lists; improved
 // peak list-related error and warning messages.
@@ -343,6 +346,8 @@ public class S2DPeakList {
     // words, we successfully matched lines in the peak text field
     // to our expected formats).
     private boolean _gotTextVals = false;
+
+    private int _maxPeakId = 0;
 
     private static class PeakInfo {
         public int _peakId;
@@ -753,7 +758,7 @@ TEMP*/
 	        System.out.println("  _nmrviewPat2 matches line: " +
 		  line);
 	    }
-	    processNmrviewData(nmrviewMatch2, peakId);
+	    processNmrviewData(nmrviewMatch2);
 	    result = true;
 
 	} else {
@@ -800,6 +805,10 @@ TEMP*/
             printMatch(sparkyMatch);
 	}
 
+	if (!checkPeakId(peakId)) {
+	    return;
+	}
+
 	PeakInfo peakInfo = new PeakInfo();
 	_peaks.add(peakInfo);
 	peakInfo._peakId = peakId;
@@ -834,6 +843,10 @@ TEMP*/
 	    printMatch(xeasyMatch);
 	}
 
+	if (!checkPeakId(peakId)) {
+	    return;
+	}
+
 	PeakInfo peakInfo = new PeakInfo();
 	_peaks.add(peakInfo);
 	peakInfo._peakId = peakId;
@@ -862,17 +875,21 @@ TEMP*/
 
     //-------------------------------------------------------------------
     // Get data from an NmrView peak list data (not header) line.
-    private void processNmrviewData(Matcher nmrviewMatch, int peakId)
+    private void processNmrviewData(Matcher nmrviewMatch)
     {
         if (doDebugOutput(23)) {
-	    System.out.println("processNmrviewData(" + peakId + ")");
+	    System.out.println("processNmrviewData()");
 	    printMatch(nmrviewMatch);
+	}
+	
+	int peakId = S2DUtils.string2Int(nmrviewMatch.group(1).trim()) + 1;
+	if (!checkPeakId(peakId)) {
+	    return;
 	}
 	
 	PeakInfo peakInfo = new PeakInfo();
 	_peaks.add(peakInfo);
-	peakInfo._peakId =
-	  S2DUtils.string2Int(nmrviewMatch.group(1).trim()) + 1;
+	peakInfo._peakId = peakId;
 	//TEMP -- make sure this really is volume
 	peakInfo._inten = S2DUtils.string2Double(nmrviewMatch.group(
 	  nmrviewMatch.groupCount()-5));
@@ -1601,6 +1618,28 @@ TEMP*/
 	writer.close();
 
 	//TEMP -- also write session file in here?
+    }
+
+    //-------------------------------------------------------------------
+    // Returns true if peakId is okay (didn't decrease).
+    private boolean checkPeakId(int peakId)
+    {
+	if (peakId < _maxPeakId) {
+	    // Note:  we really should throw an exception here, but
+	    // it would be caught up above, so for now I'm going to call
+	    // exit() instead.  I guess we should clean up how the
+	    // exceptions work (maybe add an S2DFatalError?).
+	    System.err.println("Error:  current peak ID (" +
+	      peakId + ") is less than maximum peak id (" +
+	      _maxPeakId + ")");
+	    System.exit(1);
+
+	    // We don't get to here...
+	    return false;
+	} else {
+	    _maxPeakId = peakId;
+	    return true;
+	}
     }
 
     //-------------------------------------------------------------------
