@@ -917,6 +917,17 @@ Num Date        Status  Pri     Description
 				(see bmr16943_3.str.with-peaklist).
 				(wenger)
 
+204 5/8/14	OPEN	3	Clean up how we use exceptions (for example,
+				maybe add an S2DFatalError that shouldn't
+				be caught). (wenger)
+
+205 5/8/14	OPEN	1	Change dynamics visualizations to use
+				pre-generated movies with single selected
+				residues (example URL:
+				http://144.92.217.22/download.php?key=1D2B_devise_1)
+				(last 1 is selected residue).
+				(wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
