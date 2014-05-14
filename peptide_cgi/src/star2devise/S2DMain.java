@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.345  2014/05/08 20:01:08  wenger
+// Peptide-CGI to-do 206:  multiple sets of peaks in a single save frame
+// now cause an explicit fatal error.
+//
 // Revision 1.344  2014/04/21 16:33:23  wenger
 // Changed version to 12.4.2x1 and added 12.4.2 section in version history;
 // also added some release dates in version history.
@@ -1016,7 +1020,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.2x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.2x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
 

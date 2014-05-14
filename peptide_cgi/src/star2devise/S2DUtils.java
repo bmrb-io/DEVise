@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.29  2014/01/14 23:10:12  wenger
+// Merged peak_lists2_br_0 thru peak_lists2_br_3 to trunk.
+//
 // Revision 1.28.16.1  2013/10/22 19:45:09  wenger
 // Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
 //
@@ -335,17 +338,7 @@ public class S2DUtils
     //-------------------------------------------------------------------
     public static String replace(String str, String pattern, String replace)
     {
-        int s = 0;
-        int e = 0;
-        StringBuffer result = new StringBuffer();
-
-        while ((e = str.indexOf(pattern, s)) >= 0) {
-            result.append(str.substring(s, e));
-            result.append(replace);
-            s = e+pattern.length();
-        }
-        result.append(str.substring(s));
-        return result.toString();
+	return str.replace(pattern, replace);
     }
 
     //-------------------------------------------------------------------

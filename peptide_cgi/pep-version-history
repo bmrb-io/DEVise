@@ -8,6 +8,8 @@ Peptide-CGI 12.4.2
 * Multiple sets of peaks in a single save frame now cause an explicit
 fatal error (to-do 206).
 
+* Added support for new dynamics movie URLs.
+
 
 Peptide-CGI 12.4.1
 ------------------

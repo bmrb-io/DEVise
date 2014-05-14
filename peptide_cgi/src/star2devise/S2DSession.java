@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.42  2014/03/21 18:56:57  wenger
+// Video search string in session file code was wrong.
+//
 // Revision 1.41  2014/03/21 15:00:48  wenger
 // Made some fixes to the dynamics movie code.
 //
@@ -620,10 +623,10 @@ TEMP*/
 	    replaceStrings[3] = id1 + S2DNames.SEC_STRUCT_SUFFIX +
 	      frameIndex1 + "-1";
 	    searchStrings[4] = "http://condor.bmrb.wisc.edu/bbee/video/2JUO.mpg";
-	    replaceStrings[4] = S2DUtils.replace(_dynMovieUrl, "*",
+	    replaceStrings[4] = S2DUtils.replace(_dynMovieUrl, "<pdb>",
 	      s2pPdbId.toUpperCase());
 	    searchStrings[5] = "http://pike.bmrb.wisc.edu?entry=2JUO&start_time=0&end_time=.1&material=Transparent&submitted=yes";
-	    replaceStrings[5] = S2DUtils.replace(_dynMovieGenUrl, "*",
+	    replaceStrings[5] = S2DUtils.replace(_dynMovieGenUrl, "<pdb>",
 	      s2pPdbId.toUpperCase());
 
 	    frameIndexStr = "" + frameIndex1 + "-" + frameIndex2;
@@ -854,7 +857,7 @@ TEMP*/
 	boolean result = true;
 
 	try {
-	    String urlName = S2DUtils.replace(_dynMovieUrl, "*",
+	    String urlName = S2DUtils.replace(_dynMovieUrl, "<pdb>",
 	      s2pPdbId.toUpperCase());
             if (doDebugOutput(2)) {
 	        System.out.println("Dynamics movie URL: " + urlName);

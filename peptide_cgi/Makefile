@@ -40,8 +40,10 @@ DO_S2PRED_DEFAULT = 0
 S2PRED_URL_DEFAULT = 
 JS_CMD_PORT = 6666
 DO_DYN_MOVIE_DEFAULT = 0
-DYNAMICS_MOVIE_URL = "http://144.92.217.22/videos/*.mp4"
-DYNAMICS_MOVIE_GEN_URL = "http://144.92.217.22?entry=*\&devise=1\&submitted=yes"
+# <pdb> will get replaced with PDB ID
+DYNAMICS_MOVIE_URL = "http://144.92.217.22/videos/\<pdb\>.webm"
+# <res> will get replaced with residue number
+DYNAMICS_MOVIE_GEN_URL = "http://144.92.217.22/download.php?key=\<pdb\>_devise_\<res\>"
 DSSP_FILE_URL = http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/dssp/all
 
 include Makefile.config
