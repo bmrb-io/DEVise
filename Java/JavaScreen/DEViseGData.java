@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2011
+// (c) Copyright 1999-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -29,6 +29,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2011/10/10 20:44:05  wenger
+// Merged js_button_fix_br_1 thru js_button_fix_br_2 to trunk.
+//
 // Revision 1.43  2011/08/26 15:37:34  wenger
 // Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
 //
@@ -596,7 +599,7 @@ public class DEViseGData
 	_buttonLabel = data[11];
 	_buttonCmd = data[10];
 	if (data[12].equals("bmrb_dynamics_movie") && !data[13].equals("")) {
-	    _buttonCmd += "&residues=" + data[13];
+	    _buttonCmd = _buttonCmd.replace("<res>", data[13]);
 	}
         _menuType = data[21];
         _menuName = data[22];
