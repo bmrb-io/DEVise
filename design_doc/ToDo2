@@ -378,6 +378,9 @@ JavaScreen; also information about doing a JavaScreen client-only release
 the last release).  (Also, the currently-documented procedure doesn't
 mesh very well with testing things with the Peptide-CGI release tests.)
 
+14.004 140514	OPEN	1
+Add timestamp to jar files (see
+http://docs.oracle.com/javase/7/docs/technotes/guides/security/time-of-signing.html).
 
 (add stuff from old to-do list?)
 (add stuff from my to-do list)
