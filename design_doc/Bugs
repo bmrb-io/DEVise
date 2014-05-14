@@ -4451,7 +4451,7 @@ java.security.AccessControlException: access denied
 			to resize all of the windows without actually
 			closing and re-opening the session. (wenger)
 
-1013 2/16/11	OPEN	In the 4264/1EZA restraint grid torision angle
+1013 2/16/11	OPEN	In the 4264/1EZA restraint grid torsion angle
 			visualization (4264tar1.ds), the data cursor doesn't
 			come up with the right size/location. (wenger)
 
