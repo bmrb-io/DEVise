@@ -115,8 +115,12 @@ print_cert:
 import_cert:
 	cert_scripts/import_cert.csh
 
+# Other possible TSAs are http://timestamp.verisign.com and
+# http://tsa.starfieldtech.com (see
+# http://ant.apache.org/manual/Tasks/signjar.html).
 sign:
-	jarsigner -storetype pkcs12 -keystore js_certs/uw_signing_chain.pfx \
+	jarsigner -tsa https://timestamp.geotrust.com/tsa -storetype pkcs12 \
+		-keystore js_certs/uw_signing_chain.pfx \
 		devise_js.jar "university of wisconsin-madison's internet2 id"
 
 testsign:
