@@ -72,6 +72,7 @@ do_install_info:
 	echo "set cgidir = \"$(CGI_DIR)\"" >> install_info
 	echo "set idstr = \"$(IDSTR)\"" >> install_info
 	echo "set install_host = \"$(INSTALL_HOST)\"" >> install_info
+	echo "set downloaddir = \"$(DEVISE_JS_DATA_DOWNLOAD_DIR)\"" >> install_info
 
 error_email:
 	-rm scripts/error_email

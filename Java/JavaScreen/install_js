@@ -219,6 +219,12 @@ if (! -d $logdir) then
 endif
 
 #-----------------------------------------------------------
+# Make sure the download directory exists.
+mkdir -p $downloaddir
+# In case the devised runs as a different user.
+chmod 777 $downloaddir
+
+#-----------------------------------------------------------
 # Install the jss, devised, and Tasvir.
 
 echo ""

@@ -143,6 +143,13 @@ setup:
 	# the jar files.
 	ln -s /u/w/e/wenger/.js_certs js_certs
 
+.PHONY: setupclean
+setupclean:
+	rm -r bin lib
+	make -f Makefile.setup clean
+	rm -r org
+	rm js_certs
+
 .PHONY: install
 install:
 	make -f Makefile.setup install

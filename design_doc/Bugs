@@ -4553,9 +4553,10 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			...
 			(wenger)
 
-1031 4/17/14	OPEN	JS:  install should make data download directory
+1031 4/17/14	FIXED	JS:  install should make data download directory
 			(see DEVISE_JS_DATA_DOWNLOAD_DIR in JavaScreen
 			config). (wenger)
+			(Fixed by wenger, 5/15/14)
 
 1032 5/14/14	OPEN	JS:  "{" or "}" in GData sent to JavaScreen seems
 			to cause error. (wenger)
