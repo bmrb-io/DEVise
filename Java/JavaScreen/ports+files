@@ -28,8 +28,8 @@ endif
 # "Standard" values.  Note: these should correspond to the values in
 # DEViseGlobals.java.
 set cmdPort = 6666
-set popPort = 1689
-set jssPort = 1688
+set popPort = 7666
+set jssPort = 7766
 set pFile = "logs/jspop.out"
 set sFile = "logs/jss.out"
 set dFile = "logs/devised.out"
@@ -42,25 +42,25 @@ else
     # Use "standard" port numbers.
 
   else if ($idStr == "soil") then
-    set cmdPort = 5966
-    set popPort = 8922
-    set jssPort = 7911
+    set cmdPort = 6670
+    set popPort = 7670
+    set jssPort = 7770
 
   else if ($idStr == "test") then
-    set cmdPort = 6266
-    set popPort = 8822
-    set jssPort = 7811
+    set cmdPort = 6667
+    set popPort = 7667
+    set jssPort = 7767
 
   # Not test2 so that we avoid having searches for "test" hit it.
   else if ($idStr == "tst2") then
-    set cmdPort = 6366
-    set popPort = 8322
-    set jssPort = 7311
+    set cmdPort = 6668
+    set popPort = 7668
+    set jssPort = 7768
 
   else if ($idStr == "wave") then
-    set cmdPort = 6866
-    set popPort = 9822
-    set jssPort = 9811
+    set cmdPort = 6669
+    set popPort = 7669
+    set jssPort = 7769
 
   else
     #TEMP -- needs to go to stderr

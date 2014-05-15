@@ -100,11 +100,11 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 
 	- If doing a Wavelet-IDR install, edit the html files in
 	  /var/home/www/public/waveletidr on pumori, and change the cmdport
-	  to 6866.
+	  to 6669.
 
 	- If doing a soil science install, edit the html files in
 	  /var/home/www/public/soil_sci on pumori, and change the cmdport
-	  to 5966.
+	  to 6670.
 
         - As devise, edit the crontab file so that the check scripts are
 	  run again.
