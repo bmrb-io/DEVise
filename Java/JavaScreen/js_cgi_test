@@ -8,4 +8,4 @@
 
 unsetenv CLASSPATH
 set javaexec = `cat bin2/java`
-$javaexec js -usecgi -cgiurl/cgi-bin/js.cgi -cmdport6266 $*
+$javaexec js -usecgi -cgiurl/cgi-bin/js.cgi -cmdport6667 $*

@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.161  2014/05/14 20:35:01  wenger
+// Added support for new dynamics movie URLs (<res> in the GData string
+// is replaced by the residue number, instead of a fixed string containing
+// the residue number being appended to the GData string).
+//
 // Revision 1.160  2013/12/18 22:20:33  wenger
 // Changed JS version to 5.14.4x1.
 //
@@ -1006,10 +1011,10 @@ public final class DEViseGlobals
 			      // API_IMAGE = 6, API_DATA = 7,
 			      API_JAVA_WID = 8,
 			      API_JAVA_CID = 9;    
-    public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
-      JSSPORT = 1688, JSPOPPORT = 1689;
+    public static final int DEFAULTCMDPORT = 6666,
+      JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.4x2"/*TEMP*/);
+    public static final String VERSION = new String("5.14.4x3"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.0");
 

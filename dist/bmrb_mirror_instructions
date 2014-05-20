@@ -199,7 +199,7 @@ You can test the JavaScreen as follows:
     - java jss
     - Xvfb
     - devised
-- Then run 'js -cmdport6266' (you need to specify a cmdport of 6266 to
+- Then run 'js -cmdport6667' (you need to specify a cmdport of 6667 to
   connect with a JSPoP running as test.  You should be able to open a
   session file in the JavaScreen.
 - Run 'kill_jsall' to kill off the JavaScreen processes before doing the
