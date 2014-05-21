@@ -5,7 +5,7 @@ This is a quick-and-dirty documentation of what needs to be done for
 a DEVise/JavaScreen release (by a release, I mean making a new version
 of DEVise accessible to users running from /p/devise in the CS AFS tree,
 and putting a new version of the JavaScreen on the "standard" installation
-on teal).
+on devise/condor-websrv-7).
 
 This document should probably be improved eventually -- right now it's
 mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
@@ -44,7 +44,8 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 
     - Test the new DEVise/JSPoP with the standard Peptide-CGI release
       tests:
-        - Run the new DEVise/JSPop on teal as the 'test' ID.
+        - Run the new DEVise/JSPop on devise/condor-websrv-7 as the
+	  'test' ID.
 	- Go through the Peptide-CGI pre-release tests (following
 	  appropriate links in a browser so the right sessions get
 	  created), but instead of running the (released) JavaScreen
@@ -52,7 +53,8 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 	  connecting to the test JSPoP, and open the sessions in
 	  that client.
         (Maybe a better way to do this would be to set things up so
-	that the bmrb_test setup on teal uses a test JavaScreen.)
+	that the bmrb_test setup on devise/condor-websrv-7 uses a test
+	JavaScreen.)
 
 - Test release:
     - Run scripts/release_tst and scripts/release.js_tst and make sure
@@ -69,8 +71,9 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 
     - Send an email with the details of what changed since the last release.
 
-- JavaScreen install on teal:
-    - Go to /p/devise/release/JavaScreen *on teal*, as the devise user.
+- JavaScreen install on devise/condor-websrv-7:
+    - Go to /p/devise/release/JavaScreen *on devise/condor-websrv-7*, as
+      the devise user.
 
     - Make sure Makefile.config points to the appropriate configuration file
       for the setup you want to install.

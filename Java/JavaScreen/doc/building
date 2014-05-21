@@ -78,8 +78,8 @@ Currently, Xvfb on manta will not accept connections.  I haven't spent a lot
 of time trying to figure this out, but it has something to do with how
 it's configured, and I'm not sure it can be fixed without root access.
 Because of that problem, I've been running the JSPoP, etc., on ricotta
-to test them without changing the software on teal (which is the "public"
-JavaScreen).
+to test them without changing the software on devise/condor-websrv-7 (which
+is the "public" JavaScreen).
 
 Note that there is only one Xvfb per machine, and all deviseds use that
 same Xvfb process, even deviseds run with different "IDs".  (This is
@@ -89,7 +89,8 @@ something that I want to change in the future.)
 *** Running the Client Only
 
 If you are just changing the JavaScreen client, you can run it by running the
-command 'js -hostteal' (this will connect to the JSPoP running on teal).
+command 'js -hostdevise' (this will connect to the JSPoP running on devise/
+condor-websrv-7).
 
 
 *** Common problems
