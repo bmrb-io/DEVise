@@ -36,3 +36,9 @@ echo "15562"
   -s2p_url http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/s2predict/ \
   -s2p_name 15562 -do_s2p 2 -do_dyn_movie 1 -force -dyn_movie_demo
 mv tmp/s2d.out tmp/15562_movie.s2d.out
+
+echo "15536"
+./s2d -bmrbid 15536 -name 15536_dyn_movie \
+  -s2p_url http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/s2predict/ \
+  -s2p_name 15536 -do_s2p 2 -do_dyn_movie 1 -force -dyn_movie_demo
+mv tmp/s2d.out tmp/15536_movie.s2d.out
