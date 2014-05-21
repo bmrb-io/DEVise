@@ -2,13 +2,16 @@
 
 Peptide-CGI 12.4.2
 ------------------
-(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.3 or higher.)
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
 (Not yet released.)
 
 * Multiple sets of peaks in a single save frame now cause an explicit
 fatal error (to-do 206).
 
 * Added support for new dynamics movie URLs.
+
+* Updated JavaScreen port numbers to match JS changes for new server
+at CS.
 
 
 Peptide-CGI 12.4.1

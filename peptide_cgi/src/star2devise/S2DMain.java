@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.346  2014/05/14 21:42:22  wenger
+// Added support for new dynamics movie URLs (<pdb> and <res> in the
+// config string are replaced appropriately); a couple of other minor
+// cleanups.
+//
 // Revision 1.345  2014/05/08 20:01:08  wenger
 // Peptide-CGI to-do 206:  multiple sets of peaks in a single save frame
 // now cause an explicit fatal error.
@@ -1022,7 +1027,7 @@ public class S2DMain {
 
     public static final String PEP_CGI_VERSION = "12.4.2x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
-    public static final String JS_CLIENT_MIN_VERSION = "5.14.3";
+    public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
     // Default accession number to put into html forms (also see
     // html2/devise/peptide-cgi/bmrb_select.tmpl).
