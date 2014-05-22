@@ -227,6 +227,8 @@ if (($do_all != 0) or ($do_mult != 0)) {
   RunTest("test_mult3");
   RunTest("test_mult3mu");
   RunTest("test_mult4");
+  RunTest("test_mult5");
+  RunTest("test_mult6");
 }
 
 if (($do_all != 0) or ($do_s2p != 0)) {

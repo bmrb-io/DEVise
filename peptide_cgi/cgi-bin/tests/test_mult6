@@ -1,0 +1,52 @@
+#! /bin/csh -f
+
+# Test multi-entry processing.  (Bug 154)
+
+set result = 0
+
+rm -r -f */11017*
+rm -r -f */4081*
+
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 11017 -xbmrbid 4081 -force
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( html_dir/11017/11017+4081hc1+1.html \
+	html_dir/11017/11017+4081hn1+1.html \
+	html_dir/11017/11017+4081y.html \
+	session_dir/11017/11017+4081hc1+1.ds \
+	session_dir/11017/11017+4081hn1+1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+# Make sure session names are correct!  (See bug 154.)
+set file = "html_dir/11017/11017+4081hc1+1.html"
+set line = '<param name="session" value="bmrb/dynamic_sessions/11017/11017+4081hc1+1.ds">'
+source tests/check4line
+
+set file = "html_dir/11017/11017+4081hn1+1.html"
+set line = '<param name="session" value="bmrb/dynamic_sessions/11017/11017+4081hn1+1.ds">'
+source tests/check4line
+
+
+echo -n "Test_mult6 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

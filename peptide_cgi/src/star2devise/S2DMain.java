@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.348  2014/05/21 18:29:42  wenger
+// Incremented x on version.
+//
 // Revision 1.347  2014/05/21 14:41:58  wenger
 // Added a couple of version history updates, and changed a few more
 // documents to reflect the change from teal to condor-websrv-7.
@@ -1029,7 +1032,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.2x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.2x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 

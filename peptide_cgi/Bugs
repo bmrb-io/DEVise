@@ -698,7 +698,7 @@ Num Date        Status  Description
 153 4/18/14	OPEN	test_s2p5 fails on pacu (the do_s2p line is not
 			generated). (wenger)
 
-154 5/22/14	OPEN	Generate 11017 visualizations, then generate
+154 5/22/14	ACTIVE	Generate 11017 visualizations, then generate
 			multi-entry visualizations with 4081 -> html
 			pages have incorrect session names (but 4081,
 			then 11017 works!!). (wenger)
