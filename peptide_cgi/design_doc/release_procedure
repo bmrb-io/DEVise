@@ -24,7 +24,7 @@ TEMP -- may need more changes...
 
 - Recompile and make the distribution tarball.
 
-- Install on teal (from the distribution tarball), run test_all.
+- Install on condor-websrv-7 (from the distribution tarball), run test_all.
 
 - Check at least one visualization on teal.
 

@@ -20,22 +20,22 @@ The following testing steps must be done:
 
 - Run test_all in cgi-bin.  Make sure all tests succeed.
 
-- Install the relevant software on teal.
+- Install the relevant software on condor-websrv-7.
 
 - Run test_all in /var/home/www/public/cgi-bin/bmrb or
-  /var/home/www/public/cgi-bin/bmrb_test as appropriate on teal.  All tests
-  except for test32 and test34 must succeed.  (Test32 and test34 can fail
-  because they test for viewing unreleased entries, and the CGI directory
-  on teal isn't set up for that.)
+  /var/home/www/public/cgi-bin/bmrb_test as appropriate on condor-websrv-7.
+  All tests except for test32 and test34 must succeed.  (Test32 and test34
+  can fail because they test for viewing unreleased entries, and the CGI
+  directory on condor-websrv-7 isn't set up for that.)
 
-- Access the visualizations on teal via the following URL:
+- Access the visualizations on condor-websrv-7 via the following URL:
     http://devise.cs.wisc.edu/devise/bmrb/bmrb_select.html
       or
     http://devise.cs.wisc.edu/devise/test/bmrb_test/bmrb_select.html
       as appropriate
 
 - Run 's2d -bmrbid 4267 -force' in
-  /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on teal.
+  /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on condor-websrv-7.
 
 - View the following visualizations for the entry 4267 and MAKE SURE THEY
   ARE CORRECT:
@@ -62,7 +62,8 @@ The following testing steps must be done:
 - Click the 'Force Reprocessing' button and make sure the summary page
   gets updated.
 
-- Run tests/test3 in /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on teal.
+- Run tests/test3 in /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on
+  condor-websrv-7.
 
 - View the following visualizations for the entry 4081 and MAKE SURE THEY
   ARE CORRECT:
@@ -75,7 +76,7 @@ The following testing steps must be done:
     - Test 1H-13C HSQC help page.
 
 - Run 's2d -bmrbid 4096 -force' in
-  /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on teal.
+  /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on condor-websrv-7.
 
 - View the following visualizations for the entry 4096 and MAKE SURE THEY
   ARE CORRECT:
@@ -83,7 +84,8 @@ The following testing steps must be done:
       size/location)
     - Test 3D help page.
 
-- Run tests/test19 in /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on teal.
+- Run tests/test19 in /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on
+  condor-websrv-7.
 
 - View the following visualizations for the entry 6318 and MAKE SURE THEY
   ARE CORRECT:
@@ -119,7 +121,7 @@ The following testing steps must be done:
 
 - (SPARTA) Run 'tests/test_sparta5_3' in
   /var/home/www/public/cgi-bin/[bmrb|bmrb_test]
-  on teal.  View the following visualization for entry 16387:
+  on condor-websrv-7.  View the following visualization for entry 16387:
     - SPARTA-calculated chemical shift deltas.  Make sure model # on
       drill-down matches model # selected with cursor, etc.
 
