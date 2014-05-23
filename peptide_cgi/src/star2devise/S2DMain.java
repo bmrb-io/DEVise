@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.349  2014/05/22 21:08:50  wenger
+// Added test_mult5 and test_mult6 to reproduce bug 154.
+//
 // Revision 1.348  2014/05/21 18:29:42  wenger
 // Incremented x on version.
 //
@@ -1032,7 +1035,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.2x5"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.2";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
