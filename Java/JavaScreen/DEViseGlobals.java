@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.162  2014/05/20 21:15:57  wenger
+// More JavaScreen updates for new devise.cs.wisc.edu (not 100% tested
+// yet).
+//
 // Revision 1.161  2014/05/14 20:35:01  wenger
 // Added support for new dynamics movie URLs (<res> in the GData string
 // is replaced by the residue number, instead of a fixed string containing
@@ -1014,7 +1018,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.4x3"/*TEMP*/);
+    public static final String VERSION = new String("5.14.4");
 
     public static final String PROTOCOL_VERSION = new String("17.0");
 
