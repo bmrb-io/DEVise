@@ -4561,6 +4561,9 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 1032 5/14/14	OPEN	JS:  "{" or "}" in GData sent to JavaScreen seems
 			to cause error. (wenger)
 
+1033 5/28/14	OPEN	js_is_signed.pl is missing from the JavaScreen
+			tarball. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
