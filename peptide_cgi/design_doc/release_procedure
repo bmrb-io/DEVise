@@ -46,6 +46,8 @@ TEMP -- may need more changes...
 
 - Increment the version in the sources (11.0.2 -> 11.0.3x0, for example).
 
+- Add the release date to pep-version-history.
+
 - Add a new section to pep-version-history.
 
 - Commit the sources.
