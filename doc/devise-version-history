@@ -3,7 +3,7 @@
 DEVise 1.11.5
 -------------
 
-(Nothing yet.)
+* Fixed more possible buffer overflows.
 
 
 DEVise 1.11.4
