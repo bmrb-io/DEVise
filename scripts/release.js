@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  2013/12/17 17:51:20  wenger
+#  Fixed JS release script for single jar file.
+#
 #  Revision 1.15  2013/12/13 21:51:31  wenger
 #  Merged js_todo14_002_br_0 thru js_todo14_002_br_1 to trunk.
 #
@@ -131,7 +134,7 @@ foreach file ($files)
   endif
 end
 
-set signed = `cd Java/JavaScreen; js_is_signed.pl`
+set signed = `cd Java/JavaScreen; ./js_is_signed.pl`
 if (! $signed) then
   echo ""
   echo "Jar file is not signed"

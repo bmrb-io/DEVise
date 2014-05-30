@@ -1,0 +1,4 @@
+The actual problem was not that js_is_signed.pl was missing; it was not.
+The problem is that it was not getting run when doing the install at BMRB
+because '.' is not in the path of the web user there.  I fixed things by
+specifying ./js_is_signed.pl in the install script.
