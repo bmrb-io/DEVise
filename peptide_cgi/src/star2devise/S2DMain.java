@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.351  2014/05/29 20:54:40  wenger
+// Changed version to 12.4.3x0, added new version history section;
+// slight update to release procedure (add release date).
+//
 // Revision 1.350  2014/05/23 17:08:55  wenger
 // Changed version to 12.4.2 for release; also temporarily disabled
 // test_mult6.
@@ -1039,7 +1043,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.3x0"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.3x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
