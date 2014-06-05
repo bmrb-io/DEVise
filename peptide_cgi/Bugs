@@ -709,6 +709,10 @@ Num Date        Status  Description
 			(wenger)
 			(Fixed by wenger, 6/4/14.)
 
+156 6/5/14	OPEN	Histogram pages don't get their port numbers
+			changed to 6667 when installing with test
+			configuration. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
