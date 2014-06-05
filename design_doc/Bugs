@@ -4565,9 +4565,12 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			tarball. (wenger)
 			(Fixed by wenger 5/30/14)
 
-1034 5/30/14	OPEN	JS release (maybe client-only) does a 'chmod 644'
+1034 5/30/14	FIXED	JS release (maybe client-only) does a 'chmod 644'
 			on the data download directory *as configured at
 			BMRB*. (wenger)
+			(Yes, full install works okay, but client-only
+			leaves directory with the wrong permissions.)
+			(Fixed by wenger, 6/5/14)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

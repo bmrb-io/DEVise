@@ -185,7 +185,16 @@ if (! -d $htmldir) then
   chmod 755 $htmldir
 endif
 cp -p html/* $htmldir
-chmod 644 $htmldir/*
+chmod 644 $htmldir/*.*
+
+#-----------------------------------------------------------
+# Make sure the download directory exists and has the right
+# permissions.
+mkdir -p $downloaddir
+# In case the devised runs as a different user.
+chmod 775 $downloaddir
+
+#-----------------------------------------------------------
 
 if ($client_only) then
   exit
@@ -217,12 +226,6 @@ if (! -d $logdir) then
   mkdir -p $logdir
   chmod 777 $logdir
 endif
-
-#-----------------------------------------------------------
-# Make sure the download directory exists.
-mkdir -p $downloaddir
-# In case the devised runs as a different user.
-chmod 777 $downloaddir
 
 #-----------------------------------------------------------
 # Install the jss, devised, and Tasvir.
