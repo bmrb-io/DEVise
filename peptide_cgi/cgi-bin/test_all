@@ -229,7 +229,7 @@ if (($do_all != 0) or ($do_mult != 0)) {
   RunTest("test_mult4");
   RunTest("test_mult5");
   # See bug 154.
-  #TEMP!! RunTest("test_mult6");
+  RunTest("test_mult6");
 }
 
 if (($do_all != 0) or ($do_s2p != 0)) {

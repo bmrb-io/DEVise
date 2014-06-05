@@ -20,7 +20,7 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <title>BMRB Data Viewer for bmr4264.str</title>
+  <title>BMRB Data Viewer for bmrENTRY_ID.str</title>
   <link href="../visualization.css" rel="stylesheet" type="text/css" media="all">
 </head>
 
@@ -48,13 +48,13 @@
 
   <br>
     <center> <h2>
-    BMRB Data Viewer for bmr4264.str
+    BMRB Data Viewer for bmrENTRY_ID.str
     </h2> </center>
     <center> <h2>
-    Dummy title
+    DUMMY_TITLE
     </h2> </center>
     <h3>
-    Dummy details
+    DUMMY_DETAILS
     </h3>
 
   <br>
@@ -67,18 +67,18 @@
 
     <div style="width:49%; float: left;">
     <h3 style="text-align:center;">
-    <a href="4264y.html">All visualizations for this entry</a>
+    <a href="ENTRY_IDy.html">All visualizations for this entry</a>
     </h3>
     </div>
     <p style="clear: both"></p>
 
     <hr>
     <form method="get" name="get_by_bmrb" action="CGI_URL">
-      <label for="number">Enter a BMRB accession number (e.g., 4081)
+      <label for="number">Enter a BMRB accession number (e.g., EXAMPLE_ID)
         to generate visualizations for that entry
 	<b><font color="red">(for released entries only)</font></b></label>
       <p>
-      <input type="text" name="number" id="number" size="5" value="4081">
+      <input type="text" name="number" id="number" size="5" value="EXAMPLE_ID">
       <input type="submit" value="View data">
       </p>
     </form>
@@ -92,7 +92,7 @@
       <param name="archive" value="../../../devise_js.jar">
       <param name="permissions" value="sandbox">
       <param name="debug" value="0">
-      <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">
+      <param name="session" value="bmrb/dynamic_sessions/ENTRY_IDd1.ds">
       <param name="cmdport" value="6666">
       <param name="cgiurl" value="/cgi-bin/js.cgi">
       <param name="rubberbandlimit" value="4x4">
@@ -109,7 +109,7 @@
     </center>
     <h3>3D rendering by <a href="http://jmol.sourceforge.net/">Jmol</a></h3>
     <h3>
-      <a target= "nmr_vis_help" href="help_d.html">Help about this
+      <a target= "nmr_vis_help" href="HELP_FILE.html">Help about this
         visualization</a>
     </h3>
     <p>

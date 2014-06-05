@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2013
+// (c) Copyright 2001-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.30  2013/03/19 19:10:26  wenger
+// Changed the default BMRB accession number in the web forms to
+// 15381; when you visualize a specific entry, that entry's accession
+// number becomes the default in the forms associated with that entry.
+// (Note: still needs approval from Eldon.)
+//
 // Revision 1.29  2013/03/14 18:36:21  wenger
 // To-do 181:  merged the Jmol and non-Jmol visualization page templates.
 //
@@ -114,17 +120,17 @@ public class S2DSpecificHtml {
     protected String _title;
     protected String _dataSuffix;
 
-    private static final String searchString1 = "4264d1.ds";
-    private static final String searchString1b = "4264d1.html";
-    private static final String searchString2 = "bmr4264.str";
-    private static final String searchString3 = "help_d.html";
-    private static final String searchString4 = "Dummy title";
-    private static final String searchString5 = "Dummy details";
-    private static final String searchString6 = "4264y";
+    private static final String searchString1 = "ENTRY_IDd1.ds";
+    private static final String searchString1b = "ENTRY_IDd1.html";
+    private static final String searchString2 = "bmrENTRY_ID.str";
+    private static final String searchString3 = "HELP_FILE.html";
+    private static final String searchString4 = "DUMMY_TITLE";
+    private static final String searchString5 = "DUMMY_DETAILS";
+    private static final String searchString6 = "ENTRY_IDy";
     private static final String searchString7 =
       "\"cmdport\" value=\"6666\"";
     private static final String searchString8 = "CGI_URL";
-    private static final String searchString9 = "4081";
+    private static final String searchString9 = "EXAMPLE_ID";
 
     private String _replaceString1;
     private String _replaceString1b;
@@ -167,7 +173,7 @@ public class S2DSpecificHtml {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSpecificHtml.S2DSpecificHtml(" +
 	      htmlDir + ", " + dataType + ", " + name + ", " +
-	      frameIndex1 + ", " + frameIndex2 + ")");
+	      fullName + ", " + frameIndex1 + ", " + frameIndex2 + ")");
 	}
 
 	_multiEntry = true;
