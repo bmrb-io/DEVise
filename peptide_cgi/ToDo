@@ -933,6 +933,10 @@ Num Date        Status  Pri     Description
 				of peaks. (wenger)
 				(Done by wenger, 5/8/14)
 
+207 6/9/14	OPEN	1	In peak list processing, create _Spectral_dim
+				loop if possible if it doesn't exist.
+				(elu/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
