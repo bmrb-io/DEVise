@@ -99,7 +99,8 @@ peaklist_setup:
 	chmod g+rwx test_html test_data test_session
 
 # Goofiness here is because we don't want to use Gnu make's .PHONY feature.
-install: do_install histogram_install uvd_install example_install
+install: do_install histogram_install uvd_install example_install \
+	movie_install
 do_install: 
 	./install $(DEV_DEMO_HOME) $(WWW_HOME) $(PEP_HOME) $(CGI_HOME) \
 	  $(PEP_SESSION_HOME) $(PEP_DATA_HOME) $(PEP_HTML_HOME) \
@@ -122,7 +123,8 @@ example_install:
 	./install_examples $(CGI_HOME)
 
 movie_install:
-	cp -p html/dynamics_movie_demo.html $(PEP_HTML_HOME)
+	cp -p html2/devise/vis_examples/dynamics_movie_demo.html \
+		$(PEP_HOME)/../vis_examples
 	cd $(CGI_HOME); ./generate_movies
 
 proto_install:

@@ -209,8 +209,6 @@ endif
 chmod a+rwx $targetdir
 
 cp -p html/[a-z]* $targetdir
-#TEMP -- remove this line when movie server is ready
-rm $targetdir/dynamics_movie_demo.html
 if (! -e $targetdir/help_rrdistr.html) then
   ln -s $targetdir/help_distr.html $targetdir/help_rrdistr.html
 endif

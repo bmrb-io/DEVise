@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.353  2014/06/05 20:11:32  wenger
+// Fixed bug 154 (multi-entry visualizations with 4081 as the second
+// entry don't work right).
+//
 // Revision 1.352  2014/06/04 18:25:15  wenger
 // Fixed bug 155 (test_all deletes some dynamics movie visualizations) --
 // gave the movie visualizations a different name that doesn't get deleted
@@ -1048,7 +1052,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.3x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.3x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
