@@ -22,5 +22,6 @@ dist:
 	ln -s ../../../../../html2/devise/vis_examples/Makefile .
 	ln -s ../../../../../html2/devise/vis_examples/*.txt .
 	ln -s ../../../../../html2/devise/vis_examples/*.tmpl .
+	ln -s ../../../../../html2/devise/vis_examples/dynamics_movie_demo.html .
 	mkdir figures
 	cd figures; ln -s ../../../../../../html2/devise/vis_examples/figures/*.png .
