@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.65  2014/04/17 19:50:13  wenger
+// Fixed a bug in the multi-entry visualization form in summary pages;
+// changed version to 12.4.1 for release.
+//
 // Revision 1.64  2014/02/03 21:37:58  wenger
 // Fixed some html errors in Peptide-CGI pages (note: js_videos.html
 // still has errors related to embedding flash, and two-entry summary
@@ -771,7 +775,8 @@ TEMP?*/
 		// time we write the list of stuff for which we don't
 		// have data.
 		boolean writeNoData = false;
-		for (int index = 0; index <= 1; index++) {
+		int max = _multiEntry ? 0 : 1;
+		for (int index = 0; index <= max; index++) {
 		    if (writeNoData) {
 		        _writer.write("\n<table class=\"vis\" width=\"100%\">\n");
 		    } else {

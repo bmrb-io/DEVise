@@ -692,8 +692,9 @@ Num Date        Status  Description
 			17306_dyn_movie/17306_dyn_movies2p1-1.html).
 			(wenger)
 
-152 4/17/14	OPEN	http://devise-test.cs.wisc.edu/devise/bmrb2/bmrb/devise/peptide-cgi/html/15418/15418+4099y.html
+152 4/17/14	FIXED	http://devise-test.cs.wisc.edu/devise/bmrb2/bmrb/devise/peptide-cgi/html/15418/15418+4099y.html
 			has an html validation error. (wenger)
+			(Fixed by wenger, 6/25/14)
 
 153 4/18/14	OPEN	test_s2p5 fails on pacu (the do_s2p line is not
 			generated). (wenger)

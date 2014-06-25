@@ -12,6 +12,8 @@ video type to browser.
 the demo dynamics visualizations is now part of the normal installation
 process.
 
+* Fixed an html error in multi-entry summary pages (bug 152).
+
 * Fixed bug 154 (multi-entry visualizations with 4081 as the second
 entry don't work right).
 

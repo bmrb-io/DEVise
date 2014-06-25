@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.354  2014/06/23 19:11:28  wenger
+// Added dynamics movie demos thumbnail and link to home page; generating
+// the demo dynamics visualizations is now part of the normal installation
+// process.  (Note:  probably still needs some cleanup.)
+//
 // Revision 1.353  2014/06/05 20:11:32  wenger
 // Fixed bug 154 (multi-entry visualizations with 4081 as the second
 // entry don't work right).
@@ -1052,7 +1057,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.3x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.3x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
