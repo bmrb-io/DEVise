@@ -5,6 +5,9 @@ Peptide-CGI 12.4.3
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
 (Not yet released.)
 
+* Updated configuration to use new dynamics movie script that matches
+video type to browser.
+
 * Added dynamics movie demos thumbnail and link to home page; generating
 the demo dynamics visualizations is now part of the normal installation
 process.
