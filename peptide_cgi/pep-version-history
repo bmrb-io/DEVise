@@ -3,7 +3,7 @@
 Peptide-CGI 12.4.3
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
-(Not yet released.)
+(Released 2014-06-26.)
 
 * Updated configuration to use new dynamics movie script that matches
 video type to browser.
