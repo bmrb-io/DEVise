@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.356  2014/06/26 18:12:28  wenger
+// Changed version to 12.4.3 for release.
+//
 // Revision 1.355  2014/06/25 19:05:52  wenger
 // Fixed bug 152 (html error in multi-entry summary pages).
 //
@@ -1060,7 +1063,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.3";
+    public static final String PEP_CGI_VERSION = "12.4.4x0"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
