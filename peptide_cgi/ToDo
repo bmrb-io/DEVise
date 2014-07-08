@@ -941,6 +941,9 @@ Num Date        Status  Pri     Description
 				help_s2p.html (or maybe a special version
 				for the movie visualizations?). (wenger)
 
+209 7/8/14	OPEN	1	Add message about Java not working on
+				Mac Snow Leopard. (wedell/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
