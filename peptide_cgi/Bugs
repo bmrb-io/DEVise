@@ -715,6 +715,10 @@ Num Date        Status  Description
 			changed to 6667 when installing with test
 			configuration. (wenger)
 
+157 7/8/14	OPEN	Tests fail at Florence: test70, test_tar2imu,
+			test_tar6, test_tar2p, test_tar3p, test_bug090.
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
