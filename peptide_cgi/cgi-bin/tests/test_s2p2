@@ -20,7 +20,7 @@ if ($dummycsr) then
 endif
 
 echo -n "Processing NMR-STAR: "
-./make_view number=15451\&force=1
+./s2d -nomail -bmrbid 15451 -force -s2p_url file:test_data/
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1

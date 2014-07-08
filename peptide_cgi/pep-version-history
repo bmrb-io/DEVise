@@ -5,7 +5,7 @@ Peptide-CGI 12.4.4
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
 (Not yet released.)
 
-(Nothing yet.)
+* Fixed bug 153 (test_s2p5 fails on pacu).
 
 
 Peptide-CGI 12.4.3

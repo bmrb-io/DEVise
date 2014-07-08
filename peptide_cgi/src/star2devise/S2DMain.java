@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.357  2014/06/27 16:28:17  wenger
+// Changed version to 12.4.4x0 and added 12.4.4 section to version
+// history.
+//
 // Revision 1.356  2014/06/26 18:12:28  wenger
 // Changed version to 12.4.3 for release.
 //
@@ -1714,7 +1718,7 @@ public class S2DMain {
 	if (S2DNames.DSSP_FILE_URL == null) {
 	    S2DError err = new S2DError("Unable to get value for " +
 	      "bmrb_mirror.dssp_file_url property; using default");
-	    S2DNames.S2PRED_URL = "file:./";
+	    S2DNames.DSSP_FILE_URL = "file:./";
 	}
 
 	S2DSession.getProperties(props);

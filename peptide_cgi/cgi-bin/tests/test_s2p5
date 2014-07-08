@@ -21,7 +21,8 @@ if ($dummycsr) then
 endif
 
 echo -n "Processing NMR-STAR: "
-./make_uvd name=test_s2p5_out\&file=test_data/bmr4267.str\&force=1
+./uvd -name test_s2p5_out -file test_data/bmr4267.str -force \
+  -s2p_url file:test_data/
 if ($status != 0) then
   echo "First invocation of uvd failed!"
   set result = 1

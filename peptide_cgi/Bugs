@@ -696,8 +696,9 @@ Num Date        Status  Description
 			has an html validation error. (wenger)
 			(Fixed by wenger, 6/25/14)
 
-153 4/18/14	OPEN	test_s2p5 fails on pacu (the do_s2p line is not
+153 4/18/14	DONE	test_s2p5 fails on pacu (the do_s2p line is not
 			generated). (wenger)
+			(Fixed by wenger, 7/7/14)
 
 154 5/22/14	FIXED	Generate 11017 visualizations, then generate
 			multi-entry visualizations with 4081 -> html
