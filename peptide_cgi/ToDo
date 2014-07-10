@@ -921,12 +921,13 @@ Num Date        Status  Pri     Description
 				maybe add an S2DFatalError that shouldn't
 				be caught). (wenger)
 
-205 5/8/14	OPEN	1	Change dynamics visualizations to use
+205 5/8/14	DONE	1	Change dynamics visualizations to use
 				pre-generated movies with single selected
 				residues (example URL:
 				http://144.92.217.22/download.php?key=1D2B_devise_1)
 				(last 1 is selected residue).
 				(wenger)
+				(Done by wenger, ?/?/14)
 
 206 5/8/14	DONE	1	Generate a fatal error in peak list processing
 				if a single save frame has multiple sets
