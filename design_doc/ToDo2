@@ -280,6 +280,10 @@ Clean up JavaScreen html pages (collab.html, collabf.html, keyboard.html,
 maybe others) to match new color scheme/layout of BMRB visualization
 pages. (wenger)
 
+09.030 7/15/14	OPEN	4
+Use j2js to convert the JavaScreen client code to javascript.  (Probably 
+at least try this out enough to see if it's practical.) (wedell/elu/wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
