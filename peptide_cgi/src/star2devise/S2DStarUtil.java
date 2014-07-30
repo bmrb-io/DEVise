@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.40.1  2014/06/09 21:04:00  wenger
+// Peak list processing now reports a fatal error if there is no
+// _Spectral_dim information.
+//
+// Revision 1.4  2010/04/23 16:51:08  wenger
+// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
+//
 // Revision 1.3.20.2  2010/04/22 16:38:11  wenger
 // Various minor cleanups of distance restraint code.
 //
@@ -128,7 +135,7 @@ public class S2DStarUtil
         // There should be only one data loop.
         if (loopList.size() != 1) { 
            throw new S2DError("Found " + loopList.size() +
-              " " + loopId + " tags, only expect 1." );
+              " " + loopId + " tags, expect exactly 1." );
         }
 
         DataLoopNode loop = (DataLoopNode)loopList.firstElement();

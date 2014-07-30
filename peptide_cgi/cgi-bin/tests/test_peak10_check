@@ -12,6 +12,8 @@ end
 set file = "15025_peaks.str"
 set line = 'save_spectral_peak_list'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
 set line = '2   C   13   C   .   .   .   .   15025   1'
 source tests/check4line
 set line = '1   $SPARKY    .   .   15025   1'

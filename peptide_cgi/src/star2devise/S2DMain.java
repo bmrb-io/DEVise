@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.358  2014/07/08 19:13:06  wenger
+// Fixed Peptide-CGI bug 153 (test_s2p5 fails on pacu); also fixed a bug
+// in reading bmrb_mirror.dssp_file_url property.
+//
 // Revision 1.357  2014/06/27 16:28:17  wenger
 // Changed version to 12.4.4x0 and added 12.4.4 section to version
 // history.
@@ -35,6 +39,19 @@
 // Added dynamics movie demos thumbnail and link to home page; generating
 // the demo dynamics visualizations is now part of the normal installation
 // process.  (Note:  probably still needs some cleanup.)
+//
+// Revision 1.353.2.3  2014/07/30 21:00:04  wenger
+// Peak lists:  We now throw an exception on a peak list processing
+// error only if the -peakonly flag has been specified -- this fixes
+// some test failures.
+//
+// Revision 1.353.2.2  2014/07/29 18:28:07  wenger
+// Peak lists:  Finished adding _Spectral_dim loops when they don't
+// exist but can be derived from the peak list text.
+//
+// Revision 1.353.2.1  2014/06/09 21:04:00  wenger
+// Peak list processing now reports a fatal error if there is no
+// _Spectral_dim information.
 //
 // Revision 1.353  2014/06/05 20:11:32  wenger
 // Fixed bug 154 (multi-entry visualizations with 4081 as the second
@@ -1067,7 +1084,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.4x0"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.4x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
@@ -4319,9 +4336,14 @@ public class S2DMain {
 	    try {
 	        saveFramePeakList(star, frame, frameIndex);
 	    } catch(S2DException ex) {
-		System.err.println("Exception saving peak list " +
+		S2DError error = new S2DError("Exception saving peak list " +
 		  "values for frame " + star.getFrameName(frame) +
 		  ": " + ex.toString());
+	        if (_peakOnly) {
+		    throw(error);
+		} else {
+		    System.err.println(error);
+		}
 	    }
 	    frameIndex++;
         }

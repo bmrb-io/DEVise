@@ -12,6 +12,8 @@ end
 set file = "19329_peaks.str"
 set line = '^save_Nnoesy_NUS'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
 set line = '3   H    1   HN   1   15     ?   ?   19329   1'
 source tests/check4line
 
@@ -55,6 +57,8 @@ source tests/check4line
 
 
 set line = '^save_NUS_Cnoesy_both'
+source tests/check4line
+set line = '_Spectral_dim.ID'
 source tests/check4line
 set line = '1   C   13   C   1   65     ?   ?   19329   2'
 source tests/check4line

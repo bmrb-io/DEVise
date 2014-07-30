@@ -12,6 +12,8 @@ end
 set file = "18561_peaks.str"
 set line = '^save_spectral_peak_list_15N'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
 set line  = '1   N   15   HN   ?   2513.855618964   ?   ?   18561   1'
 source tests/check4line
 
@@ -47,6 +49,8 @@ source tests/check4line
 
 
 set line  = '^save_spectral_peak_list_13C'
+source tests/check4line
+set line = '_Spectral_dim.ID'
 source tests/check4line
 set line  = '1   C   13   13C   ?   14084.5070422535   ?   ?   18561   2'
 source tests/check4line

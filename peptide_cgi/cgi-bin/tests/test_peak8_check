@@ -12,8 +12,11 @@ end
 set file = "15343_peaks.str"
 set line = 'save_spectral_peak_list_1'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
 set line = "3   H    1   'aliphatic H's & aromatic H's'    .   14.000   .   .   15343   1"
 source tests/check4line
+
 set line = '4   $SPARKY    .   .   15343   1'
 source tests/check4line
 
@@ -62,8 +65,11 @@ source tests/check4line
 
 set line = 'save_spectral_peak_list_2'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
 set line = "1   H    1   'all H's'    .   11.497   .   .   15343   2"
 source tests/check4line
+
 set line = '4   $SPARKY    .   .   15343   2'
 source tests/check4line
 

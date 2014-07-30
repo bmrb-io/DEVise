@@ -7,7 +7,6 @@ set result = 0
 rm -r -f */11017*
 
 echo -n "Processing NMR-STAR: "
-#TEMPTEMP -- change this to eventually use s2peak
 ./s2d -nomail -name 11017 -file test_data/bmr11017_3.str -force \
   -check_res_list -check_pct -peakonly
 if ($status != 0) then

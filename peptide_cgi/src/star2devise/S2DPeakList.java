@@ -28,6 +28,27 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.2.4  2014/07/29 18:28:08  wenger
+// Peak lists:  Finished adding _Spectral_dim loops when they don't
+// exist but can be derived from the peak list text.
+//
+// Revision 1.5.2.3  2014/07/25 21:40:24  wenger
+// Peak lists:  more work on adding _Spectral_dim loops when they're
+// missing (we now output atom type and isotope); improved peak list
+// tests accordingly.
+//
+// Revision 1.5.2.2  2014/06/10 23:07:20  wenger
+// Generating _Spectral_dim loops from NmrView peak text is now mostly
+// working.
+//
+// Revision 1.5.2.1  2014/06/09 21:04:00  wenger
+// Peak list processing now reports a fatal error if there is no
+// _Spectral_dim information.
+//
+// Revision 1.5  2014/05/08 20:01:08  wenger
+// Peptide-CGI to-do 206:  multiple sets of peaks in a single save frame
+// now cause an explicit fatal error.
+//
 // Revision 1.4  2014/04/11 21:49:12  wenger
 // Merged nmrview_peaks_br_0 thru nmrview_peaks_br_1 to trunk.
 //
@@ -339,7 +360,7 @@ public class S2DPeakList {
     Pattern _xeasyPat;
     Pattern _nmrviewPat1;
     Pattern _nmrviewPat2;
-    // TEMP: What should this be set to when we're done with the header??
+    // 1 -> processing NmrView header; 0 otherwise.
     int _nmrviewState = 0;
 
     // True iff we got peak values from the peak text field (in other
@@ -357,7 +378,10 @@ public class S2DPeakList {
 	public double[] _shifts;
 	public PeakAssignment _assignments;
     }
-    ArrayList _peaks = new ArrayList();
+    private ArrayList _peaks = new ArrayList();
+
+    private boolean _haveSpectralDimLoop = false;
+    private String[] _spectralDimRegions = new String[4];
 
     private static class PeakAssignment {
 	// Note:  If we have fewer than four dimensions, some of these
@@ -447,6 +471,17 @@ public class S2DPeakList {
 	    getPeakTextValues(frame);
 	}
 
+	try {
+	    String[] spectralDims = star.getFrameValues(frame,
+	      star.SPEC_DIM_ID, star.SPEC_DIM_ID);
+	    _haveSpectralDimLoop = true;
+	} catch(S2DError err) {
+	    if (_spectralDimRegions[0] == null) {
+	        throw new S2DError("Error: no _Spectral_dim data in save frame " +
+	          star.getFrameName(frame) + " (" + err.toString() + ")");
+	    }
+	}
+
 	// If we got peak values in one of the two places above,
 	// write the info from the peak save frame (except for the 
 	// peak text) to a temp file.
@@ -504,6 +539,7 @@ TEMP*/
     // Write the peak list save frame data (except for the peak list
     // text tag) to a temporary file.
     private void writePeakSaveFrame(SaveFrameNode frame)
+      throws S2DException
     {
 	try {
 	    // Remove the peak list text entry -- we don't want that in
@@ -511,13 +547,17 @@ TEMP*/
 	    S2DStarIfc.removeTag(frame, _star.PEAK_LIST_TEXT);
 
 	} catch (S2DException ex) {
-	    System.err.println("Can't remove peak text tag: " + ex.toString());
+	    throw new S2DError("Can't remove peak text tag: " + ex.toString());
 	}
 
 	try {
 	    _tmpPeakFrameFile = File.createTempFile("peaks", ".str",
 	      new File("tmp"));
-	    _tmpPeakFrameFile.deleteOnExit();
+            if (doDebugOutput(20)) {
+                System.out.println("_tmpPeakFrameFile: " + _tmpPeakFrameFile);
+	    } else {
+	    	_tmpPeakFrameFile.deleteOnExit();
+	    }
     	    FileOutputStream fos = new FileOutputStream(_tmpPeakFrameFile);
 
 	    StarUnparser unp = new StarUnparser(fos);
@@ -526,7 +566,7 @@ TEMP*/
 	    fos.close();
 
 	} catch (IOException ex) {
-	    System.err.println("Can't unparse save frame: " + ex.toString());
+	    throw new S2DError("Can't unparse save frame: " + ex.toString());
 	}
     }
 
@@ -630,7 +670,7 @@ TEMP*/
 
 	    try {
 	        if (_nmrviewState > 0) {
-	    	    // processNmrViewHdr(lines[index]);
+	    	    processNmrViewHdrLine(lines[index]);
 	        } else if (matchLine(lines[index], peakId)) {
 	    	    ++peakId;
 	        }
@@ -687,7 +727,7 @@ TEMP*/
 	}
 
 	// Regex patterns for NMRView
-	_nmrviewPat1 = Pattern.compile("label dataset sw sf");
+	_nmrviewPat1 = Pattern.compile("label dataset sw sf\\s*");
         if (doDebugOutput(20)) {
 	    System.out.println("_nmrviewPat1 <" + _nmrviewPat1 + ">");
 	}
@@ -703,6 +743,35 @@ TEMP*/
         if (doDebugOutput(20)) {
 	    System.out.println("_nmrviewPat2 <" + _nmrviewPat2 + ">");
 	}
+    }
+
+    //-------------------------------------------------------------------
+    private Pattern _nmrViewHdrPat = Pattern.compile(
+      "(\\w*)\\s*(\\w*)(\\s*(\\w*))?(\\s*(\\w*))?.*");
+
+    private void processNmrViewHdrLine(String line)
+    {
+        if (doDebugOutput(22)) {
+	    System.out.println("S2DPeakList.processNmrViewHdrLine(" +
+	      line + ")");
+	}
+
+	Matcher match1 = _nmrViewHdrPat.matcher(line);
+
+	if (match1.matches()) {
+            if (doDebugOutput(22)) {
+	        System.out.println("Matched NmrView header line <" +
+		  line + ">");
+	        printMatch(match1);
+	    }
+	}
+
+        _spectralDimRegions[0] = match1.group(1);
+        _spectralDimRegions[1] = match1.group(2);
+        _spectralDimRegions[2] = match1.group(4);
+        _spectralDimRegions[3] = match1.group(6);
+
+	_nmrviewState = 0; // Done with header...
     }
  
     //-------------------------------------------------------------------
@@ -741,7 +810,6 @@ TEMP*/
 	    processXeasyMatch(xeasyMatch, peakId);
 	    result = true;
 
-/* Ignore the NMRView header for now.  wenger 2014-03-10
 	} else if (nmrviewMatch1.matches()) {
 	    matchCount++;
             if (doDebugOutput(22)) {
@@ -750,7 +818,6 @@ TEMP*/
 	    }
 	    ++_nmrviewState;
 	    result = true;
-*/
 
 	} else if (nmrviewMatch2.matches()) {
 	    matchCount++;
@@ -1250,6 +1317,11 @@ TEMP*/
 	        System.out.println("Writing peak list tag values to output file");
 	    }
 
+	    // Write _Spectral_dim loop here if we don't already have
+	    // it but got it from peak text.
+	    if (!_haveSpectralDimLoop) {
+                writeStarPeakDim(writer, frameIndex);
+	    }
             writeStarPeakTable(writer, frameIndex);
 	    writeStarPeakInten(writer, frameIndex);
 	    writeStarPeakShifts(writer, frameIndex);
@@ -1279,6 +1351,68 @@ TEMP*/
 	//TEMP -- should there be a separate devise data file for each save frame? -- I think yes
 	writeDevisePeakIntensities(frameIndex);
         //TEMP -- what do I want to write?  * peak intensities  * chem shifts?
+    }
+
+    //-------------------------------------------------------------------
+    // Write the master peak list table.
+    private void writeStarPeakDim(FileWriter writer, int frameIndex)
+      throws IOException
+    {
+        writer.write("\n");
+        writer.write("    loop_\n");
+        writer.write("        _Spectral_dim.ID\n");
+        writer.write("        _Spectral_dim.Atom_type\n");
+        writer.write("        _Spectral_dim.Atom_isotope_number\n");
+        writer.write("        _Spectral_dim.Spectral_region\n");
+        writer.write("        _Spectral_dim.Magnetization_linkage_ID\n");
+        writer.write("        _Spectral_dim.Sweep_width\n");
+        writer.write("        _Spectral_dim.Encoding_code\n");
+        writer.write("        _Spectral_dim.Encoded_source_dimension_ID\n");
+        writer.write("        _Spectral_dim.Entry_ID\n");
+        writer.write("        _Spectral_dim.Spectral_peak_list_ID\n");
+	writer.write("\n");
+	for (int dim = 1; dim <= 4; dim++) {
+	    String region = _spectralDimRegions[dim-1];
+	    if (!region.equals("")) {
+		AtomTypeIso ati = region2TypeIso(region);
+	        writer.write("        " + dim + "   " + ati.atomType + "   " +
+		  ati.isotope + "    " + region + "   .   .   .   .   " +
+		  _name + "   " + frameIndex +
+		  "\n");
+	    }
+	}
+        writer.write("    stop_\n");
+	writer.write("\n");
+    }
+
+    //-------------------------------------------------------------------
+    // Translate region to atom type and isotope.
+    private static class AtomTypeIso {
+        String atomType = "?";
+        int isotope = 0;
+    };
+
+    private AtomTypeIso region2TypeIso(String region) {
+	AtomTypeIso result = new AtomTypeIso();
+
+	// Note:  do we need oxygen here?  wenger 2014-07-25
+	if (region.startsWith("C") || region.startsWith("13C")) {
+	    result.atomType = "C";
+	    result.isotope = 13;
+	} else if (region.startsWith("H") || region.startsWith("1H")) {
+	    result.atomType = "H";
+	    result.isotope = 1;
+	} else if (region.startsWith("N")) {
+	    result.atomType = "N";
+	    result.isotope = 15;
+	} else {
+	    S2DWarning warning = new S2DWarning(
+	      "Warning (peak list): unrecognized peak list region: " +
+	      region);
+	    System.err.println(warning.toString());
+	}
+
+	return result;
     }
 
     //-------------------------------------------------------------------

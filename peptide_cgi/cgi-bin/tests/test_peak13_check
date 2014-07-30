@@ -12,6 +12,8 @@ end
 set file = "16806_peaks.str"
 set line = '^save_spectral_peak_list_1'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
 set line = '2   C   13   Methyls   .   40   .   .   16806   1'
 source tests/check4line
 set line = '2   $CYANA    .   .   16806   1'
@@ -32,6 +34,8 @@ source tests/check4line
 
 
 set line = 'save_spectral_peak_list_2'
+source tests/check4line
+set line = '_Spectral_dim.ID'
 source tests/check4line
 set line = "2   N   15   'amide + sidechain'    .   100   .   .   16806   2"
 source tests/check4line
@@ -54,6 +58,11 @@ source tests/check4line
 
 set line = 'save_spectral_peak_list_3'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = '2   C   13   Methyls   .   40   .   .   16806   3'
+source tests/check4line
+
 set line = '499 328000.0 . volume 16806 3'
 source tests/check4line
 # Peak w/o assignments should still show up here.
@@ -65,6 +74,11 @@ source tests/check4line
 
 set line = 'save_spectral_peak_list_4'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = "2   N   15   'amide + sidechain'    .   100   .   .   16806   4"
+source tests/check4line
+
 set line = '607 568000.0 . volume 16806 4'
 source tests/check4line
 set line = '607 4 -2.0 ? ? ? ? ? ? ? ? ? ? ? ? ? 16806 4'
@@ -75,6 +89,11 @@ source tests/check4line
 
 set line = 'save_spectral_peak_list_5'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = "2   N   15   'amide + sidechain'    .   40   .   .   16806   5"
+source tests/check4line
+
 set line = '489 126000.0 . volume 16806 5'
 source tests/check4line
 set line = '489 4 -2.0 ? ? ? ? ? ? ? ? ? ? ? ? ? 16806 5'
@@ -85,6 +104,11 @@ source tests/check4line
 
 set line = 'save_spectral_peak_list_6'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = '2   C   13   methyl   .   40   .   .   16806   6'
+source tests/check4line
+
 set line = '341 62800.0 . volume 16806 6'
 source tests/check4line
 # Peak w/o assignments should still show up here.

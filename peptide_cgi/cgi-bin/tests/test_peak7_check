@@ -12,6 +12,8 @@ end
 set file = "16576_peaks.str"
 set line = 'save_spectral_peak_list_1'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
 set line = '3   N   15   N   .   33   .   .   16576   1'
 source tests/check4line
 
@@ -44,6 +46,8 @@ set line = '924 3 ? ? ? ? 8.873 ? ? ? ? ? ? ? ? 965 ? . . . 1 ? ? 16576 1'
 source tests/check4line
 
 set line = 'save_spectral_peak_list_2'
+source tests/check4line
+set line = '_Spectral_dim.ID'
 source tests/check4line
 set line = '1   H    1   H   .   13   .   .   16576   2'
 source tests/check4line

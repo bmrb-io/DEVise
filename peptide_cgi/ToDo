@@ -934,9 +934,10 @@ Num Date        Status  Pri     Description
 				of peaks. (wenger)
 				(Done by wenger, 5/8/14)
 
-207 6/9/14	OPEN	1	In peak list processing, create _Spectral_dim
+207 6/9/14	DONE	1	In peak list processing, create _Spectral_dim
 				loop if possible if it doesn't exist.
 				(elu/wenger)
+				(Done by wenger, 7/29/14)
 
 208 6/25/14	OPEN	2	Add info about dynamics movies to
 				help_s2p.html (or maybe a special version

@@ -12,6 +12,8 @@ end
 set file = "18468_peaks.str"
 set line = 'save_NUS_Nnoesy_850MHz'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
 set line = '3   H    1   H    2   11   NUS   .   18468   1'
 source tests/check4line
 
@@ -42,9 +44,11 @@ source tests/check4line
 
 set line = 'save_Cnoesy_aliph'
 source tests/check4line
-set line = '3   H    1   H   2   11   NUS   .   18468   2'
-
+set line = '_Spectral_dim.ID'
 source tests/check4line
+set line = '3   H    1   H   2   11   NUS   .   18468   2'
+source tests/check4line
+
 set line = '1 . . 18468 2'
 source tests/check4line
 set line = '1595 . . 18468 2'
@@ -67,6 +71,8 @@ source tests/check4line
 
 
 set line = 'save_4D_CC_noesy_peak_list'
+source tests/check4line
+set line = '_Spectral_dim.ID'
 source tests/check4line
 set line = '4   H    1   H   1    7     .   .   18468   3'
 source tests/check4line

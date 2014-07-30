@@ -8,7 +8,6 @@ set result = 0
 rm -r -f */18777*
 
 echo -n "Processing NMR-STAR: "
-#TEMPTEMP -- change to use s2peak?
 ./s2d -nomail -name 18777 -file test_data/bmr18777.str -force -check_res_list -check_pct -peakonly
 if ($status != 0) then
   echo "First invocation of s2d failed!"

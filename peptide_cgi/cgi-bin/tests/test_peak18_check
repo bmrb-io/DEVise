@@ -12,6 +12,15 @@ end
 set file = "11036_peaks.str"
 set line = '^save_spectral_peak_list_1'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = '1   H   1    H1   .   .   .   .   11036   1
+source tests/check4line
+set line = '2   H   1    H2   .   .   .   .   11036   1
+source tests/check4line
+set line = '3   C   13    C   .   .   .   .   11036   1
+source tests/check4line
+
 set line = '9   $NMRView    .   .   11036   1'
 source tests/check4line
 set line = '1 . . 11036 1'
@@ -25,4 +34,11 @@ source tests/check4line
 set line = '3356 0.0 . volume 11036 1'
 source tests/check4line
 
-#TEMPTEMP -- should we eventually have assignments here?
+set line = '1 1 1.086 ? ? ? ? ? ? ? ? ? ? ? ? ? 11036 1'
+source tests/check4line
+set line = '3356 3 18.015 ? ? ? ? ? ? ? ? ? ? ? ? ? 11036 1'
+source tests/check4line
+set line = '1 1 ? ? ? ? 1.086 ? ? ? ? ? ? ? ? . ? 803 . HG21 1 ? ? 11036 1'
+source tests/check4line
+set line = '3356 3 ? ? ? ? 18.015 ? ? ? ? ? ? ? ? . ? 655 . CB 1 ? ? 11036 1'
+source tests/check4line

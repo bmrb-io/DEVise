@@ -12,7 +12,15 @@ end
 set file = "16943_peaks.str"
 set line = '^save_peak_list_1'
 source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = '1   H   1    1H1   .   .   .   .   16943   1'
+source tests/check4line
+set line = '2   H   1    1H2   .   .   .   .   16943   1'
+source tests/check4line
+
 #TEMPTEMP -- add stuff here; check values
+#TEMPTEMP -- why don't we get a peak 821?
 set line = '2 . . 16943 1'
 source tests/check4line
 set line = '820 . . 16943 1'
