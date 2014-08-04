@@ -719,6 +719,10 @@ Num Date        Status  Description
 			test_tar6, test_tar2p, test_tar3p, test_bug090.
 			(wenger)
 
+158 8/3/14	OPEN	For a two-entry visualization, Peptide-CGI doesn't
+			find the 2.1 file for the second (-xbmrbid) entry
+			if the 3.1 file doesn't exist. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
