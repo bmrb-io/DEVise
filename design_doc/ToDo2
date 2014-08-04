@@ -363,6 +363,10 @@ Make use of Java enums.
 Clean up JavaScreen html pages (remove deprecated tags like "center"
 and "name", run through w3c validator, etc. (wenger)
 
+13.006 8/3/14	OPEN	1
+JavaScreen usage messages should report usage by category (e.g., histograms,
+chemical shift deltas, LACS, etc.). (elu/wenger)
+
 ...........................................................................
 SECTION 14 (release/distribution)
 Number Date	Status  Pri
