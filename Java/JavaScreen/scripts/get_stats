@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2005
+#  (c) Copyright 2000-2014
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,6 +19,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  2005/12/06 20:00:42  wenger
+#  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#  be the end of the V1_7b0_br branch.)
+#
 #  Revision 1.2.8.5  2005/06/02 21:01:52  wenger
 #  We now exlude any host name *starting* with localhost from the
 #  "real" session opens.
@@ -74,7 +78,7 @@ use strict;
 use Time::Local;
 
 my $debug = 0; # 0-3
-my $version = "3.2.0";
+my $version = "3.3.0";
 
 my $usage = "Usage: get_stats [idStr [period [curTime]]] | -usage | -version
   (Get JavaScreen usage statistics.)
@@ -169,6 +173,7 @@ my $openCount = 0;
 my $realOpenCount = 0;
 my %hostList = ();
 my %sessionList = ();
+my %sessionCats = ();
 my $time1 = -1; # Earliest time of data.
 my $time2 = -1; # Latest time of data.
 
@@ -253,6 +258,9 @@ sub ProcessOpen {
       $openCount++;
       $sessionList{$session}++;
 
+      # Doing counts here will include sessions opened from BMRB and CS.
+      # CountSessionCats($session);
+
       $hostList{$host}++;
 
       if ($host =~ /localhost.*/) {
@@ -263,6 +271,7 @@ sub ProcessOpen {
         # Intentional no-op.
       } else {
         $realOpenCount++;
+        CountSessionCats($session);
       }
     }
   }
@@ -288,6 +297,89 @@ sub ParseLine {
   my @results;
   @results = ($client, $date);
   return @results;
+}
+
+#-----------------------------------------------------------
+# Processes a line if that line contains session open information.
+# Client connection lines are of the form:
+# pumori.cs.wisc.edu: JAVAC_OpenSession {DEViseSession/Demo/Bmrb3dPeptide}  [Sep 25, 2003 12:28:00 PM]
+# Argument: line
+# Returns: (nothing)
+
+sub CountSessionCats {
+  my $session = shift(@_);
+
+  # Note:  Put most restrictive patterns first to avoid mis-counting
+  # (e.g., SPARTA (sd) before chem shift deltas (d)).
+  if ($session =~ /dna_histogram.ds$/) {
+    $sessionCats{'DNA histogram'}++;
+
+  } elsif ($session =~ /rna_histogram.ds$/) {
+    $sessionCats{'RNA histogram'}++;
+
+  } elsif ($session =~ /histogram2.ds$/) {
+    $sessionCats{'dual-protein histogram'}++;
+
+  } elsif ($session =~ /histogram.ds$/) {
+    $sessionCats{'single-protein histogram'}++;
+
+  } elsif ($session =~ /lacs\d+.ds$/) {
+    $sessionCats{'LACS'}++;
+
+  } elsif ($session =~ /distr\d+.ds$/) {
+    $sessionCats{'distance restraints'}++;
+
+  } elsif ($session =~ /tar\d+.ds$/) {
+    $sessionCats{'torsion angle restraints'}++;
+
+  } elsif ($session =~ /as\d+.ds$/) {
+    $sessionCats{'chem shift by AA/nucleotide'}++;
+
+  } elsif ($session =~ /am\d+.ds$/) {
+    $sessionCats{'ambiguity codes'}++;
+
+  } elsif ($session =~ /ac\d+.ds$/) {
+    $sessionCats{'atomic coordinates'}++;
+
+  } elsif ($session =~ /sd\d+.ds$/) {
+    $sessionCats{'SPARTA'}++;
+
+  } elsif ($session =~ /ps\d+.ds$/) {
+    $sessionCats{'Pistachio'}++;
+
+  } elsif ($session =~ /h[cn]\d+\+\d+.ds$/) {
+    $sessionCats{'two-entry simulated HSQC spectra'}++;
+
+  } elsif ($session =~ /h[cn]\d+.ds$/) {
+    $sessionCats{'simulated HSQC spectra'}++;
+
+  } elsif ($session =~ /t[12]\d+.ds$/) {
+    $sessionCats{'T1/T2 relaxation'}++;
+
+  } elsif ($session =~ /d\d+.ds$/) {
+    $sessionCats{'chem shift deltas'}++;
+
+  } elsif ($session =~ /c\d+.ds$/) {
+    $sessionCats{'chem shift index'}++;
+
+  } elsif ($session =~ /p\d+.ds$/) {
+    $sessionCats{'percent assigned'}++;
+
+  } elsif ($session =~ /g\d+.ds$/) {
+    $sessionCats{'coupling constants'}++;
+
+  } elsif ($session =~ /n\d+.ds$/) {
+    $sessionCats{'heteronuclear NOE'}++;
+
+  } elsif ($session =~ /o\d+.ds$/) {
+    $sessionCats{'S2 order parameters'}++;
+
+  } elsif ($session =~ /s2p\d+-\d+.ds$/) {
+    $sessionCats{'S2 predicted vs. experimental'}++;
+
+  } else {
+    $sessionCats{'other/unknown'}++;
+  }
 }
 
 #-----------------------------------------------------------
@@ -420,6 +512,12 @@ sub PrintResults {
   print "JavaScreen usage statistics for $dateEarly through $dateCur\n";
   print "  (Data actually found for $date1 through $date2):\n\n";
   print "$openCount session opens ($realOpenCount \"real\")\n";
+
+  print "\nSession category counts (\"real\" only):\n";
+  my $sessCat;
+  foreach $sessCat (sort { $sessionCats{$b} <=> $sessionCats{$a} } keys %sessionCats) {
+    printf "%4d %s\n", $sessionCats{$sessCat}, $sessCat;
+  }
 
   print "\nClient host info (number of session opens, host):\n";
   my $host;
