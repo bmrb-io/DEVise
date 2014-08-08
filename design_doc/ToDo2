@@ -367,6 +367,11 @@ and "name", run through w3c validator, etc. (wenger)
 JavaScreen usage messages should report usage by category (e.g., histograms,
 chemical shift deltas, LACS, etc.). (elu/wenger)
 
+13.007 8/8/14	OPEN	2
+Gather more information on JavaScreen usage -- how many actions do users
+perform, how long between session open and last action on that session,
+etc. (miron/wenger)
+
 ...........................................................................
 SECTION 14 (release/distribution)
 Number Date	Status  Pri
