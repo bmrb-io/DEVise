@@ -1,0 +1,17 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:28:37
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# $Id$
+
+type gene_heatmap_data ascii
+comment #
+whitespace '	'
+
+attr Gene int
+attr Sample int
+attr Expression float
+attr Transcription float
