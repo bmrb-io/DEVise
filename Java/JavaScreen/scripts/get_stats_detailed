@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  2014/08/19 21:31:35  wenger
+#  Script now has command counts *per ID* (not session); client ID
+#  0 still shows up in results.
+#
 #  Revision 1.1  2014/08/19 19:17:09  wenger
 #  Intermediate version of detailed usage script -- figures out some
 #  information but no stats yet.
@@ -189,7 +193,7 @@ sub ProcessConnect {
     print "  clientId = $clientId\n" if ($debug >= 1);
     print "  DIAG prevLine = $prevLine" if ($debug >= 1);
 
-    if ($clientId eq 0) return;
+    if ($clientId eq 0) { return; }
 
     my $connTime = StrToTime($time);
 
