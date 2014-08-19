@@ -4576,6 +4576,12 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			doesn't seem to work anymore in the JavaScreen
 			(see the 3D visualizations, for example). (wenger)
 
+1036 8/19/14	OPEN	JS:  On Safari/Mac, the mouse cursor image does not
+			change when you're on the *middle* of a DEVise cursor
+			(it does change on the edges).  This means that it's
+			not apparently that you can move the DEVise cursor.
+			(elu/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
