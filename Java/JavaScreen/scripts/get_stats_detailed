@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  2014/08/19 19:17:09  wenger
+#  Intermediate version of detailed usage script -- figures out some
+#  information but no stats yet.
+#
 
 ############################################################
 
@@ -107,6 +111,7 @@ my $connectCount = 0;
 my $openCount = 0;
 my %hostList = ();#TEMPTEMP -- is hostList really the right name???
 my %sessionList = ();
+my %clientIdList = ();
 my $time1 = -1; # Earliest time of data.
 my $time2 = -1; # Latest time of data.
 
@@ -184,6 +189,8 @@ sub ProcessConnect {
     print "  clientId = $clientId\n" if ($debug >= 1);
     print "  DIAG prevLine = $prevLine" if ($debug >= 1);
 
+    if ($clientId eq 0) return;
+
     my $connTime = StrToTime($time);
 
     if ($connTime >= $earliestTime && $connTime <= $curTime) {
@@ -198,6 +205,10 @@ sub ProcessConnect {
 
       $connectCount++;
       $hostList{$host}++;
+      my @xinfo = ();
+      $xinfo[0] = $host;
+      $xinfo[1] = 0; # command count
+      $clientIdList{$clientId} = [ @xinfo ];
     }
   }
 }
@@ -284,6 +295,7 @@ sub ProcessCmd {
     print "  client = $client\n" if ($debug >= 1);
     print "  cmd = $cmd\n" if ($debug >= 1);
 
+    $clientIdList{$client}[1]++;
   }
 }
 
@@ -439,6 +451,16 @@ sub PrintResults {
   my $realConns = $connectCount-$hostList{"localhost"};
   print "$connectCount connections ($realConns excluding localhost)\n";
   print "$openCount session opens\n";
+
+
+  print "\nClient command info (client, host, cmd count??):\n";
+  my $clientId;
+  foreach $clientId (sort { $clientIdList{$b}[1] <=> $clientIdList{$a}[1] } keys %clientIdList) {
+  #foreach $clientId (keys %clientIdList) {#TEMPTEMP?
+    printf "%4d %s %d\n", $clientId, $clientIdList{$clientId}[0], $clientIdList{$clientId}[1];
+  }
+
+
 
   print "\nClient host info (number of connections, host):\n";
   my $host;
