@@ -19,6 +19,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  2014/08/06 18:32:28  wenger
+#  Changed JavaScreen usage script to report usage by session categories
+#  for BMRB.
+#
 #  Revision 1.3  2005/12/06 20:00:42  wenger
 #  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 #  be the end of the V1_7b0_br branch.)
@@ -77,7 +81,7 @@
 use strict;
 use Time::Local;
 
-my $debug = 0; # 0-3
+my $debug = 2; # 0-3#TEMPTEMP
 my $version = "3.3.0";
 
 my $usage = "Usage: get_stats [idStr [period [curTime]]] | -usage | -version
@@ -167,13 +171,16 @@ if ($#pidFiles < 0) {
 #
 # Initialize various counts and lists.
 #
+#TEMPTEMP -- change some of these names?
 my $openCount = 0;
 # realOpenCount is the number of session opens from hosts other than
 # localhost, *.cs.wisc.edu and *.bmrb.wisc.edu.
 my $realOpenCount = 0;
 my %hostList = ();
 my %sessionList = ();
-my %sessionCats = ();
+my %sessionCats = (); # sessionCat -> openCount
+my %cmdCounts = (); # sessionCat -> cmdCount
+my %clientIds = (); # maps client IDs to session types
 my $time1 = -1; # Earliest time of data.
 my $time2 = -1; # Latest time of data.
 
@@ -210,10 +217,14 @@ foreach $file (@files) {
   while ($line = <DATA_IN>) {
     print "line = $line" if ($debug >= 3);
 
-    #
     # Process session open lines.
-    #
     ProcessOpen($line);
+
+    # Process session close lines.
+    ProcessClose($line);
+
+    # Process other command lines.
+    ProcessCmd($line);
   }
 
   close(DATA_IN);
@@ -224,27 +235,30 @@ PrintResults();
 #-----------------------------------------------------------
 # Processes a line if that line contains session open information.
 # Client connection lines are of the form:
-# pumori.cs.wisc.edu: JAVAC_OpenSession {DEViseSession/Demo/Bmrb3dPeptide}  [Sep 25, 2003 12:28:00 PM]
+# localhost (1201613167): JAVAC_OpenSession {DEViseSession/bmrb/dna_histogram.ds}  [Aug 21, 2014 3:05:16 PM]
 # Argument: line
 # Returns: (nothing)
 
 sub ProcessOpen {
   my $line = shift(@_);
 
-  if ($line =~ /(.*): JAVAC_OpenSession {(.*)}.*\[(.*)\]/) {
-    print "line = $line" if ($debug >= 2);
+  if ($line =~ /(\S*)( \((\d+)\))?: JAVAC_OpenSession {(.*)}.*\[(.*)\]/) {
+    print "\nopen line = $line" if ($debug >= 2);
 
     my $host = $1;
-    my $session = $2;
-    my $time = $3;
+    my $clientId = $3;
+    my $session = $4;
+    my $time = $5;
 
     print "host = $host\n" if ($debug >= 1);
+    print "clientId = $clientId\n" if ($debug >= 1);
     print "session = $session\n" if ($debug >= 1);
     print "time = $time\n" if ($debug >= 1);
 
     my $openTime = StrToTime($time);
     print "openTime = $openTime\n" if ($debug >= 1);
 
+    #TEMPTEMP -- what about sessions that are opened before earliestTime but get commands after earliestTime?
     if ($openTime >= $earliestTime && $openTime <= $curTime) {
       if ($openTime >= 0) {
         if ($time1 == -1 || $openTime < $time1) {
@@ -263,18 +277,96 @@ sub ProcessOpen {
 
       $hostList{$host}++;
 
-      if ($host =~ /localhost.*/) {
+      #TEMPTEMP if ($host =~ /localhost.*/) {
         # Intentional no-op.
-      } elsif ($host =~ /.*\.cs\.wisc\.edu/) {
+      #TEMPTEMP } elsif ($host =~ /.*\.cs\.wisc\.edu/) {
         # Intentional no-op.
-      } elsif ($host =~ /.*\.bmrb\.wisc\.edu/) {
+      #TEMPTEMP } elsif ($host =~ /.*\.bmrb\.wisc\.edu/) {
         # Intentional no-op.
-      } else {
+      #TEMPTEMP } else {
         $realOpenCount++;
         CountSessionCats($session);
-      }
+	#TEMPTEMP -- assign session cat to client ID
+	my $sessionCat = GetSessionCat($session);
+        print "sessionCat = $sessionCat\n" if ($debug >= 1);
+	if ($clientId ne '') {
+	  $clientIds{$clientId} = $sessionCat;
+	}
+      #TEMPTEMP }
     }
   }
+}
+
+#-----------------------------------------------------------
+# Processes a line if that line contains session close information.
+# Client connection lines are of the form:
+# localhost (1201615428): JAVAC_CloseCurrentSession [Aug 21, 2014 3:09:07 PM]
+# Argument: line
+# Returns: (nothing)
+
+sub ProcessClose {
+  my $line = shift(@_);
+
+  # Note: we don't have any session closing lines that don't have client ID.
+  if ($line =~ /(\S*) \((\d+)\): JAVAC_CloseCurrentSession \[(.*)\]/) {
+    print "\nclose line = $line" if ($debug >= 2);
+
+    my $host = $1;
+    my $clientId = $2;
+    my $time = $3;
+
+    print "host = $host\n" if ($debug >= 1);
+    print "clientId = $clientId\n" if ($debug >= 1);
+    print "time = $time\n" if ($debug >= 1);
+
+    if ($clientId ne '') {
+      $clientIds{$clientId} = '';
+    }
+  }
+}
+
+#-----------------------------------------------------------
+# Processes a line if that line contains general command information.
+# Command lines are of the form:
+# localhost (1201616319): JAVAC_MouseAction_RubberBand {View 1} {140} {224} {387} {356} {0} {0}  [Aug 21, 2014 3:11:47 PM]
+# Argument: line
+# Returns: (nothing)
+
+sub ProcessCmd {
+  my $line = shift(@_);
+
+  # Note: we don't have to deal with "old format" lines that don't
+  # have the client ID, because session open lines are the only ones
+  # in that format.
+  if ($line =~ /(\S*) \((\d+)\): (\w*)( \{.*\})*\s*\[(.*)\]/) {
+    print "\ncmd line = $line" if ($debug >= 2);
+
+    my $host = $1;
+    my $clientId = $2;
+    my $cmd = $3;
+    my $time = $5;
+
+    # Don't count heartbeats, open and close session.
+    if ($cmd eq "JAVAC_HeartBeat") { return; }
+    if ($cmd eq "JAVAC_OpenSession") { return; }
+    if ($cmd eq "JAVAC_CloseCurrentSession") { return; }
+    #TEMPTEMP -- any others to skip?
+
+    print "host = $host\n" if ($debug >= 1);
+    print "clientId = $clientId\n" if ($debug >= 1);
+    print "cmd = $cmd\n" if ($debug >= 1);
+    print "args = $4\n" if ($debug >= 1);#TEMPTEMP
+    print "time = $time\n" if ($debug >= 1);
+
+    my $sessionCat = $clientIds{$clientId};
+    print "sessionCat = $sessionCat\n" if ($debug >= 1);
+    if ($sessionCat ne '') {
+      $cmdCounts{$sessionCat}++;
+    }
+
+  }
+
+
 }
 
 #-----------------------------------------------------------
@@ -300,86 +392,15 @@ sub ParseLine {
 }
 
 #-----------------------------------------------------------
-# Processes a line if that line contains session open information.
-# Client connection lines are of the form:
-# pumori.cs.wisc.edu: JAVAC_OpenSession {DEViseSession/Demo/Bmrb3dPeptide}  [Sep 25, 2003 12:28:00 PM]
-# Argument: line
+# Increments correct session category open count given a session name
+# (file name).
+# Argument: session name (file name)
 # Returns: (nothing)
 
 sub CountSessionCats {
   my $session = shift(@_);
 
-  # Note:  Put most restrictive patterns first to avoid mis-counting
-  # (e.g., SPARTA (sd) before chem shift deltas (d)).
-  if ($session =~ /dna_histogram.ds$/) {
-    $sessionCats{'DNA histogram'}++;
-
-  } elsif ($session =~ /rna_histogram.ds$/) {
-    $sessionCats{'RNA histogram'}++;
-
-  } elsif ($session =~ /histogram2.ds$/) {
-    $sessionCats{'dual-protein histogram'}++;
-
-  } elsif ($session =~ /histogram.ds$/) {
-    $sessionCats{'single-protein histogram'}++;
-
-  } elsif ($session =~ /lacs\d+.ds$/) {
-    $sessionCats{'LACS'}++;
-
-  } elsif ($session =~ /distr\d+.ds$/) {
-    $sessionCats{'distance restraints'}++;
-
-  } elsif ($session =~ /tar\d+.ds$/) {
-    $sessionCats{'torsion angle restraints'}++;
-
-  } elsif ($session =~ /as\d+.ds$/) {
-    $sessionCats{'chem shift by AA/nucleotide'}++;
-
-  } elsif ($session =~ /am\d+.ds$/) {
-    $sessionCats{'ambiguity codes'}++;
-
-  } elsif ($session =~ /ac\d+.ds$/) {
-    $sessionCats{'atomic coordinates'}++;
-
-  } elsif ($session =~ /sd\d+.ds$/) {
-    $sessionCats{'SPARTA'}++;
-
-  } elsif ($session =~ /ps\d+.ds$/) {
-    $sessionCats{'Pistachio'}++;
-
-  } elsif ($session =~ /h[cn]\d+\+\d+.ds$/) {
-    $sessionCats{'two-entry simulated HSQC spectra'}++;
-
-  } elsif ($session =~ /h[cn]\d+.ds$/) {
-    $sessionCats{'simulated HSQC spectra'}++;
-
-  } elsif ($session =~ /t[12]\d+.ds$/) {
-    $sessionCats{'T1/T2 relaxation'}++;
-
-  } elsif ($session =~ /d\d+.ds$/) {
-    $sessionCats{'chem shift deltas'}++;
-
-  } elsif ($session =~ /c\d+.ds$/) {
-    $sessionCats{'chem shift index'}++;
-
-  } elsif ($session =~ /p\d+.ds$/) {
-    $sessionCats{'percent assigned'}++;
-
-  } elsif ($session =~ /g\d+.ds$/) {
-    $sessionCats{'coupling constants'}++;
-
-  } elsif ($session =~ /n\d+.ds$/) {
-    $sessionCats{'heteronuclear NOE'}++;
-
-  } elsif ($session =~ /o\d+.ds$/) {
-    $sessionCats{'S2 order parameters'}++;
-
-  } elsif ($session =~ /s2p\d+-\d+.ds$/) {
-    $sessionCats{'S2 predicted vs. experimental'}++;
-
-  } else {
-    $sessionCats{'other/unknown'}++;
-  }
+  $sessionCats{GetSessionCat($session)}++;
 }
 
 #-----------------------------------------------------------
@@ -490,6 +511,87 @@ sub TimeToStr {
 }
 
 #-----------------------------------------------------------
+# Gets a session category from the session (file) name.
+# Argument: session name (file name)
+# Returns: session category
+
+sub GetSessionCat {
+  my $session = shift(@_);
+
+  # Note:  Put most restrictive patterns first to avoid mis-counting
+  # (e.g., SPARTA (sd) before chem shift deltas (d)).
+  if ($session =~ /dna_histogram.ds$/) {
+    return 'DNA histogram';
+
+  } elsif ($session =~ /rna_histogram.ds$/) {
+    return 'RNA histogram';
+
+  } elsif ($session =~ /histogram2.ds$/) {
+    return 'dual-protein histogram';
+
+  } elsif ($session =~ /histogram.ds$/) {
+    return 'single-protein histogram';
+
+  } elsif ($session =~ /lacs\d+.ds$/) {
+    return 'LACS';
+
+  } elsif ($session =~ /distr\d+.ds$/) {
+    return 'distance restraints';
+
+  } elsif ($session =~ /tar\d+.ds$/) {
+    return 'torsion angle restraints';
+
+  } elsif ($session =~ /as\d+.ds$/) {
+    return 'chem shift by AA/nucleotide';
+
+  } elsif ($session =~ /am\d+.ds$/) {
+    return 'ambiguity codes';
+
+  } elsif ($session =~ /ac\d+.ds$/) {
+    return 'atomic coordinates';
+
+  } elsif ($session =~ /sd\d+.ds$/) {
+    return 'SPARTA';
+
+  } elsif ($session =~ /ps\d+.ds$/) {
+    return 'Pistachio';
+
+  } elsif ($session =~ /h[cn]\d+\+\d+.ds$/) {
+    return 'two-entry simulated HSQC spectra';
+
+  } elsif ($session =~ /h[cn]\d+.ds$/) {
+    return 'simulated HSQC spectra';
+
+  } elsif ($session =~ /t[12]\d+.ds$/) {
+    return 'T1/T2 relaxation';
+
+  } elsif ($session =~ /d\d+.ds$/) {
+    return 'chem shift deltas';
+
+  } elsif ($session =~ /c\d+.ds$/) {
+    return 'chem shift index';
+
+  } elsif ($session =~ /p\d+.ds$/) {
+    return 'percent assigned';
+
+  } elsif ($session =~ /g\d+.ds$/) {
+    return 'coupling constants';
+
+  } elsif ($session =~ /n\d+.ds$/) {
+    return 'heteronuclear NOE';
+
+  } elsif ($session =~ /o\d+.ds$/) {
+    return 'S2 order parameters';
+
+  } elsif ($session =~ /s2p\d+-\d+.ds$/) {
+    return 'S2 predicted vs. experimental';
+
+  } else {
+    return 'other/unknown';
+  }
+}
+
+#-----------------------------------------------------------
 # Print the results.
 # Arguments: (none)
 # Returns: (nothing)
@@ -516,7 +618,9 @@ sub PrintResults {
   print "\nSession category counts (\"real\" only):\n";
   my $sessCat;
   foreach $sessCat (sort { $sessionCats{$b} <=> $sessionCats{$a} } keys %sessionCats) {
-    printf "%4d %s\n", $sessionCats{$sessCat}, $sessCat;
+    my $avgCmds = $cmdCounts{$sessCat} / $sessionCats{$sessCat};
+    printf "%4d %s (%d commands: %d per open)\n", $sessionCats{$sessCat},
+      $sessCat, $cmdCounts{$sessCat}, $avgCmds;
   }
 
   print "\nClient host info (number of session opens, host):\n";

@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  2014/08/19 21:38:33  wenger
+#  Okay, fixed client 0 stuff showing up.
+#
 #  Revision 1.3  2014/08/19 21:33:11  wenger
 #  Oops -- typo in previous commit.
 #
@@ -43,6 +46,7 @@
 #TEMPTEMP -- do I need to filter out certain commands or command
 #  sequences, such as resize?
 #TEMPTEMP -- what about commands that come in while you don't have a session open?  should we count those at all?
+#TEMPTEMP -- maybe I don't want to keep stats individually for each client/session combo -- maybe just count session opens and commands for each session type...  -- make a subroutine that translates session name to session category?  Hmm -- then we just have to store the current session (or just session category?) for each client...
 
 use strict;
 use Time::Local;
@@ -132,6 +136,8 @@ if ($idStr eq "all") {
 } else {
   $filename = "logs/jspop.out.$idStr*";
 }
+#TEMPTEMP -- process older files first?? can clients exist across files?
+#ah, shit -- files can get rewound
 my @files = glob($filename);
 print "Files: @files\n" if ($debug >= 1);
 
@@ -147,6 +153,7 @@ foreach $file (@files) {
   while ($line = <DATA_IN>) {
     print "line = $line" if ($debug >= 3);
 
+    #TEMPTEMP -- maybe skip further processing if we match...
     #
     # Process client connection lines.
     #
@@ -156,6 +163,7 @@ foreach $file (@files) {
     # Process session open lines.
     #
     ProcessOpen($line);
+    #TEMPTEMP -- we need to process close commands, too
 
     #
     # Process client command lines.
@@ -176,8 +184,6 @@ PrintResults();
 #   "Client from localhost is added ... [27-Jul-01 9:02:53 AM]"
 # Argument: line
 # Returns: (nothing)
-
-#TEMPTEMP -- need to get corresponding client ID here -- from previous line
 
 sub ProcessConnect {
   my $line = shift(@_);
@@ -253,14 +259,19 @@ sub ProcessOpen {
   my $line = shift(@_);
 
   #TEMPTEMP -- need to get client here
-  if ($line =~ /Received.*JAVAC_OpenSession {(.*)}.*\[(.*)\]/) {
+  #TEMPTEMP if ($line =~ /Received command from client\((\d*)\) :  "(\w+).*\[(.*)\]/) {
+  if ($line =~ /Received command from client\((\d*)\) :  "JAVAC_OpenSession \{(.*)\}.*\[(.*)\]/) {
     print "open line = $line" if ($debug >= 2);
 
-    my $session = $1;
-    my $time = $2;
+    my $client = $1;
+    my $session = $2;
+    my $time = $3;
+    my $sessionCat = GetSessionCat($session);
 
+    print "  client = $client\n" if ($debug >= 1);
     print "  session = $session\n" if ($debug >= 1);
     print "  time = $time\n" if ($debug >= 1);
+    print "  sessionCat = $sessionCat\n" if ($debug >= 1);
 
     my $openTime = StrToTime($time);
 
@@ -287,21 +298,47 @@ sub ProcessOpen {
 # Argument: line
 # Returns: (nothing)
 
+# TEMPTEMP -- why doesn't host for 1187753760 show up?  Ah -- I think connect is outside specified time, and some commands aren't?  Or I'm not checking the commands yet?  Okay, it is the time selection
+
 sub ProcessCmd {
   my $line = shift(@_);
 
   #TEMPTEMP -- add more stuff below
-  if ($line =~ /Received command from client\((\d*)\) :  "(\w+)/) {
+  if ($line =~ /Received command from client\((\d*)\) :  "(\w+).*\[(.*)\]/) {
     print "cmd line = $line" if ($debug >= 2);
 
     my $client = $1;
     my $cmd = $2;
+    my $time = $3;
 
     print "  client = $client\n" if ($debug >= 1);
     print "  cmd = $cmd\n" if ($debug >= 1);
 
+    my $cmdTime = StrToTime($time);
+
+    # Don't count connection requests as commands.
     if ($client eq 0) { return; }
 
+    # Don't count heartbeats, open and close session.
+    if ($cmd eq "JAVAC_HeartBeat") { return; }
+    if ($cmd eq "JAVAC_OpenSession") { return; }
+    if ($cmd eq "JAVAC_CloseCurrentSession") { return; }
+    #TEMPTEMP -- should we also skip session opens here??
+
+    # Don't count commands outside our time range.
+    if ($cmdTime < $earliestTime || $cmdTime > $curTime) { return; }
+
+    # Update the earliest/latest times.
+    if ($cmdTime >= 0) {
+      if ($time1 == -1 || $cmdTime < $time1) {
+        $time1 = $cmdTime;
+      } 
+      if ($time2 == -1 || $cmdTime > $time2) {
+        $time2 = $cmdTime;
+      }
+    }
+
+    #TEMPTEMP -- maybe don't do anything here if client object doesn't exist?
     $clientIdList{$client}[1]++;
   }
 }
@@ -431,6 +468,107 @@ sub TimeToStr {
 
   my $dateStr = sprintf "%4d-%.2d-%.2d", $year, $mon+1, $mday;
   return $dateStr;
+}
+
+#-----------------------------------------------------------
+# Processes a line if that line contains new client ID.
+# New client ID lines are of the form:
+#     New client ID: 1190447062 [Aug 8, 2014 4:54:54 PM]
+# Argument: line
+# Returns: client ID
+
+sub ProcessNewClient {
+  my $line = shift(@_);
+
+  if ($line =~ /New client ID: (\d*)/) {
+    print "line = $line" if ($debug >= 2);
+
+    my $clientId = $1;
+
+    print "client ID = $clientId" if ($debug >= 2);
+
+  }
+}
+
+#-----------------------------------------------------------
+# Gets a session category from the session (file) name.
+# Argument: session name (file name)
+# Returns: session category
+
+sub GetSessionCat {
+  my $session = shift(@_);
+
+  # Note:  Put most restrictive patterns first to avoid mis-counting
+  # (e.g., SPARTA (sd) before chem shift deltas (d)).
+  if ($session =~ /dna_histogram.ds$/) {
+    return 'DNA histogram';
+
+  } elsif ($session =~ /rna_histogram.ds$/) {
+    return 'RNA histogram';
+
+  } elsif ($session =~ /histogram2.ds$/) {
+    return 'dual-protein histogram';
+
+  } elsif ($session =~ /histogram.ds$/) {
+    return 'single-protein histogram';
+
+  } elsif ($session =~ /lacs\d+.ds$/) {
+    return 'LACS';
+
+  } elsif ($session =~ /distr\d+.ds$/) {
+    return 'distance restraints';
+
+  } elsif ($session =~ /tar\d+.ds$/) {
+    return 'torsion angle restraints';
+
+  } elsif ($session =~ /as\d+.ds$/) {
+    return 'chem shift by AA/nucleotide';
+
+  } elsif ($session =~ /am\d+.ds$/) {
+    return 'ambiguity codes';
+
+  } elsif ($session =~ /ac\d+.ds$/) {
+    return 'atomic coordinates';
+
+  } elsif ($session =~ /sd\d+.ds$/) {
+    return 'SPARTA';
+
+  } elsif ($session =~ /ps\d+.ds$/) {
+    return 'Pistachio';
+
+  } elsif ($session =~ /h[cn]\d+\+\d+.ds$/) {
+    return 'two-entry simulated HSQC spectra';
+
+  } elsif ($session =~ /h[cn]\d+.ds$/) {
+    return 'simulated HSQC spectra';
+
+  } elsif ($session =~ /t[12]\d+.ds$/) {
+    return 'T1/T2 relaxation';
+
+  } elsif ($session =~ /d\d+.ds$/) {
+    return 'chem shift deltas';
+
+  } elsif ($session =~ /c\d+.ds$/) {
+    return 'chem shift index';
+
+  } elsif ($session =~ /p\d+.ds$/) {
+    return 'percent assigned';
+
+  } elsif ($session =~ /g\d+.ds$/) {
+    return 'coupling constants';
+
+  } elsif ($session =~ /n\d+.ds$/) {
+    return 'heteronuclear NOE';
+
+  } elsif ($session =~ /o\d+.ds$/) {
+    return 'S2 order parameters';
+
+  } elsif ($session =~ /s2p\d+-\d+.ds$/) {
+    return 'S2 predicted vs. experimental';
+
+  } else {
+    return 'other/unknown';
+  }
 }
 
 #-----------------------------------------------------------
