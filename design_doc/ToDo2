@@ -396,6 +396,9 @@ Add timestamp to jar files (see
 http://docs.oracle.com/javase/7/docs/technotes/guides/security/time-of-signing.html).
 (Done by wenger, 5/14/14.)
 
+14.005 140825	OPEN	4
+Make a JavaScreen install target to do a server-only install. (wenger)
+
 (add stuff from old to-do list?)
 (add stuff from my to-do list)
 
