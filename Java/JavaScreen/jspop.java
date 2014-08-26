@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.82  2009/08/28 15:59:39  wenger
+// Minor code cleanups.
+//
 // Revision 1.81  2005/12/06 20:00:24  wenger
 // Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 // be the end of the V1_7b0_br branch.)
@@ -695,8 +698,9 @@ public class jspop implements Runnable
 	String usageLogFile = "logs/jspop.usage." + _popId;
 	try {
 	    // Note: we should probably eventually have command-line arguments
-	    // to specify the sizes here.
-	    _usageLog = new CircularLog(usageLogFile, 1000000, 1000);
+	    // to specify the sizes here.  Size 0 means don't rotate
+	    // this log.
+	    _usageLog = new CircularLog(usageLogFile, 0, 1000);
 	    _usageLog.setAppendTime(true);
 	} catch (IOException ex) {
 	    System.err.println("Unable open file: " + usageLogFile +

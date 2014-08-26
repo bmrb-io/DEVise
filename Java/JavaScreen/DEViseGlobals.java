@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.164  2014/05/30 16:31:31  wenger
+// Changed JavaScreen version to 5.14.5x0.
+//
 // Revision 1.163  2014/05/23 19:03:58  wenger
 // Changed version to 5.14.4 for release.
 //
@@ -1021,7 +1024,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.5x0"/*TEMP*/);
+    public static final String VERSION = new String("5.14.5x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.0");
 

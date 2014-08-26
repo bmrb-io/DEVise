@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2004
+// (c) Copyright 2003-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2005/12/06 20:00:15  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.1.2.3  2004/09/29 19:08:33  wenger
 // Merged jspop_debug_0405_br_2 thru jspop_debug_0405_br_4 to the
 // V1_7b0_br branch.
@@ -75,7 +79,7 @@ public class CircularLog
 
     private static CircularLog _log;
 
-    private int _maxSize;
+    private int _maxSize; // 0 means no limit
     private int _prologSize;
     private RandomAccessFile _outFile;
     private boolean _appendTime = false;
@@ -134,7 +138,7 @@ public class CircularLog
 	      ", " + maxSize + ", " + prologSize + ")");
 	}
 
-	if (prologSize >= maxSize) {
+	if (maxSize > 0 && prologSize >= maxSize) {
 	    throw new IllegalArgumentException("Prolog size must be less " +
 	      "than maximum size");
 	}
@@ -339,7 +343,7 @@ public class CircularLog
     private void checkSize()
     {
 	try {
-            if (_outFile.getFilePointer() > _maxSize) {
+            if (_maxSize > 0 && _outFile.getFilePointer() > _maxSize) {
 		_outFile.writeBytes("-REWIND-[" + currentTimeString() + "]");
 	        _outFile.seek(_prologSize);
 	        _outFile.writeBytes("\n\n--------------- LOG REWOUND (" +

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2012
+// (c) Copyright 1999-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.83  2012/04/30 22:20:18  wenger
+// Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+//
 // Revision 1.82.16.3  2012/04/27 16:46:01  wenger
 // Cleaned up a bunch of temporary/debug code.
 //
@@ -1024,6 +1027,14 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	      ").processClientCmd(" + clientCmd + ")");
 	}
 
+	// Log this command to the usage log.  Note:  client heartbeats
+	// and some other commands are consumed in DEViseClient before
+	// they get here.
+	if (client != null) {
+            pop.logUsage(client.hostname + " (" + client.ID + "): " +
+	      clientCmd);
+	}
+	 
         if (clientCmd.startsWith(DEViseCommands.PROTOCOL_VERSION)) {
 	    cmdProtocolVersion(clientCmd);
 
@@ -1279,9 +1290,6 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
             String p = cmds[1].substring(14);
 
             client.sessionName = p;
-
-	    // Log session open to the usage log.
-            pop.logUsage(client.hostname + ": " + clientCmd);
 
             boolean error = false;
             if (client.screenDimX > 0 && client.screenDimY > 0 &&

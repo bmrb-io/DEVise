@@ -14,11 +14,19 @@
 
 #  This script gets JavaScreen usage statistics.
 
+#TEMPTEMP -- what about session opens from before the update?  They'll count as opens but not have command counts -- hmm -- maybe only do category counts for opens with client id?
+
 ############################################################
 
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  2014/08/24 02:41:37  wenger
+#  Per-session command counts are now mostly working (with JSPoP changes
+#  to usage log file, not yet committed); still a bunch of temporary code
+#  in place.  Also, I'm committing half-working stuff in get_stats_detailed
+#  that I did before I remembered that the "main" JSPoP log gets rotated.
+#
 #  Revision 1.4  2014/08/06 18:32:28  wenger
 #  Changed JavaScreen usage script to report usage by session categories
 #  for BMRB.
