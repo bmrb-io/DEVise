@@ -14,13 +14,19 @@
 
 #  This script gets JavaScreen usage statistics.
 
-#TEMPTEMP -- what about session opens from before the update?  They'll count as opens but not have command counts -- hmm -- maybe only do category counts for opens with client id?
+#  Note:  If this is run on "mixed" usage files (some with client IDs/
+#  command counts and some without) the command averages per session
+#  category won't be accurate.
 
 ############################################################
 
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  2014/08/26 20:41:05  wenger
+#  JS command counts:  Committing the changes to log commands to the
+#  usage log file.
+#
 #  Revision 1.5  2014/08/24 02:41:37  wenger
 #  Per-session command counts are now mostly working (with JSPoP changes
 #  to usage log file, not yet committed); still a bunch of temporary code
@@ -89,7 +95,7 @@
 use strict;
 use Time::Local;
 
-my $debug = 2; # 0-3#TEMPTEMP
+my $debug = 0; # 0-3
 my $version = "3.3.0";
 
 my $usage = "Usage: get_stats [idStr [period [curTime]]] | -usage | -version
@@ -179,16 +185,15 @@ if ($#pidFiles < 0) {
 #
 # Initialize various counts and lists.
 #
-#TEMPTEMP -- change some of these names?
 my $openCount = 0;
 # realOpenCount is the number of session opens from hosts other than
 # localhost, *.cs.wisc.edu and *.bmrb.wisc.edu.
 my $realOpenCount = 0;
-my %hostList = ();
-my %sessionList = ();
-my %sessionCats = (); # sessionCat -> openCount
+my %hostList = (); # hostName -> openCount
+my %sessionOpens = (); # sessionName -> openCount
+my %sessionCatCounts = (); # sessionCat -> openCount
 my %cmdCounts = (); # sessionCat -> cmdCount
-my %clientIds = (); # maps client IDs to session types
+my %sessionCats = (); # clientId -> sessionCat
 my $time1 = -1; # Earliest time of data.
 my $time2 = -1; # Latest time of data.
 
@@ -266,7 +271,6 @@ sub ProcessOpen {
     my $openTime = StrToTime($time);
     print "openTime = $openTime\n" if ($debug >= 1);
 
-    #TEMPTEMP -- what about sessions that are opened before earliestTime but get commands after earliestTime?
     if ($openTime >= $earliestTime && $openTime <= $curTime) {
       if ($openTime >= 0) {
         if ($time1 == -1 || $openTime < $time1) {
@@ -278,29 +282,28 @@ sub ProcessOpen {
       }
 
       $openCount++;
-      $sessionList{$session}++;
+      $sessionOpens{$session}++;
 
       # Doing counts here will include sessions opened from BMRB and CS.
-      # CountSessionCats($session);
+      # $sessionCatCounts{GetSessionCat($session)}++;
 
       $hostList{$host}++;
 
-      #TEMPTEMP if ($host =~ /localhost.*/) {
+      if ($host =~ /localhost.*/) {
         # Intentional no-op.
-      #TEMPTEMP } elsif ($host =~ /.*\.cs\.wisc\.edu/) {
+      } elsif ($host =~ /.*\.cs\.wisc\.edu/) {
         # Intentional no-op.
-      #TEMPTEMP } elsif ($host =~ /.*\.bmrb\.wisc\.edu/) {
+      } elsif ($host =~ /.*\.bmrb\.wisc\.edu/) {
         # Intentional no-op.
-      #TEMPTEMP } else {
+      } else {
         $realOpenCount++;
-        CountSessionCats($session);
-	#TEMPTEMP -- assign session cat to client ID
 	my $sessionCat = GetSessionCat($session);
         print "sessionCat = $sessionCat\n" if ($debug >= 1);
+        $sessionCatCounts{$sessionCat}++;
 	if ($clientId ne '') {
-	  $clientIds{$clientId} = $sessionCat;
+	  $sessionCats{$clientId} = $sessionCat;
 	}
-      #TEMPTEMP }
+      }
     }
   }
 }
@@ -328,7 +331,7 @@ sub ProcessClose {
     print "time = $time\n" if ($debug >= 1);
 
     if ($clientId ne '') {
-      $clientIds{$clientId} = '';
+      $sessionCats{$clientId} = '';
     }
   }
 }
@@ -350,23 +353,27 @@ sub ProcessCmd {
     print "\ncmd line = $line" if ($debug >= 2);
 
     my $host = $1;
-    my $clientId = $2;
+    my $clientId = $2; # This is the only thing we really care about
     my $cmd = $3;
+    my $args = $4;
     my $time = $5;
 
     # Don't count heartbeats, open and close session.
     if ($cmd eq "JAVAC_HeartBeat") { return; }
     if ($cmd eq "JAVAC_OpenSession") { return; }
     if ($cmd eq "JAVAC_CloseCurrentSession") { return; }
-    #TEMPTEMP -- any others to skip?
 
     print "host = $host\n" if ($debug >= 1);
     print "clientId = $clientId\n" if ($debug >= 1);
     print "cmd = $cmd\n" if ($debug >= 1);
-    print "args = $4\n" if ($debug >= 1);#TEMPTEMP
+    print "args = $args\n" if ($debug >= 1);
     print "time = $time\n" if ($debug >= 1);
 
-    my $sessionCat = $clientIds{$clientId};
+    # Note: we don't worry about the time here, because if the client's
+    # current session (if there is one) was opened before $earliestTime,
+    # the client's sessionCat should be '' so we won't do anything below...
+
+    my $sessionCat = $sessionCats{$clientId};
     print "sessionCat = $sessionCat\n" if ($debug >= 1);
     if ($sessionCat ne '') {
       $cmdCounts{$sessionCat}++;
@@ -397,18 +404,6 @@ sub ParseLine {
   my @results;
   @results = ($client, $date);
   return @results;
-}
-
-#-----------------------------------------------------------
-# Increments correct session category open count given a session name
-# (file name).
-# Argument: session name (file name)
-# Returns: (nothing)
-
-sub CountSessionCats {
-  my $session = shift(@_);
-
-  $sessionCats{GetSessionCat($session)}++;
 }
 
 #-----------------------------------------------------------
@@ -625,9 +620,9 @@ sub PrintResults {
 
   print "\nSession category counts (\"real\" only):\n";
   my $sessCat;
-  foreach $sessCat (sort { $sessionCats{$b} <=> $sessionCats{$a} } keys %sessionCats) {
-    my $avgCmds = $cmdCounts{$sessCat} / $sessionCats{$sessCat};
-    printf "%4d %s (%d commands: %d per open)\n", $sessionCats{$sessCat},
+  foreach $sessCat (sort { $sessionCatCounts{$b} <=> $sessionCatCounts{$a} } keys %sessionCatCounts) {
+    my $avgCmds = $cmdCounts{$sessCat} / $sessionCatCounts{$sessCat};
+    printf "%4d %s (%d commands: %d per open)\n", $sessionCatCounts{$sessCat},
       $sessCat, $cmdCounts{$sessCat}, $avgCmds;
   }
 
@@ -639,8 +634,8 @@ sub PrintResults {
 
   print "\nSession info (number of opens, session):\n";
   my $session;
-  foreach $session (sort { $sessionList{$b} <=> $sessionList{$a} }
-    keys %sessionList) {
-    printf "%4d %s\n", $sessionList{$session}, $session;
+  foreach $session (sort { $sessionOpens{$b} <=> $sessionOpens{$a} }
+    keys %sessionOpens) {
+    printf "%4d %s\n", $sessionOpens{$session}, $session;
   }
 }
