@@ -374,6 +374,10 @@ perform, how long between session open and last action on that session,
 etc. (miron/wenger)
 (Done by wenger, 8/27/14)
 
+13.008 8/27/14	OPEN	2
+Change get_stats to take an argument for whether to report all or "real"
+stats; then cron job can run it once each way. (wenger)
+
 ...........................................................................
 SECTION 14 (release/distribution)
 Number Date	Status  Pri
