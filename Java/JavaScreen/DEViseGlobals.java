@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.165  2014/08/26 20:41:01  wenger
+// JS command counts:  Committing the changes to log commands to the
+// usage log file.
+//
 // Revision 1.164  2014/05/30 16:31:31  wenger
 // Changed JavaScreen version to 5.14.5x0.
 //
@@ -1024,7 +1028,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.5x1"/*TEMP*/);
+    public static final String VERSION = new String("5.14.5");
 
     public static final String PROTOCOL_VERSION = new String("17.0");
 
