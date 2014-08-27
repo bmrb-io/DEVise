@@ -40,6 +40,8 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 
     - Make sure JavaScreen help version matches the actual software.
 
+    - Put in release date in JavaScreen help.
+
     - Run "autotest all" in the JS directory.
 
     - Test the new DEVise/JSPoP with the standard Peptide-CGI release
