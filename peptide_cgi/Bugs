@@ -723,6 +723,13 @@ Num Date        Status  Description
 			find the 2.1 file for the second (-xbmrbid) entry
 			if the 3.1 file doesn't exist. (wenger)
 
+159 9/17/14	OPEN	S2p (S2 predicted vs. experimental) visualizations
+			are often not correctly generated.  (For example,
+			go to entry 5991 -- the s2p visualization shows
+			up in the summary page menu, but when you select
+			it the page doesn't exist.)  Clicking the "Force
+			Reprocessing" button normally fixes it. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
