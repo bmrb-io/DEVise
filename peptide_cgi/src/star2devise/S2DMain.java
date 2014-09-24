@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.359  2014/07/30 21:47:12  wenger
+// Merged s2d_todo207_br_0 thru s2d_todo207_br_1 to trunk.
+//
 // Revision 1.358  2014/07/08 19:13:06  wenger
 // Fixed Peptide-CGI bug 153 (test_s2p5 fails on pacu); also fixed a bug
 // in reading bmrb_mirror.dssp_file_url property.
@@ -1084,7 +1087,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.4x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.4x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
