@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.87  2013/09/20 16:54:08  wenger
+  Merged devise_1_11_3_centos6_br_2 thru devise_1_11_3_centos6_br_3 to trunk.
+
   Revision 1.86  2013/06/13 22:03:15  wenger
   Merged devise_1_11_3_centos6_br_0 thru devise_1_11_3_centos6_br_2 to trunk.
 
@@ -731,7 +734,8 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	  // Run an external process to generate data if necessary.
 	  //
 	  if (map->HasShapeAttr(5)) {
-	    ExtProc::GetInstance()->Run(map, (const char *)gdataArray[i]);
+	    ExtProc::GetInstance()->Run(map, (const char *)gdataArray[i],
+		  view->GetVisualFilter());
 	  }
 	}
 

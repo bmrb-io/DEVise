@@ -19,6 +19,8 @@ RECTX - proportional rectangle
         7) argument 1 (optional)
           ...
         14) argument 8 (optional)
+        ($filter_xlo, $filter_xhi, $filter_ylo, $filter_yhi substitute
+        visual filter values)
 
 BAR - vertical bar (as in a bar graph)
     Shape value: 2

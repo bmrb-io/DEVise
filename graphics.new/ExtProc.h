@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2001
+  (c) Copyright 2001-2014
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -28,6 +28,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  2001/04/27 17:09:43  wenger
+  Made various cleanups to external process dynamic data generation and
+  added most GUI (still need special GUI for creating the data source);
+  cleanups included finding and fixing bug 668.
+
   Revision 1.1  2001/04/12 20:16:30  wenger
   First phase of external process dynamic data generation is in place
   for RectX symbols (needs GUI and some cleanup); added the ability to
@@ -45,15 +50,19 @@
 #include "DevStatus.h"
 
 class TDataMap;
+class VisualFilter;
 
 class ExtProc {
 public:
   static ExtProc *GetInstance();
 
-  DevStatus Run(TDataMap *map, const char *gdataRecP);
+  DevStatus Run(TDataMap *map, const char *gdataRecP,
+    const VisualFilter *filter);
 
 private:
   ExtProc();
+
+  const char *TranslateArg(const char *arg, const VisualFilter *filter);
 };
 
 #endif // _ExtProc_h_

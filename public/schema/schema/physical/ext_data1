@@ -2,4 +2,4 @@ type ext_data1 ascii
 comment #
 whitespace '	'
 
-attr name string 15
+attr name string 25

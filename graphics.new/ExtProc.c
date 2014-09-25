@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2001-2003
+  (c) Copyright 2001-2014
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  2005/12/06 20:03:59  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.3.10.1  2003/05/13 18:06:06  wenger
   Added command-line argument to disable external-process capability
   (for security), defaults to being disabled in JavaScreen support;
@@ -54,6 +58,7 @@
 #include "Util.h"
 #include "DevError.h"
 #include "Init.h"
+#include "VisualArg.h"
 
 #define DEBUG 0
 
@@ -87,7 +92,7 @@ ExtProc::GetInstance()
 //-----------------------------------------------------------------------------
 // Run the external process corresponding to a given GData record.
 DevStatus
-ExtProc::Run(TDataMap *map, const char *gdataRecP)
+ExtProc::Run(TDataMap *map, const char *gdataRecP, const VisualFilter *filter)
 {
 #if (DEBUG >= 1)
   printf("ExtProc::Run()\n");
@@ -158,7 +163,9 @@ ExtProc::Run(TDataMap *map, const char *gdataRecP)
       // Get the other arguments.
       for (index = firstArgIndex + 2; index < firstArgIndex + attrCount;
           index++) {
-        args.AddArg(map->GetShapeAttrAsStr(gdataRecP, index));
+		const char *arg = map->GetShapeAttrAsStr(gdataRecP, index);
+		arg = TranslateArg(arg, filter);
+        args.AddArg(arg);
       }
 
       args.AddArg(NULL); // for execvp()
@@ -196,6 +203,34 @@ ExtProc::Run(TDataMap *map, const char *gdataRecP)
         }
       }
     }
+  }
+
+  return result;
+}
+
+const char *
+ExtProc::TranslateArg(const char *arg, const VisualFilter *filter)
+{
+  const char *result = NULL;
+  static char buf[64];
+
+  double value;
+  if (!strcmp(arg, "$filter_xlo")) {
+    value = filter->xLow;
+  } else if (!strcmp(arg, "$filter_xhi")) {
+    value = filter->xHigh;
+  } else if (!strcmp(arg, "$filter_ylo")) {
+    value = filter->yLow;
+  } else if (!strcmp(arg, "$filter_yhi")) {
+    value = filter->yHigh;
+  } else {
+    result = arg;
+  }
+
+  if (!result) {
+	int formatted = snprintf(buf, sizeof(buf), "%g", value);
+	checkAndTermBuf2(buf, formatted);
+    result = buf;
   }
 
   return result;

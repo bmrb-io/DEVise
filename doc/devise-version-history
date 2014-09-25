@@ -3,6 +3,10 @@
 DEVise 1.11.5
 -------------
 
+* Modified the external process code to enable passing of visual
+filter values as arguments to the external process (see the mapping
+help for details).
+
 * Fixed more possible buffer overflows.
 
 
