@@ -90,6 +90,9 @@ Allow 2 X axes per view (top and bottom). (wavelet)
 05.002 4/4/13	OPEN	?
 Allow relative margins for home settings. (wenger)
 
+05.003 10/01/14 OPEN	4
+Add modulus to mapping expressions.
+
 ...........................................................................
 SECTION 06 (DEVise, data sources)
 Number Date	Status  Pri
