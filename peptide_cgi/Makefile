@@ -91,7 +91,6 @@ do_testsetup:
 	mkdir test_html/uvd
 	cd test_html/uvd; ln -s ../../html/*.css .
 	cd test_data; ln -s ../prototype/data/*.dat .
-	cd test_session; ln -s ../prototype/session/*.ds .
 
 peaklist_setup:
 	chmod g+rwx cgi-bin
@@ -194,6 +193,7 @@ dev_test:
 	cd dev_test/session; ln -s ../../test_session bmrb
 	cd dev_test/session; ln -s ../../session_templates .
 	cd dev_test/session; ln -s ../../histograms/session histograms
+	cd dev_test/session; ln -s ../../prototype/session prototype
 	mkdir dev_test/cache
 
 dev_testclean:
