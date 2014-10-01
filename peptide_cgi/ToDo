@@ -849,7 +849,7 @@ Num Date        Status  Pri     Description
 				to actually see a visualization. (wenger)
 				(Done by wenger, 3/14/13)
 
-191 10/2/13	OPEN	1	Add a view with the sequence (single letters)
+191 10/2/13	ACTIVE	1	Add a view with the sequence (single letters)
 				plus X axis to the H/N and H/C simulated
 				spetra visualizations; cursor in the new
 				view should allow selection of a residue
