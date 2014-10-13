@@ -9,7 +9,7 @@
 
 # $Id$
 
-type ResCount ascii
+type ResList ascii
 comment #
 whitespace '	'
 attr Entity_assembly_ID int

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.360  2014/09/24 18:35:26  wenger
+// Fixed the s2predict link on the "S2 Predicted vs. Experimental Values"
+// help page.
+//
 // Revision 1.359  2014/07/30 21:47:12  wenger
 // Merged s2d_todo207_br_0 thru s2d_todo207_br_1 to trunk.
 //
@@ -1087,7 +1091,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.4x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.4x2.3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 

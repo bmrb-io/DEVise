@@ -64,7 +64,7 @@ DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShif
 DEVise dteInsertCatalogEntry . {"15083d3" UNIXFILE 15083d3.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb-DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"15083c3" UNIXFILE 15083c3.dat Csi $DEVISE_SCHEMA/physical/bmrb-Csi "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"15083p3" UNIXFILE 15083p3.dat ChemShiftPercentage $DEVISE_SCHEMA/physical/bmrb-Percent "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"15083rl" UNIXFILE 15083rl.dat ResCount $DEVISE_SCHEMA/physical/bmrb-ResList "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083rl" UNIXFILE 15083rl.dat ResList $DEVISE_SCHEMA/physical/bmrb-ResList "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4096as1" UNIXFILE 4096as1.dat AllShift $DEVISE_SCHEMA/physical/bmrb-AllShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4096rc1" UNIXFILE 4096rc1.dat ResCount $DEVISE_SCHEMA/physical/bmrb-ResCount "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4096c1" UNIXFILE 4096c1.dat Csi $DEVISE_SCHEMA/physical/bmrb-Csi "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}

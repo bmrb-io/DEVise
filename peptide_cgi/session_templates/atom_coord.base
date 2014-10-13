@@ -61,7 +61,7 @@ DEVise dteInsertCatalogEntry . {"4096ac1" UNIXFILE 4096ac1.dat bmrb-atom_coord $
 DEVise dteInsertCatalogEntry . {"4096md" UNIXFILE 4096md.dat bmrb-summary $DEVISE_SCHEMA/physical/bmrb-summary "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4096as1" UNIXFILE 4096as1.dat AllShift $DEVISE_SCHEMA/physical/bmrb-AllShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4096rc1" UNIXFILE 4096rc1.dat ResCount $DEVISE_SCHEMA/physical/bmrb-ResCount "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4096rl1" UNIXFILE 4096rl1.dat ResCount $DEVISE_SCHEMA/physical/bmrb-ResList "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4096rl1" UNIXFILE 4096rl1.dat ResList $DEVISE_SCHEMA/physical/bmrb-ResList "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4096c1" UNIXFILE 4096c1.dat Csi $DEVISE_SCHEMA/physical/bmrb-Csi "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4096d1" UNIXFILE 4096d1.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb-DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4096g1" UNIXFILE 4096g1.dat CouplingConstant $DEVISE_SCHEMA/physical/bmrb-CouplingConstant "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}

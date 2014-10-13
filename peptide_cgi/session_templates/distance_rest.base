@@ -61,7 +61,7 @@ DEVise dteInsertCatalogEntry . {"15209ac1" UNIXFILE 15209ac1.dat bmrb-jmol_atom_
 DEVise dteInsertCatalogEntry . {"15209distr-md1" UNIXFILE 15209distr-md1.dat bmrb-DistRestraintMeta $DEVISE_SCHEMA/physical/bmrb-DistRestraintMeta "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"15209distr1" UNIXFILE 15209distr1.dat bmrb-DistanceRestraint $DEVISE_SCHEMA/physical/bmrb-DistanceRestraint "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"15209distrc1" UNIXFILE 15209distrc1.dat bmrb-DistRestraintCounts $DEVISE_SCHEMA/physical/bmrb-DistRestraintCounts "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"15209rl" UNIXFILE 15209rl.dat ResCount $DEVISE_SCHEMA/physical/bmrb-ResList "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15209rl" UNIXFILE 15209rl.dat ResList $DEVISE_SCHEMA/physical/bmrb-ResList "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb-AxisLabel $DEVISE_SCHEMA/physical/bmrb-AxisLabel "" 100 50 "$DEVISE_DAT/bmrb" ""}
 DEVise dteInsertCatalogEntry . {"pistachio_at_legend" UNIXFILE pistachio_at_legend.dat bmrb-pistachio_legend $DEVISE_SCHEMA/physical/bmrb-pistachio_legend "" 100 50 "$DEVISE_DAT/bmrb" ""}
 DEVise dteInsertCatalogEntry . {"distr_legend" UNIXFILE distr_legend.dat bmrb-distr-legend $DEVISE_SCHEMA/physical/bmrb-distr-legend "" 100 50 "$DEVISE_DAT/bmrb" ""}
