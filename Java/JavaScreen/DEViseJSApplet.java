@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2012
+// (c) Copyright 2000-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  2012/04/30 22:20:17  wenger
+// Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+//
 // Revision 1.24.12.3  2012/04/30 20:39:37  wenger
 // (Hopefully final) cleanup.
 //
@@ -569,12 +572,15 @@ public abstract class DEViseJSApplet extends Applet
 	    jsValues.debug._logEnabled = false;
         }
 
+/*
         String useCgi = getParameter("usecgi");
         if (useCgi != null) {
             jsValues.connection.cgi = true;
         } else {
             jsValues.connection.cgi = false;
         }
+*/
+        jsValues.connection.cgi = true;
 
         String cgiUrl = getParameter("cgiurl");
         if (cgiUrl != null) {
