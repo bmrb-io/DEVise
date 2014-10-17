@@ -4592,6 +4592,8 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 1039 10/17/14	OPEN	JS:  When viewing the 4267ac1 page (at CS) attempting
 			to view help in a browser window results in a
 			failed link. (Hmm -- it works at BMRB, though.)
+			(This is trying to access the help via the JS
+			menu, not the link in the html page.)
 			(wenger)
 
 1040 10/17/14	OPEN	JS:  In socket mode, the JavaScreen client
