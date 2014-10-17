@@ -4582,6 +4582,22 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			not apparently that you can move the DEVise cursor.
 			(elu/wenger)
 
+1037 10/17/14	OPEN	Distribution setup still looks for teal. (wenger)
+
+1038 10/17/14	OPEN	JS:  When doing a client-only JavaScreen install
+			at Florence, the install script complained
+			(incorrectly) that the jar file was not signed.
+			(wenger)
+
+1039 10/17/14	OPEN	JS:  When viewing the 4267ac1 page (at CS) attempting
+			to view help in a browser window results in a
+			failed link. (Hmm -- it works at BMRB, though.)
+			(wenger)
+
+1040 10/17/14	OPEN	JS:  In socket mode, the JavaScreen client
+			entirely fails when running under Java
+			1.8.0_25. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
