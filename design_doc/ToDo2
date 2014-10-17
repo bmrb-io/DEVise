@@ -381,6 +381,23 @@ etc. (miron/wenger)
 Change get_stats to take an argument for whether to report all or "real"
 stats; then cron job can run it once each way. (wenger)
 
+13.009 10/17/14	OPEN	2
+We should have a better way to set defaults in the JavaScreen client.
+(For example, to change the default communication mode from socket to
+CGI, I just had to release a new version of the client with that change
+compiled in.  The only other alternative would have been to release
+a new version of Peptide-CGI, that changed the defaults in the html
+files, and to change all of the other html files.)  I think there's a
+way in Java for an applet to get a file from the same directory from
+which the jar file was loaded -- if that's true, we could put a little
+config file in that directory.  The individual html file should probably
+still be able to override things from that config file.
+(Also see 12.004.)
+
+13.010 10/17/14	OPEN	1
+Have the browser itself give an error message if the JavaScreen client
+fails (e.g., with socket problems with Java 1.8.). (miron/wenger)
+
 ...........................................................................
 SECTION 14 (release/distribution)
 Number Date	Status  Pri
