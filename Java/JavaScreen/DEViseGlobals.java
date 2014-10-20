@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.167  2014/10/16 21:52:47  wenger
+// JavaScreen applet now defaults to CGI communication mode instead of
+// socket mode (to bypass problems with sockets in Java JRE 1.8).
+//
 // Revision 1.166  2014/08/27 18:09:36  wenger
 // Changed JavaScreen version to 5.14.5 for release.
 //
@@ -1031,7 +1035,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.5.1");
+    public static final String VERSION = new String("5.14.6x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.0");
 
