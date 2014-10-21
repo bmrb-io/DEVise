@@ -1,0 +1,17 @@
+#! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+# Note: specific port number must NOT be specified in this script.
+
+# Run the JS client from a jar file, in CGI mode.
+
+############################################################
+
+setenv CLASSPATH devise_js.jar
+set javaexec = `cat bin2/java`
+#TEMPTEMP $javaexec JavaScreen.js -hostdevise -cgiurl/cgi-bin/js.cgi -usecgi -screensize700x500 $*
+$javaexec JavaScreen.js -hostdevise -cgiurl/cgi-bin/js.cgi2 -cmdport6668 -usecgi -screensize700x500 $*
+#TEMPTEMP $javaexec JavaScreen.js -hostdevise -cgiurl/cgi-bin/js.cgi -cmdport6668 -usecgi -screensize700x500 $*
