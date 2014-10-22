@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.170  2014/10/22 18:08:02  wenger
+// Changed version to 5.14.6 for release.
+//
 // Revision 1.169  2014/10/22 18:05:32  wenger
 // (Bug 1041) Fixed various bugs in CGI mode (which is now the default).
 //
@@ -1042,7 +1045,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.6");
+    public static final String VERSION = new String("5.14.7x0"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.0");
 
