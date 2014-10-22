@@ -4600,9 +4600,10 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			entirely fails when running under Java
 			1.8.0_25. (wenger)
 
-1041 10/17/14	OPEN	JS:  In CGI mode, viewing the "Settings" dialog
+1041 10/17/14	FIXED	JS:  In CGI mode, viewing the "Settings" dialog
 			totally fails. There also seem to be problems
 			with some other things. (wenger)
+			(Fixed by wenger, 10/22/14)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

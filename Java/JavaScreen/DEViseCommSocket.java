@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2004
+// (c) Copyright 1999-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.42  2005/12/06 20:00:18  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.41  2003/01/13 19:23:42  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -807,6 +811,12 @@ public class DEViseCommSocket
             closeSocket();
             throw new YException("Cannot open socket connection to host {"
 	      + hostname + "}", "DEViseCommSocket.createSocket");
+	} catch (Exception e) {
+	    System.err.println("Exception in " +
+	      "DEViseCommSocket.createSocket: " + e.getMessage());
+            closeSocket();
+            throw new YException("Cannot create socket to host {"
+	      + hostname + "}", "DEViseCommSocket.createSocket");
 	}
 
 	CreateStreams();
@@ -1198,7 +1208,8 @@ public class DEViseCommSocket
 		// Note: this exception is thrown here rather than at the
 		// more obvious place in myJoin() in case the standard
 		// Thread.join() is fixed and we use that.  RKW 2001-02-05.
-	        throw new YException("Attempt to connect socket timed out; " +
+		throw new YException(
+		  "Attempt to connect socket timed out; " +
 		  "may be blocked by firewall");
 	    } else {
 	        if (DEBUG >= 2) {

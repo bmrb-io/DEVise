@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.84  2014/08/26 20:41:01  wenger
+// JS command counts:  Committing the changes to log commands to the
+// usage log file.
+//
 // Revision 1.83  2012/04/30 22:20:18  wenger
 // Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 //
@@ -918,7 +922,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                 try {
 		    if (!processClientCmd(clientCmd)) {
 			
-			// close client socket for cgi version
+			// Close client socket for cgi version (we *must*
+			// close the socket, because the CGI script waits
+			// for EOF on the socket to know the server is
+			// finished).
 			if (client != null && client.useCgi()) {
 			    client.closeSocket();
 			    pop.pn("Socket between client and cgi is closed.");

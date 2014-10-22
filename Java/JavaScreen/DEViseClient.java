@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2005
+// (c) Copyright 1999-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.70  2005/12/06 20:00:16  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.69  2003/01/13 19:23:41  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -610,6 +614,8 @@ public class DEViseClient
 
 	updateHeartbeat();
 
+	boolean shouldCloseSock = useCgi();
+
 	// Note: commands that do not actually require communication with
 	// a devised should be directly handled here to avoid unnecessary
 	// client switches. RKW 2001-11-09.
@@ -634,9 +640,6 @@ public class DEViseClient
 		  "DEViseClient.addNewCmd(): " + ex.getMessage());
 	    }
 
-	    if (useCgi()) {
-	        closeSocket();
-	    }
 	} else if (cmd.startsWith(DEViseCommands.CHECK_POP)) {
 	    try {
 		if (pop.getServerCount() >= 1) {
@@ -654,41 +657,34 @@ public class DEViseClient
 
 	    // Close here because the client exits after getting the reply.
 	    close();
+	    shouldCloseSock = false;
 
 	} else if (cmd.startsWith(DEViseCommands.CONNECT)) {
 	    connect(cmd);
-            if (useCgi()) {
-	        closeSocket();
-	    }
+
 	} else if (cmd.startsWith(DEViseCommands.ASK_COLLAB_LEADER)) {
 	    askCollabLeader(cmd);
-            if (useCgi()) {
-	        closeSocket();
-	    }
+
 	} else if (cmd.startsWith(DEViseCommands.COLLABORATE)) {
 	    collaborate(cmd);
-            if (useCgi()) {
-	        closeSocket();
-	    }
 	    addLogFile(cmd);
+
         } else if (cmd.startsWith(DEViseCommands.GET_COLLAB_LIST)) {
 	    getCollabList();
-            if (useCgi()) {
-	        closeSocket();
-	    }
 	    addLogFile(cmd);
+
         } else if (cmd.startsWith(DEViseCommands.SET_COLLAB_PASS)) {
             setCollabPassword(cmd);
-            if (useCgi()) {
-	        closeSocket();
-	    }
 	    addLogFile(cmd);
+
         } else if (cmd.startsWith(DEViseCommands.SET_3D_CONFIG)) {
 	    sendCmdToCollaborators(cmd);
             newCommandStd(cmd);
+
         } else if (cmd.startsWith(DEViseCommands.CLOSE_COLLAB_DLG)) {
 	    sendCmdToCollaborators(cmd);
 	    sendCmdToCollaborators(DEViseCommands.DONE);
+
         } else if (cmd.startsWith(DEViseCommands.HIDE_ALL_VIEW_HELP)) {
 	    try {
 	        sendCmdToCollaborators(cmd);
@@ -698,8 +694,14 @@ public class DEViseClient
 		  ex.getMessage());
 	    }
 	    addLogFile(cmd);
+
 	} else {
             newCommandStd(cmd);
+	    shouldCloseSock = false;
+	}
+
+	if (shouldCloseSock) {
+	    closeSocket();
 	}
     }
 
@@ -1018,6 +1020,18 @@ public class DEViseClient
 			//cmdBuffer.addElement(command);
 			sendCmd(DEViseCommands.ACK);
 		    }
+		}
+
+		// Close client socket for cgi version (we *must*
+		// close the socket, because the CGI script waits
+		// for EOF on the socket to know the server is
+		// finished).  (Note that we only close the socket
+		// here for commands that don't get sent to the devised.
+		// For commands that go to the devised, we close the
+		// socket in the DEViseServer object.)
+		if (useCgi() && cmdBuffer.size() <= 0) {
+		    closeSocket();
+		    pop.pn("Socket between client and cgi is closed.");
 		}
                     
                 if (_debugLvl >= 2 && cmdBuffer.size() > 0) {

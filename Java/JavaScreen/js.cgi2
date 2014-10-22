@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2001
+#  (c) Copyright 2000-2014
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  2014/10/21 15:34:02  wenger
+#  Added a couple of new scripts to help with debugging CGI mode.
+#
 #  Revision 1.7  2001/11/07 22:31:29  wenger
 #  Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
 #  js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I

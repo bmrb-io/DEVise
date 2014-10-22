@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001
+// (c) Copyright 2001-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/11/07 22:31:29  wenger
+// Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+// js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+// accidentally merged onto the bmrb_dist_br branch previously).
+// (These changes include JS heartbeat improvements and the fix to get
+// CGI mode working again.)
+//
 // Revision 1.5.2.1  2001/11/07 17:22:36  wenger
 // Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
 // handle it; got CGI mode working again (bug 723).  (Changed JS version
@@ -74,6 +81,9 @@ public class DEViseCommCgi
     private DataOutputStream _cgiOutput = null;
     private DataInputStream _cgiInput = null;
 
+    private final int CONNECT_TIMEOUT = 100 *1000; //millisec
+    private final int READ_TIMEOUT = 100 *1000; //millisec
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -88,12 +98,19 @@ public class DEViseCommCgi
 	try {
             URL cgiURL = new URL("http", values.connection.hostname,
 	      values.connection.cgiURL);
+            if (DEBUG >= 2) {
+	        System.out.println("  URL: " + cgiURL);
+	    }
             _cgiConn = cgiURL.openConnection();
+	    _cgiConn.setConnectTimeout(CONNECT_TIMEOUT);
+	    _cgiConn.setReadTimeout(READ_TIMEOUT);
 	    _cgiConn.setDoOutput(true);
         } catch(MalformedURLException ex) {
 	    throw new YException("Badly formed URL: " + ex.getMessage());
         } catch(IOException ex) {
-	    throw new YException("Failed I/O: " + ex.getMessage());
+	    throw new YException(
+	      "Failed I/O in DEViseCommCgi.DEViseCommCgi(): " +
+	      ex.getMessage());
         }
 
 	_values = values;
@@ -141,10 +158,10 @@ public class DEViseCommCgi
 		// application), even though the CGI script seems to
 		// receive everything correctly.  RKW 2000-12-21.
 
-		//TEMPTEMP -- appending a null (how it was previously) goofs
+		//TEMP -- Appending a null (how it was previously) goofs
 		// up CGI mode when running in netscape; not appending
 		// anything totally goofs things up.  RKW 2000-12-21.
-		cmdBuffer[i] = cmdBuffer[i] + "_";//TEMPTEMP
+		cmdBuffer[i] = cmdBuffer[i] + "_";
 		// Note: the "2" here is for the length value (short).
                 size = size + 2 + cmdBuffer[i].length();
             }
@@ -162,7 +179,8 @@ public class DEViseCommCgi
 	    
 	    _cgiOutput.flush();
         } catch(IOException ex) {
-	    throw new YException("Failed I/O: " + ex.getMessage());
+	    throw new YException("Failed I/O in DEViseCommCgi.sendCmd(: " +
+	      ex.getMessage());
         }
     }
 
