@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2012
+#  (c) Copyright 2001-2014
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -46,7 +46,7 @@ DEVISE_VIS = /website/devise/demo
 
 # Data download setup.
 DEVISE_JS_DATA_DOWNLOAD_DIR = /website/htdocs/devise/html/data_download
-DEVISE_JS_DATA_DOWNLOAD_URL = http://bmrb.wisc.edu/devise/html/data_download/
+DEVISE_JS_DATA_DOWNLOAD_URL = http://www.bmrb.wisc.edu/devise/html/data_download/
 
 # This is who gets email about any errors.
 ERROR_EMAIL = devise@bmrb.wisc.edu

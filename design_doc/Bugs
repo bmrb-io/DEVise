@@ -4605,12 +4605,13 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			with some other things. (wenger)
 			(Fixed by wenger, 10/22/14)
 
-1042 10/27/14	OPEN	JS:  Data download on www.bmrb.wisc.edu generates
+1042 10/27/14	FIXED	JS:  Data download on www.bmrb.wisc.edu generates
 			data download page with a URL of "bmrb.wisc.edu/..."
 			(without leading "www.").  This fails in safari.
 			(This was Peptide-CGI bug 160, but it's really
 			a purely JavaScreen problem.)
 			(elu/wenger)
+			(Fixed by wenger, 10/27/14)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
