@@ -1,0 +1,30 @@
+#! /bin/csh -f
+
+# Tests BMRB 15063 -- this has one save frame that doesn't have heights
+# for the peaks.
+
+set result = 0
+
+rm -r -f */15063*
+
+echo "Processing should fail..."
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -name 15063 -file test_data/bmr15063-3.str -force -check_res_list -check_pct -peakonly
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/test_peak22.out
+
+
+#TEMP source tests/test_peak22_check
+
+
+echo -n "Test_peak22 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

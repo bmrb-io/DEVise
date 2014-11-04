@@ -5,7 +5,7 @@
 
 set result = 0
 
-rm -r -f */16943*
+rm -r -f */17273*
 
 echo "Processing should fail..."
 echo -n "Processing NMR-STAR: "
