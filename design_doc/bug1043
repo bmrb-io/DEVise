@@ -1,0 +1,23 @@
+Bug 1043; 2014-11-07
+
+Ugh, this is turning out to be a lot more complicated than I expected.
+What are the alternatives?:
+
+1) First I thought I'd get the hostname and/or IP address of the client
+in the CGI script, and stick that into the command header.  The problem
+with that is that then I need to also change the devised to deal with
+the modified headers, which I really want to avoid.  (And changing the
+command header even in just the Java code is a PITA.)
+
+2) My second thought was to get the hostname/IP address in the JavaScreen
+client, and pass it as an argument to the JAVAC_Connect command.  The
+problem with that is that java.net.InetAddress.getLocalHost() is
+returning "localhost/127.0.0.1" on manta (although it does work on
+bodrum).
+
+3) My *third* thought is to add a whole new command that the CGI script
+can add (maybe only on a JAVAC_Connect from the client) that specifies
+the client host.  I think that adding a whole new (optional) command
+would be easier than trying to have the CGI script stuff an extra
+argument into an existing command.  If we actually connect in socket mode,
+I think things could work just the way they have in the past.

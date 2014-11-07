@@ -4613,7 +4613,7 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			(elu/wenger)
 			(Fixed by wenger, 10/27/14)
 
-1043 10/29/14	OPEN	BMRB usage data doesn't work right for CGI mode,
+1043 10/29/14	ACTIVE	BMRB usage data doesn't work right for CGI mode,
 			because we don't have IP address. (elu/wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
