@@ -54,6 +54,6 @@ devise		-a Makefile.common README \
 			util xvertext linux_amd64 linux_rh72 linux_rh73 \
 			linux_rh9 linux_tao10 linux_centos linux_rhel5 \
 			linux_rhel6
-devisefull	-a devise Java/JavaScreen EmbeddedTk ImTools QCIMS dist
+devisefull	-a devise Java/JavaScreen EmbeddedTk ImTools QCIMS dist	\				data_conversion
 devisebmrb	-a devisefull peptide_cgi bmrb
 JS		-a Java/JavaScreen lib design_doc
