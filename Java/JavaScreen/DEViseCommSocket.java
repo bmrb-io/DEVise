@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2014/10/22 18:05:32  wenger
+// (Bug 1041) Fixed various bugs in CGI mode (which is now the default).
+//
 // Revision 1.42  2005/12/06 20:00:18  wenger
 // Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 // be the end of the V1_7b0_br branch.)
@@ -890,6 +893,7 @@ public class DEViseCommSocket
                 size = size + 2 + cmd[i].length();
             }
 
+	    //TEMP -- should this be in a little class?
 	    os.writeShort(msgType);
 	    os.writeInt(ID);
  	    os.writeShort(0); // not cgi

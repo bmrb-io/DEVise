@@ -2,7 +2,10 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 17.0.
+version 17.1.  (Note:  17.1 is not compatible with 17.0 between the
+JS client and JSPoP, but is between the JSPoP and DEViseD.  I didn't
+change the version to 18.0 because I didn't want to have to release
+a new DEViseD.)
 
 For the details of the format in which commands are sent on the socket,
 see comments in DEViseCommSocket.java.
@@ -32,11 +35,15 @@ see comments in DEViseCommSocket.java.
 
     2.1 JAVAC_Connect
     Purpose: establish connection between JavaScreen and JSPoP
-    Arguments: 3
+    Arguments: 4
         <username>: default is "guest"
         <password>: default is "guest"
         <protocol-version>: the JavaScreen protocol version, in the form
 	                    <major>.<minor>.
+        <client host>: client host name and/or IP address (e.g., 
+		"manta.cs.wisc.edu/128.105.14.228").  Note:  this is
+		sent by the client as an empty string, and filled in
+		by the js.cgi script.
 
     2.2 JAVAC_GetServerState
     Purpose: get current JSPoP status
@@ -105,6 +112,7 @@ see comments in DEViseCommSocket.java.
     Purpose: Collaboration follower decides to stop following (sent by
              follower).
     Arguments: 0
+
 
 3. JSPoP to JavaScreen
 

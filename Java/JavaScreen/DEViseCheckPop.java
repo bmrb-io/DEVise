@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2005/12/06 20:00:16  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.14  2002/07/19 17:06:47  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 //
@@ -342,7 +346,7 @@ public class DEViseCheckPop
 	//
 	sendCmd(DEViseCommands.CONNECT + " {" + DEViseGlobals.DEFAULTUSER +
 	  "} {" + DEViseGlobals.DEFAULTPASS + "} {" +
-	  DEViseGlobals.PROTOCOL_VERSION + "}");
+	  DEViseGlobals.PROTOCOL_VERSION + "} {}");
 
 	String answer = rcvCmd();
 	String[] args = DEViseGlobals.parseString(answer);

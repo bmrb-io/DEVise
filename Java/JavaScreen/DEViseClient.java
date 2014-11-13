@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.71  2014/10/22 18:05:32  wenger
+// (Bug 1041) Fixed various bugs in CGI mode (which is now the default).
+//
 // Revision 1.70  2005/12/06 20:00:16  wenger
 // Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 // be the end of the V1_7b0_br branch.)
@@ -538,7 +541,7 @@ public class DEViseClient
         pop = p;
 
 	if (_debugLvl >= 2) {
-	    pop.pn("DEViseClient.DEViseClient(" +
+	    pop.pn("DEViseClient.DEViseClient(" + host + ", " +
 	      id + ", " + cs.getObjectNum() + ") in thread " +
 	      Thread.currentThread());
 	}
@@ -1259,24 +1262,24 @@ public class DEViseClient
     private void connect(String command)
     {
 	try {
-            String[] cmds = DEViseGlobals.parseString(command);
-	    if (cmds != null && cmds.length == 4) {
+            String[] args = DEViseGlobals.parseString(command);
+	    if (args != null && args.length == 5) {
 
 		// Make sure the client's protocol version is compatible
 		// with the JSPoP's.
-		String clientMajPVer = DEViseGlobals.getMajorVersion(cmds[3]);
+		String clientMajPVer = DEViseGlobals.getMajorVersion(args[3]);
 		String popMajPVer = DEViseGlobals.getMajorVersion(
 		  DEViseGlobals.PROTOCOL_VERSION);
 		if (!clientMajPVer.equals(popMajPVer)) {
 	            sendCmd(DEViseCommands.ERROR +
 		      " {Expected protocol version " +
 		      DEViseGlobals.PROTOCOL_VERSION +
-		      "; JavaScreen client has version " + cmds[3] + "}");
+		      "; JavaScreen client has version " + args[3] + "}");
 		    throw new YException("Protocol version incompatibility");
 		}
 
 		// Now make sure that we have a legal username and password.
-	        user = pop.getUser(cmds[1], cmds[2]);
+	        user = pop.getUser(args[1], args[2]);
 	        if (user != null) {
 	            sendCmd(DEViseCommands.USER + " " + ID);
 	            sendCmd(DEViseCommands.DONE);
@@ -1285,6 +1288,10 @@ public class DEViseClient
 		    throw new YException(
 		      "Client send invalid login information");
 	        }
+
+		if (!args[4].equals("")) {
+		    hostname = args[4];
+		}
 	    } else {
 	        sendCmd(DEViseCommands.ERROR + " {Invalid connecting request}");
 	        throw new YException(

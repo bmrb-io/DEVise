@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2012
+// (c) Copyright 1999-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.136  2012/04/30 22:20:17  wenger
+// Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+//
 // Revision 1.135.4.7  2012/04/27 21:55:21  wenger
 // Added dialog with the URL that's shown when we try to get the browser
 // to show a document.
@@ -1046,7 +1049,9 @@ public class DEViseCmdDispatcher implements Runnable
 	    cmd = DEViseCommands.CONNECT + " {" +
 		jsc.jsValues.connection.username + "} {" +
 		jsc.jsValues.connection.password + "} {" +
-		DEViseGlobals.PROTOCOL_VERSION + "}\n" + cmd;
+		DEViseGlobals.PROTOCOL_VERSION + "} {}\n" + cmd;
+		// Note: fourth argument is IP address; CGI script will
+		// fill in for CGI mode.
 	    
 	    _connectedAlready = true;
 

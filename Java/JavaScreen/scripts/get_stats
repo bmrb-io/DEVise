@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  2014/08/27 15:10:26  wenger
+#  JS command counts:  Final (I think) version of get_stats with command
+#  counts; added info to the JavaScreen version history.
+#
 #  Revision 1.6  2014/08/26 20:41:05  wenger
 #  JS command counts:  Committing the changes to log commands to the
 #  usage log file.
@@ -293,7 +297,11 @@ sub ProcessOpen {
         # Intentional no-op.
       } elsif ($host =~ /.*\.cs\.wisc\.edu/) {
         # Intentional no-op.
+      } elsif ($host =~ /128\.105\..*/) {
+        # Intentional no-op.
       } elsif ($host =~ /.*\.bmrb\.wisc\.edu/) {
+        # Intentional no-op.
+      } elsif ($host =~ /144\.92\..*/) {
         # Intentional no-op.
       } else {
         $realOpenCount++;

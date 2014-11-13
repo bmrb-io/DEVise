@@ -21,3 +21,11 @@ the client host.  I think that adding a whole new (optional) command
 would be easier than trying to have the CGI script stuff an extra
 argument into an existing command.  If we actually connect in socket mode,
 I think things could work just the way they have in the past.
+
+4) Hmm -- on the other hand, maybe the client should add a dummy empty
+argument to the JAVAC_Connect command, and the CGI script should fill
+it in with the "real" host information.
+
+Okay, I ended up going with #4 here.  (Note that, in socket mode, the
+host argument to the JAVAC_Connect command is blank, and the JSPoP just
+uses the host information it gets from the socket.)

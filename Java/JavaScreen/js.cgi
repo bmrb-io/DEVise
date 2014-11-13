@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2001
+#  (c) Copyright 2000-2014
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -20,6 +20,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  2001/11/07 22:31:29  wenger
+#  Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+#  js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+#  accidentally merged onto the bmrb_dist_br branch previously).
+#  (These changes include JS heartbeat improvements and the fix to get
+#  CGI mode working again.)
+#
 #  Revision 1.6.2.1  2001/11/07 17:22:37  wenger
 #  Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
 #  handle it; got CGI mode working again (bug 723).  (Changed JS version
@@ -101,8 +108,9 @@ my $debug = 1;
   if ($debug) {
     chmod 0666, "/tmp/js_cgi_log";
     open(LOG, ">/tmp/js_cgi_log");
+    # open(LOG, ">>/tmp/js_cgi_log");# for debugging
     my $date = `date`;
-    print LOG "js.cgi run at $date\n";
+    print LOG "\njs.cgi run at $date";
   }
 
 print "Content-type:java_screen\n\n";
@@ -159,6 +167,16 @@ if (grep /size/, @params) {
   dienice("size not specified");
 }
 
+#
+# Add in the client IP address if this is a JAVAC_Connect command.
+#
+if ($cgiArgs{'arg0'} eq "JAVAC_Connect_") {
+  my $client_ip = $ENV{'REMOTE_ADDR'};
+  my $iplen = length($client_ip);
+  $size += $iplen;
+  $cgiArgs{'len4'} = 3 + $iplen;
+  $cgiArgs{'arg4'} = '{' . $client_ip . '}_';
+}
 
 #
 # Set up the socket.
@@ -204,7 +222,7 @@ for ($n = 0; $n < $nelem; $n++) {
     $name = 'arg' . $n;
     $out = $cgiArgs{$name};
       print LOG "Arg $n = <$out>\n" if ($debug >= 2);
-    my $foo = substr($out, 0, -1); #TEMPTEMP? -- strip off last char
+    my $foo = substr($out, 0, -1); # strip off last char
     $out = $foo . "\0"; # Append null to match command format.
       print LOG "Arg $n = <$out>\n" if ($debug >= 2);
     $written = syswrite(SOCK, $out, $length) || dienice("send: $!");	
