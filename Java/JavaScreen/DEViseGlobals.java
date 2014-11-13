@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.172  2014/11/13 17:47:50  wenger
+// Fixed DEVise/JS bug 1043:  Usage info isn't correct when client
+// connects in CGI mode.
+//
 // Revision 1.171  2014/10/22 20:07:43  wenger
 // Changed version to 5.14.7x0, added 5.14.7 version history section.
 //
@@ -1048,7 +1052,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.7");
+    public static final String VERSION = new String("5.14.8x0"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.1");
 
