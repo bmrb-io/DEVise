@@ -316,6 +316,9 @@ Change things to just use ps (or else /proc) instead of the *_pid*
 files.  (Probably have some kind of configuration for the ps arguments,
 and what to look for in the output.) (wenger)
 
+10.008 11/14/14	OPEN	3
+JSPoP should log the java version to the jspop.out file.
+
 ...........................................................................
 SECTION 11 (JavaScreen, JSS)
 Number Date	Status  Pri
