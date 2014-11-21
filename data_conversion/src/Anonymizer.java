@@ -25,6 +25,10 @@ public class Anonymizer {
 
 	public static void main(String[] args) {
 		Anonymizer anonymizer = new Anonymizer();
+		if(args[0] != null && args[1] != null){
+			anonymizer.inputFilePath = args[0];
+			anonymizer.outputFilePath = args[1];
+		}
 		anonymizer.anonymize();
 	}
 

@@ -42,6 +42,12 @@ public class Aggregator {
 
 	public static void main(String[] args) {
 		Aggregator aggregator = new Aggregator();
+		if(args[0] != null && args[1] != null && args[2] != null && args[3] != null){
+			aggregator.inputFilePath = args[0];
+			aggregator.outputFilePath = args[1];
+			aggregator.aggrDistance = Double.parseDouble(args[2]);
+			aggregator.aggrSwath = Double.parseDouble(args[3]);
+		}
 		aggregator.findExtremesAndMaximums();
 		aggregator.sectionize();
 		aggregator.addRecordsToSections();
