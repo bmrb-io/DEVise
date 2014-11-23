@@ -28,6 +28,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2014/07/30 21:47:12  wenger
+// Merged s2d_todo207_br_0 thru s2d_todo207_br_1 to trunk.
+//
 // Revision 1.5.2.4  2014/07/29 18:28:08  wenger
 // Peak lists:  Finished adding _Spectral_dim loops when they don't
 // exist but can be derived from the peak list text.
@@ -372,7 +375,7 @@ public class S2DPeakList {
 
     private static class PeakInfo {
         public int _peakId;
-	public double _inten;
+	public double _inten = Double.NaN;
 	public String _method;
 	// Size of array depends on # of shifts (2-4).
 	public double[] _shifts;
@@ -702,11 +705,11 @@ TEMP*/
 	String assignPat = "(" + assignAtom + "-" + assignAtom + "(-" +
 	  assignAtom + ")?(-" + assignAtom + ")?\\s+)";
 
+	// Regex pattern for Sparky.
 	// Note:  entry 16647 will match this pattern.
-	// This is Sparky.
 	_sparkyPat = Pattern.compile(ws + assignPat + "?" +
 	  floatPat + floatPat + floatPat + "?" + floatPat + "?" +
-	  intPat + ".*");
+	  intPat + "?" + ".*");
         if (doDebugOutput(20)) {
 	    System.out.println("_sparkyPat <" + _sparkyPat + ">");
 	}
@@ -879,8 +882,10 @@ TEMP*/
 	PeakInfo peakInfo = new PeakInfo();
 	_peaks.add(peakInfo);
 	peakInfo._peakId = peakId;
-	peakInfo._inten =
-	  S2DUtils.string2Double(sparkyMatch.group(12));
+	if (sparkyMatch.group(12) != null) {
+	    peakInfo._inten =
+	      S2DUtils.string2Double(sparkyMatch.group(12));
+	}
 	peakInfo._method = "height";
 
 	int shiftCount = 0;
@@ -1464,6 +1469,18 @@ TEMP*/
 	    return;
 	}
 
+	boolean hasInten = false;
+        for (int index = 0; index < _peaks.size(); index++) {
+	    PeakInfo pi = (PeakInfo)_peaks.get(index);
+	    if (!Double.isNaN(pi._inten)) {
+	    	hasInten = true;
+		break;
+	    }
+	}
+	if (!hasInten) {
+	    return;
+	}
+
 	//
 	// Actually write the loop.
 	//
@@ -1477,6 +1494,7 @@ TEMP*/
 
         for (int index = 0; index < _peaks.size(); index++) {
 	    PeakInfo pi = (PeakInfo)_peaks.get(index);
+	    if (Double.isNaN(pi._inten)) continue;
 	    writer.write("     " +
 	      pi._peakId + " " + // _Peak_general_char.Peak_ID
 	      pi._inten + // _Peak_general_char.Intensity_val
@@ -1736,6 +1754,7 @@ TEMP*/
         for (int index = 0; index < _peaks.size(); index++) {
 	    PeakInfo pi = (PeakInfo)_peaks.get(index);
 	    int shiftNum = 0;
+	    //TEMP -- write 0.0 for intensity if it's NaN?
 	    writer.write(pi._peakId + " " + pi._inten + " ");
 	    if (pi._shifts != null) {
 	        for (shiftNum = 0; shiftNum < pi._shifts.length;

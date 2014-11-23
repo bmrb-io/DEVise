@@ -13,6 +13,9 @@ missing but can be derived from the peak list text.  (To-do 207.)
 * Fixed the s2predict link on the "S2 Predicted vs. Experimental Values"
 help page.
 
+* Fixed peak list processing for Sparky peak lists with no peak height
+or volume.  (To-do 210.)
+
 
 Peptide-CGI 12.4.3
 ------------------
