@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  2014/11/13 17:48:12  wenger
+#  Fixed DEVise/JS bug 1043:  Usage info isn't correct when client
+#  connects in CGI mode.
+#
 #  Revision 1.7  2014/08/27 15:10:26  wenger
 #  JS command counts:  Final (I think) version of get_stats with command
 #  counts; added info to the JavaScreen version history.
@@ -630,7 +634,7 @@ sub PrintResults {
   my $sessCat;
   foreach $sessCat (sort { $sessionCatCounts{$b} <=> $sessionCatCounts{$a} } keys %sessionCatCounts) {
     my $avgCmds = $cmdCounts{$sessCat} / $sessionCatCounts{$sessCat};
-    printf "%4d %s (%d commands: %d per open)\n", $sessionCatCounts{$sessCat},
+    printf "%4d %s (%d commands: %.1f per open)\n", $sessionCatCounts{$sessCat},
       $sessCat, $cmdCounts{$sessCat}, $avgCmds;
   }
 
