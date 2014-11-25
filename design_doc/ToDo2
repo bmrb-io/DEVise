@@ -287,6 +287,23 @@ pages. (wenger)
 Use j2js to convert the JavaScreen client code to javascript.  (Probably 
 at least try this out enough to see if it's practical.) (wedell/elu/wenger)
 
+09.031 11/24/14	OPEN	2
+Move the "Restart" functionality out of the session menu into a button
+(maybe with an icon like a browser reload button).  (gabrielc/wenger)
+
+09.032 11/24/14	OPEN	3
+Add "forward"/"back" buttons like web browsers have.  (Need to think about
+how this would work -- what would the "steps" be?  But it would be great
+to have this functionality.)  (gabrielc/wenger)
+
+09.033 11/24/14	OPEN	3
+Remove "DEVise" in mouseover descriptions of cursor modes -- confusing.
+(gabrielc/wenger)
+
+09.034 11/24/14	OPEN	4
+Session restart should maybe reset cursor mode to default. (gabrielc/
+wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri

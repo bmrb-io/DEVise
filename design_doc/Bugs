@@ -4617,6 +4617,10 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			because we don't have IP address. (elu/wenger)
 			(Fixed by wenger, 11/13/14)
 
+1044 11/24/14	OPEN	Drill-down X/Y values aren't fixed for reversed
+			axes (e.g., in simulated HSQC spectrum
+			visualizations).  (gabrielc/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
