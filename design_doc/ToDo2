@@ -418,6 +418,10 @@ still be able to override things from that config file.
 Have the browser itself give an error message if the JavaScreen client
 fails (e.g., with socket problems with Java 1.8.). (miron/wenger)
 
+13.011 12/1/14	OPEN	2
+Set up test installation at CS to use a different set of schema files than
+the regular installation uses. (wenger)
+
 ...........................................................................
 SECTION 14 (release/distribution)
 Number Date	Status  Pri

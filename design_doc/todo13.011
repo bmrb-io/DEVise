@@ -1,0 +1,2 @@
+Maybe make a $demo/test/schema; start out w/ symlinks to "real" schema
+files, which will get overwritten by test peptide-cgi install.
