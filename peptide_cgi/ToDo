@@ -955,6 +955,11 @@ Num Date        Status  Pri     Description
 				chem shifts for simulated HSQC spectra).
 				(gabrielc/wenger)
 
+212 12/1/14	OPEN	2	Set up test installation at CS to use
+				a different set of schema files than
+				the regular installation uses. (wenger)
+				(Also see DEVise/JS to-do 13.011.)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
