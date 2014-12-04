@@ -93,6 +93,11 @@ Allow relative margins for home settings. (wenger)
 05.003 10/01/14 OPEN	4
 Add modulus to mapping expressions.
 
+05.004 12/4/14	OPEN	2
+Have an option to have symbols sized by pixels rather than data units
+(so symbols stay the same size/shape as you zoom).  (Maybe have negative
+value for size or something.) (wlee44/wenger)
+
 ...........................................................................
 SECTION 06 (DEVise, data sources)
 Number Date	Status  Pri
@@ -303,6 +308,23 @@ Remove "DEVise" in mouseover descriptions of cursor modes -- confusing.
 09.034 11/24/14	OPEN	4
 Session restart should maybe reset cursor mode to default. (gabrielc/
 wenger)
+
+09.035 12/4/14	OPEN	2
+Have a cursor mode where dragging pans instead of zooming.  (wlee44/wenger)
+
+09.036 12/4/14	OPEN	3
+Show cursor mode at the bottom of the JavaScreen.  (wlee44/wenger)
+
+09.037 12/4/14	OPEN	3
+Be able to zoom in/out with mouse wheel.  (wlee44/wenger)
+
+09.038 12/4/14	OPEN	4
+Add a button in the JavaScreen that sends your browser to the
+visualization server page.  (wlee44/wenger)
+
+09.039 12/4/14	OPEN	2
+Have an indication at the bottom of the JavaScreen window that shows
+what cursor mode you're in.  (wlee44/wenger)
 
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
