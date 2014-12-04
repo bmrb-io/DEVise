@@ -322,10 +322,6 @@ Be able to zoom in/out with mouse wheel.  (wlee44/wenger)
 Add a button in the JavaScreen that sends your browser to the
 visualization server page.  (wlee44/wenger)
 
-09.039 12/4/14	OPEN	2
-Have an indication at the bottom of the JavaScreen window that shows
-what cursor mode you're in.  (wlee44/wenger)
-
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
