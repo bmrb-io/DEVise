@@ -960,6 +960,12 @@ Num Date        Status  Pri     Description
 				the regular installation uses. (wenger)
 				(Also see DEVise/JS to-do 13.011.)
 
+213 12/4/14	OPEN	3	In two-entry simulated spectrum
+				visualizations, be able to drag on spectrum
+				relative to the other to manually align
+				them.  (Also see DEVise/JS to-do 09.035.)
+				(wlee44/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
