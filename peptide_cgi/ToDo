@@ -966,6 +966,10 @@ Num Date        Status  Pri     Description
 				them.  (Also see DEVise/JS to-do 09.035.)
 				(wlee44/wenger)
 
+214 12/12/14	OPEN	3	Change HvsN, HvsC visualizations to use
+				non-prototype schemas (probably after
+				implementing 212). (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
