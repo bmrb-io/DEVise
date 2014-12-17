@@ -67,13 +67,13 @@ set line = '^2 175 GLY -0.26 0.0 -1.0 0.0$'
 source tests/check4line
 
 set file = "data_dir/4867hn1.dat"
-set line = '^4867 2 6 GLU 8.5 124.7 H N $'
+set line = '^4867 2 6 GLU 8.5 124.7 H N E$'
 source tests/check4line
-set line = '^4867 2 175 GLY 7.85 114.9 H N $'
+set line = '^4867 2 175 GLY 7.85 114.9 H N G$'
 source tests/check4line
 
 set file = "data_dir/4867hc1.dat"
-set line = '^4867 2 5 VAL 1.95 29.9 HB CB$'
+set line = '^4867 2 5 VAL 1.95 29.9 HB CB V$'
 source tests/check4line
-set line = '^4867 2 175 GLY 3.6 44.0 HA3 CA$'
+set line = '^4867 2 175 GLY 3.6 44.0 HA3 CA G$'
 source tests/check4line

@@ -21,6 +21,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.361  2014/10/13 22:06:21  wenger
+// Fixed a bunch of ResCount schema names that should have been ResList.
+//
+// Revision 1.360.2.3  2014/12/05 23:19:10  wenger
+// Removed now-used ResRow attribute from HvsN output; added correct
+// single-letter residue labels to HvsC output; changed tests accordingly.
+//
+// Revision 1.360.2.2  2014/11/19 23:01:19  wenger
+// Fixed things up so that HSQC prototypes don't conflict with "normal"
+// HSQC visualizations.
+//
+// Revision 1.360.2.1  2014/10/01 21:05:00  wenger
+// First cut at prototypes for the changes to the simulated spectrum
+// visualizations.
+//
 // Revision 1.360  2014/09/24 18:35:26  wenger
 // Fixed the s2predict link on the "S2 Predicted vs. Experimental Values"
 // help page.
@@ -1091,7 +1106,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.4x2.3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.4x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 

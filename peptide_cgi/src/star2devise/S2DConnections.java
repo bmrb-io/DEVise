@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2009
+// (c) Copyright 2001-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.58.1  2014/10/01 21:05:00  wenger
+// First cut at prototypes for the changes to the simulated spectrum
+// visualizations.
+//
+// Revision 1.4  2009/04/15 16:21:04  wenger
+// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
+// fixed test61 and test61_3.
+//
 // Revision 1.3.6.2  2009/04/14 22:09:07  wenger
 // Session file, visualization-specific HTML file and summary page link
 // are now created; removed "legend view" from session template;

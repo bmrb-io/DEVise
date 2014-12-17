@@ -41,49 +41,49 @@ end
 set file = "data_dir/uvd/methyl1_outhc1.dat"
 
 # ALA
-set line = '^methyl1_out 1 12 ALA 4.05 56.29 HA CA$'
+set line = '^methyl1_out 1 12 ALA 4.05 56.29 HA CA A$'
 source tests/check4line
 
 # ILE
-set line = '^methyl1_out 1 8 ILE 1.87 38.55 HB CB$'
+set line = '^methyl1_out 1 8 ILE 1.87 38.55 HB CB I$'
 source tests/check4line
-set line = '^methyl1_out 1 8 ILE 3.97 64.29 HA CA$'
+set line = '^methyl1_out 1 8 ILE 3.97 64.29 HA CA I$'
 source tests/check4line
-set line = '^methyl1_out 1 8 ILE 1.26 28.87 HG13 CG1$'
+set line = '^methyl1_out 1 8 ILE 1.26 28.87 HG13 CG1 I$'
 source tests/check4line
-set line = '^methyl1_out 1 8 ILE 1.48 28.87 HG12 CG1$'
+set line = '^methyl1_out 1 8 ILE 1.48 28.87 HG12 CG1 I$'
 source tests/check4line
 
 # LEU
-set line = '^methyl1_out 1 29 LEU 1.308 43.299 HB3 CB$'
+set line = '^methyl1_out 1 29 LEU 1.308 43.299 HB3 CB L$'
 source tests/check4line
-set line = '^methyl1_out 1 29 LEU 5.443 53.803 HA CA$'
+set line = '^methyl1_out 1 29 LEU 5.443 53.803 HA CA L$'
 source tests/check4line
-set line = '^methyl1_out 1 29 LEU 1.906 43.299 HB2 CB$'
+set line = '^methyl1_out 1 29 LEU 1.906 43.299 HB2 CB L$'
 source tests/check4line
-set line = '^methyl1_out 1 29 LEU 1.588 27.407 HG CG$'
+set line = '^methyl1_out 1 29 LEU 1.588 27.407 HG CG L$'
 source tests/check4line
 
 # MET
-set line = '^methyl1_out 1 28 MET 2.53 33.0 HG3 CG$'
+set line = '^methyl1_out 1 28 MET 2.53 33.0 HG3 CG M$'
 source tests/check4line
-set line = '^methyl1_out 1 28 MET 2.6 33.0 HG2 CG$'
+set line = '^methyl1_out 1 28 MET 2.6 33.0 HG2 CG M$'
 source tests/check4line
-set line = '^methyl1_out 1 28 MET 2.13 35.5 HB3 CB$'
+set line = '^methyl1_out 1 28 MET 2.13 35.5 HB3 CB M$'
 source tests/check4line
-set line = '^methyl1_out 1 28 MET 4.1 58.9 HA CA$'
+set line = '^methyl1_out 1 28 MET 4.1 58.9 HA CA M$'
 source tests/check4line
-set line = '^methyl1_out 1 28 MET 2.18 35.5 HB2 CB$'
+set line = '^methyl1_out 1 28 MET 2.18 35.5 HB2 CB M$'
 source tests/check4line
 
 # THR
-set line = '^methyl1_out 1 18 THR 4.34 70.83 HB CB$'
+set line = '^methyl1_out 1 18 THR 4.34 70.83 HB CB T$'
 source tests/check4line
-set line = '^methyl1_out 1 18 THR 4.29 64.16 HA CA$'
+set line = '^methyl1_out 1 18 THR 4.29 64.16 HA CA T$'
 source tests/check4line
 
 # VAL
-set line = '^methyl1_out 1 19 VAL 2.29 32.14 HB CB$'
+set line = '^methyl1_out 1 19 VAL 2.29 32.14 HB CB V$'
 source tests/check4line
-set line = '^methyl1_out 1 19 VAL 4.25 64.85 HA CA$'
+set line = '^methyl1_out 1 19 VAL 4.25 64.85 HA CA V$'
 source tests/check4line

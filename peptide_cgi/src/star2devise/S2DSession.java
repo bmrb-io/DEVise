@@ -20,6 +20,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.43.4.1  2014/12/16 18:47:48  wenger
+// Todo 191:  Changed HvsC and HvsN templates; changed Java code slightly
+// to make HvsC work.
+//
+// Revision 1.43  2014/05/14 21:42:22  wenger
+// Added support for new dynamics movie URLs (<pdb> and <res> in the
+// config string are replaced appropriately); a couple of other minor
+// cleanups.
+//
 // Revision 1.42  2014/03/21 18:56:57  wenger
 // Video search string in session file code was wrong.
 //
@@ -319,6 +328,8 @@ public class S2DSession {
 	String visShortInfo = info + " generated on " +
 	  S2DMain.getShortTimestamp();
 
+	// Note:  replaceStrings[0] is set for the most common case
+	// after the switch statement.
 	switch (dataType) {
 	case S2DUtils.TYPE_DELTASHIFT:
 	    baseName = "deltashift.base";
@@ -375,6 +386,8 @@ public class S2DSession {
 	    searchStrings[0] = "4267hn1";
 	    searchStrings[1] = "4267rc1";
 	    replaceStrings[1] = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
+	    searchStrings[2] = "4267rl";
+	    replaceStrings[2] = id1 + S2DNames.RES_LIST_SUFFIX;
 	    break;
 
 	case S2DUtils.TYPE_HVSC_CHEM_SHIFTS:
@@ -384,6 +397,8 @@ public class S2DSession {
 	    searchStrings[0] = "4267hc1";
 	    searchStrings[1] = "4267rc1";
 	    replaceStrings[1] = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
+	    searchStrings[2] = "4267rl";
+	    replaceStrings[2] = id1 + S2DNames.RES_LIST_SUFFIX;
 	    break;
 
         case S2DUtils.TYPE_COUPLING:

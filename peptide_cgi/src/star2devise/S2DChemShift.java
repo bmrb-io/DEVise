@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.38.6.1  2014/10/01 21:05:00  wenger
+// First cut at prototypes for the changes to the simulated spectrum
+// visualizations.
+//
+// Revision 1.38  2014/01/14 23:10:12  wenger
+// Merged peak_lists2_br_0 thru peak_lists2_br_3 to trunk.
+//
 // Revision 1.37.8.1  2013/10/22 19:45:08  wenger
 // Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
 //
@@ -484,6 +491,7 @@ public class S2DChemShift {
 	  star.CHEM_SHIFT_RES_SEQ_CODE);
 	resSeqCodesTmp = null;
 
+	//TEMP -- I don't understand the relationship here between residues and _residueLabels -- is residues just kind of a placeholder or something just to have the polymer type?
 	_residueLabels = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
 	  entityAssemblyIDs);

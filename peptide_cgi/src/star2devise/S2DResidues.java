@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2013
+// (c) Copyright 2003-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.21.10.1  2014/10/01 21:05:00  wenger
+// First cut at prototypes for the changes to the simulated spectrum
+// visualizations.
+//
+// Revision 1.21  2013/04/29 23:07:57  wenger
+// Improved error messages when translating one-letter to three-letter
+// residue lists.
+//
 // Revision 1.20  2013/04/19 19:28:47  wenger
 // Working on bug 141:  fixed problems with how we determine the polymer
 // type in S2DmmCifIfc.getBmrbResLists() (although this didn't fully fix
@@ -210,6 +218,11 @@ public class S2DResidues {
 	}
     }
 
+    //-------------------------------------------------------------------
+    public int GetPolymerType()
+    {
+        return _polymerType;
+    }
 
     //-------------------------------------------------------------------
     // Return a string representing this object.
@@ -590,7 +603,7 @@ public class S2DResidues {
     //-------------------------------------------------------------------
     // Generate an array of one-letter labels from the array of three-
     // letter labels.
-    private static String[] generateShortLabels(String[] resLabels,
+    public static String[] generateShortLabels(String[] resLabels,
       int polymerType)
     {
         String[] resLabelsSh = new String[resLabels.length];

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009-2011
+// (c) Copyright 2009-2014
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.12.16.3  2014/12/05 23:19:11  wenger
+// Removed now-used ResRow attribute from HvsN output; added correct
+// single-letter residue labels to HvsC output; changed tests accordingly.
+//
+// Revision 1.12.16.2  2014/10/01 21:52:03  wenger
+// Trying the "arranging residue labels diagonally" idea.
+//
+// Revision 1.12.16.1  2014/10/01 21:05:00  wenger
+// First cut at prototypes for the changes to the simulated spectrum
+// visualizations.
+//
+// Revision 1.12  2012/03/12 01:08:48  wenger
+// Merged vis_page_fix_base thru vis_page_fix_br_1 to trunk (includes
+// fixing of some tests to be more general).
+//
 // Revision 1.11.6.1  2012/01/20 21:00:04  wenger
 // Got a bunch of the visualization summary page menus working.
 //
@@ -193,6 +208,8 @@ public class S2DProteinChemShift extends S2DChemShift {
 
     private static final int DEBUG = 0;
 
+    private String[] _resLabelsSh = null; // one-letter
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -212,6 +229,8 @@ public class S2DProteinChemShift extends S2DChemShift {
 	}
 
 	getExperimentalValues(star, frame, entityAssemblyID, residues);
+	_resLabelsSh = residues.generateShortLabels(_residueLabels,
+	  residues.GetPolymerType());
 
 	CHEMSHIFT_FILE += "chemshift.txt";
         _refTable = new ShiftDataManager(CHEMSHIFT_FILE);
@@ -596,7 +615,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	      _name + "\n");
 	    hnWriter.write("# Schema: bmrb-HvsN\n");
 	    hnWriter.write("# Attributes: Entry; Entity_assembly_ID; " +
-	      "Residue_seq_code; AcidName; Hshift; Nshift; Hatom; Natom\n");
+	      "Residue_seq_code; AcidName; Hshift; Nshift; Hatom; Natom; AcidName_1let\n");
             hnWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             hnWriter.write("# Generation date: " +
@@ -613,68 +632,70 @@ public class S2DProteinChemShift extends S2DChemShift {
 	// Find the H and N chem shift values and write them out.
 	//
 	try {
-	    HvsNInfo info = new HvsNInfo();
+	    HvsNInfo hnInfo = new HvsNInfo();
 	    int hnCount = 0;
 	    for (int index = 0; index < _resSeqCodes.length; index++) {
 	        int currSeqCode = _resSeqCodes[index];
 	        String currResLabel = _residueLabels[index];
+		String currResLabelSh = _resLabelsSh[index];
 
-	        if (currSeqCode != info.prevSeqCode) {
+	        if (currSeqCode != hnInfo.prevSeqCode) {
 
 		    // We just finished the previous residue.
-		    if (info.prevSeqCode != -1) {
-		        if (writeHvsNLine(hnWriter, info)) {
+		    if (hnInfo.prevSeqCode != -1) {
+		        if (writeHvsNLine(hnWriter, hnInfo)) {
 		            hnCount++;
 			}
 		    }
 
-		    info.prevSeqCode = currSeqCode;
-		    info.prevResLabel = currResLabel;
-		    info.hasH = false;
-		    info.hasN = false;
-		    info.hasHE1 = false;
-		    info.hasNE1 = false;
+		    hnInfo.prevSeqCode = currSeqCode;
+		    hnInfo.prevResLabel = currResLabel;
+		    hnInfo.hasH = false;
+		    hnInfo.hasN = false;
+		    hnInfo.hasHE1 = false;
+		    hnInfo.hasNE1 = false;
+		    hnInfo.prevResLabelSh = currResLabelSh;
                 }
 
 	        String atomName = _atomNames[index];
 	        double chemShift = _chemShiftVals[index];
 
 		if (atomName.equalsIgnoreCase(S2DNames.ATOM_H)) {
-		    if (info.hasH) {
+		    if (hnInfo.hasH) {
 		        System.err.println("Multiple H entries in one " +
 			  "residue(" + currSeqCode + ")!");
 		    }
-		    info.hasH = true;
-		    info.hShift = chemShift;
+		    hnInfo.hasH = true;
+		    hnInfo.hShift = chemShift;
 		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_N)) {
-		    if (info.hasN) {
+		    if (hnInfo.hasN) {
 		        System.err.println("Multiple N entries in one " +
 			  "residue(" + currSeqCode + ")!");
 		    }
-		    info.hasN = true;
-		    info.nShift = chemShift;
+		    hnInfo.hasN = true;
+		    hnInfo.nShift = chemShift;
 		} else if (_residueLabels[index].equals("TRP") &&
 		  atomName.equalsIgnoreCase(S2DNames.ATOM_HE1)) {
-		    if (info.hasHE1) {
+		    if (hnInfo.hasHE1) {
 		        System.err.println("Multiple HE1 entries in one " +
 			  "residue(" + currSeqCode + ")!");
 		    }
-		    info.hasHE1 = true;
-		    info.he1Shift = chemShift;
+		    hnInfo.hasHE1 = true;
+		    hnInfo.he1Shift = chemShift;
 		} else if (_residueLabels[index].equals("TRP") &&
 		  atomName.equalsIgnoreCase(S2DNames.ATOM_NE1)) {
-		    if (info.hasNE1) {
+		    if (hnInfo.hasNE1) {
 		        System.err.println("Multiple NE1 entries in one " +
 			  "residue(" + currSeqCode + ")!");
 		    }
-		    info.hasNE1 = true;
-		    info.ne1Shift = chemShift;
+		    hnInfo.hasNE1 = true;
+		    hnInfo.ne1Shift = chemShift;
 	        }
             }
 
 	    // Write out the last residue.
-            if (info.prevSeqCode != -1) {
-	        if (writeHvsNLine(hnWriter, info)) {
+            if (hnInfo.prevSeqCode != -1) {
+	        if (writeHvsNLine(hnWriter, hnInfo)) {
 	            hnCount++;
 	        }
 	    }
@@ -738,7 +759,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	      _name + "\n");
 	    hcWriter.write("# Schema: bmrb-HvsC\n");
 	    hcWriter.write("# Attributes: Entry; Entity_assembly_ID; " +
-	      "Residue_seq_code; AcidName; Hshift; Cshift; Hatom; Catom\n");
+	      "Residue_seq_code; AcidName; Hshift; Cshift; Hatom; Catom; AcidName_1let\n");
             hcWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             hcWriter.write("# Generation date: " +
@@ -752,33 +773,34 @@ public class S2DProteinChemShift extends S2DChemShift {
 	    // residue, we write out the appropriate data for that
 	    // residue.
 	    //
-            HCResidueInfo info = null;
+            HCResidueInfo hcInfo = null;
 	    int hcCount = 0;
 	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        if (info == null ||
-		  (_resSeqCodes[index] != info.residueSeqCode)) {
+	        if (hcInfo == null ||
+		  (_resSeqCodes[index] != hcInfo.residueSeqCode)) {
 		    // New residue
-	            if (info != null) {
-	                hcCount += writeHCResidueInfo(hcWriter, info);
+	            if (hcInfo != null) {
+	                hcCount += writeHCResidueInfo(hcWriter, hcInfo);
 	            }
-		    info = new HCResidueInfo();
-		    info.residueSeqCode = _resSeqCodes[index];
-		    info.residueName = _residueLabels[index];
-		    info.bonds = connections.getBonds(info.residueName);
+		    hcInfo = new HCResidueInfo();
+		    hcInfo.residueSeqCode = _resSeqCodes[index];
+		    hcInfo.residueLabel = _residueLabels[index];
+		    hcInfo.residueLabelSh = _resLabelsSh[index];
+		    hcInfo.bonds = connections.getBonds(hcInfo.residueLabel);
 		}
 
 		if (_atomTypes[index].equals("H")) {
-		    info.hChemshifts.put(_atomNames[index],
+		    hcInfo.hChemshifts.put(_atomNames[index],
 		      new Double(_chemShiftVals[index]));
 		}
 		if (_atomTypes[index].equals("C")) {
-		    info.cChemshifts.put(_atomNames[index],
+		    hcInfo.cChemshifts.put(_atomNames[index],
 		      new Double(_chemShiftVals[index]));
 		}
 	    }
-	    if (info != null) {
+	    if (hcInfo != null) {
 		// Make sure we write the last residue!
-	        hcCount += writeHCResidueInfo(hcWriter, info);
+	        hcCount += writeHCResidueInfo(hcWriter, hcInfo);
 	    }
 
 	    hcWriter.close();
@@ -1003,6 +1025,7 @@ public class S2DProteinChemShift extends S2DChemShift {
         public boolean hasN = false;
         public double hShift = 0.0;
         public double nShift = 0.0;
+	public String prevResLabelSh = null;
 
         // Special case -- show side-chain HE1/NE1 for TRP.
 	// 4267 residue 32 is an example of this.
@@ -1019,29 +1042,34 @@ public class S2DProteinChemShift extends S2DChemShift {
      * @param info: the H vs N info for this residue.
      * @return: true iff a line was written.
      */
-    public boolean writeHvsNLine(FileWriter hnWriter, HvsNInfo info)
+    public boolean writeHvsNLine(FileWriter hnWriter, HvsNInfo hnInfo)
       throws IOException
     {
 	boolean wroteLine = false;
 
+        //TEMP -- combine these?
 	// Note: we can have H/N and HE1/NE1 for the same residue.
-        if (info.hasH && info.hasN) {
+        if (hnInfo.hasH && hnInfo.hasN) {
 	    hnWriter.write(_name + " " +
 	      _entityAssemblyID + " " +
-	      info.prevSeqCode + " " +
-	      info.prevResLabel + " " +
-	      info.hShift + " " +
-	      info.nShift + " H N \n");
+	      hnInfo.prevSeqCode + " " +
+	      hnInfo.prevResLabel + " " +
+	      hnInfo.hShift + " " +
+	      hnInfo.nShift +
+	      " H N " +
+	      hnInfo.prevResLabelSh + "\n");
 	    wroteLine = true;
 	}
 
-	if (info.hasHE1 && info.hasNE1) {
+	if (hnInfo.hasHE1 && hnInfo.hasNE1) {
 	    hnWriter.write(_name + " " +
 	      _entityAssemblyID + " " +
-	      info.prevSeqCode + " " +
-	      info.prevResLabel + " " +
-	      info.he1Shift + " " +
-	      info.ne1Shift + " HE1 NE1\n");
+	      hnInfo.prevSeqCode + " " +
+	      hnInfo.prevResLabel + " " +
+	      hnInfo.he1Shift + " " +
+	      hnInfo.ne1Shift +
+	      " HE1 NE1 " +
+	      hnInfo.prevResLabelSh + "\n");
 	    wroteLine = true;
         }
 
@@ -1053,7 +1081,8 @@ public class S2DProteinChemShift extends S2DChemShift {
     // H vs C peaks.
     private class HCResidueInfo {
 	int residueSeqCode;
-        String residueName;
+        String residueLabel;
+        String residueLabelSh;
 	Vector bonds; // S2DConnections.Bond objects
 
 	// String (atom name) -> Double (chemical shift)
@@ -1095,17 +1124,18 @@ public class S2DProteinChemShift extends S2DChemShift {
                     writer.write(_name + " " +
 		      _entityAssemblyID + " " +
 		      info.residueSeqCode + " " +
-		      info.residueName + " " +
+		      info.residueLabel + " " +
 		      hChemshift + " " +
 		      cChemshift + " " +
 		      hAtomName + " " +
-		      cAtomName + "\n");
+		      cAtomName + " " +
+		      info.residueLabelSh + "\n");
 		    peakCount++;
 		}
 	    } else {
 		S2DWarning warning = new S2DWarning("atom " +
 		  hAtomName + " not found in bonds list for residue " +
-		  info.residueSeqCode + "/" + info.residueName);
+		  info.residueSeqCode + "/" + info.residueLabel);
 	        if (doDebugOutput(1)) {
 	            System.err.println(warning);
 		}

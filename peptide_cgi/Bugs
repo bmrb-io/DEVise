@@ -730,6 +730,12 @@ Num Date        Status  Description
 			it the page doesn't exist.)  Clicking the "Force
 			Reprocessing" button normally fixes it. (wenger)
 
+160 10/27/14	NLR	Data download on www.bmrb.wisc.edu generates
+			data download page with a URL of "bmrb.wisc.edu/..."
+			(without leading "www.").  This fails in safari.
+			(elu/wenger)
+			(Moved to DEVise/JS bug 1042.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
