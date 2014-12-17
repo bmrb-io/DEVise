@@ -696,7 +696,7 @@ Num Date        Status  Description
 			has an html validation error. (wenger)
 			(Fixed by wenger, 6/25/14)
 
-153 4/18/14	DONE	test_s2p5 fails on pacu (the do_s2p line is not
+153 4/18/14	FIXED	test_s2p5 fails on pacu (the do_s2p line is not
 			generated). (wenger)
 			(Fixed by wenger, 7/7/14)
 
@@ -715,7 +715,7 @@ Num Date        Status  Description
 			changed to 6667 when installing with test
 			configuration. (wenger)
 
-157 7/8/14	OPEN	Tests fail at Florence: test70, test_tar2imu,
+157 7/8/14	ACTIVE	Tests fail at Florence: test70, test_tar2imu,
 			test_tar6, test_tar2p, test_tar3p, test_bug090.
 			(wenger)
 
