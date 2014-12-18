@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.362  2014/12/17 22:25:23  wenger
+// Merged s2d_todo191_br_0 thru s2d_todo191_br_1 to trunk.
+//
 // Revision 1.361  2014/10/13 22:06:21  wenger
 // Fixed a bunch of ResCount schema names that should have been ResList.
 //
@@ -1106,7 +1109,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.4x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.4";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
