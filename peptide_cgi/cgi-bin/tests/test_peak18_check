@@ -14,11 +14,11 @@ set line = '^save_spectral_peak_list_1'
 source tests/check4line
 set line = '_Spectral_dim.ID'
 source tests/check4line
-set line = '1   H   1    H1   .   .   .   .   11036   1
+set line = '1   H   1    H1   .   .   .   .   11036   1'
 source tests/check4line
-set line = '2   H   1    H2   .   .   .   .   11036   1
+set line = '2   H   1    H2   .   .   .   .   11036   1'
 source tests/check4line
-set line = '3   C   13    C   .   .   .   .   11036   1
+set line = '3   C   13    C   .   .   .   .   11036   1'
 source tests/check4line
 
 set line = '9   $NMRView    .   .   11036   1'
