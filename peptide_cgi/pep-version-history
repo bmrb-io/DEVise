@@ -5,7 +5,7 @@ Peptide-CGI 12.4.4
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
 (Released 2014-12-18.)
 
-Added residue sequence view to single-entry H vs N and H vs C simulated
+* Added residue sequence view to single-entry H vs N and H vs C simulated
 spectrum visualizations.  (To-do 191.)
 
 * Fixed bug 153 (test_s2p5 fails on pacu).
