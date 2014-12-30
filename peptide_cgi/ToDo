@@ -955,10 +955,11 @@ Num Date        Status  Pri     Description
 				chem shifts for simulated HSQC spectra).
 				(gabrielc/wenger)
 
-212 12/1/14	OPEN	2	Set up test installation at CS to use
+212 12/1/14	DONE	2	Set up test installation at CS to use
 				a different set of schema files than
 				the regular installation uses. (wenger)
 				(Also see DEVise/JS to-do 13.011.)
+				(Done by wenger, 12/30/14)
 
 213 12/4/14	OPEN	3	In two-entry simulated spectrum
 				visualizations, be able to drag on spectrum

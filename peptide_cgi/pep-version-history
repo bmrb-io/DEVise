@@ -5,6 +5,9 @@ Peptide-CGI 12.4.5
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
 (Not yet released.)
 
+* Test setup at CS now uses separate session, data, and schema files
+from the regular setup (to-do 212).
+
 
 Peptide-CGI 12.4.4
 ------------------
