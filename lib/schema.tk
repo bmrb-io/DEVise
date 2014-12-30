@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.45  1999/03/10 19:11:18  wenger
+#  Implemented DataReader schema GUI; made other improvements to schema
+#  editing GUI, such as sorting the schema lists.
+#
 #  Revision 1.44  1998/10/22 20:54:50  donjerko
 #  Renamed "recId" to "oldRecId" when mirroring the select clause.
 #
@@ -209,7 +213,7 @@ source $catalogFile
 
 set queryCatalogFile $schemadir/Querycatalog.tcl
 if {![file exists $queryCatalogFile]} {
-    puts "Cannot read Query catalog file for logical to query associations"
+    puts "Cannot read Query catalog file ($queryCatalogFile) for logical to query associations"
     exit 1
 }
 source $queryCatalogFile
