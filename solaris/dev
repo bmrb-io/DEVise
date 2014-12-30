@@ -53,6 +53,16 @@ if ($#argv > 0) then
     setenv DEVISE_PALETTE	$DEVISE_ROOT/demo/palette
     shift
 
+  else if ("$1" == "t") then
+    # Use JavaScreen demo test data, sessions, etc.
+    setenv DEVISE_DAT		$DEVISE_ROOT/demo/test/dat
+    setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/demo/test/schema/schema/catalog.js.dte
+    #setenv DEVISE_CACHE   	$DEVISE_ROOT/cache
+    setenv DEVISE_SCHEMA  	$DEVISE_ROOT/demo/test/schema/schema
+    setenv DEVISE_SESSION 	$DEVISE_ROOT/demo/test/session.js
+    setenv DEVISE_PALETTE	$DEVISE_ROOT/demo/test/palette
+    shift
+
   else if ("$1" == "l") then
     # Use local data, sessions, etc.
     setenv DEVISE_DAT		../public/dat
@@ -75,7 +85,7 @@ if ($#argv > 0) then
     shift
 
   else if ("$1" == "u") then
-    echo "Usage: dev|mul [p|d|j|l|u] [DEVise args]"
+    echo "Usage: dev|mul [p|d|j|t|l|u] [DEVise args]"
     exit 1
   endif
 endif

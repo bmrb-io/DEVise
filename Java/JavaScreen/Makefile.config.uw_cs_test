@@ -43,7 +43,7 @@ CGI_DIR = /var/home/www/public/cgi-bin/js_test
 IDSTR = test
 
 # Where the DEVise sessions, schemas, etc., are installed.
-DEVISE_VIS = /p/devise/demo
+DEVISE_VIS = /p/devise/demo/test
 
 # Data download setup.
 DEVISE_JS_DATA_DOWNLOAD_DIR = /var/home/www/public/html/devise/test/data_download
