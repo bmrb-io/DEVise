@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2005
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.83  2014/08/26 20:41:01  wenger
+// JS command counts:  Committing the changes to log commands to the
+// usage log file.
+//
 // Revision 1.82  2009/08/28 15:59:39  wenger
 // Minor code cleanups.
 //
@@ -606,6 +610,8 @@ public class jspop implements Runnable
 
 	// Print JSPoP version information and arguments.
 	System.out.println("JSPoP version " + DEViseGlobals.VERSION);
+	System.out.println("Protocol version " +
+	  DEViseGlobals.PROTOCOL_VERSION);
 	System.out.println("Arguments:");
 	for (int index = 0; index < args.length; index++) {
 	    System.out.println("  <" + args[index] + ">");

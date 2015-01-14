@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2012
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.191  2012/04/30 22:20:18  wenger
+// Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+//
 // Revision 1.190.4.4  2012/04/30 20:39:38  wenger
 // (Hopefully final) cleanup.
 //
@@ -1712,6 +1715,7 @@ public class jsdevisec extends JPanel
 	    pn("");
 
 	    pn("JavaScreen version: " + DEViseGlobals.VERSION);
+	    pn("Protocol version: " + DEViseGlobals.PROTOCOL_VERSION);
 	    pn("Jmol version: " + JmolConstants.version);
 	    pn("");
 

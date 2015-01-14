@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2014
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.72  2014/11/13 17:47:50  wenger
+// Fixed DEVise/JS bug 1043:  Usage info isn't correct when client
+// connects in CGI mode.
+//
 // Revision 1.71  2014/10/22 18:05:32  wenger
 // (Bug 1041) Fixed various bugs in CGI mode (which is now the default).
 //
@@ -1293,9 +1297,10 @@ public class DEViseClient
 		    hostname = args[4];
 		}
 	    } else {
-	        sendCmd(DEViseCommands.ERROR + " {Invalid connecting request}");
+	        sendCmd(DEViseCommands.ERROR + " {Invalid connection request -- bad argument count}");
 	        throw new YException(
-	          "Invalid connection request received from client");
+	          "Invalid connection request received from client -- bad argument count (" +
+		  args.length + ") in " + args[0]);
             }
 	} catch (YException ex) {
 	    System.err.println("YException in DEViseClient.connect(): " +
