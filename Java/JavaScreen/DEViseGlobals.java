@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.175  2015/01/14 23:35:58  wenger
+// Improved messages related to communication protocol version.
+//
 // Revision 1.174  2014/11/25 22:19:12  wenger
 // Improved the JavaScreen usage script to better report commands
 // per session open.
@@ -1059,7 +1062,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.8x2"/*TEMP*/);
+    public static final String VERSION = new String("5.14.8x1a"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.1");
 
