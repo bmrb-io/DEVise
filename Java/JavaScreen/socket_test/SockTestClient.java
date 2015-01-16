@@ -1,16 +1,32 @@
-//TEMPTEMP -- need to also have this as an applet
+import  java.applet.*;
+import  java.awt.*;
 import java.net.Socket;
 import java.net.InetAddress;
 import java.io.*;
 
-class SockTestClient {
+public class SockTestClient extends Applet
+{
+	private static boolean _isApplet = false;
+	private static TextArea _ta;
+
+	public void init() {
+		super.init();
+		_isApplet = true;
+		this.setBackground(Color.yellow);
+		//TEMPTEMP -- make a text frame or whatever the hell it is, and print stuff to that if we're an applet
+		//
+		_ta = new TextArea("", 20, 80,//TEMPTEMP
+			TextArea.SCROLLBARS_VERTICAL_ONLY);
+		this.add("Center", _ta);
+		DoTest("devise.cs.wisc.edu", 6667);//TEMPTEMP?
+	}
 
 	public static void main(String args[]) {
 		DoTest("devise.cs.wisc.edu", 6667);//TEMPTEMP?
 	}
 
 	public static void DoTest(String hostname, int port) {
-		System.out.println("Creating socket to <" + hostname +
+		myPrint("Creating socket to <" + hostname +
 		  ":" + port + ">");
 
 	    //TEMPTEMP -- more stuff here
@@ -18,7 +34,7 @@ class SockTestClient {
 		    Socket sock = new Socket(hostname, port);
 
 			InetAddress addr = sock.getInetAddress();
-			System.out.println("addr: " + addr);
+			myPrint("addr: " + addr);
 
 			DataInputStream sockIn =
 			  new DataInputStream(sock.getInputStream());
@@ -32,7 +48,7 @@ class SockTestClient {
 //  cmd: {17.1}
 //  cmd: {client_host}
 
-			System.out.println("\nSending command");
+			myPrint("\nSending command");
 
             sockOut.writeShort(5); // msgType
 			sockOut.writeInt(0); // ID
@@ -49,7 +65,7 @@ class SockTestClient {
 			int size = 0;
 			for (int i = 0; i < nelem; ++i) {
 				size += cmd[i].length() + 2; // +2 copied from real code
-				System.out.println("  " + cmd[i]);
+				myPrint("  " + cmd[i]);
 			}
 
             sockOut.writeShort(nelem);
@@ -60,25 +76,25 @@ class SockTestClient {
 				sockOut.writeBytes(cmd[i]);
 			}
 
-			System.out.println("\nReading reply");
+			myPrint("\nReading reply");
 
 			// Read command back...
 			// TEMP -- this isn't fully correct yet, but it's good
 			// enough to see if we get something back...
 			short msgType = sockIn.readShort();
-			System.out.println("msgType: " + msgType);
+			myPrint("msgType: " + msgType);
 
 			int cmdId = sockIn.readInt();
-			System.out.println("cmdId: " + cmdId);
+			myPrint("cmdId: " + cmdId);
 
 			short flag = sockIn.readShort();
-			System.out.println("flag: " + flag);
+			myPrint("flag: " + flag);
 
 			nelem = sockIn.readShort();
-			System.out.println("nelem: " + nelem);
+			myPrint("nelem: " + nelem);
 
 			size = sockIn.readShort();
-			System.out.println("size: " + size);
+			myPrint("size: " + size);
 
 			byte buf[] = new byte[size];
 			for (int i = 0; i < size; ++i) {
@@ -86,14 +102,21 @@ class SockTestClient {
 			}
 
 			String cmdIn = new String(buf);
-			System.out.println("cmdIn: " + cmdIn);
+			myPrint("cmdIn: " + cmdIn);
 
 
 
 			sock.close();
 	    } catch (Exception ex) {
-	        System.err.println("Exception (" + ex.toString() +
+	        myPrint("Exception (" + ex.toString() +
 			  ") creating socket");
 	    }
+	}
+
+	private static void myPrint(String msg) {
+		System.out.println(msg);
+		if (_isApplet) {
+			_ta.append(msg + "\n");
+		}
 	}
 }
