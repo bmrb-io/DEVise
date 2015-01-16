@@ -1,7 +1,10 @@
 all:
-	javac SockTest.java
+	javac SockTestClient.java
+
+clean:
+	\rm *.class
 
 test:
-	java SockTest
+	java SockTestClient
 
 #sign:
