@@ -311,6 +311,7 @@ wenger)
 
 09.035 12/4/14	OPEN	2
 Have a cursor mode where dragging pans instead of zooming.  (wlee44/wenger)
+(Same as 09.021.)
 
 09.036 12/4/14	OPEN	3
 Show cursor mode at the bottom of the JavaScreen.  (wlee44/wenger)
