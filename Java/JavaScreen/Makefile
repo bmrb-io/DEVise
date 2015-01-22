@@ -157,3 +157,11 @@ install:
 .PHONY: client_install
 client_install:
 	make -f Makefile.setup client_install
+
+.PHONY: test_release
+test_release:
+	mkdir -p ../js_test/release/JavaScreen/logs
+	-cd ../js_test/release; ln -s ../../../linux_rhel6/release_dir/ bin
+	-cd ../js_test/release; ln -s ../../../linux_rhel6/dyn_lib .
+	-cd ../js_test/release; ln -s ../../../lib .
+	cd ../..; scripts/release.js `pwd`/Java/js_test
