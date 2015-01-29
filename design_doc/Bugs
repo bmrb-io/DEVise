@@ -4207,6 +4207,8 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			gets you back into the default mode?)  (Also make
 			the default button more prominent?  Make it look
 			more like the associated mouse cursor?) (miron/wenger)
+			(Partially fixed -- <esc> does get you back to the
+			default mode.)
 
 973 9/19/08	FIXED?	JS: sometimes it's too hard to tell that a mouse
 			click (or whatever) did something (e.g., when "home"
