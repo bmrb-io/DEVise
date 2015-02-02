@@ -5,6 +5,10 @@ all:
 	javac SockTestServer2.java
 	javac SockTestClient3.java
 	javac SockTestServer3.java
+	javac SockTestClient4.java
+	javac SockTestServer4.java
+	javac SockTestClient5.java
+	javac SockTestServer5.java
 
 jar:
 	jar cfm SockTestClient.jar Manifest.txt *.class
@@ -21,21 +25,28 @@ install:
 
 test:
 	java SockTestClient
-
 stest:
 	java SockTestServer
 
 test2:
 	java SockTestClient2
-
 stest2:
 	java SockTestServer2
 
 test3:
 	java SockTestClient3
-
 stest3:
 	java SockTestServer3
+
+test4:
+	java SockTestClient4
+stest4:
+	java SockTestServer4
+
+test5:
+	java SockTestClient5
+stest5:
+	java SockTestServer5
 
 clean:
 	-\rm *.class *.jar
