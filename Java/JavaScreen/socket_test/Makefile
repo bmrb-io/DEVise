@@ -1,5 +1,6 @@
 all:
 	javac SockTestClient.java
+	javac SockTestServer.java
 
 jar:
 	jar cfm SockTestClient.jar Manifest.txt *.class
@@ -16,6 +17,9 @@ install:
 
 test:
 	java SockTestClient
+
+stest:
+	java SockTestServer
 
 clean:
 	-\rm *.class *.jar

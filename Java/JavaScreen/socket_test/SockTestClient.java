@@ -13,23 +13,34 @@ public class SockTestClient extends Applet
 		super.init();
 		_isApplet = true;
 		this.setBackground(Color.yellow);
-		//TEMPTEMP -- make a text frame or whatever the hell it is, and print stuff to that if we're an applet
-		//
-		_ta = new TextArea("", 20, 80,//TEMPTEMP
+		_ta = new TextArea("", 20, 80,
 			TextArea.SCROLLBARS_VERTICAL_ONLY);
 		this.add("Center", _ta);
-		DoTest("devise.cs.wisc.edu", 6667);//TEMPTEMP?
+		DoTest("devise.cs.wisc.edu", 6667);
 	}
 
 	public static void main(String args[]) {
-		DoTest("devise.cs.wisc.edu", 6667);//TEMPTEMP?
+		String host = "devise.cs.wisc.edu";
+		int port = 6667;
+
+		for (int anum = 0; anum < args.length; ++anum) {
+			if (args[anum].equals("-usage")) {
+				myPrint("Usage: java SockTestClient [-host <host>] [-port <port>]");
+				System.exit(0);
+			} else if (args[anum].equals("-host")) {
+				host = args[++anum];
+			} else if (args[anum].equals("-port")) {
+				port = Integer.parseInt(args[++anum]);
+			}
+		}
+
+		DoTest(host, port);
 	}
 
 	public static void DoTest(String hostname, int port) {
 		myPrint("Creating socket to <" + hostname +
 		  ":" + port + ">");
 
-	    //TEMPTEMP -- more stuff here
 	    try {
 		    Socket sock = new Socket(hostname, port);
 
@@ -87,8 +98,8 @@ public class SockTestClient extends Applet
 			int cmdId = sockIn.readInt();
 			myPrint("cmdId: " + cmdId);
 
-			short flag = sockIn.readShort();
-			myPrint("flag: " + flag);
+			short useCgi = sockIn.readShort();
+			myPrint("useCgi: " + useCgi);
 
 			nelem = sockIn.readShort();
 			myPrint("nelem: " + nelem);
