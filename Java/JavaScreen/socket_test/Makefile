@@ -3,6 +3,8 @@ all:
 	javac SockTestServer.java
 	javac SockTestClient2.java
 	javac SockTestServer2.java
+	javac SockTestClient3.java
+	javac SockTestServer3.java
 
 jar:
 	jar cfm SockTestClient.jar Manifest.txt *.class
@@ -28,6 +30,12 @@ test2:
 
 stest2:
 	java SockTestServer2
+
+test3:
+	java SockTestClient3
+
+stest3:
+	java SockTestServer3
 
 clean:
 	-\rm *.class *.jar
