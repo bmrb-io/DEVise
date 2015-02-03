@@ -33,6 +33,9 @@ public class SockTestServer6
 			while (true) {
 				SSLSocket sock = (SSLSocket)sSock.accept();
 				myPrint("Got connection on server socket");
+				final String[] enabledCipherSuites =
+				  { "SSL_DH_anon_WITH_RC4_128_MD5" }; //Default Anonymous Cipher Suite
+				sock.setEnabledCipherSuites(enabledCipherSuites);
 				processCmd(sock);
 				sock.close();
 			}

@@ -57,9 +57,9 @@ stest5:
 	java SockTestServer5
 
 test6:
-	java -Djavax.net.ssl.trustStore=test_cert -Djavax.net.ssl.trustStorePassword=devtest SockTestClient6
+	java SockTestClient6
 stest6:
-	java -Djavax.net.ssl.keyStore=test_cert -Djavax.net.ssl.keyStorePassword=devtest -Djava.protocol.handler.pkgs=com.sun.net.ssl.internal.www.protocol -Djavax.net.debug=ssl SockTestServer6
+	java SockTestServer6
 
 clean:
 	-\rm *.class *.jar

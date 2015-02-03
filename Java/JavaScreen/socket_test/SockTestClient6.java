@@ -47,6 +47,9 @@ public class SockTestClient6 extends Applet
 	    try {
 			SocketFactory factory = SSLSocketFactory.getDefault();
 		    SSLSocket sock = (SSLSocket)factory.createSocket(hostname, port);
+			final String[] enabledCipherSuites =
+			  { "SSL_DH_anon_WITH_RC4_128_MD5" }; //Default Anonymous Cipher Suite
+			sock.setEnabledCipherSuites(enabledCipherSuites);
 
 			InetAddress addr = sock.getInetAddress();
 			myPrint("addr: " + addr);
