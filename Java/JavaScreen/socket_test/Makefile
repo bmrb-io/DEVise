@@ -1,15 +1,30 @@
-# try ssl sockets? (see http://stackoverflow.com/questions/13874387/create-app-with-sslsocket-java)
 all:
+	# Plain socket w/ DataOutputStream/DataInputStream; writes
+	# actual JavaScreen command and reads (part of) the response.
 	javac SockTestClient.java
 	javac SockTestServer.java
+
+	# Plain socket w/ DataOutputStream/DataInputStream; writes
+	# shorts & ints.
 	javac SockTestClient2.java
 	javac SockTestServer2.java
+
+	# Plain socket w/ BufferedOutputStream/BufferedInputStream;
+	# writes bytes.
 	javac SockTestClient3.java
 	javac SockTestServer3.java
+
+	# Plain socket w/ ObjectOutputStream/ObjectInputStream; writes
+	# shorts & ints.
 	javac SockTestClient4.java
 	javac SockTestServer4.java
+
+	# Plain socket w/ OutputStream/InputStream; writes bytes.
 	javac SockTestClient5.java
 	javac SockTestServer5.java
+
+	# SSLSocket w/ BufferedOutputStream/BufferedInputStream; writes
+	# bytes.
 	javac SockTestClient6.java
 	javac SockTestServer6.java
 

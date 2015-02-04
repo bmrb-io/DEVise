@@ -42,17 +42,20 @@ public class SockTestClient3 extends Applet
 		  ":" + port + ">");
 
 	    try {
+			// System.setProperty("java.net.preferIPv4Stack" , "true");
 		    Socket sock = new Socket(hostname, port);
+			myPrint("  sock: " + sock);
 
 			InetAddress addr = sock.getInetAddress();
-			myPrint("addr: " + addr);
+			myPrint("  addr: " + addr);
 
 			BufferedOutputStream sockOut =
 			  new BufferedOutputStream(sock.getOutputStream());
 
 			for (int num = 0; num < 20; ++num) {
-				sockOut.write(num);
-				myPrint("  Wrote byte: " + num);
+				int b = num + 97;
+				sockOut.write(b);
+				myPrint("  Wrote byte: " + b);
 			}
 
 			sockOut.flush();

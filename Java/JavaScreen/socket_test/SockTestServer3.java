@@ -23,11 +23,13 @@ public class SockTestServer3
 		myPrint("Creating socket to <" + port + ">");
 
 	    try {
+			// System.setProperty("java.net.preferIPv4Stack" , "true");
 			ServerSocket sSock = new ServerSocket(port);
 			myPrint("Starting to listen on server socket");
 			while (true) {
 				Socket sock = sSock.accept();
 				myPrint("Got connection on server socket");
+				myPrint("  sock: " + sock);
 				processCmd(sock);
 				sock.close();
 			}
