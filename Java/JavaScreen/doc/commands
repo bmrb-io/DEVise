@@ -234,17 +234,16 @@ see comments in DEViseCommSocket.java.
              zoomed in or out.
     Arguments: 5 or 6
         <view name>: name of view in which the rubberband took place.
-        <x location 1>: x location of the start of the rubberband, in pixels,
-                        relative to the left edge of the view.
-        <y location 1>: y location of the start of the rubberband, in pixels,
-                        relative to the top edge of the view.
-        <x location 2>: x location of the end of the rubberband, in pixels,
-                        relative to the left edge of the view.
-        <y location 2>: y location of the end of the rubberband, in pixels,
-                        relative to the top edge of the view.
-        <zoom factor>: optional. 1 if view is to be zoomed out, 0 if zoomed
+        <x location 1>: x location of the left edge of the rubberband, in
+			pixels, relative to the left edge of the view.
+        <y location 1>: y location of the top edge of the rubberband, in
+			pixels, relative to the top edge of the view.
+        <x location 2>: x location of the right edge of the rubberband, in
+			pixels, relative to the left edge of the view.
+        <y location 2>: y location of the bottom edge of the rubberband, in
+			pixels, relative to the top edge of the view.
+        <zoom mode>: optional. 1 if view is to be zoomed out, 0 if zoomed
                        in. default is 0 if empty.
-
         <x-only zoom>: optional.  1 if zoom should be x-only, 0 if zoom
 	               should be xy.
 
