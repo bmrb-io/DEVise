@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2012
+// (c) Copyright 2000-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2012/01/09 23:27:32  wenger
+// Changed JavaScreen colors to match new BMRB web pages.  (Note that the
+// backgrounds of the toolbar icons, etc., have not been changed yet.)
+// Changed the help page to a plain white background.
+//
 // Revision 1.21  2010/05/28 19:29:11  wenger
 // Changed open session dialog to show BMRB visualization types (with
 // numbers) as the "main" value if they are available, with the new
@@ -208,7 +213,7 @@ public final class DEViseJSValues
 	public int connectionID = DEViseGlobals.DEFAULTID; // for client
 	public String username = null, password = null, hostname = null;
 	public boolean helpBox = false;
-	public boolean cgi = false;  // using cgi, default false.
+	public boolean useCgi = false;  // using cgi, default false.
 	public String cgiURL = null; // URL for cgi.
 	public URL documentBase = null;
 	public URL codeBase = null;

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2010
+// (c) Copyright 2003-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2010/07/01 17:32:59  wenger
+// Implemented JavaScreen to-do 09.019 -- JS window can now be re-sized
+// while a session is open, added new view menu options to enlarge and
+// reduce by a fixed amount.
+//
 // Revision 1.15  2010/05/20 18:38:41  wenger
 // In the JavaScreen, you can now switch sessions without explicitly
 // closing the current one before opening the new one (to make it easier
@@ -442,7 +447,7 @@ public class DEViseMainButtons
             {
                 public void actionPerformed(ActionEvent event)
                 {
-		    _js.jsValues.connection.cgi = false;
+		    _js.jsValues.connection.useCgi = false;
 		    _js.socketMode();
 
                 }
@@ -452,7 +457,7 @@ public class DEViseMainButtons
             {
                 public void actionPerformed(ActionEvent event)
                 {
-		    _js.jsValues.connection.cgi = true;
+		    _js.jsValues.connection.useCgi = true;
 		    _js.cgiMode();
 		    _js.setCgiUrl();
                 }

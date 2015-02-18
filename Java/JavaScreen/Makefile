@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-2014
+# (c) Copyright 1992-2015
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -83,6 +83,13 @@ appletclass: DEViseJSApplet.java
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
 
 jar:
+	cp Manifest.txt Manifest_real.txt
+	make jara
+	./js -version > js_version
+
+# Jar file with all-permissions instead of sandbox -- for testing only
+jar_all:
+	cp Manifest_all.txt Manifest_real.txt
 	make jara
 	./js -version > js_version
 
@@ -90,7 +97,7 @@ jara:
 	make classclean
 	-rm devise_js.jar
 	make js jsa jsb
-	jar cfm devise_js.jar Manifest.txt \
+	jar cfm devise_js.jar Manifest_real.txt \
 	    JavaScreen/*.class JavaScreen/UI/*.class \
  	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
  	    JavaScreen/resources/toolbar_cursors/*.png \

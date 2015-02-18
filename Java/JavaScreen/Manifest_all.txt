@@ -1,0 +1,4 @@
+Permissions: all-permissions
+Codebase: *.cs.wisc.edu *.bmrb.wisc.edu *.bmrb.protein.osaka-u.ac.jp *.bmrb.cerm.unifi.it
+Application-name: DEVise JavaScreen
+

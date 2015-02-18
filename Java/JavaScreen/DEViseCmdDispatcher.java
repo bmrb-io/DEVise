@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2014
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.137  2014/11/13 17:47:50  wenger
+// Fixed DEVise/JS bug 1043:  Usage info isn't correct when client
+// connects in CGI mode.
+//
 // Revision 1.136  2012/04/30 22:20:17  wenger
 // Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 //
@@ -806,6 +810,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import java.text.*;
 
 public class DEViseCmdDispatcher implements Runnable
 {
@@ -845,6 +850,7 @@ public class DEViseCmdDispatcher implements Runnable
     private DEViseCommCgi _commCgi = null;
 
     private static final boolean _debug = false;
+    private double _cmdStart;
 
     //TEMP -- we shouldn't really need this *and* isOnline, but I don't
     // want to sort that out right now.  RKW 2000-10-18.
@@ -994,11 +1000,13 @@ public class DEViseCmdDispatcher implements Runnable
             setStatus(STATUS_RUNNING_NON_HB);
 	}
 
+    	_cmdStart = System.currentTimeMillis() * 1.0e-3;
+
         jsc.animPanel.start();
         jsc.stopButton.setBackground(Color.red);
         jsc.stopNumber = 0;
 
-	if (jsc.jsValues.connection.cgi == false) { // not using cgi, default case
+	if (jsc.jsValues.connection.useCgi == false) { // not using cgi, default case
 	    // If we don't have a socket to the jspop, attempt to create one.
 	    if (commSocket == null) {
 		boolean isEnd = false;
@@ -1009,7 +1017,7 @@ public class DEViseCmdDispatcher implements Runnable
 			      "connection is not available (may be blocked " +
 			      "by firewall).  Continuing in CGI mode.");
 			    jsc.cgiMode();
-			    jsc.jsValues.connection.cgi = true;
+			    jsc.jsValues.connection.useCgi = true;
 			    isEnd = true;
 			} else {
 			    jsc.showMsg("Connection to JSPoP is not " +
@@ -1332,6 +1340,13 @@ public class DEViseCmdDispatcher implements Runnable
 
 		// Note: this is the "standard" place where the GUI gets
 		// changed to indicate that the command is finished.
+    	        double cmdTime =
+		  (System.currentTimeMillis() * 1.0e-3) - _cmdStart;
+		String timeOut =
+		  (new DecimalFormat("###.###")).format(cmdTime);
+		System.out.println("Command time: " + timeOut);
+		jsc.pn("Command time: " + timeOut);
+
 		jsc.animPanel.stop();
 		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
 	    } catch (YException e) {
@@ -1743,7 +1758,7 @@ public class DEViseCmdDispatcher implements Runnable
         } else if (args[0].equals(DEViseCommands.RESET_COLLAB_NAME)) {
 	    // First, reset the variable that says we are collaborating
 	    jsc.isCollab = false;
-            if(jsc.jsValues.connection.cgi) {
+            if(jsc.jsValues.connection.useCgi) {
 	        jsc.cgiMode();
 	    } else {
 	        jsc.socketMode();
@@ -1992,7 +2007,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
 	byte[] imageData;
-	if (jsc.jsValues.connection.cgi) {
+	if (jsc.jsValues.connection.useCgi) {
 	    imageData = _commCgi.receiveData(imageSize);
         } else {
 	    imageData = sockReceiveData(imageSize);
@@ -2063,7 +2078,7 @@ public class DEViseCmdDispatcher implements Runnable
 //            Runtime.getRuntime().totalMemory());
 
         byte[] gdata;
-	if (jsc.jsValues.connection.cgi) {
+	if (jsc.jsValues.connection.useCgi) {
 	    gdata = _commCgi.receiveData(gdataSize);
         } else {
 	    gdata = sockReceiveData(gdataSize);
@@ -2323,7 +2338,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    jsc.pn("~~~~~~~~~~~~~~~~~~~~~");
 	    jsc.pn("Sending: \"" + command + "\"");
 
-            if (jsc.jsValues.connection.cgi) {
+            if (jsc.jsValues.connection.useCgi) {
                 _commCgi = new DEViseCommCgi(jsc.jsValues);
                 _commCgi.sendCmd(command);
             } else {
@@ -2361,7 +2376,7 @@ public class DEViseCmdDispatcher implements Runnable
 
             while (!isFinish) {
                 try {
-	            if (jsc.jsValues.connection.cgi) {
+	            if (jsc.jsValues.connection.useCgi) {
                         response = _commCgi.receiveCmd(expectResponse);
                         if (response == "cgi no response") {
                             jsc.pn("CGI no response");
@@ -2390,7 +2405,7 @@ public class DEViseCmdDispatcher implements Runnable
 			    } else {
 				end = true;
 				jsc.pn("###### Reconnecting successed.");
-				if (jsc.jsValues.connection.cgi) {
+				if (jsc.jsValues.connection.useCgi) {
 				    jsc.cgiMode();
 				} else {
 				    jsc.socketMode();
@@ -2399,7 +2414,7 @@ public class DEViseCmdDispatcher implements Runnable
 			}
 
 			jsc.pn("Resending command: " + command);
-			if (jsc.jsValues.connection.cgi) {
+			if (jsc.jsValues.connection.useCgi) {
 			    _commCgi = null;
 			    _commCgi = new DEViseCommCgi(jsc.jsValues);
 			    _commCgi.sendCmd(command);
@@ -2427,7 +2442,7 @@ public class DEViseCmdDispatcher implements Runnable
 			//  commSocket.sendCmd(DEViseCommands.COLLAB_EXIT);
 			//} 
 			//else 
-			if (jsc.jsValues.connection.cgi) {
+			if (jsc.jsValues.connection.useCgi) {
                             sendRcvCmd(DEViseCommands.ABORT);
                         } else {
                             commSocket.sendCmd(DEViseCommands.ABORT);
@@ -2497,7 +2512,7 @@ public class DEViseCmdDispatcher implements Runnable
               command + ")");
         }
 
-        if (jsc.jsValues.connection.cgi) {
+        if (jsc.jsValues.connection.useCgi) {
             // cgi routing -- we must send *and* receive for the CGI
 	    // to work right.
 	    sendRcvCmd(command, false);
@@ -2588,9 +2603,9 @@ public class DEViseCmdDispatcher implements Runnable
 	boolean result = true;
 
 	try {
-            jsc.jsValues.connection.cgi = true;
+            jsc.jsValues.connection.useCgi = true;
             String[] response = sendRcvCmd(DEViseCommands.CHECK_POP);
-            jsc.jsValues.connection.cgi = false;
+            jsc.jsValues.connection.useCgi = false;
             _commCgi = null;
 	    if (response == null || response.length != 1 ||
 	      !response[0].equals(DEViseCommands.DONE))

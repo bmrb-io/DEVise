@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2010
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  2010/07/15 19:01:13  wenger
+// Minor updates to the help page, etc., related to resizing.
+//
 // Revision 1.52  2010/05/28 19:29:11  wenger
 // Changed open session dialog to show BMRB visualization types (with
 // numbers) as the "main" value if they are available, with the new
@@ -551,7 +554,7 @@ public class js extends JFrame
 
 	    } else if (DEViseGlobals.checkArgument(args[i], "-usecgi", false,
 	      argValue)) {
-	        jsValues.connection.cgi = true;
+	        jsValues.connection.useCgi = true;
 
 	    } else if (DEViseGlobals.checkArgument(args[i], "-cgiurl", true,
 	      argValue)) {

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2014
+// (c) Copyright 2000-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  2014/10/16 21:52:47  wenger
+// JavaScreen applet now defaults to CGI communication mode instead of
+// socket mode (to bypass problems with sockets in Java JRE 1.8).
+//
 // Revision 1.25  2012/04/30 22:20:17  wenger
 // Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 //
@@ -572,15 +576,15 @@ public abstract class DEViseJSApplet extends Applet
 	    jsValues.debug._logEnabled = false;
         }
 
-/*
+	jsValues.connection.useCgi = true;
         String useCgi = getParameter("usecgi");
         if (useCgi != null) {
-            jsValues.connection.cgi = true;
-        } else {
-            jsValues.connection.cgi = false;
+	    if (Integer.parseInt(useCgi) != 0 ) {
+                jsValues.connection.useCgi = true;
+	    } else {
+                jsValues.connection.useCgi = false;
+	    }
         }
-*/
-        jsValues.connection.cgi = true;
 
         String cgiUrl = getParameter("cgiurl");
         if (cgiUrl != null) {

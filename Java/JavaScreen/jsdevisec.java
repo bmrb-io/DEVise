@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.192  2015/01/14 23:35:58  wenger
+// Improved messages related to communication protocol version.
+//
 // Revision 1.191  2012/04/30 22:20:18  wenger
 // Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 //
@@ -1171,7 +1174,7 @@ public class jsdevisec extends JPanel
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(buttons,
   	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 6,
   	  DEViseComponentPanel.ALIGN_LEFT, this);
-	if (jsValues.connection.cgi) {
+	if (jsValues.connection.useCgi) {
 	    cgiMode();
 	} else {
 	    socketMode();
@@ -2146,7 +2149,7 @@ public class jsdevisec extends JPanel
     public void collabModeUnlead(boolean isLeader)
     {
 	isCollab = false;
-	if (jsValues.connection.cgi) {
+	if (jsValues.connection.useCgi) {
 	    cgiMode();
 	} else {
 	    socketMode();
@@ -3596,7 +3599,7 @@ class SetCgiUrlDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.jsValues.connection.cgi = false;
+			jsc.jsValues.connection.useCgi = false;
 			jsc.socketMode();			
                         close();
                     }

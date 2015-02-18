@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.176  2015/01/15 20:41:37  wenger
+// Changed version from 5.14.8x2 to 5.14.8x1a.
+//
 // Revision 1.175  2015/01/14 23:35:58  wenger
 // Improved messages related to communication protocol version.
 //
@@ -1062,7 +1065,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.8x1a"/*TEMP*/);
+    public static final String VERSION = new String("5.14.8x1b"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.1");
 

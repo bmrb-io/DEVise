@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2014
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2014/11/13 17:47:50  wenger
+// Fixed DEVise/JS bug 1043:  Usage info isn't correct when client
+// connects in CGI mode.
+//
 // Revision 1.43  2014/10/22 18:05:32  wenger
 // (Bug 1041) Fixed various bugs in CGI mode (which is now the default).
 //
@@ -902,6 +906,13 @@ public class DEViseCommSocket
             // on the other size, you can still get correct value
             os.writeShort(nelem);
             os.writeShort(size);
+	    if (DEBUG >= 5) {
+                System.err.println("  msgType: " + msgType);
+                System.err.println("  cmdId: " + ID);
+                System.err.println("  flag: " + flag);
+                System.err.println("  nelem: " + nelem);
+                System.err.println("  size: " + size);
+	    }
 
             for (int i = 0; i < nelem; i++) {
                 // Since we are using a BufferedOutputStream as the underlying stream of
@@ -978,6 +989,14 @@ public class DEViseCommSocket
                 flag = DEViseGlobals.toUshort(dataRead, 6);
                 numberOfElement = DEViseGlobals.toUshort(dataRead, 8);
                 totalSize = DEViseGlobals.toUshort(dataRead, 10);
+	        if (DEBUG >= 5) {
+                    System.err.println("  msgType: " + msgType);
+                    System.err.println("  cmdId: " + cmdId);
+                    System.err.println("  flag: " + flag);
+                    System.err.println("  numberOfElement: " +
+		      numberOfElement);
+                    System.err.println("  totalSize: " + totalSize);
+		}
 
                 dataRead = null;
                 isControl = false;
