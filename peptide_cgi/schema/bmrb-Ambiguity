@@ -11,13 +11,13 @@ type bmrb-Ambiguity ascii
 comment #
 whitespace ' '
 
-attr Entity_assembly_ID int
-attr Residue_seq_code int
-attr Residue_label string 4
-
 attr Ambig1 float
 attr Ambig2 float
 attr Ambig3 float
 attr Ambig4 float
 attr Ambig5 float
 attr Ambig9 float
+
+attr Residue_seq_code int
+attr Residue_label string 4
+attr Entity_assembly_ID int

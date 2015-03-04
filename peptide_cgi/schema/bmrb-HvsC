@@ -11,12 +11,14 @@ type bmrb-HvsC ascii
 comment #
 whitespace ' ''	'
 
-attr Entry string 30
-attr Entity_assembly_ID int
-attr Residue_seq_code int
-attr AcidName string 4
-
 attr Hshift float
 attr Cshift float
 attr Hatom string 5
 attr Catom string 4
+
+attr Residue_seq_code int
+attr AcidName string 4
+attr Entity_assembly_ID int
+attr Entry string 30
+
+attr AcidName_1let string 2

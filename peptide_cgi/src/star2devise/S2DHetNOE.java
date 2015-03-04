@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2010
+// (c) Copyright 2001-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.17.26.2  2015/03/04 20:46:24  wenger
+// To-do 211:  Hopefully final cleanup before merge.
+//
+// Revision 1.17.26.1  2015/02/20 16:24:08  wenger
+// To-do 211:  Re-ordered some of the data and fixed tests accordingly.
+//
+// Revision 1.17  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.16.8.1  2011/09/21 20:46:10  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -209,9 +219,8 @@ public class S2DHetNOE {
 
 	    hetNOEWriter.write("# Data: heteronuclear NOE for " + _name + "\n");
 	    hetNOEWriter.write("# Schema: bmrb-NOE\n");
-	    hetNOEWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; " +
-	      "Residue_label; NOE_value; NOE_error\n");
+	    hetNOEWriter.write("# Attributes: NOE_value; NOE_error; " +
+	      "Residue_seq_code; Residue_label; Entity_assembly_ID;\n");
             hetNOEWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             hetNOEWriter.write("# Generation date: " +
@@ -219,11 +228,11 @@ public class S2DHetNOE {
 	    hetNOEWriter.write("#\n");
 
 	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        hetNOEWriter.write(_entityAssemblyID + " " +
+	        hetNOEWriter.write(_hetNOEValues[index] + " " +
+		  _hetNOEErrors[index] + " " +
 		  _resSeqCodes[index] + " " +
 		  _resLabels[index] + " " +
-		  _hetNOEValues[index] + " " +
-		  _hetNOEErrors[index] + "\n");
+		  _entityAssemblyID + "\n");
 	    }
 
 	    hetNOEWriter.close();

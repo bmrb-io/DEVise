@@ -137,11 +137,11 @@ end
 
 
 set file = "data_dir/uvd/test_s2p5_outs2p1-1.dat"
-set line = "1 2 1.0 0.34774387"
+set line = '^1.0 0.34774387 2 1$'
 source tests/check4line
-set line = "1 82 0.889 0.8320186"
+set line = '^0.889 0.8320186 82 1$'
 source tests/check4line
-set line = "1 179 0.342 0.71590394"
+set line = '^0.342 0.71590394 179 1$'
 source tests/check4line
 
 set file = "html_dir/uvd/test_s2p5_out/test_s2p5_outy.html"

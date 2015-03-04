@@ -95,11 +95,11 @@ end
 
 
 set file = "data_dir/17306s2p1-1.dat"
-set line = "1 2 1.0 0.5462738"
+set line = '^1.0 0.5462738 2 1$'
 source tests/check4line
-set line = "1 57 0.876 0.8762687"
+set line = '^0.876 0.8762687 57 1$'
 source tests/check4line
-set line = "1 106 1.0 0.33378202"
+set line = '^1.0 0.33378202 106 1$'
 source tests/check4line
 
 set file = "html_dir/17306/17306y.html"

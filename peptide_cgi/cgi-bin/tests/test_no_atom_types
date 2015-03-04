@@ -52,11 +52,11 @@ foreach file ($files)
 end
 
 set file = "data_dir/test_nat_outd1.dat"
-set line = '^1 1 ALA -0.271 0.0 -0.698 -0.102$'
+set line = '^-0.271 0.0 -0.698 -0.102 1 ALA 1$'
 source tests/check4line
-set line = '^1 23 GLU -0.0040* 0.0 0.888 -1.304$'
+set line = '^-0.0040* 0.0 0.888 -1.304 23 GLU 1$'
 source tests/check4line
-set line = '^1 175 ARG 0.411 0.0 1.062 1.077$'
+set line = '^0.411 0.0 1.062 1.077 175 ARG 1$'
 source tests/check4line
 
 

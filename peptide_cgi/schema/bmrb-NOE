@@ -10,9 +10,8 @@
 type NOE ascii
 comment #
 whitespace ' '
-attr Entity_assembly_ID int
-attr Residue_seq_code int
-attr Residue_label string 4
-#attr Atom_name string 5
 attr NOE_value float
 attr NOE_error float
+attr Residue_seq_code int
+attr Residue_label string 4
+attr Entity_assembly_ID int

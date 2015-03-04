@@ -67,7 +67,7 @@ set file = "data_dir/15209am1.dat"
 #TEMP 2.1 has HE, 3.1 has HE1, HE2, HE3
 #TEMP set line = '^1 1 MET 0.4 0.26666668 0.0 0.0 0.0 0.0$'
 #TEMP source tests/check4line
-set line = '^1 92 HIS 0.29411766 0.0 0.0 0.0 0.0 0.0$'
+set line = '^0.29411766 0.0 0.0 0.0 0.0 0.0 92 HIS 1$'
 source tests/check4line
 
 set file = "data_dir/15209amac2.dat"

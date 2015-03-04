@@ -41,23 +41,23 @@ end
 
 
 set file = "data_dir/uvd/20090824_12345d1.dat"
-set line = '^1 1 MET -0.521 0.0 -1.49 0.347$'
+set line = '^-0.521 0.0 -1.49 0.347 1 MET 1$'
 source tests/check4line
-set line = '^1 108 GLU -0.022 -0.635 -0.569 1.427$'
+set line = '^-0.022 -0.635 -0.569 1.427 108 GLU 1$'
 source tests/check4line
 
 set file = "data_dir/uvd/20090824_12345sd1.dat"
-set line = '^1 1 2 GLU -0.286 -1.14 0.09 0.731 0.0 0.0$'
+set line = '^-0.286 -1.14 0.09 0.731 0.0 0.0 2 GLU 1 1$'
 source tests/check4line
-set line = '^1 1 107 LEU 0.242 -1.544 -1.754 0.886 -0.059 -0.457$'
+set line = '^0.242 -1.544 -1.754 0.886 -0.059 -0.457 107 LEU 1 1$'
 source tests/check4line
-set line = '^1 20 2 GLU -0.143 -1.812 -0.099 0.943 0.0 0.0$'
+set line = '^-0.143 -1.812 -0.099 0.943 0.0 0.0 2 GLU 20 1$'
 source tests/check4line
-set line = '^1 20 107 LEU -0.08 -0.42 1.02 0.144 1.538 0.054$'
+set line = '^-0.08 -0.42 1.02 0.144 1.538 0.054 107 LEU 20 1$'
 source tests/check4line
-set line = '^1 0 2 GLU -0.245 -1.449 0.202 0.053 0.0 0.0$'
+set line = '^-0.245 -1.449 0.202 0.053 0.0 0.0 2 GLU 0 1$'
 source tests/check4line
-set line = '^1 0 107 LEU -0.031 0.038 0.022 0.675 0.875 -0.095$'
+set line = '^-0.031 0.038 0.022 0.675 0.875 -0.095 107 LEU 0 1$'
 source tests/check4line
 
 set file = "html_dir/uvd/20090824_12345/20090824_12345y.html"

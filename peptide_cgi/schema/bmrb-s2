@@ -10,12 +10,12 @@
 type s2 ascii
 comment #
 whitespace ' '
-attr Entity_assembly_ID int
-attr Residue_seq_code int
-attr Residue_label string 4
-attr Atom_name string 5
 attr S2order_value float
 attr S2order_error float
+attr Atom_name string 5
+attr Residue_seq_code int
+attr Residue_label string 4
+attr Entity_assembly_ID int
 # attr Tau_e_value float
 # attr Tau_e_error float
 # attr Rex_value float

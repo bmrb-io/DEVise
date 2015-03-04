@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009-2010
+// (c) Copyright 2009-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.8.20.1  2015/02/20 22:40:54  wenger
+// To-do 211:  Re-ordered more of the data; tested it manually in DEVise,
+// but test scripts haven't been updated yet.
+//
+// Revision 1.8  2012/03/12 01:08:48  wenger
+// Merged vis_page_fix_base thru vis_page_fix_br_1 to trunk (includes
+// fixing of some tests to be more general).
+//
 // Revision 1.7.6.1  2012/03/07 18:33:55  wenger
 // Fixed tests for summary page changes.
 //
@@ -311,12 +319,10 @@ public class S2DSpartaChemShift extends S2DChemShift {
 		  "delta shift values for " + _name + "\n");
 	        deltashiftWriter.write("# Schema: bmrb-SpartaDeltaShift\n");
 
-	        deltashiftWriter.write("# Attributes: Entity_assembly_ID; ");
-	        deltashiftWriter.write("Model_number; ");
-	        deltashiftWriter.write("Residue_seq_code; Residue_label; " +
-	          "HA_DeltaShift; C_DeltaShift; CA_DeltaShift; CB_DeltaShift");
-	        deltashiftWriter.write("; N_DeltaShift; H_DeltaShift");
-	        deltashiftWriter.write("\n");
+	        deltashiftWriter.write("# Attributes: HA_DeltaShift; " +
+		  "C_DeltaShift; CA_DeltaShift; CB_DeltaShift; " +
+		  "N_DeltaShift; H_DeltaShift; Residue_seq_code " +
+		  "Residue_label; Model_number; Entity_assembly_ID\n");
 
                 deltashiftWriter.write("# Peptide-CGI version: " +
 	          S2DMain.PEP_CGI_VERSION + "\n");
@@ -336,16 +342,16 @@ public class S2DSpartaChemShift extends S2DChemShift {
             for (int index = 0; index < _deltaShiftResLabels.length; ++index) {
 	        if (!_deltaShiftResLabels[index].equals("")) {
 		    dsCount++;
-		    deltashiftWriter.write(_entityAssemblyID + " " +
-		      _modelNum + " " +
-		      index + " " +
-		      _deltaShiftResLabels[index] + " " +
-		      _haDeltaShifts[index] + " " +
+		    deltashiftWriter.write(_haDeltaShifts[index] + " " +
 		      _cDeltaShifts[index] + " " +
 		      _caDeltaShifts[index] + " " +
 		      _cbDeltaShifts[index] + " " +
 		      _nDeltaShifts[index] + " " +
-		      _hDeltaShifts[index] + "\n");
+		      _hDeltaShifts[index] + " " +
+		      index + " " +
+		      _deltaShiftResLabels[index] + " " +
+		      _modelNum + " " +
+		      _entityAssemblyID + "\n");
 	        }
 	    }
 

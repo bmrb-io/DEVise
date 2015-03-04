@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009-2014
+// (c) Copyright 2009-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.13.2.3  2015/03/04 20:46:24  wenger
+// To-do 211:  Hopefully final cleanup before merge.
+//
+// Revision 1.13.2.2  2015/02/20 22:40:54  wenger
+// To-do 211:  Re-ordered more of the data; tested it manually in DEVise,
+// but test scripts haven't been updated yet.
+//
+// Revision 1.13.2.1  2015/02/20 16:24:09  wenger
+// To-do 211:  Re-ordered some of the data and fixed tests accordingly.
+//
+// Revision 1.13  2014/12/17 22:25:23  wenger
+// Merged s2d_todo191_br_0 thru s2d_todo191_br_1 to trunk.
+//
 // Revision 1.12.16.3  2014/12/05 23:19:11  wenger
 // Removed now-used ResRow attribute from HvsN output; added correct
 // single-letter residue labels to HvsC output; changed tests accordingly.
@@ -265,10 +278,9 @@ public class S2DProteinChemShift extends S2DChemShift {
 	      _name + "\n");
 	    deltashiftWriter.write("# Schema: bmrb-DeltaShift\n");
 
-	    deltashiftWriter.write("# Attributes: Entity_assembly_ID; ");
-	    deltashiftWriter.write("Residue_seq_code; Residue_label; " +
-	      "HA_DeltaShift; C_DeltaShift; CA_DeltaShift; CB_DeltaShift");
-	    deltashiftWriter.write("\n");
+	    deltashiftWriter.write("# Attributes: HA_DeltaShift; " +
+	      "C_DeltaShift; CA_DeltaShift; CB_DeltaShift; " +
+	      "Residue_seq_code; Residue_label; Entity_assembly_ID\n");
 
             deltashiftWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
@@ -287,13 +299,13 @@ public class S2DProteinChemShift extends S2DChemShift {
             for (int index = 0; index < _deltaShiftResLabels.length; ++index) {
 	        if (!_deltaShiftResLabels[index].equals("")) {
 		    dsCount++;
-		    deltashiftWriter.write(_entityAssemblyID + " " +
-		      index + " " +
-		      _deltaShiftResLabels[index] + " " +
-		      _haDeltaShifts[index] + " " +
+		    deltashiftWriter.write(_haDeltaShifts[index] + " " +
 		      _cDeltaShifts[index] + " " +
 		      _caDeltaShifts[index] + " " +
-		      _cbDeltaShifts[index] + "\n");
+		      _cbDeltaShifts[index] + " " +
+		      index + " " +
+		      _deltaShiftResLabels[index] + " " +
+		      _entityAssemblyID + "\n");
 	        }
 	    }
 
@@ -355,9 +367,9 @@ public class S2DProteinChemShift extends S2DChemShift {
 	    csiWriter.write("# Data: chemical shift index values for " +
 	      _name + "\n");
 	    csiWriter.write("# Schema: bmrb-Csi\n");
-	    csiWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; Residue_label; " +
-	      "HA_Csi; C_Csi; CA_Csi; CB_Csi; Consensus_Csi\n");
+	    csiWriter.write("# Attributes: HA_Csi; C_Csi; CA_Csi; CB_Csi; " +
+	      "Consensus_Csi; Residue_seq_code; Residue_label; " +
+	      "Entity_assembly_ID\n");
             csiWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             csiWriter.write("# Generation date: " +
@@ -410,14 +422,14 @@ public class S2DProteinChemShift extends S2DChemShift {
 		    	consCsi = 1;
 		    }
 
-		    csiWriter.write(_entityAssemblyID + " " +
-		      index + " " +
-		      resLabel + " " +
-		      haCsi + " " +
+		    csiWriter.write(haCsi + " " +
 		      cCsi + " " +
 		      caCsi + " " +
 		      cbCsi + " " +
-		      consCsi + "\n");
+		      consCsi + " " +
+		      index + " " +
+		      resLabel + " " +
+		      _entityAssemblyID + "\n");
 		    csiCount++;
 		}
             }
@@ -480,9 +492,9 @@ public class S2DProteinChemShift extends S2DChemShift {
 	    pctWriter.write("# Data: percent assignment values for " +
 	      _name + "\n");
 	    pctWriter.write("# Schema: bmrb-Percent\n");
-	    pctWriter.write("# Attribute: Entity_assembly_ID; " +
-	      "Residue_seq_code; " +
-	      "CurrResidueLabel; assigForH; assigForC; assigForN\n");
+	    pctWriter.write("# Attributes: assigForH; assigForC; " +
+	      "assigForN Residue_seq_code; CurrResidueLabel; " +
+	      "Entity_assembly_ID;\n");
             pctWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             pctWriter.write("# Generation date: " +
@@ -543,12 +555,12 @@ public class S2DProteinChemShift extends S2DChemShift {
 		        }
 		    }
 
-		    pctWriter.write(_entityAssemblyID + " " +
+		    pctWriter.write(pctH + " " +
+		      pctC + " " +
+		      pctN + " " +
 		      resSeqCode + " " +
 		      resLabel + " " +
-		      pctH + " " +
-		      pctC + " " +
-		      pctN + "\n");
+		      _entityAssemblyID + "\n");
 		    paCount++;
 		} catch (S2DWarning ex) {
 		    index++;
@@ -613,9 +625,10 @@ public class S2DProteinChemShift extends S2DChemShift {
 	      S2DNames.DAT_SUFFIX);
 	    hnWriter.write("# Data: H vs. N chemical shifts for " +
 	      _name + "\n");
-	    hnWriter.write("# Schema: bmrb-HvsN\n");
-	    hnWriter.write("# Attributes: Entry; Entity_assembly_ID; " +
-	      "Residue_seq_code; AcidName; Hshift; Nshift; Hatom; Natom; AcidName_1let\n");
+	    hnWriter.write("# Schema: bmrb-HvsNp\n"/*TEMP*/);
+	    hnWriter.write("# Attributes: Hshift; Nshift; Hatom; Natom; " +
+	      "Residue_seq_code; AcidName; Entity_assembly_ID; Entry; " +
+	      "AcidName_1let\n");
             hnWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             hnWriter.write("# Generation date: " +
@@ -757,9 +770,10 @@ public class S2DProteinChemShift extends S2DChemShift {
 	      S2DNames.DAT_SUFFIX);
 	    hcWriter.write("# Data: H vs. C chemical shifts for " +
 	      _name + "\n");
-	    hcWriter.write("# Schema: bmrb-HvsC\n");
-	    hcWriter.write("# Attributes: Entry; Entity_assembly_ID; " +
-	      "Residue_seq_code; AcidName; Hshift; Cshift; Hatom; Catom; AcidName_1let\n");
+	    hcWriter.write("# Schema: bmrb-HvsCp\n"/*TEMP*/);
+	    hcWriter.write("# Attributes: Hshift; Nshift; Hatom; Natom; " +
+	      "Residue_seq_code; AcidName; Entity_assembly_ID; Entry; " +
+	      "AcidName_1let\n");
             hcWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             hcWriter.write("# Generation date: " +
@@ -1050,25 +1064,25 @@ public class S2DProteinChemShift extends S2DChemShift {
         //TEMP -- combine these?
 	// Note: we can have H/N and HE1/NE1 for the same residue.
         if (hnInfo.hasH && hnInfo.hasN) {
-	    hnWriter.write(_name + " " +
-	      _entityAssemblyID + " " +
-	      hnInfo.prevSeqCode + " " +
-	      hnInfo.prevResLabel + " " +
-	      hnInfo.hShift + " " +
+	    hnWriter.write(hnInfo.hShift + " " +
 	      hnInfo.nShift +
 	      " H N " +
+	      hnInfo.prevSeqCode + " " +
+	      hnInfo.prevResLabel + " " +
+	      _entityAssemblyID + " " +
+	      _name + " " +
 	      hnInfo.prevResLabelSh + "\n");
 	    wroteLine = true;
 	}
 
 	if (hnInfo.hasHE1 && hnInfo.hasNE1) {
-	    hnWriter.write(_name + " " +
-	      _entityAssemblyID + " " +
-	      hnInfo.prevSeqCode + " " +
-	      hnInfo.prevResLabel + " " +
-	      hnInfo.he1Shift + " " +
+	    hnWriter.write(hnInfo.he1Shift + " " +
 	      hnInfo.ne1Shift +
 	      " HE1 NE1 " +
+	      hnInfo.prevSeqCode + " " +
+	      hnInfo.prevResLabel + " " +
+	      _entityAssemblyID + " " +
+	      _name + " " +
 	      hnInfo.prevResLabelSh + "\n");
 	    wroteLine = true;
         }
@@ -1121,14 +1135,14 @@ public class S2DProteinChemShift extends S2DChemShift {
 	        Double hChemshift = (Double) info.hChemshifts.get(hAtomName);
 	        Double cChemshift = (Double) info.cChemshifts.get(cAtomName);
 		if (hChemshift != null && cChemshift != null) {
-                    writer.write(_name + " " +
-		      _entityAssemblyID + " " +
-		      info.residueSeqCode + " " +
-		      info.residueLabel + " " +
-		      hChemshift + " " +
+                    writer.write(hChemshift + " " +
 		      cChemshift + " " +
 		      hAtomName + " " +
 		      cAtomName + " " +
+		      info.residueSeqCode + " " +
+		      info.residueLabel + " " +
+		      _entityAssemblyID + " " +
+		      _name + " " +
 		      info.residueLabelSh + "\n");
 		    peakCount++;
 		}

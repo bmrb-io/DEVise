@@ -13,7 +13,7 @@ type bmrb_lacs_point ascii
 comment #
 whitespace ' ''	'
 
-attr  Comp_index_ID int
+attr Comp_index_ID int
 attr Comp_ID string 4
 attr X_coord_val float
 attr Y_coord_val float

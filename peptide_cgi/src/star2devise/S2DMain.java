@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2014
+// (c) Copyright 2000-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.364.2.2  2015/02/20 22:40:53  wenger
+// To-do 211:  Re-ordered more of the data; tested it manually in DEVise,
+// but test scripts haven't been updated yet.
+//
+// Revision 1.364.2.1  2015/02/20 16:24:09  wenger
+// To-do 211:  Re-ordered some of the data and fixed tests accordingly.
+//
+// Revision 1.364  2014/12/18 22:45:19  wenger
+// Changed version to 12.4.5x0, added corresponding version history
+// section.
+//
 // Revision 1.363  2014/12/18 18:41:45  wenger
 // Changed version to 12.4.4 for release, added release date to docs.
 //
@@ -1112,7 +1123,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.5x0"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.5x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 

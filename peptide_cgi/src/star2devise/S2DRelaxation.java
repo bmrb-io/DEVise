@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2010
+// (c) Copyright 2001-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.17.26.2  2015/03/04 20:46:24  wenger
+// To-do 211:  Hopefully final cleanup before merge.
+//
+// Revision 1.17.26.1  2015/02/20 16:24:09  wenger
+// To-do 211:  Re-ordered some of the data and fixed tests accordingly.
+//
+// Revision 1.17  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.16.8.1  2011/09/21 20:46:10  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -162,9 +172,9 @@ public class S2DRelaxation {
 	      _name + _suffix + frameIndex + S2DNames.DAT_SUFFIX);
             relaxWriter.write("# Data: relaxation values for " + _name + "\n");
             relaxWriter.write("# Schema: bmrb-relax\n");
-            relaxWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; " +
-	      "Residue_label; Atom_name; relax_value; relax_error\n");
+            relaxWriter.write("# Attributes: relax_value; relax_error; " +
+	      "Atom_name; Residue_seq_code; Residue_label; " +
+	      "Entity_assembly_ID\n");
             relaxWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             relaxWriter.write("# Generation date: " +
@@ -172,12 +182,12 @@ public class S2DRelaxation {
             relaxWriter.write("#\n");
 
 	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        relaxWriter.write(_entityAssemblyID + " " +
+	        relaxWriter.write(_relaxationValues[index] + " " +
+		  _relaxationErrors[index] + " " +
+		  _atomNames[index] + " " +
 		  _resSeqCodes[index] + " " +
 		  _resLabels[index] + " " +
-		  _atomNames[index] + " " +
-		  _relaxationValues[index] + " " +
-		  _relaxationErrors[index] + "\n");
+		  _entityAssemblyID + "\n");
 	    }
 
 	    relaxWriter.close();

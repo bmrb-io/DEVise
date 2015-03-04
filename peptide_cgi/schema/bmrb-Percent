@@ -10,9 +10,9 @@
 type ChemShiftPercentage ascii
 comment #
 whitespace ' '
-attr Entity_assembly_ID int
-attr Residue_seq_code int
-attr CurrResidueLabel string 4
 attr assigForH float
 attr assigForC float
 attr assigForN float
+attr Residue_seq_code int
+attr CurrResidueLabel string 4
+attr Entity_assembly_ID int

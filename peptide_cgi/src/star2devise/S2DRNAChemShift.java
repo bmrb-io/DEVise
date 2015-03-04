@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009-2010
+// (c) Copyright 2009-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.15.36.2  2015/03/04 20:46:24  wenger
+// To-do 211:  Hopefully final cleanup before merge.
+//
+// Revision 1.15.36.1  2015/02/20 22:40:54  wenger
+// To-do 211:  Re-ordered more of the data; tested it manually in DEVise,
+// but test scripts haven't been updated yet.
+//
+// Revision 1.15  2010/11/01 00:51:12  wenger
+// Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
+//
 // Revision 1.14.10.2  2010/10/19 00:23:20  wenger
 // Split the actual sample info out from the sample conditions info,
 // including modifying ambiguity code and Pistachio metadata accordingly.
@@ -183,8 +193,7 @@ public class S2DRNAChemShift extends S2DNAChemShift {
 
 	String schemaName = "bmrb-RNADeltaShift";
 	// TEMP -- add nucleotide for drill-down?
-	String attributes = "Entity_assembly_ID; Residue_seq_code; " +
-	      "Residue_label; " +
+	String attributes =
               "C1p_DeltaShift; C2_DeltaShift; C2p_DeltaShift; " +
 	      "C3p_DeltaShift; C4_DeltaShift; c4p_DeltaShift;  " +
 	      "C5_DeltaShift; C5p_DeltaShift; C6_DeltaShift;  " +
@@ -196,7 +205,8 @@ public class S2DRNAChemShift extends S2DNAChemShift {
 	      "H6_DeltaShift; H61_DeltaShift; H62_DeltaShift;  " +
 	      "H8_DeltaShift; HO2p_DeltaShift; N1_DeltaShift;  " +
 	      "N2_DeltaShift; N3_DeltaShift; N4_DeltaShift;  " +
-	      "N6_DeltaShift; N7_DeltaShift; N9_DeltaShift";
+	      "N6_DeltaShift; N7_DeltaShift; N9_DeltaShift; " +
+	      "Residue_seq_code; Residue_label; Entity_assembly_ID";
 
 	super.writeDeltaShifts(frameIndex, schemaName, attributes,
 	  S2DUtils.TYPE_RNA_DELTASHIFT);

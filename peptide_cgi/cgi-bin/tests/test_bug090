@@ -95,9 +95,9 @@ end
 
 
 set file = "data_dir/15418d1.dat"
-set line = '^1 1 MET 0.085 0.0 -2.931 0.636$'
+set line = '^0.085 0.0 -2.931 0.636 1 MET 1$'
 source tests/check4line
-set line = '^1 90 GLY 0.0 0.0 1.355 0.0$'
+set line = '^0.0 0.0 1.355 0.0 90 GLY 1$'
 source tests/check4line
 
 set file = "data_dir/15418tar5.dat"

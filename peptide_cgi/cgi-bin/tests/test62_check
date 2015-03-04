@@ -55,7 +55,7 @@ foreach file ($files)
 end
 
 set file = "data_dir/15117as1.dat"
-set line = '^1 1 MET C C 172.88$'
+set line = '^172.88 C C 1 MET 1$'
 source tests/check4line
-set line = '^1 73 SER N N 122.69$'
+set line = '^122.69 N N 73 SER 1$'
 source tests/check4line

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2010
+// (c) Copyright 2004-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.16.26.1  2015/02/20 22:40:54  wenger
+// To-do 211:  Re-ordered more of the data; tested it manually in DEVise,
+// but test scripts haven't been updated yet.
+//
+// Revision 1.16  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.15.8.1  2011/09/21 20:46:10  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -203,10 +211,10 @@ public class S2DPistachio {
 	    pistachioWriter.write("# Data: Assignment figure of merit " +
 	      "values for " + _name + "\n");
 	    pistachioWriter.write("# Schema: bmrb-Pistachio\n");
-	    pistachioWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; Residue_label; " +
-	      "backbone >= 95%; backbone < 95%; side chain >= 95%; " +
-	      "side chain < 95%; H >= 95%; H < 95%\n");
+	    pistachioWriter.write("# Attributes: backbone >= 95%; " +
+	      "backbone < 95%; side chain >= 95%; " +
+	      "side chain < 95%; H >= 95%; H < 95%; " +
+	      "Residue_seq_code; Residue_label; Entity_assembly_ID;\n");
             pistachioWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             pistachioWriter.write("# Generation date: " +
@@ -223,15 +231,15 @@ public class S2DPistachio {
 	    //TEMP -- make sure 1 is correct below
             for (int index = 1; index < _residueHasData.length; ++index) {
 		if (_residueHasData[index]) {
-	            pistachioWriter.write(_entityAssemblyID + " " +
-		      index + " " +
-		      _resLabels[index] + " " +
-		      _backboneGE95[index] + " " +
+	            pistachioWriter.write(_backboneGE95[index] + " " +
 		      _backboneLT95[index] + " " +
 		      _sideChainGE95[index] + " " +
 		      _sideChainLT95[index] + " " +
 		      _hGE95[index] + " " +
-		      _hLT95[index] + "\n");
+		      _hLT95[index] + " " +
+		      index + " " +
+		      _resLabels[index] + " " +
+		      _entityAssemblyID + "\n");
 	        }
 	    }
 

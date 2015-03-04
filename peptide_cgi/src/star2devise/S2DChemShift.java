@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2014
+// (c) Copyright 2000-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.39.2.2  2015/03/04 20:46:24  wenger
+// To-do 211:  Hopefully final cleanup before merge.
+//
+// Revision 1.39.2.1  2015/02/20 16:24:08  wenger
+// To-do 211:  Re-ordered some of the data and fixed tests accordingly.
+//
+// Revision 1.39  2014/12/17 22:25:23  wenger
+// Merged s2d_todo191_br_0 thru s2d_todo191_br_1 to trunk.
+//
 // Revision 1.38.6.1  2014/10/01 21:05:00  wenger
 // First cut at prototypes for the changes to the simulated spectrum
 // visualizations.
@@ -291,9 +300,8 @@ public class S2DChemShift {
 	      S2DNames.DAT_SUFFIX);
 	    asWriter.write("# Data: all chemical shifts for " + _name + "\n");
 	    asWriter.write("# Schema: bmrb-AllShift\n");
-	    asWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; " +
-	      "ResLabel; AtomName; AtomType; ChemShiftVal\n");
+	    asWriter.write("# Attributes: ChemShiftVal; AtomName; " +
+	      "AtomType; Residue_seq_code; ResLabel; Entity_assembly_ID\n");
             asWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             asWriter.write("# Generation date: " +
@@ -312,12 +320,12 @@ public class S2DChemShift {
 	    // Write the chemical shift values to the data file.
 	    //
 	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        asWriter.write(_entityAssemblyID + " " +
-		  _resSeqCodes[index] + " " +
-		  _residueLabels[index] + " " +
+	        asWriter.write(_chemShiftVals[index] + " " +
 		  _atomNames[index] + " " +
 		  _atomTypes[index] + " " +
-		  _chemShiftVals[index] + "\n");
+		  _resSeqCodes[index] + " " +
+		  _residueLabels[index] + " " +
+		  _entityAssemblyID + "\n");
 	    }
 
 	    //

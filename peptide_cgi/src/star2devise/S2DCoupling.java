@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2010
+// (c) Copyright 2001-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.16.26.2  2015/03/04 20:46:24  wenger
+// To-do 211:  Hopefully final cleanup before merge.
+//
+// Revision 1.16.26.1  2015/02/20 22:40:53  wenger
+// To-do 211:  Re-ordered more of the data; tested it manually in DEVise,
+// but test scripts haven't been updated yet.
+//
+// Revision 1.16  2011/10/10 23:43:38  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.15.8.1  2011/09/21 20:46:09  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -217,12 +228,13 @@ public class S2DCoupling {
             couplingWriter.write("# Data: coupling constant values for " +
 	      _name + "\n");
             couplingWriter.write("# Schema: bmrb-CouplingConstant\n");
-            couplingWriter.write("# Attributes: Coupling_constant_code; " +
-	      "Entity_assembly_ID; Residue_seq_code; " +
-	      "Atom_one_residue_label; " +
-	      "Atom_one_name string; Atom_two_residue_seq_code; " +
-	      "Atom_two_residue_label; Atom_two_name string; " +
-	      "Coupling_constant_value; Coupling_constant_value_error\n");
+            couplingWriter.write("# Attributes: Coupling_constant_value; " +
+              "Coupling_constant_value_error; Residue_seq_code; " +
+	      "Atom_one_residue_label; Atom_one_name; " +
+	      "Atom_two_residue_seq_code; " +
+	      "Atom_two_residue_label; Atom_two_name; " +
+	      "Coupling_constant_code; Entity_assembly_ID\n");
+
             couplingWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             couplingWriter.write("# Generation date: " +
@@ -230,16 +242,16 @@ public class S2DCoupling {
             couplingWriter.write("#\n");
 
 	    for (int index = 0; index < _couplingConstValues.length; index++) {
-	        couplingWriter.write(_couplingConstCodes[index] + " " +
-		  _entityAssemblyID + " " +
+	        couplingWriter.write(_couplingConstValues[index] + " " +
+		  _couplingConstErrors[index] + " " +
 		  _atom1ResSeqs[index] + " " +
 		  _atom1ResLabels[index] + " " +
 		  _atom1Names[index] + " " +
 		  _atom2ResSeqs[index] + " " +
 		  _atom2ResLabels[index] + " " +
 		  _atom2Names[index] + " " +
-		  _couplingConstValues[index] + " " +
-		  _couplingConstErrors[index] + "\n");
+		  _couplingConstCodes[index] + " " +
+		  _entityAssemblyID + "\n");
 	    }
 
 	    couplingWriter.close();

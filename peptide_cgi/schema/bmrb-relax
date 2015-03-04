@@ -10,9 +10,9 @@
 type relax ascii
 comment #
 whitespace ' '
-attr Entity_assembly_ID int
-attr Residue_seq_code int
-attr Residue_label string 4
-attr Atom_name string 5
 attr relax_value float
 attr relax_error float
+attr Atom_name string 5
+attr Residue_seq_code int
+attr Residue_label string 4
+attr Entity_assembly_ID int

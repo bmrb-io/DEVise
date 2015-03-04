@@ -55,25 +55,25 @@ set line = '^3444 2_175_HA3 2 175 GLY HA3 H 123.371 1.993 19.454 backbone$'
 source tests/check4line
 
 set file = "data_dir/4867as1.dat"
-set line = '^2 5 VAL H H 8.09$'
+set line = '^8.09 H H 5 VAL 2$'
 source tests/check4line
-set line = '^2 175 GLY N N 114.9$'
+set line = '^114.9 N N 175 GLY 2$'
 source tests/check4line
 
 set file = "data_dir/4867d1.dat"
-set line = '^2 5 VAL 0.1 0.0 -3.4 -1.8$'
+set line = '^0.1 0.0 -3.4 -1.8 5 VAL 2$'
 source tests/check4line
-set line = '^2 175 GLY -0.26 0.0 -1.0 0.0$'
+set line = '^-0.26 0.0 -1.0 0.0 175 GLY 2$'
 source tests/check4line
 
 set file = "data_dir/4867hn1.dat"
-set line = '^4867 2 6 GLU 8.5 124.7 H N E$'
+set line = '^8.5 124.7 H N 6 GLU 2 4867 E$'
 source tests/check4line
-set line = '^4867 2 175 GLY 7.85 114.9 H N G$'
+set line = '^7.85 114.9 H N 175 GLY 2 4867 G$'
 source tests/check4line
 
 set file = "data_dir/4867hc1.dat"
-set line = '^4867 2 5 VAL 1.95 29.9 HB CB V$'
+set line = '^0.84 18.4 HG23 CG2 5 VAL 2 4867 V$'
 source tests/check4line
-set line = '^4867 2 175 GLY 3.6 44.0 HA3 CA G$'
+set line = '^3.6 44.0 HA3 CA 175 GLY 2 4867 G$'
 source tests/check4line

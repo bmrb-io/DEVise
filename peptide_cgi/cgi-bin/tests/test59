@@ -88,9 +88,9 @@ end
 
 
 set file = "data_dir/4310g1.dat"
-set line = '^3JHNHA 1 3 GLN H 3 GLN HA 7.240 2.0$'
+set line = '^7.240 2.0 3 GLN H 3 GLN HA 3JHNHA 1$'
 source tests/check4line
-set line = '^3JHNHA 1 148 LYS H 148 LYS HA 8.576 2.0$'
+set line = '^8.576 2.0 148 LYS H 148 LYS HA 3JHNHA 1$'
 source tests/check4line 
 
 set file = "data_dir/4310ac1.dat"
@@ -118,15 +118,15 @@ set line = '^3 21 TRP O O 0.6 -4.175 0 0 -0.15 0 backbone AMU -1$'
 source tests/check4line
 
 set file = "data_dir/4310as1.dat"
-set line = '^1 2 ASP CB C 41.2$'
+set line = '^41.2 CB C 2 ASP 1$'
 source tests/check4line
-set line = '^1 148 LYS HA H 4.13$'
+set line = '^4.13 HA H 148 LYS 1$'
 source tests/check4line
 
 set file = "data_dir/4310as2.dat"
-set line = '^3 1 LYS H H 9.08$'
+set line = '^9.08 H H 1 LYS 3$'
 source tests/check4line
-set line = '^3 21 TRP HH2 H 6.99$'
+set line = '^6.99 HH2 H 21 TRP 3$'
 source tests/check4line
 
 set file = "data_dir/4310rl.dat"

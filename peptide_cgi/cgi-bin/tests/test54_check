@@ -66,21 +66,21 @@ set line = '^3840 4_26_HG3 4 26 GLU HG3 H 1.168 19.586 5.375 all_hydrogens$'
 source tests/check4line
 
 set file = "data_dir/5838d1.dat"
-set line = '^1 1 SER 0.2 0.0 -1.21 1.99$'
+set line = '^0.2 0.0 -1.21 1.99 1 SER 1$'
 source tests/check4line
-set line = '^1 91 GLU -0.21 0.0 1.47 0.75$'
+set line = '^-0.21 0.0 1.47 0.75 91 GLU 1$'
 source tests/check4line
 
 set file = "data_dir/5838d2.dat"
-set line = '^3 3 LEU 0.15 0.0 0.0 0.0$'
+set line = '^0.15 0.0 0.0 0.0 3 LEU 3$'
 source tests/check4line
-set line = '^3 25 LEU -0.04 0.0 0.0 0.0$'
+set line = '^-0.04 0.0 0.0 0.0 25 LEU 3$'
 source tests/check4line
 
 set file = "data_dir/5838am1.dat"
-set line = '^1 1 SER 0.7777778 0.0 0.0 0.0 0.0 0.0$'
+set line = '^0.7777778 0.0 0.0 0.0 0.0 0.0 1 SER 1$'
 source tests/check4line
-set line = '^1 91 GLU 0.61538464 0.0 0.0 0.0 0.0 0.15384616$'
+set line = '^0.61538464 0.0 0.0 0.0 0.0 0.15384616 91 GLU 1$'
 source tests/check4line
 
 # Different in 2.1 and 3.1.

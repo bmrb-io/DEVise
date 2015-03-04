@@ -11,10 +11,6 @@ type bmrb-DNADeltaShift ascii
 comment #
 whitespace ' '
 
-attr Entity_assembly_ID int
-attr Residue_seq_code int
-attr Residue_label string 4
-
 attr C1p_DeltaShift float
 attr C2_DeltaShift float
 attr C2p_DeltaShift float
@@ -56,3 +52,7 @@ attr N4_DeltaShift float
 attr N6_DeltaShift float
 attr N7_DeltaShift float
 attr N9_DeltaShift float
+
+attr Residue_seq_code int
+attr Residue_label string 4
+attr Entity_assembly_ID int

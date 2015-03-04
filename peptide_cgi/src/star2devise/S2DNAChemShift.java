@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009-2010
+// (c) Copyright 2009-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.12.26.1  2015/02/20 22:40:54  wenger
+// To-do 211:  Re-ordered more of the data; tested it manually in DEVise,
+// but test scripts haven't been updated yet.
+//
+// Revision 1.12  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.11.20.1  2011/09/21 20:46:10  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -301,14 +309,14 @@ public class S2DNAChemShift extends S2DChemShift {
 	 */
 	public void write(FileWriter writer) throws IOException
 	{
-	    writer.write(_entityAssemblyID + " " +
-	      _residueSequenceCode + " " +
-	      _residueLabel + " ");
-
 	    for (int index = 0; index < atomNameList.length; index++) {
 	    	Float value = (Float)get(atomNameList[index]);
 		writer.write(value + " ");
 	    }
+
+	    writer.write( _residueSequenceCode + " " +
+	      _residueLabel + " " +
+	      _entityAssemblyID);
 	    writer.write("\n");
 	}
     }

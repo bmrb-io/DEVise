@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2011-2013
+// (c) Copyright 2011-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.6.10.2  2015/03/04 20:46:24  wenger
+// To-do 211:  Hopefully final cleanup before merge.
+//
+// Revision 1.6.10.1  2015/02/20 22:40:54  wenger
+// To-do 211:  Re-ordered more of the data; tested it manually in DEVise,
+// but test scripts haven't been updated yet.
+//
+// Revision 1.6  2014/01/14 23:10:12  wenger
+// Merged peak_lists2_br_0 thru peak_lists2_br_3 to trunk.
+//
 // Revision 1.5.8.1  2013/10/22 19:45:09  wenger
 // Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
 //
@@ -262,8 +272,8 @@ public class S2DS2Pred {
 
 	    writer.write("# Data: s2pred values for " + _name + "\n");
 	    writer.write("# Schema: bmrb-s2pred\n");
-	    writer.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; Experimental_S2; Predicted_S2\n");
+	    writer.write("# Attributes: Experimental_S2; Predicted_S2; " +
+	      "Residue_seq_code; Entity_assembly_ID\n");
 	    writer.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
 	    writer.write("# Generation date: " +
@@ -272,9 +282,10 @@ public class S2DS2Pred {
 
 	    for (int index = 0; index < _residueData.size(); index++) {
 	        ResidueData rd = (ResidueData)_residueData.elementAt(index);
-	        writer.write(rd._entityAssemblyId + " " +
-		  rd._residueSeqCode + " " + rd._experimentalS2 + " " +
-		  rd._predictedS2 + "\n");
+	        writer.write(rd._experimentalS2 + " " +
+		  rd._predictedS2 + " " +
+		  rd._residueSeqCode + " " +
+		  rd._entityAssemblyId + "\n");
 	    }
 
 	    writer.close();

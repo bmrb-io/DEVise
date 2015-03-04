@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2008-2010
+// (c) Copyright 2008-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.26.2  2015/03/04 20:46:24  wenger
+// To-do 211:  Hopefully final cleanup before merge.
+//
+// Revision 1.11.26.1  2015/02/20 16:24:09  wenger
+// To-do 211:  Re-ordered some of the data and fixed tests accordingly.
+//
+// Revision 1.11  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.10.10.1  2011/09/21 20:46:10  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -225,10 +235,10 @@ public class S2DS2Order {
 	      File.separator + _name + S2DNames.ORDER_SUFFIX +
 	      frameIndex + S2DNames.DAT_SUFFIX);
             s2OrderWriter.write("# Data: s2order values for " + _name + "\n");
-            s2OrderWriter.write("# Schema: bmrb-s2order\n");
-            s2OrderWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; " +
-	      "Residue_label; Atom_name; s2order_value; s2order_error\n");
+            s2OrderWriter.write("# Schema: bmrb-s2\n");
+            s2OrderWriter.write("# Attributes: s2order_value; " +
+	      "s2order_error; Atom_name; Residue_seq_code; " +
+	      "Residue_label; Entity_assembly_ID\n");
             s2OrderWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             s2OrderWriter.write("# Generation date: " +
@@ -236,12 +246,12 @@ public class S2DS2Order {
             s2OrderWriter.write("#\n");
 
 	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        s2OrderWriter.write(_entityAssemblyID + " " +
+	        s2OrderWriter.write(_s2OrderValues[index] + " " +
+		  _s2OrderErrors[index] + " " +
+		  _atomNames[index] + " " +
 		  _resSeqCodes[index] + " " +
 		  _resLabels[index] + " " +
-		  _atomNames[index] + " " +
-		  _s2OrderValues[index] + " " +
-		  _s2OrderErrors[index] + "\n");
+		  _entityAssemblyID + "\n");
 	    }
 
 	    s2OrderWriter.close();

@@ -13,9 +13,9 @@ type AllShift ascii
 comment #
 whitespace ' '
 
-attr Entity_assembly_ID int
-attr Residue_seq_code int
-attr ResLabel string 4
+attr ChemShiftVal float
 attr AtomName string 5
 attr AtomType string 3
-attr ChemShiftVal float
+attr Residue_seq_code int
+attr ResLabel string 4
+attr Entity_assembly_ID int

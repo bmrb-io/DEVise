@@ -11,12 +11,12 @@ type HXRates ascii
 comment #
 whitespace ' '
 
-attr Entity_assembly_ID int
-attr Residue_seq_code int
-attr Residue_label string 4
-
 attr Atom_name string 5
 attr H_exchange_rate_value float
 attr H_exchange_rate_min_value float
 attr H_exchange_rate_max_value float
 attr H_exchange_rate_value_error float
+
+attr Residue_seq_code int
+attr Residue_label string 4
+attr Entity_assembly_ID int

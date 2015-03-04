@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005-2012
+// (c) Copyright 2005-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.18.20.1  2015/03/04 19:44:49  wenger
+// To-do 211:  Fixed code and tests for ambiguity codes; added relevant
+// version history entry and marked to-do item as done.
+//
+// Revision 1.18  2012/03/12 01:08:48  wenger
+// Merged vis_page_fix_base thru vis_page_fix_br_1 to trunk (includes
+// fixing of some tests to be more general).
+//
 // Revision 1.17.6.1  2012/01/20 21:00:03  wenger
 // Got a bunch of the visualization summary page menus working.
 //
@@ -244,9 +252,10 @@ public class S2DAmbiguity {
 	      S2DNames.DAT_SUFFIX);
 	    ambiguityWriter.write("# Data: ambiguity values for " +
 	      _name + "\n");
-	    ambiguityWriter.write("# Schema: bmrb-ambiguity\n");
-	    ambiguityWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; Residue_label; %1; %2; %3; %4; %5; %9\n");
+	    ambiguityWriter.write("# Schema: bmrb-Ambiguity\n");
+	    ambiguityWriter.write("# Attributes: Ambig1; Ambig2; Ambig3; " +
+	      "Ambig4; Ambig5; Ambig9; Residue_seq_code; Residue_label; " +
+	      "Entity_assembly_ID\n");
             ambiguityWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             ambiguityWriter.write("# Generation date: " +
@@ -263,15 +272,15 @@ public class S2DAmbiguity {
 	    //TEMP -- make sure 1 is right below
             for (int index = 1; index < _residueHasData.length; ++index) {
 		if (_residueHasData[index]) {
-	            ambiguityWriter.write(_entityAssemblyID + " " +
-		      index + " " +
-		      _resLabels[index] + " " +
-		      _percent1[index] + " " +
+	            ambiguityWriter.write(_percent1[index] + " " +
 		      _percent2[index] + " " +
 		      _percent3[index] + " " +
 		      _percent4[index] + " " +
 		      _percent5[index] + " " +
-		      _percent9[index] + "\n");
+		      _percent9[index] + " " +
+		      index + " " +
+		      _resLabels[index] + " " +
+		      _entityAssemblyID + "\n");
 	        }
 	    }
 

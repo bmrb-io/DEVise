@@ -37,21 +37,23 @@ set line = '^2177 3_._O 3 . . O O -7.051 -0.232 -1.921 backbone$'
 source tests/check4line
 
 set file = "data_dir/4096as1.dat"
-set line = '^1 1 GLY CA C 43.08$'
+set line = '^43.08 CA C 1 GLY 1$'
 source tests/check4line
-set line = '^1 147 SER N N 120.79$'
+set line = '^120.79 N N 147 SER 1$'
 source tests/check4line
 
 set file = "data_dir/4096c1.dat"
-set line = '^1 1 GLY -1 0 -1 0 0$'
+set line = '^-1 0 -1 0 0 1 GLY 1$'
 source tests/check4line
-set line = '^1 147 SER -1 1 1 1 -1$'
+set line = '^-1 1 1 1 -1 147 SER 1$'
 source tests/check4line
 
 set file = "data_dir/4096p1.dat"
-set line = "^1 1 GLY 66.666664 50.0 0.0"
+set line = '^66.666664 50.0 0.0 1 GLY 1$'
 source tests/check4line
-set line = "^1 39 HIS 75.0 83.333336 100.0"
+set line = '^75.0 83.333336 100.0 39 HIS 1$'
+source tests/check4line
+set line = '^80.0 100.0 100.0 147 SER 1$'
 source tests/check4line
 
 set file = "data_dir/4096rl.dat"
