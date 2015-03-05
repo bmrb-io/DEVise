@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.365  2015/03/04 21:58:46  wenger
+// Merged s2d_todo211_br_0 thru s2d_todo211_br_1 to trunk.
+//
 // Revision 1.364.2.2  2015/02/20 22:40:53  wenger
 // To-do 211:  Re-ordered more of the data; tested it manually in DEVise,
 // but test scripts haven't been updated yet.
@@ -1123,7 +1126,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.5x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.5";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
