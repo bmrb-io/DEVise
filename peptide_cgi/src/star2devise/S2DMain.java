@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.366  2015/03/05 20:21:51  wenger
+// Changed version to 12.4.5 for release, added release date to
+// version history.
+//
 // Revision 1.365  2015/03/04 21:58:46  wenger
 // Merged s2d_todo211_br_0 thru s2d_todo211_br_1 to trunk.
 //
@@ -1126,7 +1130,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.5";
+    public static final String PEP_CGI_VERSION = "12.4.6x0"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
