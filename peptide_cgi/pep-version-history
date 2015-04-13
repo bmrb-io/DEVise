@@ -5,7 +5,12 @@ Peptide-CGI 12.4.6
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
 (Not yet released.)
 
-(Nothing yet.)
+* Spectral dimension information in Cyana/Xeasy peak list text is
+now processed.
+
+* If a peak list save frame contains a _Spectral_dim loop an spectral
+dimension data in the peak list text, an error is generated if the
+two data sets disagree (unless the -allow_sd_mismatch flag is set).
 
 
 Peptide-CGI 12.4.5

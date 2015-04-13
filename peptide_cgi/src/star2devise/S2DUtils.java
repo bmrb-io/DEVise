@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2014
+// (c) Copyright 2000-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.30  2014/05/14 21:42:22  wenger
+// Added support for new dynamics movie URLs (<pdb> and <res> in the
+// config string are replaced appropriately); a couple of other minor
+// cleanups.
+//
 // Revision 1.29  2014/01/14 23:10:12  wenger
 // Merged peak_lists2_br_0 thru peak_lists2_br_3 to trunk.
 //
@@ -135,6 +140,7 @@ public class S2DUtils
     // Parses a string, returning an integer value.  On a parse error, the
     // result is set to 0 and an error message is printed.
     //TEMP -- use this other places
+    //TEMP -- should we trim str before parsing?
     public static int string2Int(String str)
     {
         int result;

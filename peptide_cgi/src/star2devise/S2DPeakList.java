@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2013-2014
+// (c) Copyright 2013-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -28,6 +28,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2014/11/23 22:29:30  wenger
+// Did Peptide-CGI to-do 210:  Processing of Sparky peak lists without
+// heights/volumes.
+//
 // Revision 1.6  2014/07/30 21:47:12  wenger
 // Merged s2d_todo207_br_0 thru s2d_todo207_br_1 to trunk.
 //
@@ -333,14 +337,15 @@ import java.io.*;
 import java.util.*;
 import EDU.bmrb.starlibj.SaveFrameNode;
 import EDU.bmrb.starlibj.StarUnparser;
-import  java.util.regex.Pattern;
-import  java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class S2DPeakList {
     //===================================================================
     // VARIABLES
 
     private static final int DEBUG = 0;
+    private static final int MAX_DIMS = 4;
 
     private String _name;
     private String _longName;
@@ -360,6 +365,7 @@ public class S2DPeakList {
 
     // Patterns for matching peak list text lines.
     Pattern _sparkyPat;
+    Pattern _xeasyHdrPat;
     Pattern _xeasyPat;
     Pattern _nmrviewPat1;
     Pattern _nmrviewPat2;
@@ -384,7 +390,7 @@ public class S2DPeakList {
     private ArrayList _peaks = new ArrayList();
 
     private boolean _haveSpectralDimLoop = false;
-    private String[] _spectralDimRegions = new String[4];
+    private String[] _spectralDimRegions = new String[MAX_DIMS];
 
     private static class PeakAssignment {
 	// Note:  If we have fewer than four dimensions, some of these
@@ -393,7 +399,7 @@ public class S2DPeakList {
 
 	public PeakAssignment() {
 	    // One AtomAmbigSet for each possible dimension.
-	    _atomSets = new AtomAmbigSet[4];
+	    _atomSets = new AtomAmbigSet[MAX_DIMS];
 	}
 
     }
@@ -432,7 +438,8 @@ public class S2DPeakList {
     //TEMP -- probably don't need all of this stuff, at least until DEVise peak list visualizations are working
     public S2DPeakList(String name, String longName, S2DNmrStarIfc star,
       SaveFrameNode frame, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, boolean peakOnly) throws S2DException
+      S2DSummaryHtml summary, boolean peakOnly, boolean allowSDMismatch)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DPeakList.S2DPeakList(" + name +
@@ -449,6 +456,11 @@ public class S2DPeakList {
 	_starVersion = star.version();
         _frameName = star.getFrameName(frame);
 	_peakOnly = peakOnly;
+
+	_spectralDimRegions[0] = "";
+	_spectralDimRegions[1] = "";
+	_spectralDimRegions[2] = "";
+	_spectralDimRegions[3] = "";
 
         //
 	// See if we already have tags with the peak list values.
@@ -474,20 +486,61 @@ public class S2DPeakList {
 	    getPeakTextValues(frame);
 	}
 
+	String[] spectralDims = null;
 	try {
-	    String[] spectralDims = star.getFrameValues(frame,
-	      star.SPEC_DIM_ID, star.SPEC_DIM_ID);
+	    // Note:  If we find the _Spectral_dim.ID loop here, we just
+	    // copy that loop verbatim to the output file later on.
+	    spectralDims = star.getFrameValues(frame,
+	      star.SPEC_DIM_ID, star.SPEC_DIM_REGION);
 	    _haveSpectralDimLoop = true;
 	} catch(S2DError err) {
-	    if (_spectralDimRegions[0] == null) {
+	    // If we found any spectral dim values in the peak list text,
+	    // _spectralDimRegions[0] will not be blank.
+	    if (_spectralDimRegions[0].equals("")) {
 	        throw new S2DError("Error: no _Spectral_dim data in save frame " +
 	          star.getFrameName(frame) + " (" + err.toString() + ")");
 	    }
 	}
 
+	// Check whether spectral dim info from the peak list text and
+	// from the existing Spectral_dim loop agree, if we have both.
+	if (_haveSpectralDimLoop) {
+	    boolean error = false;
+	    for (int dim = 0; dim < MAX_DIMS; ++dim) {
+	        if (dim >= spectralDims.length) {
+		    if (_spectralDimRegions[dim].equals("")) {
+		        continue;
+		    } else {
+		        error = true;
+		        break;
+		    }
+	        }
+	       if (!_spectralDimRegions[dim].equals("") &&
+	         !_spectralDimRegions[dim].equals(spectralDims[dim])) {
+	            error = true;
+		    break;
+	        }
+	    }
+	    if (error) {
+	        System.err.println("Spectral dim mismatch:");
+	        for (int dim = 0; dim < MAX_DIMS; ++dim) {
+                    System.out.println("  _spectralDimRegions[" + dim + "]: " +
+		      _spectralDimRegions[dim]);
+	            if (dim < spectralDims.length) {
+                        System.out.println("  spectralDims[" + dim + "]: " +
+		          spectralDims[dim]);
+		    }
+	        }
+		if (!allowSDMismatch) {
+	            throw new S2DError("Spectral dim mismatch");
+		}
+	    }
+	}
+
 	// If we got peak values in one of the two places above,
 	// write the info from the peak save frame (except for the 
-	// peak text) to a temp file.
+	// peak text) to a temp file.  (Note that this will include
+	// copying the _Spectral_dim.ID loop.)
         writePeakSaveFrame(frame);
     }
 
@@ -699,11 +752,13 @@ TEMP*/
 	// to set things up for a variable number of repetitions.
 	String floatPat = "(-?\\d+\\.\\d+\\s+)";
 	String intPat = "(-?\\d+\\s+)";
-	String alphaPat = "([a-zA-Z-]\\s+)";
+	String alphaPat = "([a-zA-Z\\?-]\\s+)";
 	String expPat = "((-?\\d*\\.\\d*[eE][\\+-]\\d+\\s+)|(0\\s+))";
 	String assignAtom = "\\w*(/\\w*)*"; // allows ambiguous assignments
 	String assignPat = "(" + assignAtom + "-" + assignAtom + "(-" +
 	  assignAtom + ")?(-" + assignAtom + ")?\\s+)";
+
+	//TEMP -- add examples of matching input lines to the code
 
 	// Regex pattern for Sparky.
 	// Note:  entry 16647 will match this pattern.
@@ -714,10 +769,18 @@ TEMP*/
 	    System.out.println("_sparkyPat <" + _sparkyPat + ">");
 	}
 
-	// Regex pattern for Cyana/xeasy -- matches 2D, 3D, and 4D.
+	// Regex patterns for Cyana/xeasy -- matches 2D, 3D, and 4D.
 	// 2D example: test_peak10 (entry 15025).
 	// 3D example: test_peak7 (entry 16576).
 	// 4D example: test_peak13 (entry 16806).
+	// Note: test_peak23 (entry 6792) gets the spectral dimensions
+	// from the header.
+	_xeasyHdrPat = Pattern.compile("#INAME" + ws + intPat +
+	  "(\\w+)" + ".*");
+        if (doDebugOutput(20)) {
+	    System.out.println("_xeasyHdrPat <" + _xeasyHdrPat + ">");
+	}
+
 	_xeasyPat = Pattern.compile(ws + intPat +
 	  floatPat + floatPat + floatPat + "?" + floatPat + "?" + // chem shifts
 	  intPat + alphaPat +
@@ -790,6 +853,7 @@ TEMP*/
 	String line2 = stripSparkyQs(line);
 
 	Matcher sparkyMatch = _sparkyPat.matcher(line2);
+	Matcher xeasyHdrMatch = _xeasyHdrPat.matcher(line2);
 	Matcher xeasyMatch = _xeasyPat.matcher(line2);
 	Matcher nmrviewMatch1 = _nmrviewPat1.matcher(line2);
 	Matcher nmrviewMatch2 = _nmrviewPat2.matcher(line2);
@@ -803,6 +867,14 @@ TEMP*/
 	    }
 	    processSparkyMatch(sparkyMatch, peakId);
 	    result = true;
+
+	} else if (xeasyHdrMatch.matches()) {
+	    matchCount++;
+            if (doDebugOutput(22)) {
+	        System.out.println("  _xeasyHdrPat matches line: " +
+		  line);
+	    }
+	    processXeasyHdrMatch(xeasyHdrMatch, peakId);
 
 	} else if (xeasyMatch.matches()) {
 	    matchCount++;
@@ -904,6 +976,20 @@ TEMP*/
             peakInfo._assignments =
 	      parseSparkyAssignments(sparkyMatch.group(1));
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Get data from a Cyana/xeasy header line.
+    private void processXeasyHdrMatch(Matcher xeasyHdrMatch, int peakId)
+    {
+        if (doDebugOutput(23)) {
+	    System.out.println("processXeasyHdrMatch()");
+	    printMatch(xeasyHdrMatch);
+	}
+	
+	int dim = S2DUtils.string2Int(xeasyHdrMatch.group(1).trim());
+
+	_spectralDimRegions[dim-1] = xeasyHdrMatch.group(2);
     }
 
     //-------------------------------------------------------------------
@@ -1376,7 +1462,7 @@ TEMP*/
         writer.write("        _Spectral_dim.Entry_ID\n");
         writer.write("        _Spectral_dim.Spectral_peak_list_ID\n");
 	writer.write("\n");
-	for (int dim = 1; dim <= 4; dim++) {
+	for (int dim = 1; dim <= MAX_DIMS; dim++) {
 	    String region = _spectralDimRegions[dim-1];
 	    if (!region.equals("")) {
 		AtomTypeIso ati = region2TypeIso(region);
@@ -1404,7 +1490,8 @@ TEMP*/
 	if (region.startsWith("C") || region.startsWith("13C")) {
 	    result.atomType = "C";
 	    result.isotope = 13;
-	} else if (region.startsWith("H") || region.startsWith("1H")) {
+	} else if (region.startsWith("H") || region.startsWith("1H") ||
+	  (region.startsWith("h"))) {
 	    result.atomType = "H";
 	    result.isotope = 1;
 	} else if (region.startsWith("N")) {
@@ -1762,7 +1849,7 @@ TEMP*/
 	            writer.write(pi._shifts[shiftNum] + " ");
 	        }
 	    }
-	    for (; shiftNum < 4; shiftNum++) {
+	    for (; shiftNum < MAX_DIMS; shiftNum++) {
 	        writer.write("0.0 ");
 	    }
 	    writer.write("\n");

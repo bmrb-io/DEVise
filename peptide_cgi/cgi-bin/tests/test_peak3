@@ -6,8 +6,10 @@ set result = 0
 
 rm -r -f */16486*
 
+#TEMP -- get rid of -allow_sd_mismatch if entry is fixed
 echo -n "Processing NMR-STAR: "
-./s2d -nomail -name 16486 -file test_data/bmr16486.str -force -check_res_list
+./s2d -nomail -name 16486 -file test_data/bmr16486.str -force -check_res_list \
+  -allow_sd_mismatch
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1

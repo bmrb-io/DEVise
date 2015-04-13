@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.367  2015/03/06 19:44:25  wenger
+// Changed version to 12.4.6x0, added corresponding version history
+// section.
+//
 // Revision 1.366  2015/03/05 20:21:51  wenger
 // Changed version to 12.4.5 for release, added release date to
 // version history.
@@ -1130,7 +1134,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.6x0"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.6x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 
@@ -1299,6 +1303,8 @@ public class S2DMain {
 
     private static int AMBIGUITY_WRAP_LENGTH = 10;
     private static int PISTACHIO_WRAP_LENGTH = 10;
+
+    private boolean _allowSDMismatch = false;
 
     //===================================================================
     // PUBLIC METHODS
@@ -1961,6 +1967,8 @@ public class S2DMain {
           "    java S2DMain -name <> -file <> [-file <>...] -coord_index <> [args...]\n" +
           "\n" +
           "Options are:\n" +
+	  "    -allow_sd_mismatch\n" +
+	  "        Spectral_dim mismatch is warning, not error\n" +
           "    -bmrbid <value>\n" +
           "        the BMRB accession number to process (e.g., " + DEFAULT_ACCESSION_NUM + ")\n" +
 	  "        (mandatory if pdbid is specified)\n" +
@@ -2124,7 +2132,10 @@ public class S2DMain {
 	int index = 0;
 	while (index < args.length) {
 
-	    if ("-bmrbid".equals(args[index])) {
+	    if ("-allow_sd_mismatch".equals(args[index])) {
+	    	_allowSDMismatch = true;
+
+	    } else if ("-bmrbid".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
 		    throw new S2DError("-bmrbid argument needs value");
@@ -4944,7 +4955,8 @@ public class S2DMain {
 	// Create an S2DPeakList object.
 	//
 	S2DPeakList peakList = new S2DPeakList(_name, _longName, star,
-	  frame, _dataDir, _sessionDir, _summary, _peakOnly);
+	  frame, _dataDir, _sessionDir, _summary, _peakOnly,
+	  _allowSDMismatch);
 
 	//
 	// Now go ahead and calculate and write out the peak list values.

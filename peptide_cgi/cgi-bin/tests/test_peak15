@@ -6,8 +6,9 @@ set result = 0
 
 rm -r -f */18561*
 
+#TEMP -- get rid of -allow_sd_mismatch if entry is fixed
 echo -n "Processing NMR-STAR: "
-./s2d -nomail -name 18561 -file test_data/bmr18561_3.str -force -check_res_list -check_pct -peakonly
+./s2d -nomail -name 18561 -file test_data/bmr18561_3.str -force -check_res_list -check_pct -peakonly -allow_sd_mismatch
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
