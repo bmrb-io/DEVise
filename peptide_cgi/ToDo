@@ -979,6 +979,9 @@ Num Date        Status  Pri     Description
 216 12/17/14	OPEN	2	Add residue sequence view to two-entry
 				visualizations (also see 191). (wenger)
 
+217 4/14/15	OPEN	4	Change visualization backgrounds to white
+				for a more modern look. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
