@@ -736,6 +736,9 @@ Num Date        Status  Description
 			(elu/wenger)
 			(Moved to DEVise/JS bug 1042.)
 
+161 4/15/15	OPEN	3D visualization has too much vertical space around
+			the data scroll view. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
