@@ -323,6 +323,13 @@ Be able to zoom in/out with mouse wheel.  (wlee44/wenger)
 Add a button in the JavaScreen that sends your browser to the
 visualization server page.  (wlee44/wenger)
 
+09.039 4/17/15	OPEN	2
+Replace at least some "control views" in visualizations with pull-down
+menus, etc.  (Also see BMRB project 1.32 in the 2013 list.)
+We'd like to be able to replace some of the "selection views"
+with pull-down menus; and we'd also like to allow the user to make
+multiple, discontinuous, selections.
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri

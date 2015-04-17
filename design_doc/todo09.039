@@ -1,0 +1,36 @@
+		To-do 09.039:  Replace "control views" with menus
+				2015-04-17
+
+(Also see item 1.32 in the 2013 BMRB projects list.)
+
+We would like to be able to replace some of the "control views" in BMRB
+visualizations with pull-down menus, etc.
+
+There are several benefits from this:
+
+1) Make the user interface more intuitive.
+
+2) Save screen real estate.
+
+3) Eventually add the capability to make multiple, discontinuous,
+selections.
+
+
+I think maybe this should be done in two phases:
+
+1) Just add the capability to have menus that select a single item
+from a list.
+
+2) Add the capability to select multiple items.
+
+I think that it might be possible to do phase 1 without many changes
+to the DEVise server itself -- I think the actual visualization
+could have a view with a cursor, and the view could have a flag that
+says it should be displayed as a menu by the JavaScreen.  Then, when
+the user selects something, the JavaScreen could just send a cursor
+moved message to DEVise.
+
+To do the multiple selection will be much trickier -- I don't know
+how that will fit into the overall DEVise paradigm.  Maybe we could
+implement something like a new filter where the records that pass the
+filter are individually listed somehow.
