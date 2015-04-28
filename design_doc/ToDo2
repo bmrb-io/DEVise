@@ -389,6 +389,10 @@ one site than on another.)  Right now it's really a pain because the
 port number is hard-coded in to the html files, and the ports+files
 script. (wenger)
 
+12.005 4/28/15	OPEN	2
+The "test" JavaScreen installation at CS should use a separate
+CGI script from the "normal" installation. (wenger)
+
 ...........................................................................
 SECTION 13 (JavaScreen, misc.)
 Number Date	Status  Pri
