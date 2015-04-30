@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2013
+#  (c) Copyright 2001-2015
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -195,22 +195,16 @@ mkdir -p $downloaddir
 chmod 775 $downloaddir
 
 #-----------------------------------------------------------
-
-if ($client_only) then
-  exit
-endif
-
-#-----------------------------------------------------------
-# Install the cgi file.
+# Install the cgi files.
 
 echo ""
-echo "Installing CGI file"
+echo "Installing CGI files"
 
 if (! -d $cgidir) then
   mkdir -p $cgidir
   chmod 755 $cgidir
 endif
-cp -p js.cgi $cgidir
+cp -p cgi-bin/js.cgi $cgidir
 chmod 755 $cgidir/js.cgi
 
 set logdir = $cgidir/devise
@@ -218,13 +212,19 @@ if (! -d $logdir) then
   mkdir -p $logdir
   chmod 755 $logdir
 endif
-cp js_log $logdir
+cp cgi-bin/js_log $logdir
 chmod 755 $logdir/js_log
 
 set logdir = $cgidir/devise/js_debug_log
 if (! -d $logdir) then
   mkdir -p $logdir
   chmod 777 $logdir
+endif
+
+#-----------------------------------------------------------
+
+if ($client_only) then
+  exit
 endif
 
 #-----------------------------------------------------------

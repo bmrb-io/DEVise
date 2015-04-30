@@ -1,8 +1,8 @@
-#! ../bin2/perl
+#! /usr/bin/env perl
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2007
+#  (c) Copyright 2000-2015
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,6 +19,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  2007/03/30 15:43:10  wenger
+#  (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
+#  a bunch of calls to validate() in the GUI); fixed up the client logging
+#  functionality somewhat; various improvements to debug output.
+#
 #  Revision 1.5  2002/07/19 17:06:49  wenger
 #  Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 #

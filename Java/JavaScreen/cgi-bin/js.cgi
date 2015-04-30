@@ -1,4 +1,4 @@
-#! bin2/perl
+#! /usr/bin/env perl
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  2014/11/13 17:47:50  wenger
+#  Fixed DEVise/JS bug 1043:  Usage info isn't correct when client
+#  connects in CGI mode.
+#
 #  Revision 1.7  2001/11/07 22:31:29  wenger
 #  Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
 #  js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I

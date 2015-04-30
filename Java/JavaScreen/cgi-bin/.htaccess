@@ -1,0 +1,8 @@
+
+PerlModule ModPerl::Registry
+      SetHandler perl-script
+      PerlHandler ModPerl::Registry
+      Options +ExecCGI
+      PerlSendHeader On
+      allow from all
+
