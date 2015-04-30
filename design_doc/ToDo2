@@ -392,6 +392,8 @@ script. (wenger)
 12.005 4/28/15	OPEN	2
 The "test" JavaScreen installation at CS should use a separate
 CGI script from the "normal" installation. (wenger)
+(Note:  The part of this that's more work is getting the html files
+properly updated with the right path to the script.)
 
 ...........................................................................
 SECTION 13 (JavaScreen, misc.)
