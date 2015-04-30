@@ -982,6 +982,11 @@ Num Date        Status  Pri     Description
 217 4/14/15	OPEN	4	Change visualization backgrounds to white
 				for a more modern look. (wenger)
 
+218 4/30/15	OPEN	2	Peptide-CGI should get port #, CGI script
+				path, etc., for the html files it generates
+				from a template installed as part of the
+				DEVise/JavaScreen installation. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
