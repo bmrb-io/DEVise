@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.178  2015/05/08 17:54:49  wenger
+// Merged mod_perl_br_0 thru mod_perl_br_2 to trunk.
+//
 // Revision 1.177.4.3  2015/05/08 16:55:14  wenger
 // Hopefully final mod_perl cleanup.
 //
@@ -1083,7 +1086,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.8x2"/*TEMP*/);
+    public static final String VERSION = new String("5.14.8");
 
     public static final String PROTOCOL_VERSION = new String("17.2");
 
