@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.368.2.1  2015/04/30 21:16:17  wenger
+// Modified Peptide-CGI to generate html files with new CGI script path
+// for mod_perl.
+//
+// Revision 1.368  2015/04/13 02:17:42  wenger
+// Spectral dimension information in Cyana/Xeasy peak list text is
+// now processed (fixes problem with entry 6792).  Mismatch between
+// spectral dim info in peak list text and existing loop is now an
+// error.  Also improved checking in some of the peak list tests.
+//
 // Revision 1.367  2015/03/06 19:44:25  wenger
 // Changed version to 12.4.6x0, added corresponding version history
 // section.
@@ -1134,7 +1144,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.6x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.6x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
 

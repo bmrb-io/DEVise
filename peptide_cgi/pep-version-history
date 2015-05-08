@@ -2,8 +2,11 @@
 
 Peptide-CGI 12.4.6
 ------------------
-(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.8 or higher.)
 (Not yet released.)
+
+* Modified Peptide-CGI to work with JavaScreen 5.14.8, which has
+the capability to use mod_perl in the web server.
 
 * Spectral dimension information in Cyana/Xeasy peak list text is
 now processed.

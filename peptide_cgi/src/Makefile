@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 2000-2013
+# (c) Copyright 2000-2015
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -20,7 +20,7 @@
 
 include ../Makefile.config
 
-JAVAC = javac -source 1.3 -target 1.3
+JAVAC = javac -source 1.7 -target 1.7
 
 default: all jar
 

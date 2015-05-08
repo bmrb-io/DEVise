@@ -2,7 +2,7 @@
 <!--
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2000-2014
+  (c) Copyright 2000-2015
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -94,7 +94,7 @@
       <param name="debug" value="0">
       <param name="session" value="bmrb/dynamic_sessions/ENTRY_IDd1.ds">
       <param name="cmdport" value="6666">
-      <param name="cgiurl" value="/cgi-bin/js.cgi">
+      <param name="cgiurl" value="/cgi-bin/devise/js.cgi">
       <param name="rubberbandlimit" value="4x4">
       <!-- old bgcolor     <param name="bgcolor" value="64+96+0"> -->
       <param name="bgcolor" value="0+0+0">
