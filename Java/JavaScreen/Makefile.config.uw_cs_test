@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2014
+#  (c) Copyright 2001-2015
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -39,7 +39,7 @@ JAVA_BIN3 = /usr/bin
 POP_DIR = /scratch/devise/js.test
 SERV_DIR = /scratch/devise/js.test
 JAR_DIR = /var/home/www/public/html/devise/test
-CGI_DIR = /var/home/www/public/cgi-bin/js_test
+CGI_DIR = /var/home/www/public/cgi-bin/devise
 IDSTR = test
 
 # Where the DEVise sessions, schemas, etc., are installed.

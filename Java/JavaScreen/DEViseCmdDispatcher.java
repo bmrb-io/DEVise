@@ -23,6 +23,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.138.4.1  2015/05/08 16:55:14  wenger
+// Hopefully final mod_perl cleanup.
+//
+// Revision 1.138  2015/02/18 22:53:46  wenger
+// The JavaScreen now reports in the log window how long each command
+// takes.  Socket mode can now be turned on in an applet by setting the
+// usecgi parameter to 0.  Added the capability to make jar files that
+// request all-permissions instead of sandbox.
+//
 // Revision 1.137  2014/11/13 17:47:50  wenger
 // Fixed DEVise/JS bug 1043:  Usage info isn't correct when client
 // connects in CGI mode.
@@ -863,6 +872,8 @@ public class DEViseCmdDispatcher implements Runnable
     private String _popVersion = "unknown";
     private String _deviseVersion = "unknown";
     private String _popID = "unknown";
+    private int _isCgi;
+    private int _isModPerl;
 
     //---------------------------------------------------------------------
     public DEViseCmdDispatcher(jsdevisec what)
@@ -943,6 +954,18 @@ public class DEViseCmdDispatcher implements Runnable
     public String getPopID()
     {
         return _popID;
+    }
+ 
+    //---------------------------------------------------------------------
+    public int getIsCgi()
+    {
+    	return _isCgi;
+    }
+
+    //---------------------------------------------------------------------
+    public int getIsModPerl()
+    {
+    	return _isModPerl;
     }
 
     //---------------------------------------------------------------------
@@ -1497,6 +1520,7 @@ public class DEViseCmdDispatcher implements Runnable
               response + "\"", "DEViseCmdDispatcher::processCmd()", 2);
         }
 
+	//TEMP -- for some commands we don't seem to check the arg count...
         if (args[0].equals(DEViseCommands.DONE)) {
             // this command will guaranteed to be the last
 	    if (command != null) {
@@ -1774,6 +1798,8 @@ public class DEViseCmdDispatcher implements Runnable
             _popVersion = args[1];
             _popID = args[2];
             _deviseVersion = args[3];
+	    _isCgi = Integer.parseInt(args[4]);
+	    _isModPerl = Integer.parseInt(args[5]);
 
         } else if (args[0].equals(DEViseCommands.SET_VIEW_COLORS)) {
             String viewname = args[1];

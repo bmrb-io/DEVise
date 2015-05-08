@@ -207,7 +207,10 @@ endif
 cp -p cgi-bin/js.cgi $cgidir
 chmod 755 $cgidir/js.cgi
 
-set logdir = $cgidir/devise
+cp -p cgi-bin/.htaccess $cgidir
+chmod 644 $cgidir/.htaccess
+
+set logdir = $cgidir
 if (! -d $logdir) then
   mkdir -p $logdir
   chmod 755 $logdir
@@ -215,7 +218,7 @@ endif
 cp cgi-bin/js_log $logdir
 chmod 755 $logdir/js_log
 
-set logdir = $cgidir/devise/js_debug_log
+set logdir = $logdir/js_debug_log
 if (! -d $logdir) then
   mkdir -p $logdir
   chmod 777 $logdir
@@ -338,7 +341,7 @@ chmod 644 $popdir/JavaScreen/*.class
 cp -p *.gif $popdir
 chmod 644 $popdir/*.gif
 
-# Install bin2p directory (java, perl, *links*) into pop and CGI directories.
+# Install bin2p directory (java, perl, *links*) into pop directory.
 tar cf bin2p.tar bin2p
 set curdir = `pwd`
 
@@ -352,15 +355,6 @@ if ($popdir != $servdir) then
   chmod 644 bin2p/java
   mv bin2p bin2
 endif
-
-cd $cgidir
-if (-e bin2) then
-  \rm -rf bin2
-endif
-tar xf $curdir/bin2p.tar
-chmod 755 bin2p
-chmod 644 bin2p/java
-mv bin2p bin2
 
 cd $curdir
 rm bin2p.tar
@@ -385,7 +379,7 @@ if (! -d $popdir/logs) then
 endif
 
 # Keep run_check last because of cron job.
-set files = (check_connect check_jsall check_jspop jspop js js_cgi \
+set files = (check_connect check_jsall check_jspop jspop js cgi-bin/js_cgi \
     restart_jspop jspop.kill kill_jsall ports+files get_timestamp \
     run_top jspop_savepid)
 set files = ($files run_check)

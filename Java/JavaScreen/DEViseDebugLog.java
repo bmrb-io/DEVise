@@ -20,6 +20,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.46.2  2015/05/05 19:15:48  wenger
+// Changed command-line client scripts to have new CGI script path;
+// various other changes relating to mod_perl, including an example
+// of the relevant section of the httpd configuration.
+//
+// Revision 1.5.46.1  2015/04/30 19:08:23  wenger
+// Initial version of JavaScreen CGI using mod_perl in Apache -- this works,
+// but lots of cleanup still needed.
+//
+// Revision 1.5  2007/03/30 15:43:09  wenger
+// (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
+// a bunch of calls to validate() in the GUI); fixed up the client logging
+// functionality somewhat; various improvements to debug output.
+//
 // Revision 1.4  2001/05/11 20:36:06  wenger
 // Set up a package for the JavaScreen code.
 //

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2014
+#  (c) Copyright 2000-2015
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -20,6 +20,22 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1.2.3  2015/05/08 16:55:20  wenger
+#  Hopefully final mod_perl cleanup.
+#
+#  Revision 1.1.2.2  2015/05/05 19:29:27  wenger
+#  Removed a few temporary notes.
+#
+#  Revision 1.1.2.1  2015/04/30 19:08:30  wenger
+#  Initial version of JavaScreen CGI using mod_perl in Apache -- this works,
+#  but lots of cleanup still needed.
+#
+#  Revision 1.1  2015/04/30 18:10:23  wenger
+#  Moved CGI scripts to cgi-bin directory in sources in preparation for
+#  mod_perl setup (should have made a branch before doing this?); client
+#  install installs CGI scripts; CGI scripts no longer rely on bin2
+#  directory for perl.
+#
 #  Revision 1.8  2014/11/13 17:47:50  wenger
 #  Fixed DEVise/JS bug 1043:  Usage info isn't correct when client
 #  connects in CGI mode.
@@ -110,11 +126,14 @@ use Socket;
 my $debug = 1;
 
   if ($debug) {
-    chmod 0666, "/tmp/js_cgi_log";
-    open(LOG, ">/tmp/js_cgi_log");
-    # open(LOG, ">>/tmp/js_cgi_log");# for debugging
+    #TEMP -- move this out of /tmp?
+    my $logfile = "/tmp/js_cgi_log";
+    chmod 0666, $logfile;
+    open(LOG, ">$logfile");
+    # open(LOG, ">>$logfile");# for debugging
     my $date = `date`;
     print LOG "\njs.cgi run at $date";
+    print LOG "Mod_perl: $ENV{MOD_PERL}\n";
   }
 
 print "Content-type:java_screen\n\n";
@@ -180,6 +199,16 @@ if ($cgiArgs{'arg0'} eq "JAVAC_Connect_") {
   $size += $iplen;
   $cgiArgs{'len4'} = 3 + $iplen;
   $cgiArgs{'arg4'} = '{' . $client_ip . '}_';
+}
+
+#
+# Add in that we're in CGI mode, whether mod_perl is being used.
+#
+if ($cgiArgs{'arg0'} eq "JAVAC_GetPopVersion_") {
+  $cgiArgs{'arg1'} = "{1}_";
+  if ($ENV{MOD_PERL} ne "") {
+    $cgiArgs{'arg2'} = "{1}_";
+  }
 }
 
 #

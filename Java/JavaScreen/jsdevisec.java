@@ -22,6 +22,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.193.4.2  2015/05/08 16:55:14  wenger
+// Hopefully final mod_perl cleanup.
+//
+// Revision 1.193.4.1  2015/05/05 18:34:15  wenger
+// Fixed bug 1045:  CGI path dialog now works more intuitively.
+//
+// Revision 1.193  2015/02/18 22:53:47  wenger
+// The JavaScreen now reports in the log window how long each command
+// takes.  Socket mode can now be turned on in an applet by setting the
+// usecgi parameter to 0.  Added the capability to make jar files that
+// request all-permissions instead of sandbox.
+//
 // Revision 1.192  2015/01/14 23:35:58  wenger
 // Improved messages related to communication protocol version.
 //
@@ -2975,7 +2987,7 @@ class SettingDlg extends Dialog
 	// Get the version info from the JSPoP (send the command, and
 	// wait for it to finish or fail).
 	//
-	jsc.dispatcher.start(DEViseCommands.GET_POP_VERSION);
+	jsc.dispatcher.start(DEViseCommands.GET_POP_VERSION + " {0} {0}");
 	while (jsc.dispatcher.getStatus() != DEViseCmdDispatcher.STATUS_IDLE) {
 	    try {
 	        Thread.sleep(100);
@@ -3030,6 +3042,7 @@ class SettingDlg extends Dialog
         c.weightx = 1.0;
         c.weighty = 1.0;
 
+	// JavaScreen (client) version.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label label1 = new Label("JavaScreen Version:");
@@ -3042,6 +3055,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(version, c);
         add(version);
 
+	// Jmol version.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label labelJmol1 = new Label("Jmol Version:");
@@ -3054,6 +3068,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(labelJmol2, c);
         add(labelJmol2);
 
+	// JSPoP version.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label labelPopVer = new Label("JSPoP Version:");
@@ -3066,6 +3081,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(labelPopVerValue, c);
         add(labelPopVerValue);
 
+	// DEVise version.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label labelDevVer = new Label("DEVise Version:");
@@ -3078,6 +3094,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(labelDevVerValue, c);
         add(labelDevVerValue);
 
+	// JSPoP ID.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label labelPopID = new Label("JSPoP ID:");
@@ -3090,6 +3107,37 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(labelPopIDValue, c);
         add(labelPopIDValue);
 
+	// Is CGI?
+        c.insets = new Insets(10, 10, 0, 0);
+        c.gridwidth = 1;
+        Label labelIsCgi = new Label("Is CGI:");
+        gridbag.setConstraints(labelIsCgi, c);
+        add(labelIsCgi);
+
+        c.insets = new Insets(10, 0, 0, 5);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+	String isCgiValue =
+	  jsc.dispatcher.getIsCgi() != 0 ? "yes" : "no";
+        Label labelIsCgiValue = new Label(isCgiValue);
+        gridbag.setConstraints(labelIsCgiValue, c);
+        add(labelIsCgiValue);
+
+	// Is mod_perl?
+        c.insets = new Insets(10, 10, 0, 0);
+        c.gridwidth = 1;
+        Label labelIsModPerl = new Label("Is mod_perl:");
+        gridbag.setConstraints(labelIsModPerl, c);
+        add(labelIsModPerl);
+
+        c.insets = new Insets(10, 0, 0, 5);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+	String isModPerlValue =
+	  jsc.dispatcher.getIsModPerl() != 0 ? "yes" : "no";
+        Label labelIsModPerlValue = new Label(isModPerlValue);
+        gridbag.setConstraints(labelIsModPerlValue, c);
+        add(labelIsModPerlValue);
+
+	// JavaScreen size.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label label2 = new Label("JavaScreen Size:");
@@ -3108,6 +3156,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(setButton, c);
         add(setButton);
 
+	// JSPoP status.
         c.insets = new Insets(10, 10, 10, 0);
         c.gridwidth = 1;
         Label label3 = new Label("JSPOP Status:");
@@ -3119,6 +3168,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(statButton, c);
         add(statButton);
 
+	// My ID.
         c.insets = new Insets(10, 10, 10, 0);
         c.gridwidth = 1;
         Label label5 = new Label("My ID:");
@@ -3130,6 +3180,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(meButton, c);
         add(meButton);
 
+	// Collaboration status.
         c.insets = new Insets(10, 10, 10, 0);
         c.gridwidth = 1;
         Label label4 = new Label("Collaboration Status:");
@@ -3590,6 +3641,8 @@ class SetCgiUrlDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
+			jsc.jsValues.connection.useCgi = true;
+			jsc.cgiMode();
 			jsc.jsValues.connection.cgiURL = url.getText();
                         close();
                     }
@@ -3599,8 +3652,6 @@ class SetCgiUrlDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.jsValues.connection.useCgi = false;
-			jsc.socketMode();			
                         close();
                     }
                 });

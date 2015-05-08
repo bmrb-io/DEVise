@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 17.1.  (Note:  17.1 is not compatible with 17.0 between the
+version 17.2.  (Note:  17.2 and 17.1 is not compatible with 17.0 between the
 JS client and JSPoP, but is between the JSPoP and DEViseD.  I didn't
 change the version to 18.0 because I didn't want to have to release
 a new DEViseD.)
@@ -106,7 +106,12 @@ see comments in DEViseCommSocket.java.
 
     2.13 JAVAC_GetPopVersion
     Purpose: Get the JSPoP version information (including DEVised version).
-    Arguments: 0
+    Arguments: 2
+    	<is CGI>:  0
+	<is mod_perl>:  0
+	Note:  The JavaScreen client will always send the arguments with
+	0 values; in CGI mode, the CGI script will fill in appropriate
+	values and pass them to the JSPoP, which will pass them back.
 
     2.14 JAVAC_StopCollab
     Purpose: Collaboration follower decides to stop following (sent by
@@ -189,10 +194,12 @@ see comments in DEViseCommSocket.java.
 
     3.12 JAVAC_PopVersion
     Purpose: notify the collaboration followers to close dialog.
-    Arguments: 3
+    Arguments: 5
         <pop version>: version of JSPoP
 	<pop id>: ID of JSPoP ("regular", etc.)
 	<devised version>: version of DEVised (includes compile date)
+    	<is CGI>:  0 = not in CGI mode; 1 = in CGI mode
+	<is mod_perl>:  0 = not using mod_perl; 1 = using mod_perl
 
 
 4. JavaScreen to devised (via JSPoP)

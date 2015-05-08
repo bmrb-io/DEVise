@@ -24,6 +24,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.73.4.1  2015/05/08 16:55:14  wenger
+// Hopefully final mod_perl cleanup.
+//
+// Revision 1.73  2015/01/14 23:35:58  wenger
+// Improved messages related to communication protocol version.
+//
 // Revision 1.72  2014/11/13 17:47:50  wenger
 // Fixed DEVise/JS bug 1043:  Usage info isn't correct when client
 // connects in CGI mode.
@@ -928,10 +934,11 @@ public class DEViseClient
 		String command = (String)cmdBuffer.elementAt(0);
 
 		if (_debugLvl >= 6) {
-		    pop.pn("DIAG before after cmdBuffer " +
-		      "element 0");
+		    pop.pn("DIAG after getting cmdBuffer " +
+		      "element 0 (" + command + ")");
 		}
 
+		//TEMP -- we don't seem to check argument counts here!!
                 if (command != null) {
 		    //TEMP -- move to addNewCmd()?
 		    //TEMP -- should probably allow JAVAC_Exit through -- at
@@ -1012,12 +1019,22 @@ public class DEViseClient
 			cmdBuffer.removeAllElements();
 
 		    } else if (command.startsWith(DEViseCommands.GET_POP_VERSION)) {
-			//TEMP -- move to addNewCmd()?
-			String version = DEViseCommands.POP_VERSION + " " +
-			  DEViseGlobals.VERSION + " " + pop.getPopId() +
-			  "{" + DEViseServer.getDeviseVersion() + "}";
-			sendCmd(new String[] {version, DEViseCommands.DONE});
-			cmdBuffer.removeAllElements();
+                        String[] args = DEViseGlobals.parseString(command);
+	                if (args != null && args.length == 3) {
+			    //TEMP -- move to addNewCmd()?
+			    String version = DEViseCommands.POP_VERSION + " " +
+			      DEViseGlobals.VERSION + " " + pop.getPopId() +
+			      " {" + DEViseServer.getDeviseVersion() + "}" +
+			      " " + args[1] + " " + args[2];
+			    sendCmd(new String[] {version, DEViseCommands.DONE});
+			    cmdBuffer.removeAllElements();
+	                } else {
+	                    sendCmd(DEViseCommands.ERROR +
+			      " {Invalid PoP version request -- bad argument count}");
+	                    throw new YException(
+	                      "Invalid PoP version request received from client -- bad argument count (" +
+		              args.length + ") in " + args[0]);
+			}
 
 		    } else {
 			//

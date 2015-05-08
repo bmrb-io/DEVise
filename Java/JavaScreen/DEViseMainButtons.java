@@ -22,6 +22,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.17.4.1  2015/05/05 18:34:15  wenger
+// Fixed bug 1045:  CGI path dialog now works more intuitively.
+//
+// Revision 1.17  2015/02/18 22:53:46  wenger
+// The JavaScreen now reports in the log window how long each command
+// takes.  Socket mode can now be turned on in an applet by setting the
+// usecgi parameter to 0.  Added the capability to make jar files that
+// request all-permissions instead of sandbox.
+//
 // Revision 1.16  2010/07/01 17:32:59  wenger
 // Implemented JavaScreen to-do 09.019 -- JS window can now be re-sized
 // while a session is open, added new view menu options to enlarge and
@@ -457,8 +466,6 @@ public class DEViseMainButtons
             {
                 public void actionPerformed(ActionEvent event)
                 {
-		    _js.jsValues.connection.useCgi = true;
-		    _js.cgiMode();
 		    _js.setCgiUrl();
                 }
             });

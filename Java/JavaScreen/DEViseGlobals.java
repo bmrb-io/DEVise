@@ -20,6 +20,24 @@
 // $Id$
 
 // $Log$
+// Revision 1.177.4.3  2015/05/08 16:55:14  wenger
+// Hopefully final mod_perl cleanup.
+//
+// Revision 1.177.4.2  2015/05/05 19:15:48  wenger
+// Changed command-line client scripts to have new CGI script path;
+// various other changes relating to mod_perl, including an example
+// of the relevant section of the httpd configuration.
+//
+// Revision 1.177.4.1  2015/04/30 19:08:23  wenger
+// Initial version of JavaScreen CGI using mod_perl in Apache -- this works,
+// but lots of cleanup still needed.
+//
+// Revision 1.177  2015/02/18 22:53:46  wenger
+// The JavaScreen now reports in the log window how long each command
+// takes.  Socket mode can now be turned on in an applet by setting the
+// usecgi parameter to 0.  Added the capability to make jar files that
+// request all-permissions instead of sandbox.
+//
 // Revision 1.176  2015/01/15 20:41:37  wenger
 // Changed version from 5.14.8x2 to 5.14.8x1a.
 //
@@ -1065,9 +1083,9 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.8x1b"/*TEMP*/);
+    public static final String VERSION = new String("5.14.8x2"/*TEMP*/);
 
-    public static final String PROTOCOL_VERSION = new String("17.1");
+    public static final String PROTOCOL_VERSION = new String("17.2");
 
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");

@@ -1,0 +1,9 @@
+This allows a .htaccess file in /var/home/www/public/cgi-bin/devise
+to turn on mod_perl for scripts in that directory.
+
+    <Directory "/var/home/www/public/cgi-bin/devise">
+        AllowOverride All
+        Options None
+        Order allow,deny
+        Allow from all
+    </Directory>
