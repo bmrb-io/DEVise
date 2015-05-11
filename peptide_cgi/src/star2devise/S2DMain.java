@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.369  2015/05/08 18:03:20  wenger
+// Merged mod_perl_br_0 thru mod_perl_br_1 to trunk.
+//
 // Revision 1.368.2.1  2015/04/30 21:16:17  wenger
 // Modified Peptide-CGI to generate html files with new CGI script path
 // for mod_perl.
@@ -1146,7 +1149,7 @@ public class S2DMain {
 
     public static final String PEP_CGI_VERSION = "12.4.6x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
-    public static final String JS_CLIENT_MIN_VERSION = "5.14.4";
+    public static final String JS_CLIENT_MIN_VERSION = "5.14.8";
 
     // Default accession number to put into html forms (also see
     // html2/devise/peptide-cgi/bmrb_select.tmpl).
