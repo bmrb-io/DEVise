@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2012
+#  (c) Copyright 2001-2015
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -176,6 +176,9 @@ DO_S2PRED_DEFAULT = 1
 # The root URL of s2predict output files.
 #TEMP? S2PRED_URL_DEFAULT = file:/website/ftp/pub/bmrb/derived_data/s2predict/
 S2PRED_URL_DEFAULT = file:test_data/
+
+# Do dynamics movies.
+DO_DYN_MOVIE_DEFAULT = 1
 
 #-----------------------------------------------------------
 # Other.
