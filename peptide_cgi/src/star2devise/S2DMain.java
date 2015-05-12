@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.370  2015/05/11 20:45:45  wenger
+// Fixed JS_CLIENT_MIN_VERSION.
+//
 // Revision 1.369  2015/05/08 18:03:20  wenger
 // Merged mod_perl_br_0 thru mod_perl_br_1 to trunk.
 //
@@ -1147,7 +1150,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.6x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.6";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.8";
 
