@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2013
+#  (c) Copyright 2001-2015
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  2014/05/30 21:09:25  wenger
+#  Fixed bug 1033:  added path to js_is_signed.pl invocations.
+#
 #  Revision 1.16  2013/12/17 17:51:20  wenger
 #  Fixed JS release script for single jar file.
 #
@@ -246,10 +249,10 @@ pushd $src > /dev/null
 
 set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
     DEVise.jspop DEVise.jspop_soil get_timestamp jss_savepid \
-    js.cgi check_connect check_jsall check_jspop jspop \
+    check_connect check_jsall check_jspop jspop \
     js jsj js_cgi restart_jspop jspop.kill kill_jsall ports+files \
     get_timestamp run_top run_check jspop_savepid users.cfg install_js \
-    Tasvir js_log js_version js_is_signed.pl)
+    Tasvir js_version js_is_signed.pl)
 foreach file ($files)
   cp -p $file $dest
   chmod 755 $dest/$file
@@ -276,6 +279,27 @@ cp -p $src/Makefile.config.* $dest
 cp -p $src/Makefile.setup $dest
 chmod 644 $dest/Makefile*
 cp -p $src/CONFIG.txt $dest
+
+#-----------------------------------------------------------
+# Release the CGI-related files.
+
+set cgidest = $dest/cgi-bin
+
+if (! -e $cgidest) then
+  mkdir $cgidest
+endif
+
+set files = (js.cgi js_log)
+foreach file ($files)
+  cp -p $src/cgi-bin/$file $cgidest
+  chmod 755 $cgidest/$file
+end
+
+set files = (.htaccess example_httpd_config)
+foreach file ($files)
+  cp -p $src/cgi-bin/$file $cgidest
+  chmod 644 $cgidest/$file
+end
 
 #-----------------------------------------------------------
 # Release the GIFs.
