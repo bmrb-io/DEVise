@@ -739,6 +739,11 @@ Num Date        Status  Description
 161 4/15/15	OPEN	3D visualization has too much vertical space around
 			the data scroll view. (wenger)
 
+162 5/13/15	OPEN	For the test setup on devise, if you try to view
+			JavaScreen help in a browser window, from a bmrb
+			visualization, it doesn't find the file.  (See
+			to-do 219.) (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
