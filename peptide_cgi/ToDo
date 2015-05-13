@@ -987,6 +987,13 @@ Num Date        Status  Pri     Description
 				from a template installed as part of the
 				DEVise/JavaScreen installation. (wenger)
 
+219 5/13/15	OPEN	3	Have the Peptide-CGI install link all
+				of the JavaScreen client-side files into
+				a known location within the Peptide-CGI
+				directory tree (the JavaScreen client
+				install location would have to be part of
+				the Peptide-CGI config). (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
