@@ -4646,6 +4646,9 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			(Fixed by wenger, 5/13/15 -- fix to release.js
 			fixed this.)
 
+1048 6/4/15	OPEN	Color print mode should change Jmol background
+			to white. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
