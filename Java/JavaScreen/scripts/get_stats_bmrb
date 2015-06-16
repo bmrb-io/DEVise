@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2002-2003
+#  (c) Copyright 2002-2015
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -27,4 +27,4 @@ else
   set mail_prog = mail
 endif
 
-scripts/get_stats | $mail_prog wenger@cs.wisc.edu elu@bmrb.wisc.edu miron@cs.wisc.edu `cat scripts/error_email`
+scripts/get_stats | $mail_prog wenger@cs.wisc.edu promero@wisc.edu elu@bmrb.wisc.edu miron@cs.wisc.edu `cat scripts/error_email`
