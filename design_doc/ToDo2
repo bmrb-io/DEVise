@@ -337,6 +337,10 @@ from buttons that don't (Stop). (wenger)
 09.041 6/18/15	OPEN 	3
 Add mouseover tooltips to menu bar buttons. (wenger)
 
+09.042 6/18/15	OPEN	4
+Move the socket/CGI mode indicator to the bottom of the JavaScreen.
+(wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
