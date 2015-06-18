@@ -330,6 +330,10 @@ We'd like to be able to replace some of the "selection views"
 with pull-down menus; and we'd also like to allow the user to make
 multiple, discontinuous, selections.
 
+09.040 6/18/15	OPEN	3
+Make buttons that show menus (Session, View, Help) visually distinct
+from buttons that don't (Stop). (wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
