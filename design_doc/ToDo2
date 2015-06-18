@@ -341,6 +341,9 @@ Add mouseover tooltips to menu bar buttons. (wenger)
 Move the socket/CGI mode indicator to the bottom of the JavaScreen.
 (wenger)
 
+09.043 6/18/15	OPEN	3
+Make the Stop button into a little X like on a web browser. (wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
