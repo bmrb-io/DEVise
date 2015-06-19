@@ -749,6 +749,11 @@ Num Date        Status  Description
 			residue scroll view in simulated HN spectra).
 			(wenger)
 
+164 6/19/15	OPEN 	If you go to
+			http://www.bmrb.wisc.edu/devise/peptide-cgi/html/7114x/7114xy.html
+			(for example), and then select one of the 3D
+			visualizations, you get an error. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
