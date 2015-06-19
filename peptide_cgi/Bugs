@@ -744,6 +744,11 @@ Num Date        Status  Description
 			visualization, it doesn't find the file.  (See
 			to-do 219.) (wenger)
 
+163 6/19/15	OPEN	A number of visualizations do not have zoom disabled
+			in views in which it *should* be disabled (e.g.,
+			residue scroll view in simulated HN spectra).
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
