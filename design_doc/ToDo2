@@ -28,6 +28,10 @@ Make sure the xv code incorporated into DEVise is up-to-date (see
 patches in http://www.trilon.com/xv/downloads.html).
 (wenger)
 
+01.007 6/19/15	OPEN	4
+Be able to disable zoom for one axis in a view without disabling it
+for the other axis. (wenger)
+
 ...........................................................................
 SECTION 02 (DEVise, links)
 Number Date	Status  Pri
@@ -96,7 +100,8 @@ Add modulus to mapping expressions.
 05.004 12/4/14	OPEN	2
 Have an option to have symbols sized by pixels rather than data units
 (so symbols stay the same size/shape as you zoom).  (Maybe have negative
-value for size or something.) (wlee44/wenger)
+value for size or something.) (wlee44/wenger)  (Symbol enlarge/reduce
+should probably still affect them.)
 
 ...........................................................................
 SECTION 06 (DEVise, data sources)
@@ -164,6 +169,8 @@ JavaScreen: integrated keyboard help. (wenger)
 
 09.004 09/10/01	OPEN	?
 JavaScreen: visual filter dialog. (wenger)
+(Also see 09.045 -- maybe there could be a question button or something
+that would bring up this dialog.)
 
 09.005 09/10/01	OPEN	?
 JavaScreen: session-programmable buttons. (wenger)
@@ -343,6 +350,33 @@ Move the socket/CGI mode indicator to the bottom of the JavaScreen.
 
 09.043 6/18/15	OPEN	3
 Make the Stop button into a little X like on a web browser. (wenger)
+
+09.044 6/19/15	OPEN	4
+Allow multiple windows in the JavaScreen.  I guess there could be two
+versions of this:
+1) Sessions are defined with multiple windows, the user can't change
+this.
+2) The user can select a view and move it to a different window.
+This would obviously be harder to implement than #1.
+(wenger)
+
+09.045 6/19/15	OPEN	2
+Have +/- buttons in zoomable views to zoom in/out.  (Have them actually
+in the views, as in Google maps.) (wenger)
+
+09.046 6/19/15	OPEN	2
+Have left/right/up/down buttons in zoomable views to move the visual
+filter (just like left/right/up/down keys). (wenger)
+
+09.047 6/19/15	OPEN	2
+Eliminate larger/smaller selections in JavaScreen View/Tools menu.
+(promero/wenger)
+
+09.048 6/19/15	OPEN	3
+Be able to save & restore visualization state (zoom, etc.).  My current
+thought is the user would select "Save State" or something in the session
+menu, and a dialog would come up with a URL that would bring up a
+visualization at the current state.) (wenger)
 
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
