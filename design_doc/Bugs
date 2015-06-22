@@ -4462,10 +4462,11 @@ java.security.AccessControlException: access denied
 			the canvases are drawn, the JS window is blank
 			when you come back to that workspace. (wenger)
 
-1015 2/17/11	OPEN	JS: the embedded version of the JavaScreen applet
+1015 2/17/11	ACTIVE	JS: the embedded version of the JavaScreen applet
 			still shows the "Larger" and "Smaller" options
 			in the view menu, and selecting them goofs
 			up the visualization. (wenger)
+			(Fixed on aditya1_br, but not merged.)
 
 1016 3/1/11	OPEN	DEVise can't generate images for the JavaScreen
 			if it's running against a "real" X server (as
