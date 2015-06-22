@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2015/05/08 17:54:49  wenger
+// Merged mod_perl_br_0 thru mod_perl_br_2 to trunk.
+//
 // Revision 1.17.4.1  2015/05/05 18:34:15  wenger
 // Fixed bug 1045:  CGI path dialog now works more intuitively.
 //
@@ -171,8 +174,6 @@ public class DEViseMainButtons
     private MenuItem filterMenuItem = new MenuItem("Reset Axis Ranges");
     private MenuItem exitMenuItem = new MenuItem("Exit");
 
-    private MenuItem largerMenuItem = new MenuItem("Larger");
-    private MenuItem smallerMenuItem = new MenuItem("Smaller");
     private MenuItem normalDisplayMenuItem = new MenuItem("Normal");
     private MenuItem colorPrintDisplayMenuItem = new MenuItem("Color print");
     private MenuItem bwPrintDisplayMenuItem = new MenuItem("B/w print");
@@ -268,7 +269,7 @@ public class DEViseMainButtons
 	}
 
         sessionMenuButton = new DEViseButton("Session", _js.jsValues);
-        viewMenuButton = new DEViseButton("View", _js.jsValues);
+        viewMenuButton = new DEViseButton("Tools", _js.jsValues);
         helpMenuButton = new DEViseButton("Help", _js.jsValues);
         stopButton = new DEViseButton("Stop", _js.jsValues);
 
@@ -300,8 +301,6 @@ public class DEViseMainButtons
 	commModeMenu.add(cgiModeMenuItem);
 
 	// Set up view menu.
-	viewPM.add(largerMenuItem);
-	viewPM.add(smallerMenuItem);
 	viewPM.add(displayModeMenu);
 	viewPM.add(setMenuItem);
 	viewPM.add(commModeMenu);
@@ -397,34 +396,6 @@ public class DEViseMainButtons
                 public void actionPerformed(ActionEvent event)
                 {
                     _js.checkQuit();
-                }
-            });
-
-        largerMenuItem.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent event)
-                {
-		    int width =
-		      (int)(_js.jsValues.uiglobals.screenSize.width *
-		      RESIZE_FACTOR);
-		    int height =
-		      (int)(_js.jsValues.uiglobals.screenSize.height *
-		      RESIZE_FACTOR);
-		    _js.jscreen.setScreenDim(width, height);
-                }
-            });
-
-        smallerMenuItem.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent event)
-                {
-		    int width =
-		      (int)(_js.jsValues.uiglobals.screenSize.width /
-		      RESIZE_FACTOR);
-		    int height =
-		      (int)(_js.jsValues.uiglobals.screenSize.height /
-		      RESIZE_FACTOR);
-		    _js.jscreen.setScreenDim(width, height);
                 }
             });
 

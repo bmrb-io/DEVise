@@ -368,9 +368,10 @@ in the views, as in Google maps.) (wenger)
 Have left/right/up/down buttons in zoomable views to move the visual
 filter (just like left/right/up/down keys). (wenger)
 
-09.047 6/19/15	OPEN	2
+09.047 6/19/15	DONE	2
 Eliminate larger/smaller selections in JavaScreen View/Tools menu.
 (promero/wenger)
+(Done by wenger, 6/22/15)
 
 09.048 6/19/15	OPEN	3
 Be able to save & restore visualization state (zoom, etc.).  My current
