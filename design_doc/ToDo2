@@ -383,6 +383,10 @@ thought is the user would select "Save State" or something in the session
 menu, and a dialog would come up with a URL that would bring up a
 visualization at the current state.) (wenger)
 
+09.049 6/22/15	OPEN	1
+"Feedback" button in the JavaScreen that brings up a web form that
+people can fill out. (elu/wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
