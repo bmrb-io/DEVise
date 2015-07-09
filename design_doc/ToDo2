@@ -220,11 +220,11 @@ draw a rubberband line in a view, and any cursors in that view will
 be moved and resized to match the rubberband line, without having to
 grab an existing part of the cursor. (wenger)
 
-09.014 11/13/09	ACTIVE	3
+09.014 11/13/09	DONE	3
 Be able to change the drill-down location without dismissing the drill-
 down dialog -- just click in a new place and have the dialog update.
 (wenger)
-(Done on aditya1_br but not merged.)
+(Done by kancherla, 1/?/15)
 
 09.015 11/13/09	OPEN	1
 Add an option to the JavaScreen to automatically refresh the data at
@@ -300,10 +300,10 @@ pages. (wenger)
 Use j2js to convert the JavaScreen client code to javascript.  (Probably 
 at least try this out enough to see if it's practical.) (wedell/elu/wenger)
 
-09.031 11/24/14	ACTIVE	2
+09.031 11/24/14	DONE	2
 Move the "Restart" functionality out of the session menu into a button
 (maybe with an icon like a browser reload button).  (gabrielc/wenger)
-(Done on aditya1_br but not merged.)
+(Done by kancherla, 1/?/15)
 
 09.032 11/24/14	OPEN	3
 Add "forward"/"back" buttons like web browsers have.  (Need to think about
@@ -322,13 +322,13 @@ wenger)
 Have a cursor mode where dragging pans instead of zooming.  (wlee44/wenger)
 (Same as 09.021.)
 
-09.036 12/4/14	ACTIVE	3
+09.036 12/4/14	DONE	3
 Show cursor mode at the bottom of the JavaScreen.  (wlee44/wenger)
-(Done on aditya1_br but not merged.)
+(Done by kancherla, 1/14/15)
 
-09.037 12/4/14	ACTIVE	3
+09.037 12/4/14	DONE	3
 Be able to zoom in/out with mouse wheel.  (wlee44/wenger)
-(Done on aditya1_br but not merged.)
+(Done by kancherla, 2/?/15)
 
 09.038 12/4/14	OPEN	4
 Add a button in the JavaScreen that sends your browser to the

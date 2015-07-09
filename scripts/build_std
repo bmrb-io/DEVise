@@ -20,6 +20,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1.4.1  2015/07/02 20:26:55  wenger
+#  (Partially) merged aditya1_br_1 thru aditya1_br_2 to aditya_merge_br.
+#
+#  Revision 1.1.2.1  2014/11/25 18:12:02  wenger
+#  Added jar target to build_std script.
+#
+#  Revision 1.1  2014/11/25 16:49:50  wenger
+#  Added build_std script to build DEVise and the JavaScreen.
+#
 
 ############################################################
 
@@ -30,4 +39,4 @@ make
 cd ../Java/JavaScreen
 ln -s Makefile.config.uw_cs Makefile.config
 make setup
-make
+make jar all

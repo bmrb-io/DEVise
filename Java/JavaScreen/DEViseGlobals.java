@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.181  2015/06/22 19:40:02  wenger
+// Changed minor version to 15 instead of just incrementing the revision,
+// because I'm hoping the next release will have some fairly major GUI
+// changes.  Implemented to-do 09.047 (remove "Larger" and "Smaller" menu
+// items).  Also changed "View" menu to "Tools".
+//
 // Revision 1.180  2015/06/05 20:17:09  wenger
 // Changed version to 5.14.9x0, added 5.14.9 version history section.
 //
@@ -41,6 +47,16 @@
 // Initial version of JavaScreen CGI using mod_perl in Apache -- this works,
 // but lots of cleanup still needed.
 //
+// Revision 1.177.2.3  2015/07/09 19:00:13  wenger
+// Final cleanup of Aditya's changes.
+//
+// Revision 1.177.2.2  2015/07/08 21:48:04  wenger
+// Merged aditya1_br_8 thru aditya1_br_9 to aditya_merge_br.
+//
+// Revision 1.177.2.1  2015/07/07 15:14:16  wenger
+// Merged aditya1_br_5 thru aditya1_br_6 to aditya_merge_br.
+//
+//
 // Revision 1.177  2015/02/18 22:53:46  wenger
 // The JavaScreen now reports in the log window how long each command
 // takes.  Socket mode can now be turned on in an applet by setting the
@@ -56,6 +72,9 @@
 // Revision 1.174  2014/11/25 22:19:12  wenger
 // Improved the JavaScreen usage script to better report commands
 // per session open.
+//
+// Revision 1.173.2.1  2015/01/21 18:32:49  wenger
+// Changed JavaScreen version string and updated the help page slightly.
 //
 // Revision 1.173  2014/11/13 21:47:57  wenger
 // Changed version to 5.14.8x0, added 5.14.8 version history section.
@@ -1092,7 +1111,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.15.0x1"/*TEMP*/);
+    public static final String VERSION = new String("5.15.0x2"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.2");
 

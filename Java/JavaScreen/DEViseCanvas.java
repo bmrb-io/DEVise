@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2011
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -30,6 +30,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.111.14.2  2015/07/09 19:00:13  wenger
+// Final cleanup of Aditya's changes.
+//
+// Revision 1.111.14.1  2015/07/07 14:56:37  wenger
+// Merged aditya1_br_4 thru aditya1_br_5 to aditya_merge_br.
+//
+// Revision 1.111.12.2  2015/01/16 23:07:31  kancherla
+// Aggregating  multiple mouse wheel rotations if they occur quickly (in less than a second)
+//
+// Revision 1.111.12.1  2015/01/14 21:46:58  kancherla
+// Added mouse wheel listener
+//
+// Revision 1.111  2011/10/10 20:44:05  wenger
+// Merged js_button_fix_br_1 thru js_button_fix_br_2 to trunk.
+//
 // Revision 1.110  2011/08/26 15:37:34  wenger
 // Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
 //
@@ -716,6 +731,7 @@ public class DEViseCanvas extends JComponent
         addMouseMotionListener(new ViewMouseMotionListener());
         addKeyListener(new ViewKeyListener());
         addFocusListener(new ViewFocusListener());
+        addMouseWheelListener(new ViewMouseWheelListener());
     }
 
     // Called when a session is closed.
@@ -1088,6 +1104,10 @@ public class DEViseCanvas extends JComponent
     }
 
     protected void doMouseMoved(Point p)
+    {
+    }
+    
+    protected void doMouseWheelMoved(MouseWheelEvent e)
     {
     }
 
@@ -1789,9 +1809,29 @@ public class DEViseCanvas extends JComponent
 	    }
 	    _mouseIsInCanvas = false;
 	}
+        
     }
     // end of class ViewMouseListener
-
+    
+    // start of class ViewMouseWheelListener
+    class ViewMouseWheelListener implements MouseWheelListener
+    {	
+    	private long time = Calendar.getInstance().getTimeInMillis();
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent e) {
+			if (DEBUG >= 1) {
+	        System.out.println("Mouse wheelmoved in ViewMouseListener.mouseWheelMoved()");
+	    }	
+			long eventTime = e.getWhen();
+			if(eventTime - time > 1000){
+				doMouseWheelMoved(e);
+				time = eventTime;
+			}
+		}
+    }
+ // end of class ViewMouseWheelListener
+    
+    
     // start of class ViewMouseMotionListener
     class ViewMouseMotionListener extends MouseMotionAdapter
     {

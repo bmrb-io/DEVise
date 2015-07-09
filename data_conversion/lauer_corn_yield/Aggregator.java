@@ -1,3 +1,21 @@
+// ========================================================================
+// DEVise Data Visualization Software
+// (c) Copyright 2014
+// By the DEVise Development Group
+// Madison, Wisconsin
+// All Rights Reserved.
+// ========================================================================
+
+// Under no circumstances is this software to be copied, distributed,
+// or altered in any way without prior permission from the DEVise
+// Development Group.
+
+// ------------------------------------------------------------------------
+
+// This class is used to aggregate corn field output per sections
+
+// ------------------------------------------------------------------------
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -6,7 +24,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,9 +37,11 @@ sum : flow[2], cycles[4], distance[5], swath[6], bushels [16]
 constants : field id [11], load id [12], grain[13], variety [14]
 */
 
+//TEMPTEMP -- please copy comment lines to output
+
 public class Aggregator {
 	
-	private double aggrDistance = 60;
+	private double aggrDistance = 60; // aggrDistance and aggrSwath represent the dimensions we want to aggregate to
 	private double aggrSwath = 60;
 	private String dirPath = "C:\\DEVise\\";
 	private String inputFileName = "cornYield2.csv";
@@ -39,35 +62,59 @@ public class Aggregator {
 	private String loadId = "\"L1: \"";
 	private String grain = "\"Corn\"";
 	private String variety = "\"Corn Mix\"";
+	private int numOfColumnsInInput = 17;
+	private PrintWriter writer;
 
 	public static void main(String[] args) {
 		Aggregator aggregator = new Aggregator();
-		if(args[0] != null && args[1] != null && args[2] != null && args[3] != null){
-			aggregator.inputFilePath = args[0];
-			aggregator.outputFilePath = args[1];
-			aggregator.aggrDistance = Double.parseDouble(args[2]);
-			aggregator.aggrSwath = Double.parseDouble(args[3]);
-		}
-		aggregator.findExtremesAndMaximums();
-		aggregator.sectionize();
-		aggregator.addRecordsToSections();
-		aggregator.calculateAggrPerSection();
+		aggregator.process(args);
 	}
 	
+	private void process(String[] args) {
+		if(args.length == 4 && args[0] != null && args[1] != null && args[2] != null && args[3] != null){
+			inputFilePath = args[0];
+			outputFilePath = args[1];
+			aggrDistance = Double.parseDouble(args[2]);
+			//TEMPTEMP -- what is this? --- Input from the user
+			aggrSwath = Double.parseDouble(args[3]);
+		} else {
+			log("Incorrect number of arguments. Correct usage : java Aggregator <inputFilePath> <outputFilePath> <aggregateLength> <aggregateBreadth>");
+			return;
+		}
+		try {
+			writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFilePath)));
+			DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+			writer.println(firstLineStartsWith + "This aggregation was run on " + dateFormat.format(Calendar.getInstance().getTime()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		findExtremesAndMaximums();
+		sectionize();
+		addRecordsToSections();
+		calculateAggrPerSection();
+		writer.close();
+	}
+
+	//This method finds the boundaries of the field
 	private void findExtremesAndMaximums(){
 		BufferedReader reader;
 		try {
 			reader = new BufferedReader(new FileReader(inputFilePath));
 			String line = null;
-			String [] strArray = new String[17];
+			String [] strArray = new String[numOfColumnsInInput];
 			double longitude = 0;
 			double latitude = 0;
 			List<Double> longDouble = new ArrayList<Double>();
 			List<Double> latDouble = new ArrayList<Double>();
 			while ((line = reader.readLine()) != null) {
-				if(line.startsWith(firstLineStartsWith))
-			    	continue;
-			    strArray = line.split(",");
+				strArray = line.split(",");
+				if(line.startsWith(firstLineStartsWith)){
+					for(int i=0; i< strArray.length; i++){
+						writer.print(strArray[i] + ( i < strArray.length-1 ? "," : "" ));
+					}
+					writer.println();
+					continue;
+				}
 			    longitude = Double.parseDouble(strArray[0]); 
 			    latitude  = Double.parseDouble(strArray[1]);
 			    longDouble.add(longitude);
@@ -80,6 +127,7 @@ public class Aggregator {
 			rightMostLongitude = longDouble.get(longDouble.size()-1);
 			topMostLatitude = latDouble.get(latDouble.size()-1);
 			log(leftMostLongitude,rightMostLongitude,topMostLatitude,bottomMostLatitude);
+			//TEMPTEMP -- aren't maxLength and maxBreadth the same thing here? - No they are not. Field could be rectangular
 			maxLength = getDistanceBetweenCoordinates(topMostLatitude,leftMostLongitude,topMostLatitude,rightMostLongitude);
 			maxBreadth = getDistanceBetweenCoordinates(topMostLatitude,leftMostLongitude,bottomMostLatitude,leftMostLongitude);
 			maxArea = maxLength*maxBreadth;
@@ -104,7 +152,10 @@ public class Aggregator {
 		return distance;
 	}
 	
+	//Divide the field into sections of desired size
 	private void sectionize() {
+		//TEMPTEMP -- is this correct?  what if the size we want to aggregate to doesn't do a good job of tiling the overall area?  I think you have to base the number of sections on the width and height individually as opposed to the overall area
+		//-- This takes care of it
 		int numOfSections = (int)(maxArea/(aggrDistance*aggrSwath));
 		log(numOfSections);
 		double remainingArea = maxArea - numOfSections*aggrDistance*aggrSwath;
@@ -168,11 +219,12 @@ public class Aggregator {
 	}
 
 	static void log(Object... obj) {
-		/*for (Object o : obj) {
+		for (Object o : obj) {
 			System.out.println(o);
-		}*/
+		}
 	}
-
+	
+	//Adds records to corresponding sections based on the lat and long
 	private void addRecordsToSections() {
 		BufferedReader reader;
 		try {
@@ -220,13 +272,16 @@ public class Aggregator {
 	}
 
 	private void calculateAggrPerSection() {
+		int outputArraySize = 13;
 		for(List<Section> row : field){
 	    	for(Section section : row){
-	    		double outputArray [] = new double [13];
+	    		double outputArray [] = new double [outputArraySize];
 	    		List<String []> records = section.getRecords();
 	    		int size = records.size();
 	    		if(size != 0){
 	    			for(String [] strArray : records){
+						//TEMPTEMP -- what's special about 7?
+	    				// index 7 represents moist, and therefore needs to be calculated per bushel
 		    			for(int i=0; i<7; i++){
 		    				outputArray[i] += Double.parseDouble(strArray[i]);
 		    			}
@@ -234,6 +289,7 @@ public class Aggregator {
 		    				outputArray[i] += Double.parseDouble(strArray[i]);
 		    			}
 		    			//Sum flags
+						//TEMPTEMP -- why is 15 going to 11 here? -- there are constants such as grain and grain variety in input
 		    			outputArray[11] += Double.parseDouble(strArray[15]);
 		    			
 		    			int distance = Integer.parseInt(strArray[5]);
@@ -267,12 +323,12 @@ public class Aggregator {
 		for(int i=0;i<2;i++){
 			strArray[i] = String.valueOf(Math.round(outputArray[i]*1000000.0)/1000000.0);
 		}
-		strArray[2] = String.valueOf(Math.round(outputArray[2 ]*10.0)/10.0);
+		strArray[2] = String.valueOf(Math.round(outputArray[2]*10.0)/10.0);
 		strArray[3] = String.valueOf(Math.round(outputArray[3]));
 		for(int i=4;i<7;i++){
 			strArray[i] = String.valueOf(Math.round(outputArray[i]));
 		}
-		strArray[7] = String.valueOf(Math.round(outputArray[2 ]*100.0)/100.0);
+		strArray[7] = String.valueOf(Math.round(outputArray[2]*100.0)/100.0);
 		for(int i=8;i<11;i++){
 			strArray[i] = String.valueOf(Math.round(outputArray[i]));
 		}
@@ -283,22 +339,11 @@ public class Aggregator {
 	
 		
 	private void writeToFile(String[] strArray) {
-		PrintWriter writer;
-		try {
-			writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFilePath, true)));
-			for(int i=0;i<11;i++){
-				writer.print(strArray[i] + ",");
-			}
-			writer.print(fieldId + "," + loadId + "," + grain + "," + variety + "," + strArray[11] + "," + strArray[12]);
-			writer.println();
-			writer.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		for(int i=0;i<11;i++){
+			writer.print(strArray[i] + ",");
 		}
+		writer.print(fieldId + "," + loadId + "," + grain + "," + variety + "," + strArray[11] + "," + strArray[12]);
+		writer.println();
 	}
 	
 	public double getAggrDistance() {
@@ -435,7 +480,6 @@ class Section {
 final class Coordinate {
 	private final double longitude;
 	private final double latitude;
-	static double counter;
 	
 	Coordinate(double longitude, double latitude){
 		this.longitude = longitude;

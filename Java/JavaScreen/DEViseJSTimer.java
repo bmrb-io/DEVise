@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2003
+// (c) Copyright 2002-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.50.2  2015/07/09 19:00:13  wenger
+// Final cleanup of Aditya's changes.
+//
+// Revision 1.5.50.1  2015/07/08 20:57:11  wenger
+// Merged aditya1_br_7 thru aditya1_br_8 to aditya_merge_br.
+//
+// Revision 1.5.48.1  2015/02/04 20:05:32  kancherla
+// Handling modifyThread exception
+//
+// Revision 1.5  2005/12/06 20:00:19  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.4  2003/01/13 19:23:43  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -145,6 +158,12 @@ public class DEViseJSTimer implements Runnable
 	    DEViseUtils.printAllThreads("Stopping thread " + thread);
 	}
         thread.interrupt();
+        try{
         thread.stop();
+        } catch (Exception e){
+        	if (DEBUG >= 1) {
+        	    e.printStackTrace();
+        	}
+        }
     }
 }

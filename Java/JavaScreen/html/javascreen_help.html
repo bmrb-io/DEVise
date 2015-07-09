@@ -207,7 +207,7 @@ the toolbar only has an effect on two-dimensional views.
 </p>
 
 <ul>
-<li> <img src="drill-down.default.png">
+<li> <img src="../resources/toolbar_icons/drill-down.default.png">
 <b>Drill down (show data records)</b>:  in this toolbar mode, if you
 click on a data symbol, the location of the click (in data units) and the
 data associated with the symbol will be displayed.  If multiple data
@@ -216,12 +216,12 @@ show the data corresponding to all of the symbols.  If you click in an
 area in which there is no symbol, only the location of the click will be
 displayed.
 
-<li> <img src="show_view_help.default.png">
+<li> <img src="../resources/toolbar_icons/show_view_help.default.png">
 <b>Show help for selected view</b>:  in this toolbar mode, if you
 click anywhere in a view, the help message for that view (if any) will
 be shown.
 
-<li> <img src="data_download.default.png">
+<li> <img src="../resources/toolbar_icons/data_download.default.png">
 <b>Data download (save data records)</b>:  in this toolbar mode, if you
 click anywhere in a view, the data for that view (and any other views
 in the same pile) will be saved to a file, and your browser will be
@@ -231,7 +231,7 @@ The data is saved in comma-separated values (CSV) format.
 be saved.  If you want to be sure to save <i>all</i> data for
 a view, do Home (see below) on the view before doing the data download.)
 
-<li> <img src="crosshairs.default.png">
+<li> <img src="../resources/toolbar_icons/crosshairs.default.png">
 <b>Select cursor/zoom in XY/3D rotate</b>:  this is the "normal"
 toolbar mode.  In this mode, you can drag or resize a DEVise cursor
 (if the mouse cursor is on a DEVise cursor).  If you are not on a cursor
@@ -243,26 +243,26 @@ Also, a single-click in a view with a cursor will move the cursor to
 the mouse location.  If there are multiple cursors in the view, only
 one will be moved.
 
-<li> <img src="full_screen_filter.default.png">
+<li> <img src="../resources/toolbar_icons/full_screen_filter.default.png">
 <b>Expand DEVise cursor to fill view</b>:  in this toolbar mode, if
 you click anywhere in a view containing a DEVise cursor, the DEVise
 cursor in the view will be expanded (or contracted) to the dimensions of
 view axes.  If there are multiple cursors in the view, only one will
 be resized.
 
-<li> <img src="increase_symbol_size.default.png">
+<li> <img src="../resources/toolbar_icons/increase_symbol_size.default.png">
 <b>Increase symbol size</b>: for some symbol types, the size can
 be varied.  In this toolbar mode, clicking in a view with such symbols
 will increase the symbol size.
 
-<li> <img src="decrease_symbol_size.default.png">
+<li> <img src="../resources/toolbar_icons/decrease_symbol_size.default.png">
 <b>Decrease symbol size</b>: for some symbol types, the size can
 be varied.  In this toolbar mode, clicking in a view with such symbols
 will decrease the symbol size.  Note that the symbols cannot be made
 smaller than the "default" size, so the symbols will only be reduced
 in size if they have already been increased from the default.
 
-<li> <img src="home_filter.default.png">
+<li> <img src="../resources/toolbar_icons/home_filter.default.png">
 <b>Home (show all data)</b>: in this toolbar mode, clicking in a
 view will set the view's axis ranges to the "home" setting.  In most
 cases, this means that the view will be expanded (or contracted) to
@@ -271,26 +271,26 @@ cases, there is a pre-defined home setting different than this default.
 Note that if the view is already at the "home" setting, performing this
 operation again will have no effect.
 
-<li> <img src="toggle_filter.default.png">
+<li> <img src="../resources/toolbar_icons/toggle_filter.default.png">
 <b>Toggle axis ranges</b>: in this toolbar mode, clicking in a view
 will toggle back and forth between the last two sets of axis ranges.
 
-<li> <img src="zoom_in-all.default.png">
+<li> <img src="../resources/toolbar_icons/zoom_in-all.default.png">
 <b>Zoom in XY</b>:  in this toolbar mode, dragging with the mouse
 zooms in on both the X and Y axes.  Single-clicking zooms in on
 both axes by a factor of two.
 
-<li> <img src="zoom_in-x.default.png">
+<li> <img src="../resources/toolbar_icons/zoom_in-x.default.png">
 <b>Zoom in X</b>: in this toolbar mode, dragging with the mouse
 zooms in on the X axis only.  Single-clicking zooms in on the X axis
 by a factor of two.
 
-<li> <img src="zoom_out-all.default.png">
+<li> <img src="../resources/toolbar_icons/zoom_out-all.default.png">
 <b>Zoom out XY</b>: in this toolbar mode, dragging with the mouse
 zooms out on both the X and Y axes.  Single-clicking zooms out on
 both axes by a factor of two.
 
-<li> <img src="zoom_out-x.default.png">
+<li> <img src="../resources/toolbar_icons/zoom_out-x.default.png">
 <b>Zoom out X</b>: in this toolbar mode, dragging with the mouse
 zooms out on the X axis only.  Single-clicking zooms out on the X
 axis by a factor of two.
@@ -332,7 +332,12 @@ pressing the key.
 </ul>
 
 <h3>2D Mouse Actions</h3>
-In normal toolbar mode only.
+Always:
+<ul>
+<li><b>Scroll wheel</b>: zoom in (scroll down) or out (scroll up)
+<li><b>F1</b>: toggle display of help information for the current view
+</ul>
+In normal toolbar mode only:
 <ul>
 <li><b>Click</b>: select view and move cursor (if view contains a cursor)
 <li><b>Drag</b>: move cursor (if on a cursor) or zoom in
@@ -342,7 +347,6 @@ In normal toolbar mode only.
 <li><b>Shift-drag</b>: zoom out (same as Alt-drag)
 <li><b>Shift-click</b>: show data records, if any, at mouse location
 -->
-<li><b>F1</b>: toggle display of help information for the current view
 <!-- TEMP -- Control-drag on a cursor is supposed to move the cursor
   without talking to the devised, but this doesn't seem to work anymore -->
 </ul>
@@ -531,7 +535,20 @@ Version 5.15.0
 <li>Changed "View" menu to "Tools" to better reflect its functionality.
 <li>Removed no-longer-necessary "Larger" and "Smaller" menu items from
 the "Tools" menu.
+<li>Two-dimensional views can now be zoomed using the mouse wheel
+(to-do 09.037).
+<li>Moved "restart session" functionality out of the session menu
+and into its own button (to-do 09.031).
+<li>When drilling down to display the data correspoding to a symbol,
+you can now see the data for a different location simply by clicking
+in the new location, without first dismissing the drill-down dialog
+(to-do 09.014).
+<li>Mouse cursor mode is now shown at the bottom of the JavaScreen window
+(to-do 09.036).
 </ul>
+<li>Fixed the display of JavaScreen help in a Java window (icons
+and links work) (bug 1025).
+<li>Fixed errors when exiting the JavaScreen (bug 1030).
 </ul>
 
 <h3>

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2012
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,36 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.10.3  2015/07/08 21:48:04  wenger
+// Merged aditya1_br_8 thru aditya1_br_9 to aditya_merge_br.
+//
+// Revision 1.10.10.2  2015/07/08 20:57:11  wenger
+// Merged aditya1_br_7 thru aditya1_br_8 to aditya_merge_br.
+//
+// Revision 1.10.10.1  2015/07/07 14:56:37  wenger
+// Merged aditya1_br_4 thru aditya1_br_5 to aditya_merge_br.
+//
+// Revision 1.10.8.6  2015/02/13 20:15:36  kancherla
+// Fixed the drill down marker disappearing bug
+//
+// Revision 1.10.8.5  2015/02/04 20:05:14  kancherla
+// Added a null check for fixing mouse wheel moved NPE
+//
+// Revision 1.10.8.4  2015/01/26 14:19:34  kancherla
+// changed copyright date
+//
+// Revision 1.10.8.3  2015/01/26 14:18:21  kancherla
+// changed the sense of scroll wheel zooming
+//
+// Revision 1.10.8.2  2015/01/16 23:10:21  kancherla
+// *** empty log message ***
+//
+// Revision 1.10.8.1  2015/01/14 21:47:18  kancherla
+// Added mouse wheel listener
+//
+// Revision 1.10  2012/04/30 22:20:17  wenger
+// Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+//
 // Revision 1.9.16.3  2012/04/27 16:46:00  wenger
 // Cleaned up a bunch of temporary/debug code.
 //
@@ -250,7 +280,8 @@ public class DEViseCanvas2D extends DEViseCanvas
 	      jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) ||
 	      jsc.toolBar.doDrillDown()) {
                 if (activeView.isDrillDown) {
-		    drawDrillDownMark(p.x, p.y);
+                	//drawDrillDownMark(p.x, p.y);
+                	jsc.setDrillDownMarkerCoordinates(p.x, p.y, this);
                     cmd = DEViseCommands.SHOW_RECORDS + " " +
                       activeView.getCurlyName() + " " +
 		      activeView.translateX(p.x, 2) + " " +
@@ -424,4 +455,39 @@ public class DEViseCanvas2D extends DEViseCanvas
             System.err.println(err.getMessage());
         }
     }
+    
+	protected void doMouseWheelMoved(MouseWheelEvent e) {
+		try {
+			Point p = e.getPoint();
+			if(p != null){
+				int x1 = p.x;
+				int y1 = p.y;
+				int direction  = e.getWheelRotation();
+				if (DEBUG >= 1) {
+					System.out.println("doMouseWheelMoved " + x1 + "," + y1);
+				}
+				
+				final double ZOOM_FACTOR = 0.5;
+				int xMargin = (int)(activeView.viewLoc.width *  ZOOM_FACTOR / 2);
+				int yMargin = (int)(activeView.viewLoc.height *  ZOOM_FACTOR / 2);
+
+				String cmd = DEViseCommands.MOUSE_RUBBERBAND + " "
+						+ activeView.getCurlyName() + " "
+						+ activeView.translateX(x1 - xMargin, 2) + " "
+						+ activeView.translateY(y1 - yMargin, 2) + " "
+						+ activeView.translateX(x1 + xMargin, 2) + " "
+						+ activeView.translateY(y1 + yMargin, 2);
+				if (direction >= 0) {
+					cmd = cmd + " 0 0";
+				} else {
+					cmd = cmd + " 1 0";
+				}
+				
+				jscreen.guiAction = true;
+	            dispatcher.start(cmd);
+			}
+		} catch (YError err) {
+			System.err.println(err.getMessage());
+		}
+	}
 }

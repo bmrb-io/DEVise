@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006-2011
+// (c) Copyright 2006-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,27 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.14.3  2015/07/09 19:00:13  wenger
+// Final cleanup of Aditya's changes.
+//
+// Revision 1.4.14.2  2015/07/08 20:57:11  wenger
+// Merged aditya1_br_7 thru aditya1_br_8 to aditya_merge_br.
+//
+// Revision 1.4.14.1  2015/07/07 14:32:15  wenger
+// Merged aditya1_br_3 thru aditya1_br_4 to aditya_merge_br.
+//
+// Revision 1.4.12.3  2015/01/26 21:05:18  kancherla
+// THe constructor is no longer needed
+//
+// Revision 1.4.12.2  2014/12/29 19:32:58  kancherla
+// *** empty log message ***
+//
+// Revision 1.4.12.1  2014/12/29 19:00:36  kancherla
+// *** empty log message ***
+//
+// Revision 1.4  2011/08/26 15:37:34  wenger
+// Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
+//
 // Revision 1.3.30.3  2011/08/25 21:35:53  wenger
 // Hopefully final cleanup of the JavaScreen embedded button fixes.
 //
@@ -56,8 +77,11 @@
 //TEMP package edu.wisc.cs.devise.js.jsc;
 package JavaScreen;
 
-/*import  java.awt.*;*/
-import javax.swing.*;
+//import  java.awt.*;
+import java.awt.Dimension;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 
 public class DEViseButton extends JButton
 {
@@ -73,4 +97,5 @@ public class DEViseButton extends JButton
         setBackground(jsValues.uiglobals.bg);
         setForeground(jsValues.uiglobals.fg);
     }
+    
 }

@@ -22,17 +22,47 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2015/06/22 19:40:03  wenger
+// Changed minor version to 15 instead of just incrementing the revision,
+// because I'm hoping the next release will have some fairly major GUI
+// changes.  Implemented to-do 09.047 (remove "Larger" and "Smaller" menu
+// items).  Also changed "View" menu to "Tools".
+//
 // Revision 1.18  2015/05/08 17:54:49  wenger
 // Merged mod_perl_br_0 thru mod_perl_br_2 to trunk.
 //
 // Revision 1.17.4.1  2015/05/05 18:34:15  wenger
 // Fixed bug 1045:  CGI path dialog now works more intuitively.
 //
+// Revision 1.17.2.3  2015/07/07 14:56:37  wenger
+// Merged aditya1_br_4 thru aditya1_br_5 to aditya_merge_br.
+//
+// Revision 1.17.2.2  2015/07/07 14:32:16  wenger
+// Merged aditya1_br_3 thru aditya1_br_4 to aditya_merge_br.
+//
+// Revision 1.17.2.1  2015/07/06 22:22:52  wenger
+// Merged aditya1_br_1 thru aditya1_br_2 to aditya_merge_br.
+//
 // Revision 1.17  2015/02/18 22:53:46  wenger
 // The JavaScreen now reports in the log window how long each command
 // takes.  Socket mode can now be turned on in an applet by setting the
 // usecgi parameter to 0.  Added the capability to make jar files that
 // request all-permissions instead of sandbox.
+//
+// Revision 1.16.20.5  2015/01/16 21:30:16  kancherla
+// *** empty log message ***
+//
+// Revision 1.16.20.4  2014/12/29 19:32:58  kancherla
+// *** empty log message ***
+//
+// Revision 1.16.20.3  2014/12/29 19:00:36  kancherla
+// *** empty log message ***
+//
+// Revision 1.16.20.2  2014/12/19 21:05:04  kancherla
+// fixed help icons bug - 1025
+//
+// Revision 1.16.20.1  2014/12/13 02:39:36  kancherla
+// Added restart button, added a check for in browser flag before adding smaller and larger to view menu
 //
 // Revision 1.16  2010/07/01 17:32:59  wenger
 // Implemented JavaScreen to-do 09.019 -- JS window can now be re-sized
@@ -170,7 +200,7 @@ public class DEViseMainButtons
     // Menu items.
     private MenuItem openMenuItem = new MenuItem("Open/Switch...");
     private MenuItem closeMenuItem = new MenuItem("Close");
-    private MenuItem restartMenuItem = new MenuItem("Restart");
+    //private MenuItem restartMenuItem = new MenuItem("Restart");
     private MenuItem filterMenuItem = new MenuItem("Reset Axis Ranges");
     private MenuItem exitMenuItem = new MenuItem("Exit");
 
@@ -267,7 +297,6 @@ public class DEViseMainButtons
         if (DEBUG >= 2) {
 	    System.out.println("DEViseMainButtons.createButtons()");
 	}
-
         sessionMenuButton = new DEViseButton("Session", _js.jsValues);
         viewMenuButton = new DEViseButton("Tools", _js.jsValues);
         helpMenuButton = new DEViseButton("Help", _js.jsValues);
@@ -284,7 +313,7 @@ public class DEViseMainButtons
 	    sessionPM.add(openMenuItem);
 	    sessionPM.add(closeMenuItem);
 	}
-	sessionPM.add(restartMenuItem);
+	//sessionPM.add(restartMenuItem); -- Not needed since we are adding a refresh button -- kancherla
 	sessionPM.add(filterMenuItem);
         if (!_js.jsValues.uiglobals.inBrowser) {
 	    sessionPM.add(exitMenuItem);
@@ -299,7 +328,7 @@ public class DEViseMainButtons
 	// Set up communication mode menu.
 	commModeMenu.add(socketModeMenuItem);
 	commModeMenu.add(cgiModeMenuItem);
-
+	
 	// Set up view menu.
 	viewPM.add(displayModeMenu);
 	viewPM.add(setMenuItem);
@@ -375,13 +404,13 @@ public class DEViseMainButtons
 	        }
 	    });
 
-        restartMenuItem.addActionListener(new ActionListener()
+        /*restartMenuItem.addActionListener(new ActionListener()
 	    {
 	        public void actionPerformed(ActionEvent event)
 	        {
 	            _js.restartSession();
 	        }
-	    });
+	    });*/
 
         filterMenuItem.addActionListener(new ActionListener()
 	    {

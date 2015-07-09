@@ -1,0 +1,103 @@
+		Notes on Merging Aditya's Changes
+			2015-07-06
+
+(This is stuff on the aditya1_br cvs branch.)
+
+What are the changes?:
+
+* aditya1_br_0-aditya1_br_1:
+Attempt to fix bug 1030 (error when exiting JS), plus changes to 
+build_std, and moving some of the data conversion scripts around.
+Merged (partially -- as much as will get merged)
+
+I'm going to leave out the bug 1030 "fix", because it works for running
+the JavaScreen on the command line, but goofs it up for the applet.
+
+aditya_merge_br_1 tag is after this merge.
+
+
+* aditya1_br_1-aditya1_br_2:
+At least part of adding "reload session" button (todo 09.031).
+(This is with the button labeled with "Restart" text instead of an
+icon.)  Also removed "Larger" and "Smaller" from JS in embedded mode.
+(Maybe merge this in conjunction with the changes that include the
+icon?)
+
+Merged.
+
+
+* aditya1_br_2-aditya1_br_3:
+Fixed bug 1025 (help icons don't show up in Java window).
+Hmm -- this works in the non-jar version on the command line, but fails
+in the applet (you don't get *anything* in the help window when you're
+running from a jar file):
+  java.security.AccessControlException: access denied ("java.util.PropertyPermission" "user.dir" "read")
+  ...
+  at java.io.File.toURI(File.java:731)
+  at JavaScreen.UI.DEViseHtmlWindow.<init>(DEViseHtmlWindow.java:64)
+  at JavaScreen.DEViseMainButtons$22.actionPerformed(DEViseMainButtons.java:534)
+  at java.awt.MenuItem.processActionEvent(MenuItem.java:669)
+
+I'm going to just abandon this set of changes...
+
+
+* aditya1_br_3-aditya1_br_4:
+Changed "Restart" button to an icon, but button is oversize.  Also added
+hyperlinks to the help page in the JS window.
+
+Merged the button change, deleted the hyperlinks change.
+
+
+* aditya1_br_4-aditya1_br_5:
+"Restart" button is smaller; mouse cursor mode is displayed at bottom
+of JavaScreen window (todo 09.036); zoom in/out with mouse wheel (todo
+09.037).
+
+Merged.
+
+
+* aditya1_br_5-aditya1_br_6:
+Changed JavaScreen version and added stuff about mouse wheel zooming
+to version history.
+
+Merged.
+
+
+* aditya1_br_6-aditya1_br_7:
+Just updated JavaScreen help, Bugs, and Todo2 files.
+
+Merged (edited Bugs and ToDo2 files to reflect things removed from
+previous merges).
+
+
+* aditya1_br_7-aditya1_br_8:
+Fixes to mouse wheel zooming; click updates drill-down dialog w/o
+having to dismiss it first (to-do 09.014); added mouseover to restart
+button; fixed errors on JS exit (bug 1030); partially got icons and
+links working in help window in JS (bug 1025); updated help page;
+various other minor bug fixes.
+
+Merged.
+
+
+* aditya1_br_8-aditya1_br_9:
+Fixed problem with help icons; fixed bug of drill-down marker
+disappearing.  Better argument checking in corn yield conversion
+script; added Unix timestamp (for better visualization) in SWAMP
+data anonymizer script.
+
+Merged.
+
+
+* aditya1_br_9-aditya1_br_10:
+Fixed bug in corn yield aggregator.
+
+Merged.
+
+
+* aditya1_br_10-aditya1_br_11:
+Minor changes to corn yield Makefile; updated to-do list.
+
+Merged.
+
+

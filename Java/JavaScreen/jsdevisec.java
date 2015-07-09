@@ -22,11 +22,26 @@
 // $Id$
 
 // $Log$
+// Revision 1.194  2015/05/08 17:54:50  wenger
+// Merged mod_perl_br_0 thru mod_perl_br_2 to trunk.
+//
 // Revision 1.193.4.2  2015/05/08 16:55:14  wenger
 // Hopefully final mod_perl cleanup.
 //
 // Revision 1.193.4.1  2015/05/05 18:34:15  wenger
 // Fixed bug 1045:  CGI path dialog now works more intuitively.
+//
+// Revision 1.193.2.4  2015/07/09 19:00:13  wenger
+// Final cleanup of Aditya's changes.
+//
+// Revision 1.193.2.3  2015/07/08 21:48:04  wenger
+// Merged aditya1_br_8 thru aditya1_br_9 to aditya_merge_br.
+//
+// Revision 1.193.2.2  2015/07/08 20:57:11  wenger
+// Merged aditya1_br_7 thru aditya1_br_8 to aditya_merge_br.
+//
+// Revision 1.193.2.1  2015/07/07 14:56:37  wenger
+// Merged aditya1_br_4 thru aditya1_br_5 to aditya_merge_br.
 //
 // Revision 1.193  2015/02/18 22:53:47  wenger
 // The JavaScreen now reports in the log window how long each command
@@ -36,6 +51,41 @@
 //
 // Revision 1.192  2015/01/14 23:35:58  wenger
 // Improved messages related to communication protocol version.
+// Revision 1.191.8.12  2015/02/13 20:15:44  kancherla
+// Fixed the drill down marker disappearing bug
+//
+// Revision 1.191.8.11  2015/02/04 20:06:07  kancherla
+// Fixed bug 1030 - Errors on exit
+//
+// Revision 1.191.8.10  2015/01/26 21:05:51  kancherla
+// Fixed the issue of restart image not showing up in the release version
+//
+// Revision 1.191.8.9  2015/01/26 18:20:41  kancherla
+// Added functionality for enabling selection of a different data point and showing its record by clicking in drill down mode
+//
+// Revision 1.191.8.8  2015/01/26 16:21:05  kancherla
+// Added a check to see if applet is run via browser and if true, calling a dispose method on parent frame
+//
+// Revision 1.191.8.7  2015/01/26 15:38:56  kancherla
+// chnaged the refreshicon location
+//
+// Revision 1.191.8.6  2015/01/26 14:41:55  kancherla
+// Added mouseover to restart button and removed extra space around it
+//
+// Revision 1.191.8.5  2015/01/16 21:32:58  kancherla
+// *** empty log message ***
+//
+// Revision 1.191.8.4  2015/01/16 21:29:31  kancherla
+// *** empty log message ***
+//
+// Revision 1.191.8.3  2015/01/14 22:26:23  kancherla
+// *** empty log message ***
+//
+// Revision 1.191.8.2  2015/01/14 21:51:01  kancherla
+// Getter for status panel
+//
+// Revision 1.191.8.1  2014/12/13 02:37:49  kancherla
+// Fixed bug 1030
 //
 // Revision 1.191  2012/04/30 22:20:18  wenger
 // Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
@@ -973,6 +1023,7 @@ package JavaScreen;
 
 import  java.applet.*;
 import  java.awt.*;
+import java.awt.Dialog.ModalityType;
 import  java.io.*;
 import  java.net.*;
 import  java.awt.event.*;
@@ -983,6 +1034,9 @@ import  javax.swing.*;
 import  javax.swing.table.*;
 import  javax.swing.event.ListSelectionListener;
 import  javax.swing.event.ListSelectionEvent;
+
+import JavaScreen.DEViseButton;
+import JavaScreen.DEViseCanvas2D;
 import	JavaScreen.UI.*;
 
 public class jsdevisec extends JPanel
@@ -1102,6 +1156,12 @@ public class jsdevisec extends JPanel
     private DEViseScreenResizeHandler _resizeHandler =
       new DEViseScreenResizeHandler(this);
 
+	private int drillDownX;
+
+	private int drillDownY;
+
+	private DEViseCanvas2D dCanvas2D;
+
     //---------------------------------------------------------------------
     // Constructor.
     public jsdevisec(Applet parentApplet, JFrame frame, Vector images,
@@ -1199,6 +1259,30 @@ public class jsdevisec extends JPanel
 	sessionMenuButton = new DEViseSessionMenuButton(this);
 	buttonPanel.add(sessionMenuButton);
 	sessionMenuButton.hide();
+	
+	//Adding restart button
+	JButton restartBtn = new JButton();
+	try {
+		ImageIcon icon = new ImageIcon(loadImage("resources/toolbar_icons/refresh.png", jsValues));
+		restartBtn.setIcon(icon);
+	} catch(Exception e) {
+		System.err.println("Error creating restart button : " + e);
+	}
+	restartBtn.setBackground(jsValues.uiglobals.bg);
+	restartBtn.setForeground(jsValues.uiglobals.fg);
+	restartBtn.setBorderPainted(false);
+	restartBtn.setContentAreaFilled(false);
+	restartBtn.setOpaque(false);
+	restartBtn.setMargin(new Insets(0, 0, 0, 0));
+	restartBtn.setToolTipText("Restart Session");
+	restartBtn.addActionListener(new ActionListener()
+    {
+        public void actionPerformed(ActionEvent event)
+        {
+            restartSession();
+        }
+    });
+	buttonPanel.add(restartBtn, 0);
 
 	// viewInfo contains the process counter
 	viewInfo = new DEViseViewInfo(this, images);
@@ -1273,6 +1357,7 @@ public class jsdevisec extends JPanel
 	// it will contain text-based status info about communication mode,
 	// loading status, etc.
 	statusMessage = new DEViseStatusMessage();
+	statusMessage.setText("Select cursor/zoom in XY/3D rotate");
 		
 		
 	// The menuPanel contains the throbber and main application menus.
@@ -1932,6 +2017,12 @@ public class jsdevisec extends JPanel
         if (specialID == -1 && ! jsValues.session.autoPlayback)	
 	    collabstatedlg = null;        
     }
+    
+    public void setDrillDownMarkerCoordinates(int xCoord, int yCoord, DEViseCanvas2D canvas2D){
+    	drillDownX = xCoord;
+    	drillDownY = yCoord;
+    	dCanvas2D  = canvas2D;
+    }
 
     public void showRecord(String[] msg)
     {
@@ -1944,8 +2035,13 @@ public class jsdevisec extends JPanel
 
 	// Don't drill-down twice w/o user re-selecting drill-down mode.
 	// toolBar.setNormal();
-
+		recorddlg = RecordDlg.getInstance();
+		if(recorddlg != null){
+			recorddlg.getOkButton().doClick(); //automatically closes an open dialog so that a new dialog can be opened
+		}
         recorddlg = new RecordDlg(parentFrame, isCenterScreen, msg, this);
+        dCanvas2D.drawDrillDownMark(drillDownX, drillDownY);
+        recorddlg.setModalityType(ModalityType.MODELESS);
         recorddlg.open();
         if (specialID == -1 && ! jsValues.session.autoPlayback)
 	    recorddlg = null;
@@ -2120,8 +2216,9 @@ public class jsdevisec extends JPanel
 	// Note: this must be done before destroying the dispatcher;
 	// otherwise we get null pointer errors because we get window
 	// events after the dispatcher has been destroyed.
-	parentFrame.dispose();
-
+	// parentFrame.dispose();
+        parentFrame.setVisible(false);  //-- Fix for bug 1030  -- kancherla
+	 
 	if (debugWindow != null) {
 	    debugWindow.dispose();
 	    debugWindow = null;
@@ -2332,7 +2429,7 @@ public class jsdevisec extends JPanel
         InputStream is = jsValues._imageLoadComp.getClass().
 	  getResourceAsStream(imagePath);
         BufferedInputStream bis = new BufferedInputStream(is);
-        final int MAX_IMAGE_SIZE = 2000;
+        final int MAX_IMAGE_SIZE = 20000;
         byte[] imageData = new byte[MAX_IMAGE_SIZE];
         int count = bis.read(imageData, 0, MAX_IMAGE_SIZE);
         if (count >= MAX_IMAGE_SIZE) {
@@ -2362,17 +2459,24 @@ public class jsdevisec extends JPanel
 
 	return image;
     }
+
+	public DEViseStatusPanel getStatusPanel() {
+		return statusPanel;
+	}
 }
 
 // ------------------------------------------------------------------------
 
 // Dialog to show record values (drill-down).
 class RecordDlg extends Dialog
-{
-    jsdevisec jsc = null;
+{	
+	private static RecordDlg instance = null;
+	
+	jsdevisec jsc = null;
 
     private DEViseButton okButton;
-    private boolean status = false; // true means this dialog is showing
+
+	private boolean status = false; // true means this dialog is showing
     private JTable table;
     String[] urls;
 
@@ -2384,7 +2488,7 @@ class RecordDlg extends Dialog
 	setResizable(true);
 	
 	jsc = what;
-
+	
 	okButton = new DEViseButton("  OK  ", jsc.jsValues);
 
         jsc.jsValues.debug.log("Creating RecordDlg");
@@ -2551,9 +2655,18 @@ class RecordDlg extends Dialog
 			}
                     }
                 });
+        instance = this;
     }
-
-    //
+    
+    public static RecordDlg getInstance(){
+		return instance;
+	}
+    
+    public DEViseButton getOkButton() {
+		return okButton;
+	}
+    
+	//
     // The next two methods split up a string of the form "{description}{url}".
     // If the braces aren't there, both methods return the whole string.
     //
@@ -2650,7 +2763,7 @@ class RecordDlg extends Dialog
         setVisible(true);
     }
 
-    public synchronized void close()
+    public void close() // Synchronization causes deadlock
     {
         if (status) {
             dispose();
