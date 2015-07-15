@@ -1,0 +1,17 @@
+		To-do 09.049:  JavaScreen Feedback GUI
+				2015-07-15
+
+We want to have a button in the JavaScreen that brings up an html form
+that allows users to easily send us feedback.
+
+When a user does that, I think it should send email, probably to
+bmrbhelp@bmrb.wisc.edu.  Either have a form that sends email via a PHP
+script on the server, or pop up a mail client automatically.
+
+I also think that it would be a good idea for the JavaScreen to pass
+along the file name of the session the user currently has open,
+and then the form should automatically include that in the email.
+
+Also, once to-do 09.048 is done, maybe we should save the visualization
+state and send *that* session file name, as opposed to the "generic"
+session file name.
