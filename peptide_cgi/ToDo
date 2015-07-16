@@ -987,7 +987,7 @@ Num Date        Status  Pri     Description
 				from a template installed as part of the
 				DEVise/JavaScreen installation. (wenger)
 
-219 5/13/15	OPEN	3	Have the Peptide-CGI install link all
+219 5/13/15	OPEN	1	Have the Peptide-CGI install link all
 				of the JavaScreen client-side files into
 				a known location within the Peptide-CGI
 				directory tree (the JavaScreen client
