@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.183  2015/07/21 14:40:38  wenger
+// Merged js_suggest_button_br_0 thru js_suggest_button_br_1 to trunk.
+//
 // Revision 1.182  2015/07/09 20:02:44  wenger
 // Merged aditya_merge_br_0 thru aditya_merge_br_3 to trunk.
 //
@@ -1128,7 +1131,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.15.0x3"/*TEMP*/);
+    public static final String VERSION = new String("5.15.0");
 
     public static final String PROTOCOL_VERSION = new String("17.2");
 

@@ -12,4 +12,4 @@
 
 setenv CLASSPATH devise_js.jar
 set javaexec = `cat bin2/java`
-$javaexec JavaScreen.js -cgiurl/cgi-bin/devise/js.cgi -screensize700x500$*
+$javaexec JavaScreen.js -cgiurl/cgi-bin/devise/js.cgi -screensize700x500 $*
