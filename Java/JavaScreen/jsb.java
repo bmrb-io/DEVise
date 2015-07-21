@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.24.34.1  2015/06/19 17:02:57  wenger
+// Changed "suggest" to "feedback" as per feedback from Eldon (still working
+// on moving the feedback button to the right side).  Added -showallbut
+// command-line flag (for debugging) that causes the JS to show the
+// Jmol and session-specific buttons.
+//
+// Revision 1.24  2008/01/24 20:30:53  wenger
+// Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
+//
 // Revision 1.23  2008/01/22 20:02:38  wenger
 // Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
 // my fix to the pre-toolbar version of the JS, but it doesn't work for
@@ -202,7 +211,7 @@ public class jsb extends DEViseJSApplet
         if (isInit) {
             remove(startInfo);
             if (jsc == null || jsc.getQuitStatus()) {
-                jsc = new jsdevisec(this, null, images, jsValues);
+                jsc = new jsdevisec(this, null, images, jsValues, false);
                 add(jsc, BorderLayout.CENTER);
 	    } else {
                 //jsc.displayMe(true);

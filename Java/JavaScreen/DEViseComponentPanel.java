@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2011
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.12.18.2  2015/07/20 21:18:21  wenger
+// Moved Feedback button to the right side of the JavaScreen.
+//
+// Revision 1.12.18.1  2015/06/18 21:34:09  wenger
+// First cut at the "Suggest" button and related HTML form.  Also, a few
+// other changes to the menu buttons.  Fixed version in JavaScreen
+// help page.
+//
+// Revision 1.12  2011/08/26 15:37:34  wenger
+// Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
+//
 // Revision 1.11.30.2  2011/08/25 21:35:53  wenger
 // Hopefully final cleanup of the JavaScreen embedded button fixes.
 //
@@ -99,13 +110,14 @@ public class DEViseComponentPanel extends JPanel
     
     public jsdevisec jsc;
 
-    public DEViseComponentPanel(Component component[], String style, int gap,
+    public DEViseComponentPanel(Component components[], String style, int gap,
       int align, jsdevisec js)
     {
 	jsc = js;
 
-        if (component == null)
+        if (components == null) {
             return;
+	}
 
         if (align == ALIGN_CENTER) {
             setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -123,47 +135,49 @@ public class DEViseComponentPanel extends JPanel
             // panel.setLayout(new GridLayout(0, 1, 0, gap));
             panel.setLayout(new GridLayout(0, 0, 0, gap));
         }  else if (style.equals(LAYOUT_HORIZONTAL))  {
-	    int rows = component.length > 5 ? 2 : 1;
+	    int rows = components.length > 5 ? 2 : 1;
             panel.setLayout(new GridLayout(rows, 0, gap, 0));
         } else {
 	    System.out.println("Illegal style value: " + style);
 	}
 
         int i;
-        for (i = 0; i < component.length; i++) {
-            if ((component[i] instanceof TextField) ||
-	      (component[i] instanceof TextArea)) {
-                component[i].setBackground(jsc.jsValues.uiglobals.textBg);
-                component[i].setForeground(jsc.jsValues.uiglobals.textFg);
-                component[i].setFont(jsc.jsValues.uiglobals.textFont);
-            } else if (!(component[i] instanceof DEViseButton)) {
-                component[i].setBackground(jsc.jsValues.uiglobals.bg);
-                component[i].setForeground(jsc.jsValues.uiglobals.fg);
+	// We leave off the last component (the feedback button) so that
+	// it can later be put in on the far right side.
+        for (i = 0; i < components.length-1; i++) {
+            if ((components[i] instanceof TextField) ||
+	      (components[i] instanceof TextArea)) {
+                components[i].setBackground(jsc.jsValues.uiglobals.textBg);
+                components[i].setForeground(jsc.jsValues.uiglobals.textFg);
+                components[i].setFont(jsc.jsValues.uiglobals.textFont);
+            } else if (!(components[i] instanceof DEViseButton)) {
+                components[i].setBackground(jsc.jsValues.uiglobals.bg);
+                components[i].setForeground(jsc.jsValues.uiglobals.fg);
 		// font2 for drill-down dialog.  RKW 2000-06-22.
-                component[i].setFont(jsc.jsValues.uiglobals.font2);
-                if (component[i] instanceof Label) {
-                    ((Label)component[i]).setAlignment(Label.CENTER);
+                components[i].setFont(jsc.jsValues.uiglobals.font2);
+                if (components[i] instanceof Label) {
+                    ((Label)components[i]).setAlignment(Label.CENTER);
 	        }
             }
 
-            panel.add(component[i]);
+            panel.add(components[i]);
         }
 
         add(panel);
     }
 
-    public DEViseComponentPanel(Component component[], String style, int gap, jsdevisec js)
+    public DEViseComponentPanel(Component components[], String style, int gap, jsdevisec js)
     {
-        this(component, style, gap, ALIGN_CENTER, js);
+        this(components, style, gap, ALIGN_CENTER, js);
     }
 
-    public DEViseComponentPanel(Component component[], String style, jsdevisec js)
+    public DEViseComponentPanel(Component components[], String style, jsdevisec js)
     {
-        this(component, style, 10, ALIGN_CENTER, js);
+        this(components, style, 10, ALIGN_CENTER, js);
     }
 
-    public DEViseComponentPanel(Component component[], jsdevisec js)
+    public DEViseComponentPanel(Component components[], jsdevisec js)
     {
-        this(component, LAYOUT_HORIZONTAL, 10, ALIGN_CENTER, js);
+        this(components, LAYOUT_HORIZONTAL, 10, ALIGN_CENTER, js);
     }
 }

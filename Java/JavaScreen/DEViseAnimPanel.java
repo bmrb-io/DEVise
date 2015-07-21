@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2008
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.47.34.1  2015/07/20 21:18:20  wenger
+// Moved Feedback button to the right side of the JavaScreen.
+//
+// Revision 1.47  2008/09/24 21:46:51  wenger
+// Partially(?) fixed DEVise/JS bug 973: there is now a minimum delay
+// before the JS stop button goes back to normal when communicating
+// with the server, so the user won't fail to notice.
+//
 // Revision 1.46  2006/06/23 19:52:39  wenger
 // Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
 //
@@ -122,10 +130,11 @@ public class DEViseAnimPanel extends Canvas implements Runnable
     {
         jsc = what;
 
-        if (time < 10)
+        if (time < 10) {
             waitInterval = 10;
-        else
+        } else {
             waitInterval = time;
+        }
 
         minSize = new Dimension(imageWidth, imageHeight);
 
@@ -171,6 +180,11 @@ public class DEViseAnimPanel extends Canvas implements Runnable
     }
 
     public Dimension getMinimumSize()
+    {
+        return minSize;
+    }
+
+    public Dimension getMaximumSize()
     {
         return minSize;
     }

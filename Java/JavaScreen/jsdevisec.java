@@ -22,6 +22,35 @@
 // $Id$
 
 // $Log$
+// Revision 1.195  2015/07/09 20:02:44  wenger
+// Merged aditya_merge_br_0 thru aditya_merge_br_3 to trunk.
+//
+// Revision 1.194.2.6  2015/07/20 21:54:52  wenger
+// Removed (for now) in-progress About dialog and visualization help.
+//
+// Revision 1.194.2.5  2015/07/20 21:18:23  wenger
+// Moved Feedback button to the right side of the JavaScreen.
+//
+// Revision 1.194.2.4  2015/07/16 21:50:17  wenger
+// A little more cleanup of the JavaScreen feedback GUI.
+//
+// Revision 1.194.2.3  2015/07/16 19:54:24  wenger
+// A lot of the JavaScreen feedback GUI is working, but quite a bit of
+// cleanup still needed to the PHP script, and also need to reposition
+// the feedback button.  Started on "About" dialog.  Various debug code
+// still in place.
+//
+// Revision 1.194.2.2  2015/06/19 17:02:58  wenger
+// Changed "suggest" to "feedback" as per feedback from Eldon (still working
+// on moving the feedback button to the right side).  Added -showallbut
+// command-line flag (for debugging) that causes the JS to show the
+// Jmol and session-specific buttons.
+//
+// Revision 1.194.2.1  2015/06/18 21:34:09  wenger
+// First cut at the "Suggest" button and related HTML form.  Also, a few
+// other changes to the menu buttons.  Fixed version in JavaScreen
+// help page.
+//
 // Revision 1.194  2015/05/08 17:54:50  wenger
 // Merged mod_perl_br_0 thru mod_perl_br_2 to trunk.
 //
@@ -1093,6 +1122,7 @@ public class jsdevisec extends JPanel
     public EnterCollabPassDlg entercollabpassdlg = null;
     public CollabStateDlg collabstatedlg = null;
     public ShowUrlDlg showUrlDlg = null;
+    //TEMP public AboutDlg aboutDlg = null;
 
     private DEViseJmolMenuButton jmolButton;
     private DEViseSessionMenuButton sessionMenuButton;
@@ -1164,8 +1194,9 @@ public class jsdevisec extends JPanel
 
     //---------------------------------------------------------------------
     // Constructor.
+    // Note:  showAllButtons is basically for debugging.
     public jsdevisec(Applet parentApplet, JFrame frame, Vector images,
-      DEViseJSValues jv)
+      DEViseJSValues jv, boolean showAllButtons)
     {
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
 	    DEViseUtils.printAllThreads("In jsdevisec constructor");
@@ -1254,11 +1285,15 @@ public class jsdevisec extends JPanel
 	buttonPanel.add(commMode);
         jmolButton = new DEViseJmolMenuButton(jsValues);
 	buttonPanel.add(jmolButton);
-	jmolButton.hide();
+	if (!showAllButtons) {
+	    jmolButton.hide();
+	}
 
 	sessionMenuButton = new DEViseSessionMenuButton(this);
 	buttonPanel.add(sessionMenuButton);
-	sessionMenuButton.hide();
+	if (!showAllButtons) {
+	    sessionMenuButton.hide();
+	}
 	
 	//Adding restart button
 	JButton restartBtn = new JButton();
@@ -1365,6 +1400,7 @@ public class jsdevisec extends JPanel
 	// from jsValues. Eventually this will hopefully be set using
 	// Java Swing Look and Feel.
         menuPanel = new DEViseMenuPanel(animPanel, buttonPanel,
+	  _mainButtons.getFeedbackButton(),
 	  jsValues.session.disableButtons);
 	menuPanel.setBackground(jsValues.uiglobals.bg);
 	menuPanel.inheritBackground(); // causes children to inherit bg color
@@ -1418,10 +1454,13 @@ public class jsdevisec extends JPanel
             setBackground(Color.gray);
 	    // topPanel.setBackground(Color.magenta);
             // mainPanel.setBackground(Color.blue);
+	    menuPanel.setBackground(Color.red);
+            buttonPanel.setBackground(Color.blue);
             animPanel.setBackground(Color.green);
             light.setBackground(Color.yellow);
             viewInfo.setBackground(Color.black);
             jscreen.setBackground(Color.orange);
+	    statusPanel.setBackground(Color.pink);
 	}
     } // end of constructor
 
@@ -1737,6 +1776,40 @@ public class jsdevisec extends JPanel
 	     _parentApplet.showHelpInBrowser();
 	} else {
 	     System.out.println("Can't show help in browser " +
+	       "because not an applet");
+	}
+    }
+
+/*TEMP
+    public void showAbout()
+    {
+        //TEMP -- version, copyright, web site
+
+	//TEMP!!
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showAbout()");
+	}
+        aboutDlg = new AboutDlg(this, parentFrame, isCenterScreen);
+        aboutDlg.open();
+        aboutDlg = null;
+    }
+TEMP*/
+
+    public void showFeedbackInBrowser()
+    {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showFeedbackInBrowser()");
+	}
+    	if (_parentApplet != null) {
+	     _parentApplet.showFeedbackInBrowser();
+	} else {
+	     System.out.println("Can't show feedback page in browser " +
 	       "because not an applet");
 	}
     }
@@ -3810,6 +3883,7 @@ class SetCgiUrlDlg extends Dialog
     }
 }
 
+// ------------------------------------------------------------------------
 
 // Dialog for setting logfile name for playback.
 class SetLogFileDlg extends Dialog
@@ -3953,6 +4027,7 @@ class SetLogFileDlg extends Dialog
         super.processEvent(event);
     }
 
+    //TEMP -- do we need this?
     public void open()
     {
 	jsc.jsValues.debug.log("Opening SetLogFileDlg");
@@ -3960,6 +4035,7 @@ class SetLogFileDlg extends Dialog
         setVisible(true);
     }
 
+    //TEMP -- do we need this?
     public synchronized void close()
     {
         if (status) {
@@ -3968,12 +4044,6 @@ class SetLogFileDlg extends Dialog
             status = false;
         }
 	jsc.jsValues.debug.log("Closed SetLogFileDlg");
-    }
-
-    // true means this dialog is showing
-    public synchronized boolean getStatus()
-    {
-        return status;
     }
 }
 
@@ -5154,3 +5224,110 @@ class ShowUrlDlg extends Dialog
         return status;
     }
 }
+
+/*TEMP
+// ------------------------------------------------------------------------
+// Dialog for showing information about the JavaScreen.
+class AboutDlg extends Dialog
+{
+    private jsdevisec jsc = null;
+    private DEViseButton closeButton;
+    private boolean status = false; // true means this dialog is showing
+
+    public AboutDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
+    {
+        super(owner, true);
+
+        jsc = what;
+	jsc.jsValues.debug.log("Creating AboutDlg");
+
+        closeButton = new DEViseButton("  Close  ", jsc.jsValues);    
+
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
+
+        setTitle("About DEVise JavaScreen");
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        c.insets = new Insets(10, 10, 10, 10);
+
+        DEViseButton [] button = new DEViseButton[1];
+        button[0] = closeButton;
+        DEViseComponentPanel panel2 = new DEViseComponentPanel(button,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+        panel2.setBackground(jsc.jsValues.uiglobals.bg);
+
+        gridbag.setConstraints(panel2, c);
+        add(panel2);
+
+        pack();
+
+        // reposition the window
+        Point parentLoc = null;
+        Dimension parentSize = null;
+
+	//TEMP -- do we need this?
+        if (isCenterScreen) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = owner.getLocation();
+            parentSize = owner.getSize();
+        }
+
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+        closeButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			close();
+                    }
+                });
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            close();
+            return;
+        }
+
+        super.processEvent(event);
+    }
+
+    public void open()
+    {
+	jsc.jsValues.debug.log("Opening AboutDlg");
+        status = true;
+        setVisible(true);
+    }
+
+    public synchronized void close()
+    {
+        if (status) {
+            dispose();
+
+            status = false;
+        }
+	jsc.jsValues.debug.log("Closed AboutDlg");
+    }
+}
+TEMP*/

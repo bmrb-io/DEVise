@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2012
+// (c) Copyright 2000-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.14.1  2015/06/19 17:02:57  wenger
+// Changed "suggest" to "feedback" as per feedback from Eldon (still working
+// on moving the feedback button to the right side).  Added -showallbut
+// command-line flag (for debugging) that causes the JS to show the
+// Jmol and session-specific buttons.
+//
+// Revision 1.4  2012/05/10 21:35:53  wenger
+// Fixed a bug in the session menu buttons that prevented the menu
+// commands from getting updated properly (this caused the dynamics
+// movies to always be generated with residue 5 selected).
+//
 // Revision 1.3  2012/04/30 22:20:18  wenger
 // Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 //
@@ -76,6 +87,7 @@ public class DEViseSessionMenuButton extends DEViseButton
         super("", jsc.jsValues);
 
 	_jsc = jsc;
+	setText("(undefined)");
 
 	addActionListener(this);
     }

@@ -21,6 +21,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.54.6.1  2015/06/19 17:02:57  wenger
+// Changed "suggest" to "feedback" as per feedback from Eldon (still working
+// on moving the feedback button to the right side).  Added -showallbut
+// command-line flag (for debugging) that causes the JS to show the
+// Jmol and session-specific buttons.
+//
+// Revision 1.54  2015/02/18 22:53:47  wenger
+// The JavaScreen now reports in the log window how long each command
+// takes.  Socket mode can now be turned on in an applet by setting the
+// usecgi parameter to 0.  Added the capability to make jar files that
+// request all-permissions instead of sandbox.
+//
 // Revision 1.53  2010/07/15 19:01:13  wenger
 // Minor updates to the help page, etc., related to resizing.
 //
@@ -243,6 +255,7 @@ public class js extends JFrame
 	  "    (default: false)\n" +
 	"  -playbackdisplayoff: turn off display during command log playback\n" +
 	"  -hidebmrbsess: hide BMRB session names if the vis type is recognized\n" + 
+	"  -showallbut: show optional buttions (for debugging)\n" +
 	"  -version: print the version and exit\n" +
 	"  -usage: print this message and exit");
 
@@ -299,6 +312,7 @@ public class js extends JFrame
     //
     public DEViseJSValues jsValues = null;
     public jsdevisec jsc = null;
+    private static boolean _showAllButtons = false;
 
     public js(DEViseJSValues jv)
     {
@@ -325,7 +339,7 @@ public class js extends JFrame
 	}
 
         // start JavaScreen
-        jsc = new jsdevisec(null, this, images, jsValues);
+        jsc = new jsdevisec(null, this, images, jsValues, _showAllButtons);
         add(jsc);
         setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();
@@ -595,6 +609,10 @@ public class js extends JFrame
 	    } else if (DEViseGlobals.checkArgument(args[i], "-hidebmrbsess",
 	      false, argValue)) {
 	        jsValues.uiglobals._hideBmrbSessionNames = true;
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-showallbut",
+	      false, argValue)) {
+		_showAllButtons = true;
 
             } else {
 		throw new YException("Invalid js option \"" + args[i]

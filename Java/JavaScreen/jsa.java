@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2010
+// (c) Copyright 1999-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.55.26.1  2015/06/19 17:02:57  wenger
+// Changed "suggest" to "feedback" as per feedback from Eldon (still working
+// on moving the feedback button to the right side).  Added -showallbut
+// command-line flag (for debugging) that causes the JS to show the
+// Jmol and session-specific buttons.
+//
+// Revision 1.55  2010/06/16 14:32:04  wenger
+// Added a message ("(DEVise data visualization will appear in a new
+// window)") to the embedded part of the JSA.
+//
 // Revision 1.54  2010/06/15 18:56:57  wenger
 // Got rid of the "Click here to start/restart JavaScreen" button in
 // the JSA (non-embedded) version as requested by Eldon (the JSA now
@@ -385,7 +395,7 @@ class jscframe extends JFrame
         jsValues.uiglobals.minScreenSize.width = 300;
         jsValues.uiglobals.minScreenSize.height = 240;
 
-        jsc = new jsdevisec(parentApplet, this, images, jsValues);
+        jsc = new jsdevisec(parentApplet, this, images, jsValues, false);
         add(jsc);
         setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();

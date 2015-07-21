@@ -20,11 +20,28 @@
 // $Id$
 
 // $Log$
+// Revision 1.182  2015/07/09 20:02:44  wenger
+// Merged aditya_merge_br_0 thru aditya_merge_br_3 to trunk.
+//
 // Revision 1.181  2015/06/22 19:40:02  wenger
 // Changed minor version to 15 instead of just incrementing the revision,
 // because I'm hoping the next release will have some fairly major GUI
 // changes.  Implemented to-do 09.047 (remove "Larger" and "Smaller" menu
 // items).  Also changed "View" menu to "Tools".
+//
+// Revision 1.180.2.3  2015/07/20 21:18:21  wenger
+// Moved Feedback button to the right side of the JavaScreen.
+//
+// Revision 1.180.2.2  2015/07/16 19:54:24  wenger
+// A lot of the JavaScreen feedback GUI is working, but quite a bit of
+// cleanup still needed to the PHP script, and also need to reposition
+// the feedback button.  Started on "About" dialog.  Various debug code
+// still in place.
+//
+// Revision 1.180.2.1  2015/06/18 21:34:09  wenger
+// First cut at the "Suggest" button and related HTML form.  Also, a few
+// other changes to the menu buttons.  Fixed version in JavaScreen
+// help page.
 //
 // Revision 1.180  2015/06/05 20:17:09  wenger
 // Changed version to 5.14.9x0, added 5.14.9 version history section.
@@ -1111,7 +1128,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.15.0x2"/*TEMP*/);
+    public static final String VERSION = new String("5.15.0x3"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.2");
 

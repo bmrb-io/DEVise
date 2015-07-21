@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2015/07/09 20:02:44  wenger
+// Merged aditya_merge_br_0 thru aditya_merge_br_3 to trunk.
+//
 // Revision 1.4.14.3  2015/07/09 19:00:13  wenger
 // Final cleanup of Aditya's changes.
 //
@@ -38,6 +41,14 @@
 //
 // Revision 1.4.12.1  2014/12/29 19:00:36  kancherla
 // *** empty log message ***
+//
+// Revision 1.4.18.2  2015/07/20 21:18:21  wenger
+// Moved Feedback button to the right side of the JavaScreen.
+//
+// Revision 1.4.18.1  2015/06/18 21:34:09  wenger
+// First cut at the "Suggest" button and related HTML form.  Also, a few
+// other changes to the menu buttons.  Fixed version in JavaScreen
+// help page.
 //
 // Revision 1.4  2011/08/26 15:37:34  wenger
 // Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
@@ -91,11 +102,22 @@ public class DEViseButton extends JButton
     //-------------------------------------------------------------------
     public DEViseButton(String name, DEViseJSValues jsValues)
     {
+        this(name, jsValues, null);
+    }
+ 
+    //-------------------------------------------------------------------
+    public DEViseButton(String name, DEViseJSValues jsValues,
+      String tooltip)
+    {
         super(name);
 
         setFont(jsValues.uiglobals.font);
         setBackground(jsValues.uiglobals.bg);
         setForeground(jsValues.uiglobals.fg);
+
+	if (tooltip != null) {
+            setToolTipText(tooltip);
+	}
     }
     
 }

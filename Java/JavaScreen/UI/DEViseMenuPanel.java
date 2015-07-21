@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2007
+// (c) Copyright 2003-2015
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.42.1  2015/07/20 21:18:31  wenger
+// Moved Feedback button to the right side of the JavaScreen.
+//
+// Revision 1.3  2007/06/27 17:48:10  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
 // Revision 1.1.2.3  2007/06/06 14:13:14  wenger
 // Got JavaScreen Makefile to work with Andy's latest changes; added
 // headers to the UI java files.
@@ -46,30 +54,25 @@ public class DEViseMenuPanel extends JPanel {
 	
   public DEViseMenuPanel(
 		DEViseAnimPanel throbber,
-		DEViseComponentPanel menu
-		) 
-	{
-		this(throbber, menu, false, DEFAULT_HGAP, DEFAULT_HGAP);
-	}
-	
-  public DEViseMenuPanel(
-		DEViseAnimPanel throbber,
 		DEViseComponentPanel menu,
+		Component feedbackButton,
 		boolean menuDisabled
 		) 
 	{
-		this(throbber, menu, menuDisabled, DEFAULT_HGAP, DEFAULT_HGAP);
+		this(throbber, menu, feedbackButton, menuDisabled, DEFAULT_HGAP, DEFAULT_HGAP);
 	}
 
 	public DEViseMenuPanel(
 		DEViseAnimPanel throbber,
 		DEViseComponentPanel menu,
+		Component feedbackButton,
 		boolean menuDisabled,
 		int hgap,
 		int vgap	
 		)
 	{
-		super(new FlowLayout(FlowLayout.LEFT, hgap, vgap));
+		super();
+		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		_throbber = throbber;
 		_menu = menu;
@@ -78,6 +81,8 @@ public class DEViseMenuPanel extends JPanel {
 		this.add(_throbber);
 		
 		if(!_menuDisabled){ this.add(_menu); }
+		this.add(Box.createHorizontalGlue());
+		this.add(feedbackButton);
 	}
 	
 	// Sets children to statusPanel's bg color.

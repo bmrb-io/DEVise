@@ -187,6 +187,10 @@ endif
 cp -p html/* $htmldir
 chmod 644 $htmldir/*.*
 
+mkdir -p $htmldir/feedback
+cp -p html/feedback/[a-z]* $htmldir/feedback
+chmod 644 $htmldir/feedback/*
+
 #-----------------------------------------------------------
 # Make sure the download directory exists and has the right
 # permissions.

@@ -22,11 +22,37 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2015/07/09 20:02:44  wenger
+// Merged aditya_merge_br_0 thru aditya_merge_br_3 to trunk.
+//
 // Revision 1.19  2015/06/22 19:40:03  wenger
 // Changed minor version to 15 instead of just incrementing the revision,
 // because I'm hoping the next release will have some fairly major GUI
 // changes.  Implemented to-do 09.047 (remove "Larger" and "Smaller" menu
 // items).  Also changed "View" menu to "Tools".
+//
+// Revision 1.18.2.5  2015/07/20 21:54:52  wenger
+// Removed (for now) in-progress About dialog and visualization help.
+//
+// Revision 1.18.2.4  2015/07/20 21:18:22  wenger
+// Moved Feedback button to the right side of the JavaScreen.
+//
+// Revision 1.18.2.3  2015/07/16 19:54:24  wenger
+// A lot of the JavaScreen feedback GUI is working, but quite a bit of
+// cleanup still needed to the PHP script, and also need to reposition
+// the feedback button.  Started on "About" dialog.  Various debug code
+// still in place.
+//
+// Revision 1.18.2.2  2015/06/19 17:02:57  wenger
+// Changed "suggest" to "feedback" as per feedback from Eldon (still working
+// on moving the feedback button to the right side).  Added -showallbut
+// command-line flag (for debugging) that causes the JS to show the
+// Jmol and session-specific buttons.
+//
+// Revision 1.18.2.1  2015/06/18 21:34:09  wenger
+// First cut at the "Suggest" button and related HTML form.  Also, a few
+// other changes to the menu buttons.  Fixed version in JavaScreen
+// help page.
 //
 // Revision 1.18  2015/05/08 17:54:49  wenger
 // Merged mod_perl_br_0 thru mod_perl_br_2 to trunk.
@@ -196,6 +222,7 @@ public class DEViseMainButtons
 
     // DEViseButton that don't bring up menus.
     public  DEViseButton stopButton;
+    public  DEViseButton feedbackButton;
 
     // Menu items.
     private MenuItem openMenuItem = new MenuItem("Open/Switch...");
@@ -223,13 +250,13 @@ public class DEViseMainButtons
     private MenuItem showViewHelpMenuItem = new MenuItem("Show View Help");
     private MenuItem hideViewHelpMenuItem = new MenuItem("Hide View Help");
     private MenuItem aboutMenuItem = new MenuItem("About JavaScreen...");
-    private MenuItem versionHistMenuItem = new MenuItem(
-      "JavaScreen version history...");
 
     private MenuItem jsHelpBrowserMenuItem = new MenuItem(
       "JavaScreen Help (in browser window)...");
     private MenuItem jsHelpInternalMenuItem = new MenuItem(
       "JavaScreen Help (in Java window)...");
+    private MenuItem visHelpMenuItem = new MenuItem(
+      "Help about this visualization...");
 
     // Dialogs
     private DEViseHtmlWindow helpWindow;
@@ -285,6 +312,20 @@ public class DEViseMainButtons
 	return stopButton;
     }
 
+    /**
+     * Get the feedback button (so that it can be stuck at the far ride
+     * side of the JavaScreen).
+     * @return The feedback button.
+     */
+    public DEViseButton getFeedbackButton()
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("DEViseMainButtons.getFeedbackButton()");
+	}
+
+	return feedbackButton;
+    }
+
     //===================================================================
     // PRIVATE METHODS
 
@@ -300,13 +341,17 @@ public class DEViseMainButtons
         sessionMenuButton = new DEViseButton("Session", _js.jsValues);
         viewMenuButton = new DEViseButton("Tools", _js.jsValues);
         helpMenuButton = new DEViseButton("Help", _js.jsValues);
-        stopButton = new DEViseButton("Stop", _js.jsValues);
+        stopButton = new DEViseButton("Stop", _js.jsValues,
+	  "Stop the current operation");
+        feedbackButton = new DEViseButton("Feedback", _js.jsValues,
+	  "Go to a form to give feedback");
 
-        _buttons = new Component[4];
+        _buttons = new Component[5];
         _buttons[0] = sessionMenuButton;
         _buttons[1] = viewMenuButton;
         _buttons[2] = stopButton;
         _buttons[3] = helpMenuButton;
+        _buttons[4] = feedbackButton;
 
 	// Set up session menu.
         if (!_js.jsValues.uiglobals.inBrowser) {
@@ -340,14 +385,15 @@ public class DEViseMainButtons
 
 	// Set up help menu.
 	helpPM.add(jsHelpBrowserMenuItem);
+	//TEMP helpPM.add(visHelpMenuItem);
 	helpPM.add(showViewHelpMenuItem);
 	helpPM.add(hideViewHelpMenuItem);
-	//TEMP helpPM.add(aboutMenuItem);
-	//TEMP helpPM.add(versionHistMenuItem);
 	helpPM.add(jsHelpInternalMenuItem);
+	//TEMP helpPM.add(aboutMenuItem);
 	helpMenuButton.add(helpPM);
 	if (_js._parentApplet == null) {
             jsHelpBrowserMenuItem.setEnabled(false);
+            feedbackButton.setEnabled(false);
         }
     }
 
@@ -545,19 +591,21 @@ public class DEViseMainButtons
                 }
             });
 
+/*TEMP
         aboutMenuItem.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent event)
                 {
-		    System.out.println("DIAG about");//TEMP
+		    _js.showAbout();
                 }
             });
+TEMP*/
 
-        versionHistMenuItem.addActionListener(new ActionListener()
+        feedbackButton.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent event)
                 {
-		    System.out.println("DIAG version history");//TEMP
+		    _js.showFeedbackInBrowser();
                 }
             });
     }

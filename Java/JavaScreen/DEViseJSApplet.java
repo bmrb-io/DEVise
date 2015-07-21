@@ -20,6 +20,32 @@
 // $Id$
 
 // $Log$
+// Revision 1.27.6.4  2015/07/16 21:50:17  wenger
+// A little more cleanup of the JavaScreen feedback GUI.
+//
+// Revision 1.27.6.3  2015/07/16 19:54:24  wenger
+// A lot of the JavaScreen feedback GUI is working, but quite a bit of
+// cleanup still needed to the PHP script, and also need to reposition
+// the feedback button.  Started on "About" dialog.  Various debug code
+// still in place.
+//
+// Revision 1.27.6.2  2015/06/19 17:02:57  wenger
+// Changed "suggest" to "feedback" as per feedback from Eldon (still working
+// on moving the feedback button to the right side).  Added -showallbut
+// command-line flag (for debugging) that causes the JS to show the
+// Jmol and session-specific buttons.
+//
+// Revision 1.27.6.1  2015/06/18 21:34:09  wenger
+// First cut at the "Suggest" button and related HTML form.  Also, a few
+// other changes to the menu buttons.  Fixed version in JavaScreen
+// help page.
+//
+// Revision 1.27  2015/02/18 22:53:46  wenger
+// The JavaScreen now reports in the log window how long each command
+// takes.  Socket mode can now be turned on in an applet by setting the
+// usecgi parameter to 0.  Added the capability to make jar files that
+// request all-permissions instead of sandbox.
+//
 // Revision 1.26  2014/10/16 21:52:47  wenger
 // JavaScreen applet now defaults to CGI communication mode instead of
 // socket mode (to bypass problems with sockets in Java JRE 1.8).
@@ -385,6 +411,29 @@ public abstract class DEViseJSApplet extends Applet
         showDocument(helpUrl, "_blank", null);
     }
 
+    public void showFeedbackInBrowser()
+    {
+	String archive = getParameter("archive");
+
+	String firstElement;
+	int firstComma = archive.indexOf(",");
+	if (firstComma != -1) {
+	    firstElement = archive.substring(0, firstComma);
+	} else {
+	    firstElement = archive;
+	}
+
+	String feedbackUrl;
+	int lastSlash = firstElement.lastIndexOf("/");
+	if (lastSlash != -1) {
+	    feedbackUrl = firstElement.substring(0, lastSlash) + "/" +
+	      "html/feedback/javascreen_feedback.html";
+	} else {
+	    feedbackUrl = "html/feedback/javascreen_feedback.html";
+	}
+
+        showDocument(feedbackUrl, "_blank", null);
+    }
 
     public void start()
     {
