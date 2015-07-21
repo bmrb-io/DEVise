@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  2015/07/21 14:40:38  wenger
+// Merged js_suggest_button_br_0 thru js_suggest_button_br_1 to trunk.
+//
 // Revision 1.27.6.4  2015/07/16 21:50:17  wenger
 // A little more cleanup of the JavaScreen feedback GUI.
 //
@@ -411,7 +414,7 @@ public abstract class DEViseJSApplet extends Applet
         showDocument(helpUrl, "_blank", null);
     }
 
-    public void showFeedbackInBrowser()
+    public void showFeedbackInBrowser(String sessionFile)
     {
 	String archive = getParameter("archive");
 
@@ -430,6 +433,10 @@ public abstract class DEViseJSApplet extends Applet
 	      "html/feedback/javascreen_feedback.html";
 	} else {
 	    feedbackUrl = "html/feedback/javascreen_feedback.html";
+	}
+
+	if (sessionFile != null) {
+	    feedbackUrl += "?session_file=" + sessionFile;
 	}
 
         showDocument(feedbackUrl, "_blank", null);

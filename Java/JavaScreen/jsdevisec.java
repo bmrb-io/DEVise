@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.196  2015/07/21 14:40:38  wenger
+// Merged js_suggest_button_br_0 thru js_suggest_button_br_1 to trunk.
+//
 // Revision 1.195  2015/07/09 20:02:44  wenger
 // Merged aditya_merge_br_0 thru aditya_merge_br_3 to trunk.
 //
@@ -1807,7 +1810,7 @@ TEMP*/
 	      " calls jsdevisec.showFeedbackInBrowser()");
 	}
     	if (_parentApplet != null) {
-	     _parentApplet.showFeedbackInBrowser();
+	     _parentApplet.showFeedbackInBrowser(currentSession);
 	} else {
 	     System.out.println("Can't show feedback page in browser " +
 	       "because not an applet");

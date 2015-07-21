@@ -7,6 +7,7 @@ if(!isset($_POST['submit']))
 $name = $_POST['name'];
 $visitor_email = $_POST['email'];
 $message = $_POST['message'];
+$session = $_POST['session_file'];
 
 //Validate first
 if(empty($name))
@@ -24,11 +25,11 @@ if(IsInjected($visitor_email))
     exit;
 }
 
-//TEMPTEMP -- change email
-$email_from = 'www-user@cs.wisc.edu';//<== update the email address
+$email_from = 'web@bmrb.wisc.edu';//<== update the email address
 $email_subject = "JavaScreen feedback";
 $email_body = "You have received a new message from the user $name ($visitor_email).\n".
-    "Here is the message:\n$message";
+    "\nSession file: $session\n".
+    "\nHere is the message:\n$message";
     
 $to = "bmrbhelp@bmrb.wisc.edu";//<== update the email address
 $headers = "From: $email_from \r\n";
