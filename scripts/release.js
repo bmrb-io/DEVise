@@ -19,6 +19,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  2015/05/13 16:44:54  wenger
+#  Fixed release.js script to release stuff in the cgi-bin directory,
+#  which also fixed bug 1047.
+#
 #  Revision 1.17  2014/05/30 21:09:25  wenger
 #  Fixed bug 1033:  added path to js_is_signed.pl invocations.
 #
@@ -317,6 +321,10 @@ mkdir -p $dest/html
 chmod 755 $dest/html
 cp -p $src/html/* $dest/html
 chmod 644 $dest/html/*
+mkdir -p $dest/html/feedback
+cp -p $src/html/feedback/*[a-z] $dest/html/feedback
+chmod 644 $dest/html/feedback/*
+
 
 #-----------------------------------------------------------
 # Release the cron entry files.
