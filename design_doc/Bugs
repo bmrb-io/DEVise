@@ -4652,6 +4652,11 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 1048 6/4/15	OPEN	Color print mode should change Jmol background
 			to white. (wenger)
 
+1049 7/24/15	OPEN	"OK" button disappeared from the dialog you get
+			when you click a link in the drill-down dialog
+			(e.g., in BMRB histograms).  Happened in 5.15.0
+			(5.14.8 is okay).  (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
