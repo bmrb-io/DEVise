@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2014
+#  (c) Copyright 2000-2015
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  2014/11/25 22:19:26  wenger
+#  Improved the JavaScreen usage script to better report commands
+#  per session open.
+#
 #  Revision 1.8  2014/11/13 17:48:12  wenger
 #  Fixed DEVise/JS bug 1043:  Usage info isn't correct when client
 #  connects in CGI mode.
@@ -204,6 +208,7 @@ my %cmdCounts = (); # sessionCat -> cmdCount
 my %sessionCats = (); # clientId -> sessionCat
 my $time1 = -1; # Earliest time of data.
 my $time2 = -1; # Latest time of data.
+my %hostCmdCounts = (); # hostId -> cmdCount
 
 #
 # Figure out the form of log file name to look for, and get a list of
@@ -389,11 +394,10 @@ sub ProcessCmd {
     print "sessionCat = $sessionCat\n" if ($debug >= 1);
     if ($sessionCat ne '') {
       $cmdCounts{$sessionCat}++;
+      # Note: this doesn't count commands for "non-real" hosts.
+      $hostCmdCounts{$host}++;
     }
-
   }
-
-
 }
 
 #-----------------------------------------------------------
@@ -641,7 +645,8 @@ sub PrintResults {
   print "\nClient host info (number of session opens, host):\n";
   my $host;
   foreach $host (sort { $hostList{$b} <=> $hostList{$a} } keys %hostList) {
-    printf "%4d %s\n", $hostList{$host}, $host;
+    my $avgHostCmds = $hostCmdCounts{$host} / $hostList{$host};
+    printf "%4d %s (%d commands: %.1f per open)\n", $hostList{$host}, $host, $hostCmdCounts{$host}, $avgHostCmds;
   }
 
   print "\nSession info (number of opens, session):\n";
