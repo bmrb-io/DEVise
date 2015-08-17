@@ -388,6 +388,11 @@ visualization at the current state.) (wenger)
 people can fill out. (elu/wenger)
 (Done by wenger, 7/21/15)
 
+09.050 8/16/15 OPEN	2
+Create GUI in the JavaScreen, and associated functionality in the
+DEVised, that allows users to insert their own data into visualizations
+that are set up for this.  (miron/wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
