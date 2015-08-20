@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  2015/08/13 15:44:28  wenger
+#  Changed JavaScreen usage scripts to report commands by client host
+#  (note:  "non-real" hosts report command counts of zero).
+#
 #  Revision 1.9  2014/11/25 22:19:26  wenger
 #  Improved the JavaScreen usage script to better report commands
 #  per session open.
@@ -398,28 +402,6 @@ sub ProcessCmd {
       $hostCmdCounts{$host}++;
     }
   }
-}
-
-#-----------------------------------------------------------
-# Parses a jspop log file line to get the client host and date.
-# Expects a line of the form:
-#   "Client from localhost is added ... [27-Jul-01 9:02:53 AM]"
-# Argument: line
-# Returns: list of host and date.
-
-sub ParseLine {
-  my $line = shift(@_);
-
-  my $client = "unknown";
-  my $date = "unknown";
-  if ($line =~ /Client from (.*) is added \.\.\. \[(.*)\]/) {
-    $client = $1;
-    $date = $2;
-  }
-  print "client = <$client>; date = <$date>\n", if ($debug >= 2);
-  my @results;
-  @results = ($client, $date);
-  return @results;
 }
 
 #-----------------------------------------------------------
