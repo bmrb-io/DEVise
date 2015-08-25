@@ -1,0 +1,167 @@
+#! /bin/env python
+#TEMPTEMP -- 150820:  working on new version w/ histogram data
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2000-2015
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script gets JavaScreen usage statistics.
+
+#  Note:  If this is run on "mixed" usage files (some with client IDs/
+#  command counts and some without) the command averages per session
+#  category won't be accurate.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+#  Revision 1.10  2015/08/13 15:44:28  wenger
+#  Changed JavaScreen usage scripts to report commands by client host
+#  (note:  "non-real" hosts report command counts of zero).
+#
+#  Revision 1.9  2014/11/25 22:19:26  wenger
+#  Improved the JavaScreen usage script to better report commands
+#  per session open.
+#
+#  Revision 1.8  2014/11/13 17:48:12  wenger
+#  Fixed DEVise/JS bug 1043:  Usage info isn't correct when client
+#  connects in CGI mode.
+#
+#  Revision 1.7  2014/08/27 15:10:26  wenger
+#  JS command counts:  Final (I think) version of get_stats with command
+#  counts; added info to the JavaScreen version history.
+#
+#  Revision 1.6  2014/08/26 20:41:05  wenger
+#  JS command counts:  Committing the changes to log commands to the
+#  usage log file.
+#
+#  Revision 1.5  2014/08/24 02:41:37  wenger
+#  Per-session command counts are now mostly working (with JSPoP changes
+#  to usage log file, not yet committed); still a bunch of temporary code
+#  in place.  Also, I'm committing half-working stuff in get_stats_detailed
+#  that I did before I remembered that the "main" JSPoP log gets rotated.
+#
+#  Revision 1.4  2014/08/06 18:32:28  wenger
+#  Changed JavaScreen usage script to report usage by session categories
+#  for BMRB.
+#
+#  Revision 1.3  2005/12/06 20:00:42  wenger
+#  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#  be the end of the V1_7b0_br branch.)
+#
+#  Revision 1.2.8.5  2005/06/02 21:01:52  wenger
+#  We now exlude any host name *starting* with localhost from the
+#  "real" session opens.
+#
+#  Revision 1.2.8.4  2005/01/05 18:06:29  wenger
+#  Improvements to JS usage statistics script: now deals with the fact
+#  that the logs seem to be in local time instead of GMT; error messages
+#  if parsing time fails; prints a warning if there's no JSPoP pid file.
+#
+#  Revision 1.2.8.3  2003/10/07 21:19:59  wenger
+#  Get_stats and get_stats_old now accept curTime command-line argument
+#  to get statistics from the past.
+#
+#  Revision 1.2.8.2  2003/09/25 18:25:21  wenger
+#  New version of JavaScreen usage stats script gets info from
+#  jspop.usage.* files, gives non-UW counts.
+#
+#  Revision 1.2.8.1  2003/06/20 16:18:14  wenger
+#  Added id, directory, and hostname header to usage stats.
+#
+#  Revision 1.2  2001/09/24 17:36:37  wenger
+#  Moved all JS log files to "logs" subdirectory; fixed omission of Tasvir
+#  script from intall.
+#
+#  Revision 1.1  2001/09/17 22:03:26  wenger
+#  Improved JavaScreen usage statistics: stats are now incremental (last
+#  day or week), session opening counts are included.
+#
+#  Revision 1.4  2001/09/05 19:31:21  wenger
+#  Added bin2 and dyn_lib directories in JavaScreen release and install,
+#  and made corresponding changes to scripts; other distribution-related
+#  changes.
+#
+#  Revision 1.3  2001/07/30 19:57:43  wenger
+#  Fixed the get_stats script to match the current jspop log file format;
+#  added cron entries for pumori and yola to run it automatically.
+#
+#  Revision 1.2  2001/01/08 20:31:55  wenger
+#  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+#  back onto the trunk.
+#
+#  Revision 1.1.2.1  2000/12/27 19:38:36  wenger
+#  Merged changes from js_restart_improvements thru zero_js_cache_check from
+#  the trunk onto the js_cgi_br branch.
+#
+#  Revision 1.1  2000/12/13 21:22:00  wenger
+#  First version of script to get usage statistics.
+#
+
+############################################################
+
+import sys
+import getopt
+
+def main(argv):
+	debug = 2#TEMPTEMP
+
+	version = "4.0.0"
+
+	# Initialize command-line arguments.
+	idStr = "all"
+	period = "week"
+	curTime = ""
+
+	# Process command-line arguments.
+	if (debug > 1):
+		print("Args: ", argv)
+
+	try:
+		(opts, args) = getopt.getopt(argv, "i:p:t:uv", [])
+	except getopt.GetoptError:
+		#TEMPTEMP -- we don't seem to get here on unrecognized arg
+		print("Error in command-line arguments")
+		usage()
+		sys.exit(2)
+
+	for opt, arg in opts:
+		if (opt == "-i"):
+			idStr = arg
+		elif (opt == "-p"):
+			period = arg
+		elif (opt == "-t"):
+			curTime = arg
+		elif (opt == "-u"):
+			usage()
+			sys.exit(0)
+		elif (opt == "-v"):
+			print("get_stats version ", version)
+			sys.exit(0)
+		else:
+			print("Unrecognized argument: ", opt)
+			usage()
+			sys.exit(2)
+
+	if (debug > 0):
+		print("idStr: ", idStr);
+		print("period: ", period);
+		print("curTime: ", curTime);
+
+def usage():
+	print("Usage: get_stats [-i <id>] [-p <period>] [-t <time>] | -u | -v")
+	print("  <id> can be all (default), regular, soil, test, or tst2")
+	print("  <period> can be week (default), day, or all")
+	print("  <time> should be of the form 'dd-mmm-yy hh:mm:ss ap' or " +
+		"'mmm dd, yyyy hh:mm:ss ap' (e.g., 'Sep 26, 2003 00:00:00 AM')")
+
+main(sys.argv[1:])
