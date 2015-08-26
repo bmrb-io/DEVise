@@ -24,6 +24,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  2015/08/25 15:17:09  wenger
+#  First version of new get_stats script (get_stats3 will replace
+#  get_stats when it's finished).
+#
 #  Revision 1.10  2015/08/13 15:44:28  wenger
 #  Changed JavaScreen usage scripts to report commands by client host
 #  (note:  "non-real" hosts report command counts of zero).
@@ -111,8 +115,13 @@
 
 import sys
 import getopt
+import datetime
+import glob
+import re
 
+#-----------------------------------------------------------------
 def main(argv):
+	global debug
 	debug = 2#TEMPTEMP
 
 	version = "4.0.0"
@@ -120,7 +129,7 @@ def main(argv):
 	# Initialize command-line arguments.
 	idStr = "all"
 	period = "week"
-	curTime = ""
+	curTime = datetime.datetime.now()
 
 	# Process command-line arguments.
 	if (debug > 1):
@@ -140,12 +149,13 @@ def main(argv):
 		elif (opt == "-p"):
 			period = arg
 		elif (opt == "-t"):
+			#TEMPTEMP -- parse time argument here...
 			curTime = arg
 		elif (opt == "-u"):
 			usage()
 			sys.exit(0)
 		elif (opt == "-v"):
-			print("get_stats version ", version)
+			print("get_stats version " + version)
 			sys.exit(0)
 		else:
 			print("Unrecognized argument: ", opt)
@@ -153,10 +163,13 @@ def main(argv):
 			sys.exit(2)
 
 	if (debug > 0):
-		print("idStr: ", idStr);
-		print("period: ", period);
-		print("curTime: ", curTime);
+		print("idStr: ", idStr)
+		print("period: ", period)
+		print("curTime: ", curTime)
 
+	process(idStr, period, curTime)
+
+#-----------------------------------------------------------------
 def usage():
 	print("Usage: get_stats [-i <id>] [-p <period>] [-t <time>] | -u | -v")
 	print("  <id> can be all (default), regular, soil, test, or tst2")
@@ -164,4 +177,130 @@ def usage():
 	print("  <time> should be of the form 'dd-mmm-yy hh:mm:ss ap' or " +
 		"'mmm dd, yyyy hh:mm:ss ap' (e.g., 'Sep 26, 2003 00:00:00 AM')")
 
+#-----------------------------------------------------------------
+def process(idStr, period, curTime):
+	print("process:")#TEMPTEMP
+	print("  idStr: ", idStr)#TEMPTEMP
+	print("  period: ", period)#TEMPTEMP
+	print("  curTime: ", curTime)#TEMPTEMP
+
+	#TEMPTEMP -- figure out earliest valid time here (curTime - period)
+
+	# See if we have an appropriate JSPoP PID file, and print a
+	# warning if we don't.
+	if (idStr == "all"):
+		pidPattern = "jspop_pid:*"
+	else:
+		pidPattern = "jspop_pid:" + idStr + ":*"
+	pidFiles = glob.glob(pidPattern)
+	if (len(pidFiles) < 1):
+		print("WARNING: no JSPoP PID file (" + pidPattern + ") found")
+		response = raw_input("Are you sure this script is being run in the " +
+			"directory that the JSPoP is actually run in? (y/n) ")
+		print("DIAG response: ", response)#TEMPTEMP
+		if (response in ("y", "Y", "yes")):
+			print("Script continuing")
+		else:
+			print("Script terminated")
+			sys.exit(1)
+
+	# Find the log files to look for.
+	if (idStr == "all"):
+		usagePattern = "logs/jspop.usage*"
+	else:
+		#TEMPTEMP -- this won't work!!
+		usagePattern = "logs/jspop.usage." + idStr + "*"
+	usageFiles = glob.glob(usagePattern)
+	if (debug > 0):
+		print("Usage files: ", usageFiles)
+
+	if (len(usageFiles) < 1):
+		print("No appropriate jspop.usage* files found -- exiting")
+		sys.exit(1)
+
+	# Now process each usage file
+	for uf in usageFiles:
+		processFile(uf)
+
+#-----------------------------------------------------------------
+def processFile(uf):
+	if (debug > 1):
+		print("Processing usage file: " + uf)
+
+	file = open(uf, "r")
+	for line in file:
+		line = line.rstrip('\n')
+		if (debug > 2):
+			print("Line: " + line)
+
+		#TEMPTEMP processOpen(line)
+		#TEMPTEMP processClose(line)
+		processCmd(line)
+
+#-----------------------------------------------------------------
+def processOpen(line):
+	if (debug > 2):
+		print("processOpen(" + line + ")")
+
+	regex = re.compile(r"(?P<host>\S*)( \((?P<client>\d+)\))?: JAVAC_OpenSession {(?P<session>.*)}.*\[(?P<time>.*)\]")
+	result = regex.search(line)
+	if (result != None):
+		if (debug > 1):
+			print("  processOpen matches line " + line)
+		host = result.group('host')
+		clientId = result.group('client')
+		session = result.group('session')
+		timestamp = result.group('time')
+		if (debug > 1):
+			print("host: ", host)
+			print("clientId: ", clientId)
+			print("session: ", session)
+			print("timestamp: ", timestamp)
+	#TEMPTEMP -- add stuff here
+
+#-----------------------------------------------------------------
+def processClose(line):
+	if (debug > 2):
+		print("processClose(" + line + ")")
+
+	regex = re.compile(r"(?P<host>\S*) \((?P<client>\d+)\): JAVAC_CloseCurrentSession \[(?P<time>.*)\]")
+	result = regex.search(line)
+	if (result != None):
+		if (debug > 1):
+			print("  processClose matches line " + line)
+		host = result.group('host')
+		clientId = result.group('client')
+		timestamp = result.group('time')
+		if (debug > 1):
+			print("host: ", host)
+			print("clientId: ", clientId)
+			print("timestamp: ", timestamp)
+	#TEMPTEMP -- add stuff here
+
+#-----------------------------------------------------------------
+def processCmd(line):
+	if (debug > 2):
+		print("processClose(" + line + ")")
+	#TEMPTEMP -- add stuff here
+
+	regex = re.compile(r"(?P<host>\S*) \((?P<client>\d+)\): (?P<cmd>\w*)(?P<args> \{.*\})*\s*\[(?P<time>.*)\]")
+	result = regex.search(line)
+	if (result != None):
+		if (debug > 1):
+			print("  processCmd matches line " + line)
+		host = result.group('host')
+		clientId = result.group('client')
+		cmd = result.group('cmd')
+		args = result.group('args')
+		timestamp = result.group('time')
+		if (debug > 1):
+			print("host: ", host)
+			print("clientId: ", clientId)
+			print("cmd: ", cmd)
+			print("args: ", args)
+			print("timestamp: ", timestamp)
+
+
+
+#-----------------------------------------------------------------
 main(sys.argv[1:])
