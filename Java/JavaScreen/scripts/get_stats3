@@ -33,6 +33,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  2015/10/08 22:28:54  wenger
+#  Got filtering by host working.
+#
 #  Revision 1.4  2015/10/08 21:09:18  wenger
 #  Basic command counts are now working.
 #
@@ -283,6 +286,8 @@ def printReport(cmdData, filter):
 	print("printReport...")#TEMPTEMP
 	if (filter):
 		print("BMRB and CS hosts are filtered from statistics")
+
+	# Print the raw data (for debugging).
 	if (debug) > 0:
 		print("Raw data:")
 		for clientId in cmdData.keys():
@@ -290,6 +295,25 @@ def printReport(cmdData, filter):
 				print("Client {0} on {1}:".format(clientId, cmdData[clientId][0]))
 				for tmp in cmdData[clientId][1:]:
 					print("  Session {0}: {1} commands(s)".format(tmp[0], tmp[1]))
+
+	# Collect the command count histogram data.
+	cmdHist = {}
+	for clientId in cmdData.keys():
+		if (passHost(cmdData[clientId][0], filter)):
+			for tmp in cmdData[clientId][1:]:
+				count = tmp[1]
+				print("Command count: ", count)#TEMPTEMP
+				if (count in cmdHist):
+					cmdHist[count] += 1
+				else:
+					cmdHist[count] = 1
+
+	print(cmdHist)#TEMPTEMP
+
+	counts = cmdHist.keys()
+	counts.sort()
+	for count in counts:
+		print("Command count {0}, frequency {1}".format(count, cmdHist[count]))
 
 #-----------------------------------------------------------------
 def passHost(host, filter):
