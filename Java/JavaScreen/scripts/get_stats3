@@ -18,11 +18,26 @@
 #  command counts and some without) the command averages per session
 #  category won't be accurate.
 
+#  The data structures involved are as follows:
+#  * We have an array that has an entry for each client ID.
+#  * For each client ID we also store the host.
+#  * For each client ID we have an array with an entry for
+#    each session open.
+#  * For each session open we store a command count.
+#TEMPTEMP -- hmm -- or maybe we just store a list where [0] is the hostname, [1] is the command count for the first session, etc.  When we see an open, we add a new element to the list with a value of 0; when we see a command, we increment the last value in the list
+
+#TEMPTEMP -- hmm -- I think I have to store the session name, too...
+
 ############################################################
 
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  2015/10/08 18:10:04  wenger
+#  Got rid of version history junk; we now parse the period argument
+#  and set a beginning time accordingly; added filter argument,
+#  although we don't do anything with it yet.
+#
 #  Revision 1.2  2015/08/26 18:11:30  wenger
 #  Got regexes working in new get_stats script.
 #
@@ -47,7 +62,7 @@ def main(argv):
 	version = "4.0.0"
 
 	# Initialize command-line arguments.
-	filter = 0 # if 1 filter out UW usage from stats
+	filter = False # if True filter out UW usage from stats
 	idStr = "all"
 	period = "week"
 	curTime = datetime.datetime.now()
@@ -66,7 +81,7 @@ def main(argv):
 
 	for opt, arg in opts:
 		if (opt == "-f"):
-			filter = 1
+			filter = True
 		elif (opt == "-i"):
 			idStr = arg
 		elif (opt == "-p"):
@@ -90,7 +105,11 @@ def main(argv):
 		print("period: ", period)
 		print("curTime: ", curTime)
 
-	process(idStr, period, curTime)
+	#TEMPTEMP -- document this
+	cmdData = {}
+
+	process(idStr, period, curTime, cmdData)
+	printReport(cmdData)
 
 #-----------------------------------------------------------------
 def usage():
@@ -104,12 +123,13 @@ def usage():
 	print("  -v(ersion):  print version")
 
 #-----------------------------------------------------------------
-def process(idStr, period, curTime):
+def process(idStr, period, curTime, cmdData):
 	print("process:")#TEMPTEMP
 	print("  idStr: ", idStr)#TEMPTEMP
 	print("  period: ", period)#TEMPTEMP
 	print("  curTime: ", curTime)#TEMPTEMP
 
+	#TEMPTEMP -- where do we want to enforce the begin time?  when we're reading data or when we're outputting it?  what if the session open falls before the beginTime but some commands fall after beginTime?
 	if (period == "day"):
 		beginTime = curTime - datetime.timedelta(1)
 	elif (period == "week"):
@@ -158,10 +178,10 @@ def process(idStr, period, curTime):
 
 	# Now process each usage file
 	for uf in usageFiles:
-		processFile(uf)
+		processFile(uf, cmdData)
 
 #-----------------------------------------------------------------
-def processFile(uf):
+def processFile(uf, cmdData):
 	if (debug > 1):
 		print("Processing usage file: " + uf)
 
@@ -171,12 +191,12 @@ def processFile(uf):
 		if (debug > 2):
 			print("Line: " + line)
 
-		#TEMPTEMP processOpen(line)
-		#TEMPTEMP processClose(line)
-		processCmd(line)
+		processOpen(line, cmdData)
+		#TEMPTEMP processClose(line, cmdData)
+		processCmd(line, cmdData)
 
 #-----------------------------------------------------------------
-def processOpen(line):
+def processOpen(line, cmdData):
 	if (debug > 2):
 		print("processOpen(" + line + ")")
 
@@ -190,14 +210,20 @@ def processOpen(line):
 		session = result.group('session')
 		timestamp = result.group('time')
 		if (debug > 1):
-			print("host: ", host)
-			print("clientId: ", clientId)
-			print("session: ", session)
-			print("timestamp: ", timestamp)
-	#TEMPTEMP -- add stuff here
+			print("Found open:")
+			print("  host: ", host)
+			print("  clientId: ", clientId)
+			print("  session: ", session)
+			print("  timestamp: ", timestamp)
+
+		if (clientId not in cmdData):
+			cmdData[clientId] = [host]
+
+		# Command count for this session.
+		cmdData[clientId].append(0)
 
 #-----------------------------------------------------------------
-def processClose(line):
+def processClose(line, cmdData):
 	if (debug > 2):
 		print("processClose(" + line + ")")
 
@@ -210,13 +236,16 @@ def processClose(line):
 		clientId = result.group('client')
 		timestamp = result.group('time')
 		if (debug > 1):
-			print("host: ", host)
-			print("clientId: ", clientId)
-			print("timestamp: ", timestamp)
+			print("Found close:")
+			print("  host: ", host)
+			print("  clientId: ", clientId)
+			print("  timestamp: ", timestamp)
 	#TEMPTEMP -- add stuff here
+	#TEMPTEMP -- do we even need to do anything on a close?
 
 #-----------------------------------------------------------------
-def processCmd(line):
+#TEMPTEMP -- be sure not to count open and close as commands
+def processCmd(line, cmdData):
 	if (debug > 2):
 		print("processClose(" + line + ")")
 	#TEMPTEMP -- add stuff here
@@ -232,13 +261,24 @@ def processCmd(line):
 		args = result.group('args')
 		timestamp = result.group('time')
 		if (debug > 1):
-			print("host: ", host)
-			print("clientId: ", clientId)
-			print("cmd: ", cmd)
-			print("args: ", args)
-			print("timestamp: ", timestamp)
+			print("Found command:")
+			print("  host: ", host)
+			print("  clientId: ", clientId)
+			print("  cmd: ", cmd)
+			print("  args: ", args)
+			print("  timestamp: ", timestamp)
 
+		if (clientId in cmdData):
+			print("Client data:", cmdData[clientId])#TEMPTEMP
+			cmdData[clientId][-1] += 1
+		else:
+			#TEMPTEMP -- throw error
+			print("ERROR: clientId " + clientId + " not found!")
 
+#-----------------------------------------------------------------
+def printReport(cmdData):
+	print("printReport...")#TEMPTEMP
+	print(cmdData)
 
 #-----------------------------------------------------------------
 main(sys.argv[1:])
