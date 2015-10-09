@@ -33,6 +33,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  2015/10/08 22:38:11  wenger
+#  Got basic command count histograms working.
+#
 #  Revision 1.5  2015/10/08 22:28:54  wenger
 #  Got filtering by host working.
 #
@@ -292,9 +295,12 @@ def printReport(cmdData, filter):
 		print("Raw data:")
 		for clientId in cmdData.keys():
 			if (passHost(cmdData[clientId][0], filter)):
-				print("Client {0} on {1}:".format(clientId, cmdData[clientId][0]))
+				print("Client %s on %s:" % (clientId, cmdData[clientId][0]))
 				for tmp in cmdData[clientId][1:]:
-					print("  Session {0}: {1} commands(s)".format(tmp[0], tmp[1]))
+					print("  Session %s: %s commands(s)" % (tmp[0], tmp[1]))
+
+	# Count the total number of session opens.
+	#TEMPTEMP -- add stuff here
 
 	# Collect the command count histogram data.
 	cmdHist = {}
@@ -308,12 +314,12 @@ def printReport(cmdData, filter):
 				else:
 					cmdHist[count] = 1
 
-	print(cmdHist)#TEMPTEMP
-
+	print("Command frequency histogram")
 	counts = cmdHist.keys()
 	counts.sort()
 	for count in counts:
-		print("Command count {0}, frequency {1}".format(count, cmdHist[count]))
+		#TEMPTEMP -- print frequencies as % of total session opens
+		print("  Command count %s, frequency %s" % (count, cmdHist[count]))
 
 #-----------------------------------------------------------------
 def passHost(host, filter):
