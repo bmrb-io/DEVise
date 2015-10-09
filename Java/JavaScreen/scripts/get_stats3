@@ -18,19 +18,15 @@
 #  command counts and some without) the command averages per session
 #  category won't be accurate.
 
-#  The data structures involved are as follows:
-#  * We have an array that has an entry for each client ID.
-#  * For each client ID we also store the host.
-#  * For each client ID we have an array with an entry for
-#    each session open.
-#  * For each session open we store a command count.
-#TEMPTEMP -- hmm -- or maybe we just store a list where [0] is the hostname, [1] is the command count for the first session, etc.  When we see an open, we add a new element to the list with a value of 0; when we see a command, we increment the last value in the list
-
 ############################################################
 
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  2015/10/09 16:20:40  wenger
+#  We now output total session open count, and histogram frequencies
+#  as a percentage of the total session count.
+#
 #  Revision 1.7  2015/10/09 15:26:14  wenger
 #  Changed output formatting to older style for older Perl version at
 #  BMRB.
@@ -64,13 +60,29 @@ import getopt
 import datetime
 import glob
 import re
+import os
+import socket
+
+#-----------------------------------------------------------------
+# To hold the info for each client.
+class ClientInfo:
+	def __init__(self, host):
+		self.host = host
+		self.sessions = [] # List of SessionInfo objects
+
+#-----------------------------------------------------------------
+# To hold session name and command count.
+class SessionInfo:
+	def __init__(self, session):
+		self.name = session
+		self.cmdCt = 0
 
 #-----------------------------------------------------------------
 def main(argv):
 	global debug
-	debug = 1#TEMPTEMP
+	debug = 0
 
-	version = "4.0.0"
+	version = "0.0.1"
 
 	# Initialize command-line arguments.
 	filter = False # if True filter out UW usage from stats
@@ -104,7 +116,7 @@ def main(argv):
 			usage()
 			sys.exit(0)
 		elif (opt == "-v"):
-			print("get_stats version " + version)
+			print("get_stats3 version " + version)
 			sys.exit(0)
 		else:
 			print("Unrecognized argument: ", opt)
@@ -115,11 +127,12 @@ def main(argv):
 		print("idStr: ", idStr)
 		print("period: ", period)
 		print("curTime: ", curTime)
+		print("filter: ", filter)
 
-	#TEMPTEMP -- document this
+	# cmdData maps clientId keys to ClientInfo values
 	cmdData = {}
 
-	process(idStr, period, curTime, cmdData)
+	process(idStr, period, curTime, filter, cmdData)
 	printReport(cmdData, filter)
 
 #-----------------------------------------------------------------
@@ -134,11 +147,12 @@ def usage():
 	print("  -v(ersion):  print version")
 
 #-----------------------------------------------------------------
-def process(idStr, period, curTime, cmdData):
-	print("process:")#TEMPTEMP
-	print("  idStr: ", idStr)#TEMPTEMP
-	print("  period: ", period)#TEMPTEMP
-	print("  curTime: ", curTime)#TEMPTEMP
+def process(idStr, period, curTime, filter, cmdData):
+	if (debug > 1):
+		print("process:")
+		print("  idStr: ", idStr)
+		print("  period: ", period)
+		print("  curTime: ", curTime)
 
 	#TEMPTEMP -- where do we want to enforce the begin time?  when we're reading data or when we're outputting it?  what if the session open falls before the beginTime but some commands fall after beginTime?
 	if (period == "day"):
@@ -155,23 +169,29 @@ def process(idStr, period, curTime, cmdData):
 	if (debug > 0):
 		print("beginTime: ", beginTime)
 
+	# Print header info.
+	print("")
+	print("JavaScreen usage for ID %s" % (idStr)) 
+	print("  in %s on %s" % (os.getcwd(), socket.gethostname()))
+	print("JavaScreen usage statistics for %s through %s" % (beginTime, curTime))
+	if (filter):
+		print("CS/BMRB usage is filtered out")
+	else:
+		print("CS/BMRB usage is not filtered out")
+	print("")
+
 	# See if we have an appropriate JSPoP PID file, and print a
 	# warning if we don't.
 	if (idStr == "all"):
 		pidPattern = "jspop_pid:*"
 	else:
 		pidPattern = "jspop_pid:" + idStr + ":*"
+
 	pidFiles = glob.glob(pidPattern)
 	if (len(pidFiles) < 1):
 		print("WARNING: no JSPoP PID file (" + pidPattern + ") found")
-		response = raw_input("Are you sure this script is being run in the " +
-			"directory that the JSPoP is actually run in? (y/n) ")
-		print("DIAG response: ", response)#TEMPTEMP
-		if (response in ("y", "Y", "yes")):
-			print("Script continuing")
-		else:
-			print("Script terminated")
-			sys.exit(1)
+		print("Are you sure this script is being run in the " +
+			"directory that the JSPoP is actually run in?")
 
 	# Find the log files to look for.
 	if (idStr == "all"):
@@ -202,6 +222,7 @@ def processFile(uf, cmdData):
 		if (debug > 2):
 			print("Line: " + line)
 
+		#TEMPTEMP -- don't call processCmd if processOpen found an open command?
 		processOpen(line, cmdData)
 		#TEMPTEMP processClose(line, cmdData)
 		processCmd(line, cmdData)
@@ -227,12 +248,15 @@ def processOpen(line, cmdData):
 			print("  session: ", session)
 			print("  timestamp: ", timestamp)
 
+		#TEMPTEMP -- check whether timestamp is within the right time here...
+
 		if (clientId not in cmdData):
-			cmdData[clientId] = [host]
+			ci = ClientInfo(host)
+			cmdData[clientId] = ci
 
 		# Command count for this session.
-		#TEMPTEMP -- can we use a "struct" here?
-		cmdData[clientId].append([session, 0])
+		si = SessionInfo(session)
+		cmdData[clientId].sessions.append(si)
 
 #-----------------------------------------------------------------
 def processClose(line, cmdData):
@@ -260,7 +284,6 @@ def processClose(line, cmdData):
 def processCmd(line, cmdData):
 	if (debug > 2):
 		print("processCmd(" + line + ")")
-	#TEMPTEMP -- add stuff here
 
 	regex = re.compile(r"(?P<host>\S*) \((?P<client>\d+)\): (?P<cmd>\w*)(?P<args> \{.*\})*\s*\[(?P<time>.*)\]")
 	result = regex.search(line)
@@ -281,15 +304,19 @@ def processCmd(line, cmdData):
 			print("  timestamp: ", timestamp)
 
 		if (clientId in cmdData):
-			print("Client data:", cmdData[clientId])#TEMPTEMP
-			cmdData[clientId][-1][1] += 1
+			cmdData[clientId].sessions[-1].cmdCt += 1
 		else:
-			#TEMPTEMP -- throw error
-			print("ERROR: clientId " + clientId + " not found!")
+			# This means we didn't find an open for this client.
+			if (debug > 0):
+				print("Warning: clientId " + clientId + " not found!")
 
 #-----------------------------------------------------------------
 def printReport(cmdData, filter):
-	print("printReport...")#TEMPTEMP
+	if (debug > 2):
+		print("printReport")
+
+	#TEMPTEMP -- print time range
+
 	if (filter):
 		print("BMRB and CS hosts are filtered from statistics")
 
@@ -297,24 +324,24 @@ def printReport(cmdData, filter):
 	if (debug) > 0:
 		print("Raw data:")
 		for clientId in cmdData.keys():
-			if (passHost(cmdData[clientId][0], filter)):
-				print("Client %s on %s:" % (clientId, cmdData[clientId][0]))
-				for tmp in cmdData[clientId][1:]:
-					print("  Session %s: %s commands(s)" % (tmp[0], tmp[1]))
+			if (passHost(cmdData[clientId].host, filter)):
+				print("Client %s on %s:" % (clientId, cmdData[clientId].host))
+				for tmp in cmdData[clientId].sessions:
+					print("  Session %s: %s commands(s)" % (tmp.name, tmp.cmdCt))
 
 	# Count the total number of session opens.
 	sessionCount = 0
 	for clientId in cmdData.keys():
-		if (passHost(cmdData[clientId][0], filter)):
-			sessionCount += (len(cmdData[clientId])-1)
-	print("Total session opens: %s" % (sessionCount))
+		if (passHost(cmdData[clientId].host, filter)):
+			sessionCount += (len(cmdData[clientId].sessions))
+	print("\nTotal session opens: %s" % (sessionCount))
 
 	# Collect the command count histogram data.
 	cmdHist = {}
 	for clientId in cmdData.keys():
-		if (passHost(cmdData[clientId][0], filter)):
-			for tmp in cmdData[clientId][1:]:
-				count = tmp[1]
+		if (passHost(cmdData[clientId].host, filter)):
+			for tmp in cmdData[clientId].sessions:
+				count = tmp.cmdCt
 				if (debug > 1):
 					print("Command count: ", count)
 				if (count in cmdHist):
@@ -322,7 +349,7 @@ def printReport(cmdData, filter):
 				else:
 					cmdHist[count] = 1
 
-	print("Command frequency histogram")
+	print("\nCommand frequency histogram")
 	counts = cmdHist.keys()
 	counts.sort()
 	for count in counts:
@@ -330,6 +357,8 @@ def printReport(cmdData, filter):
 		print("  Command count %s, frequency %s (%.1f%%)" % (count, cmdHist[count], percent))
 
 #-----------------------------------------------------------------
+# Returns True if we should include data from this host in our
+# statistics.
 def passHost(host, filter):
 	value = True
 	if (filter):
