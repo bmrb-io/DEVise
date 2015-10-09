@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  2015/10/09 21:03:09  wenger
+#  We now also report command counts per host, and sort the hosts
+#  in (decreasing) order of session open count.
+#
 #  Revision 1.9  2015/10/09 17:40:34  wenger
 #  Cleaned things up by using classes to hold the information as we go;
 #  various other cleanups; changed version number because I decided to
@@ -352,6 +356,7 @@ def printReport(cmdData, filter):
 	# Count the total number of session opens.
 	sessionCount = 0
 	opensByHost = {}
+	sessionCats = {}
 	for clientId in cmdData.keys():
 		if (passHost(cmdData[clientId].host, filter)):
 			sessionCount += (len(cmdData[clientId].sessions))
@@ -362,9 +367,22 @@ def printReport(cmdData, filter):
 			else:
 				hi = HostInfo(cmdData[clientId].totalOpens(), cmdData[clientId].totalCmds())
 				opensByHost[host] = hi
+			for si in cmdData[clientId].sessions:
+				cat = getSessionCat(si.name)
+				if (cat in sessionCats):
+					sessionCats[cat] += 1
+				else:
+					sessionCats[cat] = 1
 
 	print("\nTotal session opens: %s" % (sessionCount))
-	print("Client host info:")
+
+	#TEMPTEMP -- need to add command counts here
+	print("\nSession category counts:")
+	cats = sessionCats.items()
+	for tmp in cats:
+		print("  %s opens of %s" % (tmp[1], tmp[0]))
+
+	print("\nClient host info:")
 	hosts = opensByHost.items()
 	hosts.sort(key=compareHostOpens, reverse=True)
 	for tmp in hosts:
@@ -391,6 +409,9 @@ def printReport(cmdData, filter):
 		percent = 100.0 * cmdHist[count] / sessionCount
 		print("  Command count %s, frequency %s (%.1f%%)" % (count, cmdHist[count], percent))
 
+	print("\nSession info:")
+	print("  TEMPTEMP")
+
 #-----------------------------------------------------------------
 # Returns True if we should include data from this host in our
 # statistics.
@@ -408,6 +429,45 @@ def passHost(host, filter):
 		elif (host.find("144.92.") == 0):
 			value = False
 	return value
+
+#-----------------------------------------------------------------
+# Convert session file name to session category.
+def getSessionCat(session):
+	cat = "other/unknown"
+
+	# Note:  Put most restrictive patterns first to avoid mis-counting
+	# (e.g., SPARTA (sd) before chem shift deltas (d)).
+	relist = []
+	relist.append((re.compile(r"dna_histogram.ds$"), "DNA histogram"))
+	relist.append((re.compile(r"rna_histogram.ds$"), "RNA histogram"))
+	relist.append((re.compile(r"histogram2.ds$"), "dual-protein histogram"))
+	relist.append((re.compile(r"histogram.ds$"), "single-protein histogram"))
+	relist.append((re.compile(r"lacs\d+.ds$"), "LACS"))
+	relist.append((re.compile(r"distr\d+.ds$"), "distance restraints"))
+	relist.append((re.compile(r"tar\d+.ds$"), "torsion angle restraints"))
+	relist.append((re.compile(r"as\d+.ds$"), "chem shift by AA/nucleotide"))
+	relist.append((re.compile(r"am\d+.ds$"), "ambiguity codes"))
+	relist.append((re.compile(r"ac\d+.ds$"), "atomic coordinates"))
+	relist.append((re.compile(r"sd\d+.ds$"), "SPARTA"))
+	relist.append((re.compile(r"ps\d+.ds$"), "Pistachio"))
+	relist.append((re.compile(r"h[cn]\d+\+\d+.ds$"), "two-entry simulated HSQC spectra"))
+	relist.append((re.compile(r"h[cn]\d+.ds$"), "simulated HSQC spectra"))
+	relist.append((re.compile(r"t[12]\d+.ds$"), "T1/T2 relaxation"))
+	relist.append((re.compile(r"d\d+.ds$"), "chem shift deltas"))
+	relist.append((re.compile(r"c\d+.ds$"), "chem shift index"))
+	relist.append((re.compile(r"p\d+.ds$"), "percent assigned"))
+	relist.append((re.compile(r"g\d+.ds$"), "coupling constants"))
+	relist.append((re.compile(r"n\d+.ds$"), "heteronuclear NOE"))
+	relist.append((re.compile(r"o\d+.ds$"), "S2 order parameters"))
+	relist.append((re.compile(r"s2p\d+-\d+.ds$"), "S2 predicted vs. experimental"))
+
+	for tmp in relist:
+		result = tmp[0].search(session)
+		if (result != None):
+			cat = tmp[1]
+			break
+		
+	return cat
 
 #-----------------------------------------------------------------
 # For sorting.
