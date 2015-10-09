@@ -26,13 +26,15 @@
 #  * For each session open we store a command count.
 #TEMPTEMP -- hmm -- or maybe we just store a list where [0] is the hostname, [1] is the command count for the first session, etc.  When we see an open, we add a new element to the list with a value of 0; when we see a command, we increment the last value in the list
 
-#TEMPTEMP -- hmm -- I think I have to store the session name, too...
-
 ############################################################
 
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  2015/10/09 15:26:14  wenger
+#  Changed output formatting to older style for older Perl version at
+#  BMRB.
+#
 #  Revision 1.6  2015/10/08 22:38:11  wenger
 #  Got basic command count histograms working.
 #
@@ -66,7 +68,7 @@ import re
 #-----------------------------------------------------------------
 def main(argv):
 	global debug
-	debug = 2#TEMPTEMP
+	debug = 1#TEMPTEMP
 
 	version = "4.0.0"
 
@@ -229,6 +231,7 @@ def processOpen(line, cmdData):
 			cmdData[clientId] = [host]
 
 		# Command count for this session.
+		#TEMPTEMP -- can we use a "struct" here?
 		cmdData[clientId].append([session, 0])
 
 #-----------------------------------------------------------------
@@ -256,7 +259,7 @@ def processClose(line, cmdData):
 #TEMPTEMP -- be sure not to count open and close as commands
 def processCmd(line, cmdData):
 	if (debug > 2):
-		print("processClose(" + line + ")")
+		print("processCmd(" + line + ")")
 	#TEMPTEMP -- add stuff here
 
 	regex = re.compile(r"(?P<host>\S*) \((?P<client>\d+)\): (?P<cmd>\w*)(?P<args> \{.*\})*\s*\[(?P<time>.*)\]")
@@ -300,7 +303,11 @@ def printReport(cmdData, filter):
 					print("  Session %s: %s commands(s)" % (tmp[0], tmp[1]))
 
 	# Count the total number of session opens.
-	#TEMPTEMP -- add stuff here
+	sessionCount = 0
+	for clientId in cmdData.keys():
+		if (passHost(cmdData[clientId][0], filter)):
+			sessionCount += (len(cmdData[clientId])-1)
+	print("Total session opens: %s" % (sessionCount))
 
 	# Collect the command count histogram data.
 	cmdHist = {}
@@ -308,7 +315,8 @@ def printReport(cmdData, filter):
 		if (passHost(cmdData[clientId][0], filter)):
 			for tmp in cmdData[clientId][1:]:
 				count = tmp[1]
-				print("Command count: ", count)#TEMPTEMP
+				if (debug > 1):
+					print("Command count: ", count)
 				if (count in cmdHist):
 					cmdHist[count] += 1
 				else:
@@ -318,8 +326,8 @@ def printReport(cmdData, filter):
 	counts = cmdHist.keys()
 	counts.sort()
 	for count in counts:
-		#TEMPTEMP -- print frequencies as % of total session opens
-		print("  Command count %s, frequency %s" % (count, cmdHist[count]))
+		percent = 100.0 * cmdHist[count] / sessionCount
+		print("  Command count %s, frequency %s (%.1f%%)" % (count, cmdHist[count], percent))
 
 #-----------------------------------------------------------------
 def passHost(host, filter):
