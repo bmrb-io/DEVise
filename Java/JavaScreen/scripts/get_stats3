@@ -23,6 +23,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  2015/10/09 17:40:34  wenger
+#  Cleaned things up by using classes to hold the information as we go;
+#  various other cleanups; changed version number because I decided to
+#  not rename this script to get_stats when it's ready; we now print
+#  header info.
+#
 #  Revision 1.8  2015/10/09 16:20:40  wenger
 #  We now output total session open count, and histogram frequencies
 #  as a percentage of the total session count.
@@ -69,6 +75,13 @@ class ClientInfo:
 	def __init__(self, host):
 		self.host = host
 		self.sessions = [] # List of SessionInfo objects
+	def totalOpens(self):
+		return len(self.sessions)
+	def totalCmds(self):
+		tot = 0
+		for tmp in self.sessions:
+			tot += tmp.cmdCt
+		return tot
 
 #-----------------------------------------------------------------
 # To hold session name and command count.
@@ -76,6 +89,13 @@ class SessionInfo:
 	def __init__(self, session):
 		self.name = session
 		self.cmdCt = 0
+
+#-----------------------------------------------------------------
+# To hold per-host info.
+class HostInfo:
+	def __init__(self, sessions, cmds):
+		self.openCt = sessions
+		self.cmdCt = cmds
 
 #-----------------------------------------------------------------
 def main(argv):
@@ -331,10 +351,25 @@ def printReport(cmdData, filter):
 
 	# Count the total number of session opens.
 	sessionCount = 0
+	opensByHost = {}
 	for clientId in cmdData.keys():
 		if (passHost(cmdData[clientId].host, filter)):
 			sessionCount += (len(cmdData[clientId].sessions))
+			host = cmdData[clientId].host
+			if (host in opensByHost):
+				opensByHost[host].openCt += cmdData[clientId].totalOpens()
+				opensByHost[host].cmdCt += cmdData[clientId].totalCmds()
+			else:
+				hi = HostInfo(cmdData[clientId].totalOpens(), cmdData[clientId].totalCmds())
+				opensByHost[host] = hi
+
 	print("\nTotal session opens: %s" % (sessionCount))
+	print("Client host info:")
+	hosts = opensByHost.items()
+	hosts.sort(key=compareHostOpens, reverse=True)
+	for tmp in hosts:
+		avg = 1.0 * tmp[1].cmdCt / tmp[1].openCt
+		print("  %s opens from host %s (%s commands: %.1f per open)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg))
 
 	# Collect the command count histogram data.
 	cmdHist = {}
@@ -373,6 +408,11 @@ def passHost(host, filter):
 		elif (host.find("144.92.") == 0):
 			value = False
 	return value
+
+#-----------------------------------------------------------------
+# For sorting.
+def compareHostOpens(tmp):
+	return tmp[1].openCt
 
 #-----------------------------------------------------------------
 main(sys.argv[1:])
