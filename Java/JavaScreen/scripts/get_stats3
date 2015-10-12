@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  2015/10/12 20:28:26  wenger
+#  Added filtering by time period (to open commands).
+#
 #  Revision 1.11  2015/10/09 22:39:04  wenger
 #  Now printing session category counts (still need command counts per
 #  category, and sorting).
@@ -359,7 +362,8 @@ def printReport(cmdData, filter):
 				for tmp in cmdData[clientId].sessions:
 					print("  Session %s: %s commands(s)" % (tmp.name, tmp.cmdCt))
 
-	# Count the total number of session opens.
+	# Count the total number of session opens and session opens by
+	# session category.
 	sessionCount = 0
 	opensByHost = {}
 	sessionCats = {}
@@ -386,14 +390,14 @@ def printReport(cmdData, filter):
 	print("\nSession category counts:")
 	cats = sessionCats.items()
 	for tmp in cats:
-		print("  %s opens of %s" % (tmp[1], tmp[0]))
+		print("  %4d opens of %s" % (tmp[1], tmp[0]))
 
 	print("\nClient host info:")
 	hosts = opensByHost.items()
 	hosts.sort(key=compareHostOpens, reverse=True)
 	for tmp in hosts:
 		avg = 1.0 * tmp[1].cmdCt / tmp[1].openCt
-		print("  %s opens from host %s (%s commands: %.1f per open)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg))
+		print("  %4d opens from host %s (%s commands: %.1f per open)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg))
 
 	# Collect the command count histogram data.
 	cmdHist = {}
@@ -413,10 +417,23 @@ def printReport(cmdData, filter):
 	counts.sort()
 	for count in counts:
 		percent = 100.0 * cmdHist[count] / sessionCount
-		print("  Command count %s, frequency %s (%.1f%%)" % (count, cmdHist[count], percent))
+		print("  Command count %3d, frequency %3d (%.1f%%)" % (count, cmdHist[count], percent))
+
+	# Collect the per-session open counts.
+	sessionOpens = {}
+	for clientId in cmdData.keys():
+		if (passHost(cmdData[clientId].host, filter)):
+			for tmp in cmdData[clientId].sessions:
+				if (tmp.name in sessionOpens):
+					sessionOpens[tmp.name] += 1
+				else:
+					sessionOpens[tmp.name] = 1
 
 	print("\nSession info:")
-	print("  TEMPTEMP")
+	sessions = sessionOpens.items()
+	sessions.sort(key=compareSessionOpens, reverse=True)
+	for tmp in sessions:
+		print("%4d %s" % (tmp[1], tmp[0]))
 
 #-----------------------------------------------------------------
 # Returns True if we should include data from this host in our
@@ -479,6 +496,11 @@ def getSessionCat(session):
 # For sorting.
 def compareHostOpens(tmp):
 	return tmp[1].openCt
+
+#-----------------------------------------------------------------
+# For sorting.
+def compareSessionOpens(tmp):
+	return tmp[1]
 
 #-----------------------------------------------------------------
 # Parse a timestamp of the form 'Aug 5, 2015 3:25:53 PM' into a
