@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  2015/10/09 22:39:04  wenger
+#  Now printing session category counts (still need command counts per
+#  category, and sorting).
+#
 #  Revision 1.10  2015/10/09 21:03:09  wenger
 #  We now also report command counts per host, and sort the hosts
 #  in (decreasing) order of session open count.
@@ -134,8 +138,7 @@ def main(argv):
 		elif (opt == "-p"):
 			period = arg
 		elif (opt == "-t"):
-			#TEMPTEMP -- parse time argument here...
-			curTime = arg
+			curTime = parseTimestamp(arg)
 		elif (opt == "-u"):
 			usage()
 			sys.exit(0)
@@ -178,7 +181,6 @@ def process(idStr, period, curTime, filter, cmdData):
 		print("  period: ", period)
 		print("  curTime: ", curTime)
 
-	#TEMPTEMP -- where do we want to enforce the begin time?  when we're reading data or when we're outputting it?  what if the session open falls before the beginTime but some commands fall after beginTime?
 	if (period == "day"):
 		beginTime = curTime - datetime.timedelta(1)
 	elif (period == "week"):
@@ -233,10 +235,10 @@ def process(idStr, period, curTime, filter, cmdData):
 
 	# Now process each usage file
 	for uf in usageFiles:
-		processFile(uf, cmdData)
+		processFile(uf, beginTime, curTime, cmdData)
 
 #-----------------------------------------------------------------
-def processFile(uf, cmdData):
+def processFile(uf, beginTime, curTime, cmdData):
 	if (debug > 1):
 		print("Processing usage file: " + uf)
 
@@ -247,12 +249,12 @@ def processFile(uf, cmdData):
 			print("Line: " + line)
 
 		#TEMPTEMP -- don't call processCmd if processOpen found an open command?
-		processOpen(line, cmdData)
+		processOpen(line, beginTime, curTime, cmdData)
 		#TEMPTEMP processClose(line, cmdData)
 		processCmd(line, cmdData)
 
 #-----------------------------------------------------------------
-def processOpen(line, cmdData):
+def processOpen(line, beginTime, curTime, cmdData):
 	if (debug > 2):
 		print("processOpen(" + line + ")")
 
@@ -272,15 +274,21 @@ def processOpen(line, cmdData):
 			print("  session: ", session)
 			print("  timestamp: ", timestamp)
 
-		#TEMPTEMP -- check whether timestamp is within the right time here...
+		timeVal = parseTimestamp(timestamp)
+		if (timeVal < beginTime):
+			if (debug > 1):
+				print("Open time (%s) is before begin time (%s)" % (timeVal, beginTime))
+		elif (timeVal > curTime):
+			if (debug > 1):
+				print("Open time (%s) is after \"current\" time (%s)" % (timeVal, curTime))
+		else:
+			if (clientId not in cmdData):
+				ci = ClientInfo(host)
+				cmdData[clientId] = ci
 
-		if (clientId not in cmdData):
-			ci = ClientInfo(host)
-			cmdData[clientId] = ci
-
-		# Command count for this session.
-		si = SessionInfo(session)
-		cmdData[clientId].sessions.append(si)
+			# Command count for this session.
+			si = SessionInfo(session)
+			cmdData[clientId].sessions.append(si)
 
 #-----------------------------------------------------------------
 def processClose(line, cmdData):
@@ -338,8 +346,6 @@ def processCmd(line, cmdData):
 def printReport(cmdData, filter):
 	if (debug > 2):
 		print("printReport")
-
-	#TEMPTEMP -- print time range
 
 	if (filter):
 		print("BMRB and CS hosts are filtered from statistics")
@@ -473,6 +479,52 @@ def getSessionCat(session):
 # For sorting.
 def compareHostOpens(tmp):
 	return tmp[1].openCt
+
+#-----------------------------------------------------------------
+# Parse a timestamp of the form 'Aug 5, 2015 3:25:53 PM' into a
+# datetime object.
+def parseTimestamp(timeStr):
+	if (debug > 1):
+		print("parseTimestamp(%s)" % (timeStr))
+
+	timeVal = None
+
+	regex = re.compile(r"(?P<month>\w+)\s+(?P<day>\d+),\s+(?P<year>\d+)\s+(?P<hour>\d+):(?P<min>\d+):(?P<sec>\d+)\s+(?P<ampm>(am)|(pm))")
+	result = regex.search(timeStr.lower())
+	if (result != None):
+		if (debug > 1):
+			print("  parseTimestamp matches timeStr " + timeStr)
+		monthStr = result.group('month')
+		day = int(result.group('day'))
+		year = int(result.group('year'))
+		hour = int(result.group('hour'))
+		minute = int(result.group('min'))
+		second = int(result.group('sec'))
+		ampm = result.group('ampm')
+
+		if (debug > 1):
+			print("    monthStr: ", monthStr)
+			print("    day: ", day)
+			print("    year: ", year)
+			print("    hour: ", hour)
+			print("    minute: ", minute)
+			print("    second: ", second)
+			print("    ampm: ", ampm)
+
+		monthList = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+		if (monthStr in monthList):
+			monthNum = monthList.index(monthStr) + 1
+			if (debug > 1):
+				print("    monthNum: ", monthNum)
+			if (ampm == "pm" and hour < 12):
+				hour += 12
+			timeVal = datetime.datetime(year, monthNum, day, hour, minute, second)
+	else:
+		print("Unrecognized time string: %s", (timeStr))
+
+	if (debug > 1):
+		print("timeVal:", timeVal)
+	return timeVal
 
 #-----------------------------------------------------------------
 main(sys.argv[1:])
