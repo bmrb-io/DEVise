@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  2015/10/12 21:29:35  wenger
+#  Added open counts by session name.
+#
 #  Revision 1.12  2015/10/12 20:28:26  wenger
 #  Added filtering by time period (to open commands).
 #
@@ -106,6 +109,13 @@ class SessionInfo:
 class HostInfo:
 	def __init__(self, sessions, cmds):
 		self.openCt = sessions
+		self.cmdCt = cmds
+
+#-----------------------------------------------------------------
+# To hold per-session category info.
+class CatInfo:
+	def __init__(self, cmds):
+		self.openCt = 1
 		self.cmdCt = cmds
 
 #-----------------------------------------------------------------
@@ -367,6 +377,7 @@ def printReport(cmdData, filter):
 	sessionCount = 0
 	opensByHost = {}
 	sessionCats = {}
+	#TEMPTEMP -- need open count, cmd count for session cats
 	for clientId in cmdData.keys():
 		if (passHost(cmdData[clientId].host, filter)):
 			sessionCount += (len(cmdData[clientId].sessions))
@@ -380,17 +391,21 @@ def printReport(cmdData, filter):
 			for si in cmdData[clientId].sessions:
 				cat = getSessionCat(si.name)
 				if (cat in sessionCats):
-					sessionCats[cat] += 1
+					ci = sessionCats[cat]
+					ci.openCt += 1
+					ci.cmdCt += si.cmdCt
 				else:
-					sessionCats[cat] = 1
+					ci = CatInfo(si.cmdCt)
+					sessionCats[cat] = ci
 
 	print("\nTotal session opens: %s" % (sessionCount))
 
-	#TEMPTEMP -- need to add command counts here
 	print("\nSession category counts:")
 	cats = sessionCats.items()
+	cats.sort(key=compareHostOpens, reverse=True)#TEMPTEMP -- rename compare function?
 	for tmp in cats:
-		print("  %4d opens of %s" % (tmp[1], tmp[0]))
+		avg = 1.0 * tmp[1].cmdCt / tmp[1].openCt
+		print("  %4d opens of %s (%d commands: %.1f per open)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg))
 
 	print("\nClient host info:")
 	hosts = opensByHost.items()
