@@ -21,4 +21,4 @@
 
 ############################################################
 
-scripts/get_stats | mail -s 'JavaScreen usage on condor-websrv-7' devise wenger miron
+scripts/get_stats3 -f | mail -s 'JavaScreen usage on condor-websrv-7' devise wenger miron
