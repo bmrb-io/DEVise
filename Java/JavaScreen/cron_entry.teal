@@ -1,17 +1,28 @@
 # Check regular JSPoP, etc., and restart if necessary.
 * * * * * cd /scratch/devise/js.regular; ./run_check regular 2
-#5,20,35,50 * * * * cd /scratch/devise/js.regular; ./run_check -dev regular 1
+#5,20,35,50 * * * * cd /scratch/devise/js.regular; ./run_check -dev regular 2
 19 * * * * cd /scratch/devise/js.regular; sleep 20; ./run_check -dev regular 2
 
 # Get usage stats for regular JavaScreen.
-1 16 * * 1 cd /scratch/devise/js.regular; scripts/get_stats_teal
+# 1 16 * * 1 cd /scratch/devise/js.regular; scripts/get_stats_teal
 
 # Check Wavelet-IDR JSPoP, etc., and restart if necessary.
-* * * * * cd /scratch/devise/js.wave; ./run_check wave 4
-20 * * * * cd /scratch/devise/js.wave; sleep 20; ./run_check -dev wave 4
+#* * * * * cd /scratch/devise/js.wave; ./run_check wave 4
+#20 * * * * cd /scratch/devise/js.wave; sleep 20; ./run_check -dev wave 4
 
 # Get usage stats for Wavelet-IDR JavaScreen.
-2 16 * * 1 cd /scratch/devise/js.wave; scripts/get_stats_wave_teal
+# 2 16 * * 1 cd /scratch/devise/js.wave; scripts/get_stats_wave_teal
 
 # Check test JSPoP, etc., and restart if necessary.
-# 5,15,25,35,45,55 * * * * cd /scratch/devise/js.test; ./run_check test 1
+5,15,25,35,45,55 * * * * cd /scratch/devise/js.test; ./run_check test 1
+
+# Check the dummy ChemShiftRef server and restart if necessary.
+1,6,11,16,21,26,31,36,41,46,51,56 * * * * cd /var/home/www/public/cgi-bin/bmrb_test; tests/check_dum_csr_server
+
+# Run top to check the load on condor-websrv-7.
+# Trying sleep to see if JS CPU is artificially inflated by doing check
+# at the same time as top.
+47 3,15 * * * sleep 20; /scratch/devise/utils/run_top
+
+# Run df to check disk space on condor-websrv-7.
+48 3,15 * * * /scratch/devise/utils/run_df
