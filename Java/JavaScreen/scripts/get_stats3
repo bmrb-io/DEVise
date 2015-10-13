@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  2015/10/12 22:26:37  wenger
+#  Added command counts per session category, and sort of session categories
+#  by open count.
+#
 #  Revision 1.13  2015/10/12 21:29:35  wenger
 #  Added open counts by session name.
 #
@@ -89,6 +93,7 @@ class ClientInfo:
 	def __init__(self, host):
 		self.host = host
 		self.sessions = [] # List of SessionInfo objects
+		self.isOpen = True
 	def totalOpens(self):
 		return len(self.sessions)
 	def totalCmds(self):
@@ -123,7 +128,7 @@ def main(argv):
 	global debug
 	debug = 0
 
-	version = "0.0.1"
+	version = "1.0.0"
 
 	# Initialize command-line arguments.
 	filter = False # if True filter out UW usage from stats
@@ -138,7 +143,6 @@ def main(argv):
 	try:
 		(opts, args) = getopt.getopt(argv, "fi:p:t:uv", [])
 	except getopt.GetoptError:
-		#TEMPTEMP -- we don't seem to get here on unrecognized arg
 		print("Error in command-line arguments")
 		usage()
 		sys.exit(2)
@@ -236,7 +240,6 @@ def process(idStr, period, curTime, filter, cmdData):
 	if (idStr == "all"):
 		usagePattern = "logs/jspop.usage*"
 	else:
-		#TEMPTEMP -- this won't work!!
 		usagePattern = "logs/jspop.usage." + idStr + "*"
 	usageFiles = glob.glob(usagePattern)
 	if (debug > 0):
@@ -261,12 +264,16 @@ def processFile(uf, beginTime, curTime, cmdData):
 		if (debug > 2):
 			print("Line: " + line)
 
-		#TEMPTEMP -- don't call processCmd if processOpen found an open command?
-		processOpen(line, beginTime, curTime, cmdData)
-		#TEMPTEMP processClose(line, cmdData)
-		processCmd(line, cmdData)
+		if (processOpen(line, beginTime, curTime, cmdData)):
+			pass
+		elif (processClose(line, cmdData)):
+			pass
+		else:
+			processCmd(line, cmdData)
 
 #-----------------------------------------------------------------
+# Process a given log line looking for a session open command --
+# returns True if we found an open, False otherwise.
 def processOpen(line, beginTime, curTime, cmdData):
 	if (debug > 2):
 		print("processOpen(" + line + ")")
@@ -302,8 +309,16 @@ def processOpen(line, beginTime, curTime, cmdData):
 			# Command count for this session.
 			si = SessionInfo(session)
 			cmdData[clientId].sessions.append(si)
+			cmdData[clientId].isOpen = True
+
+		return True
+
+	else:
+		return False
 
 #-----------------------------------------------------------------
+# Process a given log line looking for a session close command --
+# returns True if we found a close, False otherwise.
 def processClose(line, cmdData):
 	if (debug > 2):
 		print("processClose(" + line + ")")
@@ -321,11 +336,16 @@ def processClose(line, cmdData):
 			print("  host: ", host)
 			print("  clientId: ", clientId)
 			print("  timestamp: ", timestamp)
-	#TEMPTEMP -- add stuff here
-	#TEMPTEMP -- do we even need to do anything on a close?
+
+		if (clientId in cmdData):
+			cmdData[clientId].isOpen = False
+
+		return True
+
+	else:
+		return False
 
 #-----------------------------------------------------------------
-#TEMPTEMP -- be sure not to count open and close as commands
 def processCmd(line, cmdData):
 	if (debug > 2):
 		print("processCmd(" + line + ")")
@@ -349,7 +369,8 @@ def processCmd(line, cmdData):
 			print("  timestamp: ", timestamp)
 
 		if (clientId in cmdData):
-			cmdData[clientId].sessions[-1].cmdCt += 1
+			if (cmdData[clientId].isOpen):
+				cmdData[clientId].sessions[-1].cmdCt += 1
 		else:
 			# This means we didn't find an open for this client.
 			if (debug > 0):
@@ -377,7 +398,6 @@ def printReport(cmdData, filter):
 	sessionCount = 0
 	opensByHost = {}
 	sessionCats = {}
-	#TEMPTEMP -- need open count, cmd count for session cats
 	for clientId in cmdData.keys():
 		if (passHost(cmdData[clientId].host, filter)):
 			sessionCount += (len(cmdData[clientId].sessions))
@@ -402,14 +422,14 @@ def printReport(cmdData, filter):
 
 	print("\nSession category counts:")
 	cats = sessionCats.items()
-	cats.sort(key=compareHostOpens, reverse=True)#TEMPTEMP -- rename compare function?
+	cats.sort(key=compareOpenCts, reverse=True)
 	for tmp in cats:
 		avg = 1.0 * tmp[1].cmdCt / tmp[1].openCt
 		print("  %4d opens of %s (%d commands: %.1f per open)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg))
 
 	print("\nClient host info:")
 	hosts = opensByHost.items()
-	hosts.sort(key=compareHostOpens, reverse=True)
+	hosts.sort(key=compareOpenCts, reverse=True)
 	for tmp in hosts:
 		avg = 1.0 * tmp[1].cmdCt / tmp[1].openCt
 		print("  %4d opens from host %s (%s commands: %.1f per open)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg))
@@ -509,7 +529,7 @@ def getSessionCat(session):
 
 #-----------------------------------------------------------------
 # For sorting.
-def compareHostOpens(tmp):
+def compareOpenCts(tmp):
 	return tmp[1].openCt
 
 #-----------------------------------------------------------------
