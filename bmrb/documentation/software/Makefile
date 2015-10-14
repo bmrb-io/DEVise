@@ -58,6 +58,7 @@ setup:
 	ln -s ../../../peptide_cgi/design_doc/vis_server_testing \
 		vis_server_testing.txt
 	ln -s routine_tasks routine_tasks.txt
+	ln -s ../../../design_doc/jar_signing jar_signing.txt
 
 clean:
 	\rm *.txt
