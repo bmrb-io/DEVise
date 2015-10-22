@@ -23,6 +23,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  2015/10/13 16:00:11  wenger
+#  Fixed things to not count commands while no session is open for
+#  a given client; avoid looking for "regular" commands if a line has
+#  an open or close; other small cleanups; changed version to 1.0.0
+#  because this should be ready to release.
+#
 #  Revision 1.14  2015/10/12 22:26:37  wenger
 #  Added command counts per session category, and sort of session categories
 #  by open count.
@@ -124,6 +130,46 @@ class CatInfo:
 		self.cmdCt = cmds
 
 #-----------------------------------------------------------------
+# To hold the time range for which we've actually found data
+# (applies just to the open timestamp).
+class TimeRange:
+	def __init__(self):
+		self.updated = False
+		self.first = datetime.datetime(datetime.MAXYEAR, 12, 31)
+		self.last = datetime.datetime(datetime.MINYEAR, 1, 1)
+	def update(self, timeVal):
+		self.updated = True
+		if (timeVal < self.first):
+			self.first = timeVal
+		if (timeVal > self.last):
+			self.last = timeVal
+	def wasUpdated(self):
+		return self.updated
+	def setFirst(self, period):
+		if (period == "day"):
+			self.first = self.last - datetime.timedelta(1)
+		elif (period == "week"):
+			self.first = self.last - datetime.timedelta(7)
+		elif (period == "all"):
+			self.first = datetime.datetime(datetime.MINYEAR, 1, 1)
+			self.last = datetime.datetime(datetime.MAXYEAR, 12, 31)
+		else:
+			print("Illegal period value: ", period)
+			usage()
+			sys.exit(2)
+	def within(self, timeVal):
+		if (timeVal < self.first):
+			if (debug > 1):
+				print("Open time (%s) is before begin time (%s)" % (timeVal, self.first))
+			return False
+		elif (timeVal > self.last):
+			if (debug > 1):
+				print("Open time (%s) is after end time (%s)" % (timeVal, self.last))
+			return False
+		else:
+			return True
+
+#-----------------------------------------------------------------
 def main(argv):
 	global debug
 	debug = 0
@@ -134,7 +180,8 @@ def main(argv):
 	filter = False # if True filter out UW usage from stats
 	idStr = "all"
 	period = "week"
-	curTime = datetime.datetime.now()
+	tLimit = TimeRange()
+	tLimit.last = datetime.datetime.now()
 
 	# Process command-line arguments.
 	if (debug > 1):
@@ -155,7 +202,7 @@ def main(argv):
 		elif (opt == "-p"):
 			period = arg
 		elif (opt == "-t"):
-			curTime = parseTimestamp(arg)
+			tLimit.last = parseTimestamp(arg)
 		elif (opt == "-u"):
 			usage()
 			sys.exit(0)
@@ -167,17 +214,21 @@ def main(argv):
 			usage()
 			sys.exit(2)
 
+	tLimit.setFirst(period)
+
 	if (debug > 0):
 		print("idStr: ", idStr)
 		print("period: ", period)
-		print("curTime: ", curTime)
+		print("endTime: ", tLimit.last)
 		print("filter: ", filter)
 
 	# cmdData maps clientId keys to ClientInfo values
 	cmdData = {}
 
-	process(idStr, period, curTime, filter, cmdData)
-	printReport(cmdData, filter)
+	tr = TimeRange()
+
+	process(idStr, filter, tLimit, cmdData, tr)
+	printReport(idStr, filter, tLimit, cmdData, tr)
 
 #-----------------------------------------------------------------
 def usage():
@@ -191,37 +242,12 @@ def usage():
 	print("  -v(ersion):  print version")
 
 #-----------------------------------------------------------------
-def process(idStr, period, curTime, filter, cmdData):
+def process(idStr, filter, tLimit, cmdData, tr):
 	if (debug > 1):
 		print("process:")
 		print("  idStr: ", idStr)
-		print("  period: ", period)
-		print("  curTime: ", curTime)
-
-	if (period == "day"):
-		beginTime = curTime - datetime.timedelta(1)
-	elif (period == "week"):
-		beginTime = curTime - datetime.timedelta(7)
-	elif (period == "all"):
-		beginTime = datetime.datetime(datetime.MINYEAR, 1, 1)
-	else:
-		print("Illegal period value: ", period)
-		usage()
-		sys.exit(2)
-
-	if (debug > 0):
-		print("beginTime: ", beginTime)
-
-	# Print header info.
-	print("")
-	print("JavaScreen usage for ID %s" % (idStr)) 
-	print("  in %s on %s" % (os.getcwd(), socket.gethostname()))
-	print("JavaScreen usage statistics for %s through %s" % (beginTime, curTime))
-	if (filter):
-		print("CS/BMRB usage is filtered out")
-	else:
-		print("CS/BMRB usage is not filtered out")
-	print("")
+		print("beginTime: ", tLimit.first)
+		print("  endTime: ", tLimit.last)
 
 	# See if we have an appropriate JSPoP PID file, and print a
 	# warning if we don't.
@@ -229,7 +255,6 @@ def process(idStr, period, curTime, filter, cmdData):
 		pidPattern = "jspop_pid:*"
 	else:
 		pidPattern = "jspop_pid:" + idStr + ":*"
-
 	pidFiles = glob.glob(pidPattern)
 	if (len(pidFiles) < 1):
 		print("WARNING: no JSPoP PID file (" + pidPattern + ") found")
@@ -251,10 +276,10 @@ def process(idStr, period, curTime, filter, cmdData):
 
 	# Now process each usage file
 	for uf in usageFiles:
-		processFile(uf, beginTime, curTime, cmdData)
+		processFile(uf, filter, tLimit, cmdData, tr)
 
 #-----------------------------------------------------------------
-def processFile(uf, beginTime, curTime, cmdData):
+def processFile(uf, filter, tLimit, cmdData, tr):
 	if (debug > 1):
 		print("Processing usage file: " + uf)
 
@@ -264,7 +289,7 @@ def processFile(uf, beginTime, curTime, cmdData):
 		if (debug > 2):
 			print("Line: " + line)
 
-		if (processOpen(line, beginTime, curTime, cmdData)):
+		if (processOpen(line, filter, tLimit, cmdData, tr)):
 			pass
 		elif (processClose(line, cmdData)):
 			pass
@@ -274,7 +299,7 @@ def processFile(uf, beginTime, curTime, cmdData):
 #-----------------------------------------------------------------
 # Process a given log line looking for a session open command --
 # returns True if we found an open, False otherwise.
-def processOpen(line, beginTime, curTime, cmdData):
+def processOpen(line, filter, tLimit, cmdData, tr):
 	if (debug > 2):
 		print("processOpen(" + line + ")")
 
@@ -295,13 +320,7 @@ def processOpen(line, beginTime, curTime, cmdData):
 			print("  timestamp: ", timestamp)
 
 		timeVal = parseTimestamp(timestamp)
-		if (timeVal < beginTime):
-			if (debug > 1):
-				print("Open time (%s) is before begin time (%s)" % (timeVal, beginTime))
-		elif (timeVal > curTime):
-			if (debug > 1):
-				print("Open time (%s) is after \"current\" time (%s)" % (timeVal, curTime))
-		else:
+		if (tLimit.within(timeVal) and passHost(host, filter)):
 			if (clientId not in cmdData):
 				ci = ClientInfo(host)
 				cmdData[clientId] = ci
@@ -310,6 +329,8 @@ def processOpen(line, beginTime, curTime, cmdData):
 			si = SessionInfo(session)
 			cmdData[clientId].sessions.append(si)
 			cmdData[clientId].isOpen = True
+
+			tr.update(timeVal)
 
 		return True
 
@@ -377,21 +398,33 @@ def processCmd(line, cmdData):
 				print("Warning: clientId " + clientId + " not found!")
 
 #-----------------------------------------------------------------
-def printReport(cmdData, filter):
+def printReport(idStr, filter, tLimit, cmdData, tr):
 	if (debug > 2):
 		print("printReport")
 
+	# Print header info.
+	print("")
+	print("JavaScreen usage for ID %s" % (idStr)) 
+	print("  in %s on %s" % (os.getcwd(), socket.gethostname()))
+	print("JavaScreen usage statistics for %s through %s\n" % (tLimit.first, tLimit.last))
+	if (tr.wasUpdated()):
+		print("  (Data actually found for %s through %s):" % (tr.first, tr.last))
+	else:
+		print("  (No data actually found)")
+
 	if (filter):
-		print("BMRB and CS hosts are filtered from statistics")
+		print("CS/BMRB usage is filtered out")
+	else:
+		print("CS/BMRB usage is not filtered out")
+	print("")
 
 	# Print the raw data (for debugging).
 	if (debug) > 0:
 		print("Raw data:")
 		for clientId in cmdData.keys():
-			if (passHost(cmdData[clientId].host, filter)):
-				print("Client %s on %s:" % (clientId, cmdData[clientId].host))
-				for tmp in cmdData[clientId].sessions:
-					print("  Session %s: %s commands(s)" % (tmp.name, tmp.cmdCt))
+			print("Client %s on %s:" % (clientId, cmdData[clientId].host))
+			for tmp in cmdData[clientId].sessions:
+				print("  Session %s: %s commands(s)" % (tmp.name, tmp.cmdCt))
 
 	# Count the total number of session opens and session opens by
 	# session category.
@@ -399,26 +432,25 @@ def printReport(cmdData, filter):
 	opensByHost = {}
 	sessionCats = {}
 	for clientId in cmdData.keys():
-		if (passHost(cmdData[clientId].host, filter)):
-			sessionCount += (len(cmdData[clientId].sessions))
-			host = cmdData[clientId].host
-			if (host in opensByHost):
-				opensByHost[host].openCt += cmdData[clientId].totalOpens()
-				opensByHost[host].cmdCt += cmdData[clientId].totalCmds()
+		sessionCount += (len(cmdData[clientId].sessions))
+		host = cmdData[clientId].host
+		if (host in opensByHost):
+			opensByHost[host].openCt += cmdData[clientId].totalOpens()
+			opensByHost[host].cmdCt += cmdData[clientId].totalCmds()
+		else:
+			hi = HostInfo(cmdData[clientId].totalOpens(), cmdData[clientId].totalCmds())
+			opensByHost[host] = hi
+		for si in cmdData[clientId].sessions:
+			cat = getSessionCat(si.name)
+			if (cat in sessionCats):
+				ci = sessionCats[cat]
+				ci.openCt += 1
+				ci.cmdCt += si.cmdCt
 			else:
-				hi = HostInfo(cmdData[clientId].totalOpens(), cmdData[clientId].totalCmds())
-				opensByHost[host] = hi
-			for si in cmdData[clientId].sessions:
-				cat = getSessionCat(si.name)
-				if (cat in sessionCats):
-					ci = sessionCats[cat]
-					ci.openCt += 1
-					ci.cmdCt += si.cmdCt
-				else:
-					ci = CatInfo(si.cmdCt)
-					sessionCats[cat] = ci
+				ci = CatInfo(si.cmdCt)
+				sessionCats[cat] = ci
 
-	print("\nTotal session opens: %s" % (sessionCount))
+	print("Total session opens: %s" % (sessionCount))
 
 	print("\nSession category counts:")
 	cats = sessionCats.items()
@@ -437,15 +469,14 @@ def printReport(cmdData, filter):
 	# Collect the command count histogram data.
 	cmdHist = {}
 	for clientId in cmdData.keys():
-		if (passHost(cmdData[clientId].host, filter)):
-			for tmp in cmdData[clientId].sessions:
-				count = tmp.cmdCt
-				if (debug > 1):
-					print("Command count: ", count)
-				if (count in cmdHist):
-					cmdHist[count] += 1
-				else:
-					cmdHist[count] = 1
+		for tmp in cmdData[clientId].sessions:
+			count = tmp.cmdCt
+			if (debug > 1):
+				print("Command count: ", count)
+			if (count in cmdHist):
+				cmdHist[count] += 1
+			else:
+				cmdHist[count] = 1
 
 	print("\nCommand frequency histogram")
 	counts = cmdHist.keys()
@@ -457,12 +488,11 @@ def printReport(cmdData, filter):
 	# Collect the per-session open counts.
 	sessionOpens = {}
 	for clientId in cmdData.keys():
-		if (passHost(cmdData[clientId].host, filter)):
-			for tmp in cmdData[clientId].sessions:
-				if (tmp.name in sessionOpens):
-					sessionOpens[tmp.name] += 1
-				else:
-					sessionOpens[tmp.name] = 1
+		for tmp in cmdData[clientId].sessions:
+			if (tmp.name in sessionOpens):
+				sessionOpens[tmp.name] += 1
+			else:
+				sessionOpens[tmp.name] = 1
 
 	print("\nSession info:")
 	sessions = sessionOpens.items()
