@@ -23,6 +23,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  2015/10/22 23:08:19  wenger
+#  Added info about the date range we were searching and the date range
+#  for which we actually found session opens; fixed a problem with the
+#  hostname-based filtering.
+#
 #  Revision 1.15  2015/10/13 16:00:11  wenger
 #  Fixed things to not count commands while no session is open for
 #  a given client; avoid looking for "regular" commands if a line has
@@ -223,12 +228,14 @@ def main(argv):
 		print("filter: ", filter)
 
 	# cmdData maps clientId keys to ClientInfo values
-	cmdData = {}
+	cmdDataAll = {}
+	cmdDataVS = {}
+	cmdDataNonVS = {}
 
 	tr = TimeRange()
 
-	process(idStr, filter, tLimit, cmdData, tr)
-	printReport(idStr, filter, tLimit, cmdData, tr)
+	process(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
+	printReport(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
 
 #-----------------------------------------------------------------
 def usage():
@@ -242,7 +249,7 @@ def usage():
 	print("  -v(ersion):  print version")
 
 #-----------------------------------------------------------------
-def process(idStr, filter, tLimit, cmdData, tr):
+def process(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 	if (debug > 1):
 		print("process:")
 		print("  idStr: ", idStr)
@@ -276,10 +283,10 @@ def process(idStr, filter, tLimit, cmdData, tr):
 
 	# Now process each usage file
 	for uf in usageFiles:
-		processFile(uf, filter, tLimit, cmdData, tr)
+		processFile(uf, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
 
 #-----------------------------------------------------------------
-def processFile(uf, filter, tLimit, cmdData, tr):
+def processFile(uf, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 	if (debug > 1):
 		print("Processing usage file: " + uf)
 
@@ -289,17 +296,25 @@ def processFile(uf, filter, tLimit, cmdData, tr):
 		if (debug > 2):
 			print("Line: " + line)
 
-		if (processOpen(line, filter, tLimit, cmdData, tr)):
-			pass
-		elif (processClose(line, cmdData)):
-			pass
-		else:
-			processCmd(line, cmdData)
+		processLine(line, filter, True, True, tLimit, cmdDataAll, tr)
+		processLine(line, filter, True, False, tLimit, cmdDataVS, tr)
+		processLine(line, filter, False, True, tLimit, cmdDataNonVS, tr)
+
+#-----------------------------------------------------------------
+# Process one line from a usage file, updating the given command
+# data and time range.
+def processLine(line, filter, incVisServ, incNonVS, tLimit, cmdData, tr):
+	if (processOpen(line, filter, incVisServ, incNonVS, tLimit, cmdData, tr)):
+		pass
+	elif (processClose(line, cmdData)):
+		pass
+	else:
+		processCmd(line, cmdData)
 
 #-----------------------------------------------------------------
 # Process a given log line looking for a session open command --
 # returns True if we found an open, False otherwise.
-def processOpen(line, filter, tLimit, cmdData, tr):
+def processOpen(line, filter, incVisServ, incNonVS, tLimit, cmdData, tr):
 	if (debug > 2):
 		print("processOpen(" + line + ")")
 
@@ -320,7 +335,7 @@ def processOpen(line, filter, tLimit, cmdData, tr):
 			print("  timestamp: ", timestamp)
 
 		timeVal = parseTimestamp(timestamp)
-		if (tLimit.within(timeVal) and passHost(host, filter)):
+		if (tLimit.within(timeVal) and passHost(host, filter) and passSession(session, incVisServ, incNonVS)):
 			if (clientId not in cmdData):
 				ci = ClientInfo(host)
 				cmdData[clientId] = ci
@@ -367,6 +382,8 @@ def processClose(line, cmdData):
 		return False
 
 #-----------------------------------------------------------------
+# Process a given log line looking for a command other than a
+# session open or close.
 def processCmd(line, cmdData):
 	if (debug > 2):
 		print("processCmd(" + line + ")")
@@ -394,13 +411,22 @@ def processCmd(line, cmdData):
 				cmdData[clientId].sessions[-1].cmdCt += 1
 		else:
 			# This means we didn't find an open for this client.
-			if (debug > 0):
+			if (debug > 1):
 				print("Warning: clientId " + clientId + " not found!")
 
 #-----------------------------------------------------------------
-def printReport(idStr, filter, tLimit, cmdData, tr):
+# Print the full report.
+def printReport(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 	if (debug > 2):
 		print("printReport")
+
+	# Print the raw data (for debugging).
+	if (debug > 0):
+		print("Raw data:")
+		for clientId in cmdDataAll.keys():
+			print("Client %s on %s:" % (clientId, cmdDataAll[clientId].host))
+			for tmp in cmdDataAll[clientId].sessions:
+				print("  Session %s: %s commands(s)" % (tmp.name, tmp.cmdCt))
 
 	# Print header info.
 	print("")
@@ -418,28 +444,57 @@ def printReport(idStr, filter, tLimit, cmdData, tr):
 		print("CS/BMRB usage is not filtered out")
 	print("")
 
-	# Print the raw data (for debugging).
-	if (debug) > 0:
-		print("Raw data:")
-		for clientId in cmdData.keys():
-			print("Client %s on %s:" % (clientId, cmdData[clientId].host))
-			for tmp in cmdData[clientId].sessions:
-				print("  Session %s: %s commands(s)" % (tmp.name, tmp.cmdCt))
+	# Print total session opens.
+	sessionCountAll = calcSessionCount(cmdDataAll)
+	print("Total session opens (vis server and non-vis server): %s" % (sessionCountAll))
+	sessionCountVS = calcSessionCount(cmdDataVS)
+	print("Total session opens (vis server only): %s" % (sessionCountVS))
+	sessionCountNonVS = calcSessionCount(cmdDataNonVS)
+	print("Total session opens (non-vis server only): %s" % (sessionCountNonVS))
 
-	# Count the total number of session opens and session opens by
-	# session category.
+	# Print session category counts.
+	print("\nSession category counts (vis server and non-vis server):")
+	printSessionCats(cmdDataAll)
+	print("\nSession category counts (vis server only):")
+	printSessionCats(cmdDataVS)
+	print("\nSession category counts (non-vis server only):")
+	printSessionCats(cmdDataNonVS)
+
+	# Print session opens per host.
+	print("\nClient host info (vis server and non-vis server):")
+	printHostOpens(cmdDataAll)
+	print("\nClient host info (vis server only):")
+	printHostOpens(cmdDataVS)
+	print("\nClient host info (non-vis server only):")
+	printHostOpens(cmdDataNonVS)
+
+	# Print command frequency histograms.
+	print("\nCommand frequency histogram (vis server and non-vis server):")
+	printCmdHistogram(cmdDataAll, sessionCountAll)
+	print("\nCommand frequency histogram (vis server only):")
+	printCmdHistogram(cmdDataVS, sessionCountVS)
+	print("\nCommand frequency histogram (non-vis server only):")
+	printCmdHistogram(cmdDataNonVS, sessionCountNonVS)
+
+	# Print opens per individual session.
+	print("\nSession open counts (vis server and non-vis server):")
+	printSessionOpens(cmdDataAll)
+
+#-----------------------------------------------------------------
+# Calculate the number of session opens in the given command data.
+def calcSessionCount(cmdData):
 	sessionCount = 0
-	opensByHost = {}
-	sessionCats = {}
 	for clientId in cmdData.keys():
 		sessionCount += (len(cmdData[clientId].sessions))
-		host = cmdData[clientId].host
-		if (host in opensByHost):
-			opensByHost[host].openCt += cmdData[clientId].totalOpens()
-			opensByHost[host].cmdCt += cmdData[clientId].totalCmds()
-		else:
-			hi = HostInfo(cmdData[clientId].totalOpens(), cmdData[clientId].totalCmds())
-			opensByHost[host] = hi
+
+	return sessionCount
+
+#-----------------------------------------------------------------
+# Print the number of opens per session category in the given command
+# list.
+def printSessionCats(cmdData):
+	sessionCats = {}
+	for clientId in cmdData.keys():
 		for si in cmdData[clientId].sessions:
 			cat = getSessionCat(si.name)
 			if (cat in sessionCats):
@@ -450,22 +505,34 @@ def printReport(idStr, filter, tLimit, cmdData, tr):
 				ci = CatInfo(si.cmdCt)
 				sessionCats[cat] = ci
 
-	print("Total session opens: %s" % (sessionCount))
-
-	print("\nSession category counts:")
 	cats = sessionCats.items()
 	cats.sort(key=compareOpenCts, reverse=True)
 	for tmp in cats:
 		avg = 1.0 * tmp[1].cmdCt / tmp[1].openCt
 		print("  %4d opens of %s (%d commands: %.1f per open)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg))
 
-	print("\nClient host info:")
+#-----------------------------------------------------------------
+# Print the number of opens per host in the given command list.
+def printHostOpens(cmdData):
+	opensByHost = {}
+	for clientId in cmdData.keys():
+		host = cmdData[clientId].host
+		if (host in opensByHost):
+			opensByHost[host].openCt += cmdData[clientId].totalOpens()
+			opensByHost[host].cmdCt += cmdData[clientId].totalCmds()
+		else:
+			hi = HostInfo(cmdData[clientId].totalOpens(), cmdData[clientId].totalCmds())
+			opensByHost[host] = hi
+
 	hosts = opensByHost.items()
 	hosts.sort(key=compareOpenCts, reverse=True)
 	for tmp in hosts:
 		avg = 1.0 * tmp[1].cmdCt / tmp[1].openCt
 		print("  %4d opens from host %s (%s commands: %.1f per open)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg))
 
+#-----------------------------------------------------------------
+# Print a command frequency histogram for the given command data.
+def printCmdHistogram(cmdData, sessionCount):
 	# Collect the command count histogram data.
 	cmdHist = {}
 	for clientId in cmdData.keys():
@@ -478,13 +545,15 @@ def printReport(idStr, filter, tLimit, cmdData, tr):
 			else:
 				cmdHist[count] = 1
 
-	print("\nCommand frequency histogram")
 	counts = cmdHist.keys()
 	counts.sort()
 	for count in counts:
 		percent = 100.0 * cmdHist[count] / sessionCount
 		print("  Command count %3d, frequency %3d (%.1f%%)" % (count, cmdHist[count], percent))
 
+#-----------------------------------------------------------------
+# Print open counts per individual session for the given command data.
+def printSessionOpens(cmdData):
 	# Collect the per-session open counts.
 	sessionOpens = {}
 	for clientId in cmdData.keys():
@@ -494,7 +563,6 @@ def printReport(idStr, filter, tLimit, cmdData, tr):
 			else:
 				sessionOpens[tmp.name] = 1
 
-	print("\nSession info:")
 	sessions = sessionOpens.items()
 	sessions.sort(key=compareSessionOpens, reverse=True)
 	for tmp in sessions:
@@ -556,6 +624,22 @@ def getSessionCat(session):
 			break
 		
 	return cat
+
+#-----------------------------------------------------------------
+# Returns True if we should include data from this session in our
+# statistics.
+def passSession(session, incVisServ, incNonVS):
+	isVisServ = False
+	if (session.find(".uvd") != -1):
+		isVisServ = True
+
+	result = False
+	if (incVisServ and isVisServ):
+		result = True
+	elif (incNonVS and not isVisServ):
+		result = True
+
+	return result
 
 #-----------------------------------------------------------------
 # For sorting.
