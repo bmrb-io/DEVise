@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  2015/10/23 21:25:31  wenger
+#  Data is now split out by visualization server and non-visualization
+#  server sessions.
+#
 #  Revision 1.16  2015/10/22 23:08:19  wenger
 #  Added info about the date range we were searching and the date range
 #  for which we actually found session opens; fixed a problem with the
@@ -123,16 +127,28 @@ class SessionInfo:
 #-----------------------------------------------------------------
 # To hold per-host info.
 class HostInfo:
-	def __init__(self, sessions, cmds):
-		self.openCt = sessions
-		self.cmdCt = cmds
+	def __init__(self):
+		self.openCt = 0
+		self.cmdCt = 0
+		self.maxCmds = 0
+	def update(self, clientInfo):
+		self.openCt += clientInfo.totalOpens()
+		self.cmdCt += clientInfo.totalCmds()
+		if (clientInfo.totalCmds() > self.maxCmds):
+			self.maxCmds = clientInfo.totalCmds()
 
 #-----------------------------------------------------------------
 # To hold per-session category info.
 class CatInfo:
-	def __init__(self, cmds):
-		self.openCt = 1
-		self.cmdCt = cmds
+	def __init__(self):
+		self.openCt = 0
+		self.cmdCt = 0
+		self.maxCmds = 0
+	def update(self, sessInfo):
+		self.openCt += 1
+		self.cmdCt += sessInfo.cmdCt
+		if (sessInfo.cmdCt > self.maxCmds):
+			self.maxCmds = sessInfo.cmdCt
 
 #-----------------------------------------------------------------
 # To hold the time range for which we've actually found data
@@ -422,7 +438,7 @@ def printReport(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 
 	# Print the raw data (for debugging).
 	if (debug > 0):
-		print("Raw data:")
+		print("+ Raw data:")
 		for clientId in cmdDataAll.keys():
 			print("Client %s on %s:" % (clientId, cmdDataAll[clientId].host))
 			for tmp in cmdDataAll[clientId].sessions:
@@ -430,55 +446,57 @@ def printReport(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 
 	# Print header info.
 	print("")
-	print("JavaScreen usage for ID %s" % (idStr)) 
+	print("+ JavaScreen usage for ID %s" % (idStr)) 
 	print("  in %s on %s" % (os.getcwd(), socket.gethostname()))
-	print("JavaScreen usage statistics for %s through %s\n" % (tLimit.first, tLimit.last))
+	print("+ JavaScreen usage statistics for %s through %s" % (tLimit.first, tLimit.last))
 	if (tr.wasUpdated()):
 		print("  (Data actually found for %s through %s):" % (tr.first, tr.last))
 	else:
 		print("  (No data actually found)")
 
 	if (filter):
-		print("CS/BMRB usage is filtered out")
+		print("  CS/BMRB usage is filtered out")
 	else:
-		print("CS/BMRB usage is not filtered out")
+		print("  CS/BMRB usage is not filtered out")
 	print("")
 
 	# Print total session opens.
 	sessionCountAll = calcSessionCount(cmdDataAll)
-	print("Total session opens (vis server and non-vis server): %s" % (sessionCountAll))
+	print("+ Total session opens (vis server and non-vis server): %s" % (sessionCountAll))
 	sessionCountVS = calcSessionCount(cmdDataVS)
-	print("Total session opens (vis server only): %s" % (sessionCountVS))
+	print("+ Total session opens (vis server only): %s" % (sessionCountVS))
 	sessionCountNonVS = calcSessionCount(cmdDataNonVS)
-	print("Total session opens (non-vis server only): %s" % (sessionCountNonVS))
+	print("+ Total session opens (non-vis server only): %s" % (sessionCountNonVS))
 
 	# Print session category counts.
-	print("\nSession category counts (vis server and non-vis server):")
+	print("\n+ Session category counts (vis server and non-vis server):")
 	printSessionCats(cmdDataAll)
-	print("\nSession category counts (vis server only):")
+	print("\n+ Session category counts (vis server only):")
 	printSessionCats(cmdDataVS)
-	print("\nSession category counts (non-vis server only):")
+	print("\n+ Session category counts (non-vis server only):")
 	printSessionCats(cmdDataNonVS)
 
 	# Print session opens per host.
-	print("\nClient host info (vis server and non-vis server):")
+	print("\n+ Client host info (vis server and non-vis server):")
 	printHostOpens(cmdDataAll)
-	print("\nClient host info (vis server only):")
+	print("\n+ Client host info (vis server only):")
 	printHostOpens(cmdDataVS)
-	print("\nClient host info (non-vis server only):")
+	print("\n+ Client host info (non-vis server only):")
 	printHostOpens(cmdDataNonVS)
 
 	# Print command frequency histograms.
-	print("\nCommand frequency histogram (vis server and non-vis server):")
+	print("\n+ Command frequency histogram (vis server and non-vis server):")
 	printCmdHistogram(cmdDataAll, sessionCountAll)
-	print("\nCommand frequency histogram (vis server only):")
+	print("\n+ Command frequency histogram (vis server only):")
 	printCmdHistogram(cmdDataVS, sessionCountVS)
-	print("\nCommand frequency histogram (non-vis server only):")
+	print("\n+ Command frequency histogram (non-vis server only):")
 	printCmdHistogram(cmdDataNonVS, sessionCountNonVS)
 
 	# Print opens per individual session.
-	print("\nSession open counts (vis server and non-vis server):")
-	printSessionOpens(cmdDataAll)
+	print("\n+ Session open counts (vis server only):")
+	printSessionOpens(cmdDataVS)
+	print("\n+ Session open counts (non-vis server only):")
+	printSessionOpens(cmdDataNonVS)
 
 #-----------------------------------------------------------------
 # Calculate the number of session opens in the given command data.
@@ -497,19 +515,15 @@ def printSessionCats(cmdData):
 	for clientId in cmdData.keys():
 		for si in cmdData[clientId].sessions:
 			cat = getSessionCat(si.name)
-			if (cat in sessionCats):
-				ci = sessionCats[cat]
-				ci.openCt += 1
-				ci.cmdCt += si.cmdCt
-			else:
-				ci = CatInfo(si.cmdCt)
-				sessionCats[cat] = ci
+			if (cat not in sessionCats):
+				sessionCats[cat] = CatInfo()
+			sessionCats[cat].update(si)
 
 	cats = sessionCats.items()
 	cats.sort(key=compareOpenCts, reverse=True)
 	for tmp in cats:
 		avg = 1.0 * tmp[1].cmdCt / tmp[1].openCt
-		print("  %4d opens of %s (%d commands: %.1f per open)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg))
+		print("  %4d opens of %s (%d commands: %.1f per open; max %d)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg, tmp[1].maxCmds))
 
 #-----------------------------------------------------------------
 # Print the number of opens per host in the given command list.
@@ -517,18 +531,15 @@ def printHostOpens(cmdData):
 	opensByHost = {}
 	for clientId in cmdData.keys():
 		host = cmdData[clientId].host
-		if (host in opensByHost):
-			opensByHost[host].openCt += cmdData[clientId].totalOpens()
-			opensByHost[host].cmdCt += cmdData[clientId].totalCmds()
-		else:
-			hi = HostInfo(cmdData[clientId].totalOpens(), cmdData[clientId].totalCmds())
-			opensByHost[host] = hi
+		if (host not in opensByHost):
+			opensByHost[host] = HostInfo()
+		opensByHost[host].update(cmdData[clientId])
 
 	hosts = opensByHost.items()
 	hosts.sort(key=compareOpenCts, reverse=True)
 	for tmp in hosts:
 		avg = 1.0 * tmp[1].cmdCt / tmp[1].openCt
-		print("  %4d opens from host %s (%s commands: %.1f per open)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg))
+		print("  %4d opens from host %s (%s commands: %.1f per open; max %d)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg, tmp[1].maxCmds))
 
 #-----------------------------------------------------------------
 # Print a command frequency histogram for the given command data.
