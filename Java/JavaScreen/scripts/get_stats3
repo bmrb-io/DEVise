@@ -23,6 +23,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  2015/10/26 21:07:48  wenger
+#  Added maximum command counts to the session category and host
+#  sections to make it easier to find "power users"; split out
+#  individual session open counts by visualization server and non-
+#  visualization server; put '+' at the beginning of each section
+#  to make it easier to search through the output.
+#
 #  Revision 1.17  2015/10/23 21:25:31  wenger
 #  Data is now split out by visualization server and non-visualization
 #  server sessions.
@@ -195,9 +202,13 @@ def main(argv):
 	global debug
 	debug = 0
 
+	global dummyId
+	dummyId = -1
+
 	version = "1.0.0"
 
 	# Initialize command-line arguments.
+	commandOnly = False # only include sessions w/ command data
 	filter = False # if True filter out UW usage from stats
 	idStr = "all"
 	period = "week"
@@ -209,14 +220,16 @@ def main(argv):
 		print("Args: ", argv)
 
 	try:
-		(opts, args) = getopt.getopt(argv, "fi:p:t:uv", [])
+		(opts, args) = getopt.getopt(argv, "cfi:p:t:uv", [])
 	except getopt.GetoptError:
 		print("Error in command-line arguments")
 		usage()
 		sys.exit(2)
 
 	for opt, arg in opts:
-		if (opt == "-f"):
+		if (opt == "-c"):
+			commandOnly = True
+		elif (opt == "-f"):
 			filter = True
 		elif (opt == "-i"):
 			idStr = arg
@@ -238,10 +251,11 @@ def main(argv):
 	tLimit.setFirst(period)
 
 	if (debug > 0):
+		print("commandOnly: ", commandOnly)
+		print("filter: ", filter)
 		print("idStr: ", idStr)
 		print("period: ", period)
 		print("endTime: ", tLimit.last)
-		print("filter: ", filter)
 
 	# cmdData maps clientId keys to ClientInfo values
 	cmdDataAll = {}
@@ -250,8 +264,8 @@ def main(argv):
 
 	tr = TimeRange()
 
-	process(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
-	printReport(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
+	process(idStr, filter, commandOnly, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
+	printReport(idStr, filter, commandOnly, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
 
 #-----------------------------------------------------------------
 def usage():
@@ -265,7 +279,7 @@ def usage():
 	print("  -v(ersion):  print version")
 
 #-----------------------------------------------------------------
-def process(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
+def process(idStr, filter, commandOnly, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 	if (debug > 1):
 		print("process:")
 		print("  idStr: ", idStr)
@@ -299,10 +313,10 @@ def process(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 
 	# Now process each usage file
 	for uf in usageFiles:
-		processFile(uf, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
+		processFile(uf, filter, commandOnly, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
 
 #-----------------------------------------------------------------
-def processFile(uf, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
+def processFile(uf, filter, commandOnly, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 	if (debug > 1):
 		print("Processing usage file: " + uf)
 
@@ -312,15 +326,15 @@ def processFile(uf, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 		if (debug > 2):
 			print("Line: " + line)
 
-		processLine(line, filter, True, True, tLimit, cmdDataAll, tr)
-		processLine(line, filter, True, False, tLimit, cmdDataVS, tr)
-		processLine(line, filter, False, True, tLimit, cmdDataNonVS, tr)
+		processLine(line, filter, commandOnly, True, True, tLimit, cmdDataAll, tr)
+		processLine(line, filter, commandOnly, True, False, tLimit, cmdDataVS, tr)
+		processLine(line, filter, commandOnly, False, True, tLimit, cmdDataNonVS, tr)
 
 #-----------------------------------------------------------------
 # Process one line from a usage file, updating the given command
 # data and time range.
-def processLine(line, filter, incVisServ, incNonVS, tLimit, cmdData, tr):
-	if (processOpen(line, filter, incVisServ, incNonVS, tLimit, cmdData, tr)):
+def processLine(line, filter, commandOnly, incVisServ, incNonVS, tLimit, cmdData, tr):
+	if (processOpen(line, filter, commandOnly, incVisServ, incNonVS, tLimit, cmdData, tr)):
 		pass
 	elif (processClose(line, cmdData)):
 		pass
@@ -330,9 +344,13 @@ def processLine(line, filter, incVisServ, incNonVS, tLimit, cmdData, tr):
 #-----------------------------------------------------------------
 # Process a given log line looking for a session open command --
 # returns True if we found an open, False otherwise.
-def processOpen(line, filter, incVisServ, incNonVS, tLimit, cmdData, tr):
+def processOpen(line, filter, commandOnly, incVisServ, incNonVS, tLimit, cmdData, tr):
 	if (debug > 2):
 		print("processOpen(" + line + ")")
+
+	# For "old-format" usage files that don't include client IDs and
+	# commands other than opens.
+	global dummyId
 
 	regex = re.compile(r"(?P<host>\S*)( \((?P<client>\d+)\))?: JAVAC_OpenSession {(?P<session>.*)}.*\[(?P<time>.*)\]")
 	result = regex.search(line)
@@ -343,12 +361,20 @@ def processOpen(line, filter, incVisServ, incNonVS, tLimit, cmdData, tr):
 		clientId = result.group('client')
 		session = result.group('session')
 		timestamp = result.group('time')
+		if (clientId == None):
+			clientId = dummyId
+			dummyId -= 1
 		if (debug > 1):
 			print("Found open:")
 			print("  host: ", host)
 			print("  clientId: ", clientId)
 			print("  session: ", session)
 			print("  timestamp: ", timestamp)
+
+		if (commandOnly and clientId < 0):
+			if (debug > 2):
+				print("Bailing out because of missing client ID")
+			return True
 
 		timeVal = parseTimestamp(timestamp)
 		if (tLimit.within(timeVal) and passHost(host, filter) and passSession(session, incVisServ, incNonVS)):
@@ -432,7 +458,7 @@ def processCmd(line, cmdData):
 
 #-----------------------------------------------------------------
 # Print the full report.
-def printReport(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
+def printReport(idStr, filter, commandOnly, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 	if (debug > 2):
 		print("printReport")
 
@@ -453,6 +479,9 @@ def printReport(idStr, filter, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 		print("  (Data actually found for %s through %s):" % (tr.first, tr.last))
 	else:
 		print("  (No data actually found)")
+
+	if (commandOnly):
+		print("  Sessions w/o command data not included")
 
 	if (filter):
 		print("  CS/BMRB usage is filtered out")
@@ -511,13 +540,19 @@ def calcSessionCount(cmdData):
 # Print the number of opens per session category in the given command
 # list.
 def printSessionCats(cmdData):
+	hasOld = False
 	sessionCats = {}
 	for clientId in cmdData.keys():
+		if (clientId < 0):
+			hasOld = True
 		for si in cmdData[clientId].sessions:
 			cat = getSessionCat(si.name)
 			if (cat not in sessionCats):
 				sessionCats[cat] = CatInfo()
 			sessionCats[cat].update(si)
+
+	if (hasOld):
+		print("(Includes data from old-format usage files -- command counts will be low)")
 
 	cats = sessionCats.items()
 	cats.sort(key=compareOpenCts, reverse=True)
@@ -528,12 +563,18 @@ def printSessionCats(cmdData):
 #-----------------------------------------------------------------
 # Print the number of opens per host in the given command list.
 def printHostOpens(cmdData):
+	hasOld = False
 	opensByHost = {}
 	for clientId in cmdData.keys():
+		if (clientId < 0):
+			hasOld = True
 		host = cmdData[clientId].host
 		if (host not in opensByHost):
 			opensByHost[host] = HostInfo()
 		opensByHost[host].update(cmdData[clientId])
+
+	if (hasOld):
+		print("(Includes data from old-format usage files -- command counts will be low)")
 
 	hosts = opensByHost.items()
 	hosts.sort(key=compareOpenCts, reverse=True)
@@ -545,8 +586,11 @@ def printHostOpens(cmdData):
 # Print a command frequency histogram for the given command data.
 def printCmdHistogram(cmdData, sessionCount):
 	# Collect the command count histogram data.
+	hasOld = False
 	cmdHist = {}
 	for clientId in cmdData.keys():
+		if (clientId < 0):
+			hasOld = True
 		for tmp in cmdData[clientId].sessions:
 			count = tmp.cmdCt
 			if (debug > 1):
@@ -555,6 +599,9 @@ def printCmdHistogram(cmdData, sessionCount):
 				cmdHist[count] += 1
 			else:
 				cmdHist[count] = 1
+
+	if (hasOld):
+		print("(Includes data from old-format usage files -- command counts will be low)")
 
 	counts = cmdHist.keys()
 	counts.sort()
