@@ -130,6 +130,9 @@ sign:
 		-keystore js_certs/uw_signing_chain.pfx \
 		devise_js.jar "university of wisconsin-madison's internet2 id"
 
+showcerts:
+	keytool -printcert -jarfile devise_js.jar
+
 testsign:
 	jarsigner -keystore js_certs/js_test.jks devise_js.jar js_test
 
