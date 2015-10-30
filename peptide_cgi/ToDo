@@ -858,6 +858,9 @@ Num Date        Status  Pri     Description
 				highlighting work w/ the existing
 				highlighting?) (gabriel/elu/wenger)
 				(What about two-entry visualizations?)
+				(151030:  This is done for single-entry
+				visualizations (s2d_todo191_br_1) but not
+				for two-entry visualizations.)
 
 192 10/8/13	DONE	1	Maybe move the chem shifts section to
 				the top left of visualization summary
