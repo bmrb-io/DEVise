@@ -32,6 +32,7 @@ They've (normally) been merged back into the trunk, or else abandoned.
 * expression_br
 * cleanup_1_4_7_br
 
+
 == JavaScreen-only branches:
 * js_suggest_button_br
 * js_button_fix_br
@@ -48,13 +49,13 @@ They've (normally) been merged back into the trunk, or else abandoned.
 * js_restraint_proto_br
 * js_collab_br
 
-== Peptide-CGI-only branches:
-* s2d_todo191_br
-* s2d_multi_models_br
-* vis_link_tmp_br
-* s2d_movie_br
-* s2d_new_vis_serv_csr_br
-* multiple_entities_br
-* peptide_cgi_nmr_star3_br
-* pepcgi_restraint_prod_br
 
+== Peptide-CGI-only branches:
+
+* s2d_multi_models_br:  Started on display of coordinates for multiple
+models; nothing functional yet.
+
+* s2d_new_vis_serv_csr_br:  Minor changes.  I think this branch can be
+ignored.
+
+* multiple_entities_br:  Only changes to test_all and dummy_csr_server.
