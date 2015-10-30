@@ -1,0 +1,35 @@
+		List of Existing DEVise Code Branches in CVS
+				2015-10-30
+
+Note that branches marked with <branch name>_end are no longer active.
+They've (normally) been merged back into the trunk, or else abandoned.
+
+== Top-level branches:
+* devise_bug1008_br
+* js_data_save_br
+* js_vis_filter_dialog_br
+* devise_1_10_br
+* x86_64_centos5_br
+* bug949_br
+* restraints_in_jmol_br
+* V1_8b0_br
+* cmu_src_br
+* V2_1b4_br
+* reproduce_bug831_br
+* js_tmpdir_fix_br
+* gcc_303_br
+* collab_cleanup_br
+* js_no_reconnect_br
+* bmrb_dist_br
+* no_collab_br
+* new_viewsyms_br
+* js_viewsyms_br
+* newpile_br
+* projection_push_br
+* double_br
+* collab_debug_br
+* collab_br
+* expression_br
+* cleanup_1_4_7_br
+
+== JavaScreen-only branches:
