@@ -33,3 +33,17 @@ They've (normally) been merged back into the trunk, or else abandoned.
 * cleanup_1_4_7_br
 
 == JavaScreen-only branches:
+* js_suggest_button_br
+* js_button_fix_br
+* bug_1005_br
+* s2d_torsion_rest_0905_br
+* js_ie_fix_br
+* js_no_swing_br
+* js_no_jmol_br
+* win_vista_fix_br
+* bug940_br
+* andyd_gui_br
+* js_restraint_prod_br
+* jspop_debug_0405_br
+* js_restraint_proto_br
+* js_collab_br
