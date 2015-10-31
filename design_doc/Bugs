@@ -4432,6 +4432,9 @@ java.security.AccessControlException: access denied
 
 1008 1/21/11	ACTIVE	DEVise shouldn't crash if data source files don't
 			exist. (wenger)
+			(I think this was partially, but not entirely,
+			fixed in devise_bug1008_br, which was merged
+			to the trunk.)
 
 1009 1/21/11	OPEN	Setting view highlight on for the View3DHighlight
 			view in the distance restraints visualization

@@ -1,11 +1,10 @@
 		List of Existing DEVise Code Branches in CVS
-				2015-10-30
+				2015-10-31
 
 Note that branches marked with <branch name>_end are no longer active.
 They've (normally) been merged back into the trunk, or else abandoned.
 
 == Top-level branches:
-* devise_bug1008_br
 * js_data_save_br
 * js_vis_filter_dialog_br
 * devise_1_10_br
