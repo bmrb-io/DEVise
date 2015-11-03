@@ -1,22 +1,39 @@
 		List of Existing DEVise Code Branches in CVS
-				2015-10-31
+				2015-11-02
 
 Note that branches marked with <branch name>_end are no longer active.
 They've (normally) been merged back into the trunk, or else abandoned.
 
 == Top-level branches:
-* js_data_save_br
-* js_vis_filter_dialog_br
-* devise_1_10_br
-* x86_64_centos5_br
-* bug949_br
-* restraints_in_jmol_br
-* V1_8b0_br
-* cmu_src_br
-* V2_1b4_br
-* reproduce_bug831_br
-* js_tmpdir_fix_br
-* gcc_303_br
+
+* js_vis_filter_dialog_br:  Very minor steps towards having a dialog
+in the JavaScreen to set the visual filter of a view.
+
+* x86_64_centos5_br:  This has mostly been merged.  There are minor
+unmerged changes; I'm not sure if they're important at all.
+
+* bug949_br:  Some work on implementing this (multiple levels of
+parent/child views in the JavaScreen).  This is a pretty major change,
+so I don't think there's any point in pursuing it if the JavaScreen
+is not the major focus of BMRB's new visualization development.
+
+* restraints_in_jmol_br:  Has a few very old changes.  I think these
+can be ignored, since the restraint visualizations have been implemented.
+
+* V1_8b0_br:  Most changes have been merged; unmerged changes are very
+minor config changes and can be ignored.
+
+* V2_1b4_br:  This has quite extensive changes, but I think they're
+all very old.  This was a branch for low-priority new features that were
+being worked on separately from higher-priority things.
+
+* reproduce_bug831_br:  This has one small change, which was never
+merged.  But the bug was eventually fixed (seperately from this branch,
+I guess) so I think the branch can be ignored.
+
+* gcc_303_br:  A bunch of unmerged changes, but they can be safely
+ignored since we long ago passed that version of gcc!
+
 * collab_cleanup_br
 * js_no_reconnect_br
 * bmrb_dist_br
