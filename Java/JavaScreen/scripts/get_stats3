@@ -23,6 +23,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19  2015/10/27 19:40:17  wenger
+#  Fixed host open counts for "old-style" usage logs that d
+#  Fixes for "old-style" usage logs that don't have client IDs and commands
+#  other than opens:
+#  * Added option to exclude data.
+#  * Fixed per-host session open counts.
+#  * Added messages warning about incorrect command counts if we have
+#    such data.
+#
 #  Revision 1.18  2015/10/26 21:07:48  wenger
 #  Added maximum command counts to the session category and host
 #  sections to make it easier to find "power users"; split out
@@ -269,11 +278,12 @@ def main(argv):
 
 #-----------------------------------------------------------------
 def usage():
-	print("Usage: get_stats [-f] [-i <id>] [-p <period>] [-t <time>] | -u | -v")
+	print("Usage: get_stats [-c] [-f] [-i <id>] [-p <period>] [-t <time>] | -u | -v")
+	print("  -c(command only): only include usage that has command counts")
 	print("  -f(ilter): filter out BMRB, UW CS, etc, usage")
-	print("  <id> can be all (default), regular, soil, test, or tst2")
-	print("  <period> can be week (default), day, or all")
-	print("  <time> should be of the form 'dd-mmm-yy hh:mm:ss ap' or " +
+	print("  -i(d): <id> can be all (default), regular, soil, test, or tst2")
+	print("  -p(eriod): <period> can be week (default), day, or all")
+	print("  t(ime): <time> should be of the form 'dd-mmm-yy hh:mm:ss ap' or " +
 		"'mmm dd, yyyy hh:mm:ss ap' (e.g., 'Sep 26, 2003 00:00:00 AM')")
 	print("  -u(sage): print usage message")
 	print("  -v(ersion):  print version")
@@ -430,7 +440,7 @@ def processCmd(line, cmdData):
 	if (debug > 2):
 		print("processCmd(" + line + ")")
 
-	regex = re.compile(r"(?P<host>\S*) \((?P<client>\d+)\): (?P<cmd>\w*)(?P<args> \{.*\})*\s*\[(?P<time>.*)\]")
+	regex = re.compile(r"(?P<host>\S*) \((?P<client>\d+)\): (?P<cmd>\w*)(?P<args> .*)*\s*\[(?P<time>.*)\]")
 	result = regex.search(line)
 	if (result != None):
 		if (debug > 1):
