@@ -23,6 +23,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20  2015/11/09 20:51:24  wenger
+#  Fixed bug that was causing some commands (e.g., cursor move) to not
+#  get counted; added -c stuff to usage info, and other usage
+#  info improvements.
+#
 #  Revision 1.19  2015/10/27 19:40:17  wenger
 #  Fixed host open counts for "old-style" usage logs that d
 #  Fixes for "old-style" usage logs that don't have client IDs and commands
@@ -223,20 +228,23 @@ def main(argv):
 	period = "week"
 	tLimit = TimeRange()
 	tLimit.last = datetime.datetime.now()
+	advanced = 0 # 0 means ignore this
 
 	# Process command-line arguments.
 	if (debug > 1):
 		print("Args: ", argv)
 
 	try:
-		(opts, args) = getopt.getopt(argv, "cfi:p:t:uv", [])
+		(opts, args) = getopt.getopt(argv, "a:cfi:p:t:uv", [])
 	except getopt.GetoptError:
 		print("Error in command-line arguments")
 		usage()
 		sys.exit(2)
 
 	for opt, arg in opts:
-		if (opt == "-c"):
+		if (opt == "-a"):
+			advanced = int(arg)
+		elif (opt == "-c"):
 			commandOnly = True
 		elif (opt == "-f"):
 			filter = True
@@ -274,11 +282,12 @@ def main(argv):
 	tr = TimeRange()
 
 	process(idStr, filter, commandOnly, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
-	printReport(idStr, filter, commandOnly, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
+	printReport(idStr, filter, commandOnly, tLimit, advanced, cmdDataAll, cmdDataVS, cmdDataNonVS, tr)
 
 #-----------------------------------------------------------------
 def usage():
 	print("Usage: get_stats [-c] [-f] [-i <id>] [-p <period>] [-t <time>] | -u | -v")
+	print("  -a(advanced): show advanced users (command counts >= count)")
 	print("  -c(command only): only include usage that has command counts")
 	print("  -f(ilter): filter out BMRB, UW CS, etc, usage")
 	print("  -i(d): <id> can be all (default), regular, soil, test, or tst2")
@@ -468,7 +477,7 @@ def processCmd(line, cmdData):
 
 #-----------------------------------------------------------------
 # Print the full report.
-def printReport(idStr, filter, commandOnly, tLimit, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
+def printReport(idStr, filter, commandOnly, tLimit, advanced, cmdDataAll, cmdDataVS, cmdDataNonVS, tr):
 	if (debug > 2):
 		print("printReport")
 
@@ -517,11 +526,11 @@ def printReport(idStr, filter, commandOnly, tLimit, cmdDataAll, cmdDataVS, cmdDa
 
 	# Print session opens per host.
 	print("\n+ Client host info (vis server and non-vis server):")
-	printHostOpens(cmdDataAll)
+	printHostOpens(cmdDataAll, advanced)
 	print("\n+ Client host info (vis server only):")
-	printHostOpens(cmdDataVS)
+	printHostOpens(cmdDataVS, advanced)
 	print("\n+ Client host info (non-vis server only):")
-	printHostOpens(cmdDataNonVS)
+	printHostOpens(cmdDataNonVS, advanced)
 
 	# Print command frequency histograms.
 	print("\n+ Command frequency histogram (vis server and non-vis server):")
@@ -572,7 +581,7 @@ def printSessionCats(cmdData):
 
 #-----------------------------------------------------------------
 # Print the number of opens per host in the given command list.
-def printHostOpens(cmdData):
+def printHostOpens(cmdData, advanced):
 	hasOld = False
 	opensByHost = {}
 	for clientId in cmdData.keys():
@@ -590,7 +599,11 @@ def printHostOpens(cmdData):
 	hosts.sort(key=compareOpenCts, reverse=True)
 	for tmp in hosts:
 		avg = 1.0 * tmp[1].cmdCt / tmp[1].openCt
-		print("  %4d opens from host %s (%s commands: %.1f per open; max %d)" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg, tmp[1].maxCmds))
+		advancedStr = ""
+		if (advanced > 0 and tmp[1].maxCmds >= advanced):
+			#TEMP -- add "advanced" session count below?
+			advancedStr = "(advanced user)"
+		print("  %4d opens from host %s (%s commands: %.1f per open; max %d) %s" % (tmp[1].openCt, tmp[0], tmp[1].cmdCt, avg, tmp[1].maxCmds, advancedStr))
 
 #-----------------------------------------------------------------
 # Print a command frequency histogram for the given command data.
