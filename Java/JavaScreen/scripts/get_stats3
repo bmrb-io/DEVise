@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.21  2015/11/09 21:28:57  wenger
+#  Added option to mark "advanced" users.
+#
 #  Revision 1.20  2015/11/09 20:51:24  wenger
 #  Fixed bug that was causing some commands (e.g., cursor move) to not
 #  get counted; added -c stuff to usage info, and other usage
@@ -137,6 +140,12 @@ class ClientInfo:
 		for tmp in self.sessions:
 			tot += tmp.cmdCt
 		return tot
+	def maxCmds(self):
+		max = 0
+		for tmp in self.sessions:
+			if (tmp.cmdCt > max):
+				max = tmp.cmdCt
+		return max
 
 #-----------------------------------------------------------------
 # To hold session name and command count.
@@ -155,8 +164,8 @@ class HostInfo:
 	def update(self, clientInfo):
 		self.openCt += clientInfo.totalOpens()
 		self.cmdCt += clientInfo.totalCmds()
-		if (clientInfo.totalCmds() > self.maxCmds):
-			self.maxCmds = clientInfo.totalCmds()
+		if (clientInfo.maxCmds() > self.maxCmds):
+			self.maxCmds = clientInfo.maxCmds()
 
 #-----------------------------------------------------------------
 # To hold per-session category info.
