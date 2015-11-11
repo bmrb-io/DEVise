@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.22  2015/11/09 23:30:08  wenger
+#  Fixed a bug in the calculation of max commands per host.
+#
 #  Revision 1.21  2015/11/09 21:28:57  wenger
 #  Added option to mark "advanced" users.
 #
@@ -362,9 +365,16 @@ def processFile(uf, filter, commandOnly, tLimit, cmdDataAll, cmdDataVS, cmdDataN
 # Process one line from a usage file, updating the given command
 # data and time range.
 def processLine(line, filter, commandOnly, incVisServ, incNonVS, tLimit, cmdData, tr):
+	if (debug > 2):
+		print("processLine(" + line + ")")
+
 	if (processOpen(line, filter, commandOnly, incVisServ, incNonVS, tLimit, cmdData, tr)):
 		pass
+	elif (processReopen(line, cmdData)):
+		pass
 	elif (processClose(line, cmdData)):
+		pass
+	elif (processSkip(line)):
 		pass
 	else:
 		processCmd(line, cmdData)
@@ -423,13 +433,42 @@ def processOpen(line, filter, commandOnly, incVisServ, incNonVS, tLimit, cmdData
 		return False
 
 #-----------------------------------------------------------------
+# Process a given log line looking for a session reopen command --
+# returns True if we found an open, False otherwise.
+def processReopen(line, cmdData):
+	if (debug > 2):
+		print("processReopen(" + line + ")")
+
+	regex = re.compile(r"(?P<host>\S*)( \((?P<client>\d+)\)): JAVAC_ReopenSession\s+\[(?P<time>.*)\]")
+	result = regex.search(line)
+	if (result != None):
+		if (debug > 1):
+			print("  processReopen matches line " + line)
+		host = result.group('host')
+		clientId = result.group('client')
+		timestamp = result.group('time')
+		if (debug > 1):
+			print("Found reopen:")
+			print("  host: ", host)
+			print("  clientId: ", clientId)
+			print("  timestamp: ", timestamp)
+
+		if (clientId in cmdData):
+			cmdData[clientId].isOpen = True
+
+		return True
+
+	else:
+		return False
+
+#-----------------------------------------------------------------
 # Process a given log line looking for a session close command --
 # returns True if we found a close, False otherwise.
 def processClose(line, cmdData):
 	if (debug > 2):
 		print("processClose(" + line + ")")
 
-	regex = re.compile(r"(?P<host>\S*) \((?P<client>\d+)\): JAVAC_CloseCurrentSession \[(?P<time>.*)\]")
+	regex = re.compile(r"(?P<host>\S*) \((?P<client>\d+)\): JAVAC_CloseCurrentSession\s+\[(?P<time>.*)\]")
 	result = regex.search(line)
 	if (result != None):
 		if (debug > 1):
@@ -452,13 +491,39 @@ def processClose(line, cmdData):
 		return False
 
 #-----------------------------------------------------------------
+# Process commands that we want to skip (e.g., they shouldn't
+# count towards command counts).
+# Returns true if this is a command that should be skipped.
+def processSkip(line):
+	if (debug > 2):
+		print("processSkip(" + line + ")")
+
+	regex = re.compile(r"(?P<host>\S*) \((?P<client>\d+)\): (?P<cmd>JAVAC_Exit|JAVAC_GetSessionList)")
+	result = regex.search(line)
+	if (result != None):
+		if (debug > 1):
+			print("  processSkip matches line " + line)
+		host = result.group('host')
+		clientId = result.group('client')
+		cmd = result.group('cmd')
+		if (debug > 1):
+			print("Found command:")
+			print("  host: ", host)
+			print("  clientId: ", clientId)
+			print("  cmd: ", cmd)
+		return True
+
+	else:
+		return False
+
+#-----------------------------------------------------------------
 # Process a given log line looking for a command other than a
 # session open or close.
 def processCmd(line, cmdData):
 	if (debug > 2):
 		print("processCmd(" + line + ")")
 
-	regex = re.compile(r"(?P<host>\S*) \((?P<client>\d+)\): (?P<cmd>\w*)(?P<args> .*)*\s*\[(?P<time>.*)\]")
+	regex = re.compile(r"(?P<host>\S*) \((?P<client>\d+)\): (?P<cmd>\w*)(?P<args>.*)\s+\[(?P<time>.*)\]")
 	result = regex.search(line)
 	if (result != None):
 		if (debug > 1):
