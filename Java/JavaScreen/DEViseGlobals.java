@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.185  2015/07/23 21:04:13  wenger
+// Changed version to 5.15.1x0, added 5.15.1 version history section.
+//
 // Revision 1.184  2015/07/21 17:00:43  wenger
 // Got rid of x on version, and added release date to help; fixed typo
 // in jsj script.
@@ -1135,7 +1138,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.15.1x0"/*TEMP*/);
+    public static final String VERSION = new String("5.15.1x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.2");
 
