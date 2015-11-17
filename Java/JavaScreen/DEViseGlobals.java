@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.186  2015/11/17 19:07:29  wenger
+// Changed version to 5.15.1x1, fixed 'last updated' date in JavaScreen help.
+//
 // Revision 1.185  2015/07/23 21:04:13  wenger
 // Changed version to 5.15.1x0, added 5.15.1 version history section.
 //
@@ -1138,7 +1141,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.15.1x1"/*TEMP*/);
+    public static final String VERSION = new String("5.15.1");
 
     public static final String PROTOCOL_VERSION = new String("17.2");
 
