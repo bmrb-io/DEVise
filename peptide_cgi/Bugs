@@ -754,6 +754,11 @@ Num Date        Status  Description
 			(for example), and then select one of the 3D
 			visualizations, you get an error. (wenger)
 
+165 11/19/15	OPEN	For restraint-only visualizations (by PDB ID)
+			nothing shows up in the data scroll view.  (The
+			visualization still works, but the scrolling is
+			kind of confusing.) (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
