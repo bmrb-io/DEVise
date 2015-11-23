@@ -134,7 +134,8 @@ showcerts:
 	keytool -printcert -jarfile devise_js.jar
 
 testsign:
-	jarsigner -keystore js_certs/js_test.jks devise_js.jar js_test
+	jarsigner -tsa https://timestamp.geotrust.com/tsa \
+		-keystore js_certs/js_test.jks devise_js.jar js_test
 
 clean: classclean
 	-rm devise_js.jar
