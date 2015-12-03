@@ -114,6 +114,9 @@ realkey:
 testkey:
 	cert_scripts/create_test_keystore.csh
 
+export_test_cert:
+	cert_scripts/export_test_cert.csh
+
 print_cert:
 	keytool -storetype pkcs12 -keystore js_certs/uw_signing_chain.pfx \
 		-list -v
@@ -136,6 +139,10 @@ showcerts:
 testsign:
 	jarsigner -tsa https://timestamp.geotrust.com/tsa \
 		-keystore js_certs/js_test.jks devise_js.jar js_test
+
+# Show Java control panel (to import certs, etc.).
+java_control:
+	javaws -viewer
 
 clean: classclean
 	-rm devise_js.jar

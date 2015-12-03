@@ -87,11 +87,11 @@ cd ..
 # ./setup
 # cd ..
 
-echo "Creating linux-intel_rhel5 directory"
-setenv ARCH_DIR i386_rhel5
-cd linux-intel_rhel5
-./setup
-cd ..
+# echo "Creating linux-intel_rhel5 directory"
+# setenv ARCH_DIR i386_rhel5
+# cd linux-intel_rhel5
+# ./setup
+# cd ..
 
 echo "Creating linux-intel_rhel6 directory"
 setenv ARCH_DIR amd64_rhel6
