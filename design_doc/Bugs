@@ -4665,6 +4665,10 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			correspond to the area that gets included in the
 			drill down). (wenger)
 
+1051 10/4/15	OPEN	JS: test install doesn't install the CGI script
+			into the right directory.  (I think this is just
+			a config error.) (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
