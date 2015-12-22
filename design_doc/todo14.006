@@ -1,0 +1,19 @@
+		To-do 14.006: Clean up release/distribution
+				2015-12-22
+
+My current thought on how to do this with minimal changes is to
+make new release scripts that release things to a new directory
+within the source tree.  Then the distribution scripts would
+get the binaries from there, instead of from /p/devise/release.
+
+I think it should probably still be possible to release things
+to /p/devise/release, although ideally we'd be able to do that
+by untarring the distribution tarball(s) and making some target
+that comes as part of those.
+
+(Part of my goal with this is to generally simplify the process,
+and make the order more logical (create tarballs, then release to
+/p/devise/release instead of the other way around).  And part of
+my goal is to set things up so that distribution tarballs can
+be created on any appropriate machine, without access to the CS
+AFS cell.

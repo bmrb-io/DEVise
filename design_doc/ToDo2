@@ -546,6 +546,10 @@ http://docs.oracle.com/javase/7/docs/technotes/guides/security/time-of-signing.h
 14.005 140825	OPEN	4
 Make a JavaScreen install target to do a server-only install. (wenger)
 
+14.006 151222	OPEN	1
+Clean up DEVise release/distribution.  (Be able to make distribution
+tarballs without involving anything in /p/devise.) (wenger)
+
 (add stuff from old to-do list?)
 (add stuff from my to-do list)
 
