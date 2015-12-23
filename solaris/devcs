@@ -62,6 +62,15 @@ if ($#argv > 0) then
     setenv DEVISE_SESSION 	$DEVISE_ROOT/demo/session.js
     setenv DEVISE_PALETTE	$DEVISE_ROOT/demo/palette
     shift
+  else if ("$1" == "l") then
+    # Use local data, sessions, etc.
+    setenv DEVISE_DAT		../public/dat
+    setenv DEVISE_HOME_TABLE	../public/schema/schema/catalog.dte
+    #setenv DEVISE_CACHE   	$DEVISE_ROOT/cache
+    setenv DEVISE_SCHEMA  	../public/schema/schema
+    setenv DEVISE_SESSION 	../public/session
+    setenv DEVISE_PALETTE	../public/palette
+    shift
   else if ("$1" == "u") then
     echo "Usage: dev|mul [p|d|u] [DEVise args]"
     exit 1
