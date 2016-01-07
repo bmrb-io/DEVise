@@ -762,6 +762,10 @@ Num Date        Status  Description
 166 12/4/15	OPEN	Test setup at CS doesn't use the test CGI script.
 			(wenger)
 
+167 1/7/16	OPEN	make_view and make_uvd allow execution of
+			arbitrary code by putting in in backticks in
+			arguments. (wedell/wenger)  (see design_doc/bug167)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
