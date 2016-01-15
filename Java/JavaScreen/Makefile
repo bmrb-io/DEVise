@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-2015
+# (c) Copyright 1992-2016
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -157,9 +157,9 @@ setup:
 	./setup
 	make -f Makefile.setup setup
 	jar xf JmolApplet.jar
-	# Note:  The path here should change if anyone else signs
-	# the jar files.
-	ln -s /u/w/e/wenger/.js_certs js_certs
+	# Note:  The target path here may need to change according
+	# to where the actual cert files are.
+	ln -s /p/devise/ext3/wenger4/certs js_certs
 
 .PHONY: setupclean
 setupclean:

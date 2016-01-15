@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2015
+// (c) Copyright 1999-2016
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.188  2015/12/03 23:24:23  wenger
+// Changed JavaScreen version to 5.15.2x0, added 5.15.2 version history
+// section.
+//
 // Revision 1.187  2015/11/17 20:38:56  wenger
 // Changed version ot 5.15.1 for release, and added release date to
 // JavaScreen help.
@@ -1145,7 +1149,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
       JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.15.2x0"/*TEMP*/);
+    public static final String VERSION = new String("5.15.2x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.2");
 
