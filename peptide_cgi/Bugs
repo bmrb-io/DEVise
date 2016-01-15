@@ -762,7 +762,7 @@ Num Date        Status  Description
 166 12/4/15	OPEN	Test setup at CS doesn't use the test CGI script.
 			(wenger)
 
-167 1/7/16	OPEN	make_view and make_uvd allow execution of
+167 1/7/16	ACTIVE	make_view and make_uvd allow execution of
 			arbitrary code by putting in in backticks in
 			arguments. (wedell/wenger)  (see design_doc/bug167)
 

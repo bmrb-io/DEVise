@@ -1,0 +1,56 @@
+#! /bin/csh -f
+
+# Test bug 167 (make_view and make_uvd allow arbitrary command execution).
+
+set result = 0
+
+rm -r -f foobar
+rm -r -f barfoo
+rm -r -f */4267*
+rm -f html_dir/uvd/test_bug167_out/test_bug167_outy.html
+
+echo -n "Processing NMR-STAR: "
+./make_view number=4267`touch foobar`\&xbmrbid=4081\&force=1
+if ($status != 0) then
+  echo "First invocation of make_view failed!"
+  set result = 1
+endif
+
+./make_uvd file=test_data/bmr4267.str`touch barfoo`\&name=test_bug167_out\&force=1\&force=1
+if ($status != 0) then
+  echo "First invocation of make_uvd failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+if (-e foobar) then
+  echo "Embedded command was run (found foobar)!"
+  set result = 1
+endif
+
+if (-e barfoo) then
+  echo "Embedded command was run (found barfoo)!"
+  set result = 1
+endif
+
+
+set files = (html_dir/4267/4267y.html \
+	html_dir/uvd/test_bug167_out/test_bug167_outy.html)
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+echo -n "test_bug167 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
