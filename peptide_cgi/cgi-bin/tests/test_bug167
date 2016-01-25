@@ -10,13 +10,18 @@ rm -r -f */4267*
 rm -f html_dir/uvd/test_bug167_out/test_bug167_outy.html
 
 echo -n "Processing NMR-STAR: "
-./make_view number=4267`touch foobar`\&xbmrbid=4081\&force=1
+# Note: need single quotes here to prevent backtick expansion!
+set args = 'number=4267&force=1&dist_url=`touch%20foobar`'
+./make_view $args
 if ($status != 0) then
   echo "First invocation of make_view failed!"
   set result = 1
 endif
 
-./make_uvd file=test_data/bmr4267.str`touch barfoo`\&name=test_bug167_out\&force=1\&force=1
+echo -n "Processing NMR-STAR: "
+# Note: need single quotes here to prevent backtick expansion!
+set args = 'file=test_data/bmr4267.str&name=test_bug167_out&force=1&dist_url=`touch%20barfoo`'
+./make_uvd $args
 if ($status != 0) then
   echo "First invocation of make_uvd failed!"
   set result = 1
