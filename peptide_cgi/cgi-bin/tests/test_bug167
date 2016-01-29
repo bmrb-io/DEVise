@@ -6,8 +6,8 @@ set result = 0
 
 rm -r -f foobar
 rm -r -f barfoo
-rm -r -f */4267*
-rm -f html_dir/uvd/test_bug167_out/test_bug167_outy.html
+rm tmp/s2d.out
+rm tmp/uvd.out
 
 echo -n "Processing NMR-STAR: "
 # Note: need single quotes here to prevent backtick expansion!
@@ -41,8 +41,8 @@ if (-e barfoo) then
 endif
 
 
-set files = (html_dir/4267/4267y.html \
-	html_dir/uvd/test_bug167_out/test_bug167_outy.html)
+# Make sure make_view and make_uvd actually got run...
+set files = (tmp/s2d.out tmp/uvd.out)
 
 foreach file ($files)
   if (! -f $file) then

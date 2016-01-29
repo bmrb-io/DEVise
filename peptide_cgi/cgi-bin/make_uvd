@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2007-2012
+#  (c) Copyright 2007-2016
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -133,50 +133,60 @@ if ($do_pdb) {
     '.html';
 }
 
-my $cmd;
+my @args = ("./uvd");
 if ($do_pdb) {
-  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_pdb $do_pdb -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_pdb", $do_pdb, "-coord_index", $coord_index);
 } elsif ($do_csr) {
-  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_csr $do_csr -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_csr", $do_csr, "-coord_index", $coord_index);
 
 } elsif ($do_dist) {
-  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_dist $do_dist -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_dist", $do_dist, "-coord_index", $coord_index);
 } elsif ($do_rrdist) {
-  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_rrdist $do_rrdist -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-file", $file,"-name", $name,
+    "-do_rrdist", $do_rrdist, "-coord_index", $coord_index);
 } elsif ($do_tar) {
-  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_tar $do_tar -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_tar", $do_tar, "-coord_index", $coord_index);
 } elsif ($do_rrtar) {
-  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_rrtar $do_rrtar -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_rrtar", $do_rrtar, "-coord_index", $coord_index);
 } elsif ($do_s2p) {
-  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_s2p $do_s2p -coord_index $coord_index -s2_frame_index $frame_index";
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_s2p", $do_s2p, "-coord_index", $coord_index, "-s2_frame_index",
+    $frame_index);
 } else {
-  $cmd = "./uvd -file $file -name $name";
+  push @args, ("-file", $file, "-name", $name);
 }
 if ($dist_url) {
-  $cmd = $cmd . " -dist_url " . $dist_url;
+  push @args, ("-dist_url", $dist_url);
 }
 if ($tar_url) {
-  $cmd = $cmd . " -tar_url " . $tar_url;
+  push @args, ("-tar_url", $tar_url);
 }
 if ($pdb_file) {
-  $cmd = $cmd . " -pdb_file " . $pdb_file;
+  push @args, ("-pdb_file", $pdb_file);
 }
 if ($lacs_file) {
-  $cmd = $cmd . " -lacs_file " . $lacs_file;
+  push @args, ("-lacs_file", $lacs_file);
 }
 if ($sparta_file) {
-  $cmd = $cmd . " -sparta_file " . $sparta_file;
+  push @args, ("-sparta_file", $sparta_file);
 }
 if ($force) {
-  $cmd = $cmd . " -force";
+  push @args, "-force";
 }
 if ($xbmrbid) {
-  $cmd = $cmd . " -xbmrbid " . $xbmrbid;
+  push @args, ("-xbmrbid", $xbmrbid);
 }
 
-print "Cmd: <$cmd>\n" if ($debug);
+print "Args <@args>\n" if ($debug);
 
-my $result = `$cmd`;
+open(OUT, "-|", @args);
+my $result = <OUT>;
+close(OUT);
 chomp $result;
 if ($result ne "OK") {
   my ($tmpmsg);

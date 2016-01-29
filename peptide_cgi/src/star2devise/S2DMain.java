@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.373  2015/06/15 20:32:22  wenger
+// Changed config for pacu and piranha to put DEVise data, sessions, and
+// html files into shared directory
+// (/website/htdocs/vis_serv/upload_data/devise) so that visualization
+// server IDs will work across failover.
+//
 // Revision 1.372  2015/06/05 20:41:02  wenger
 // Changed version to 12.4.7x0, added 12.4.7 version history section.
 //
@@ -1156,7 +1162,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.7x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.7x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.8";
 

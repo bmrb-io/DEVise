@@ -762,9 +762,13 @@ Num Date        Status  Description
 166 12/4/15	OPEN	Test setup at CS doesn't use the test CGI script.
 			(wenger)
 
-167 1/7/16	ACTIVE	make_view and make_uvd allow execution of
+167 1/7/16	FIXED	make_view and make_uvd allow execution of
 			arbitrary code by putting in in backticks in
 			arguments. (wedell/wenger)  (see design_doc/bug167)
+			(Fixed by wenger, 1/29/16)
+
+168 1/29/16	OPEN	Tests should exercise all parameters in make_view
+			and make_uvd. (wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

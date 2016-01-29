@@ -151,42 +151,53 @@ if (defined($restraint_id)) {
     '.html';
 }
 
-my $cmd;
+my @args = ("./s2d");
 if (defined($restraint_id)) {
-  $cmd = "./s2d -pdbid $restraint_id -name $restraint_id -do_dist 3 -do_rrdist 3 -do_tar 3 -do_rrtar 3 -coord_index 1";
+  push @args, ("-pdbid", $restraint_id, "-name", $restraint_id,
+    "-do_dist", "3", "-do_rrdist", "3", "-do_tar", "3", "-do_rrtar", "3",
+    "-coord_index", "1");
 } elsif ($do_pdb) {
-  $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_pdb $do_pdb -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-bmrbid", $acc_num, "-do_pdb", $do_pdb,
+    "-coord_index", $coord_index);
 } elsif ($do_csr) {
-  $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_csr $do_csr -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-bmrbid", $acc_num, "-do_csr", $do_csr,
+    "-coord_index", $coord_index);
 } elsif ($do_dist) {
-  $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_dist $do_dist -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-bmrbid", $acc_num, "-do_dist", $do_dist,
+    "-coord_index", $coord_index);
 } elsif ($do_rrdist) {
-  $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_rrdist $do_rrdist -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-bmrbid", $acc_num, "-do_rrdist",
+    $do_rrdist, "-coord_index", $coord_index);
 } elsif ($do_tar) {
-  $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_tar $do_tar -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-bmrbid", $acc_num, "-do_tar", $do_tar,
+    "-coord_index", $coord_index);
 } elsif ($do_rrtar) {
-  $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_rrtar $do_rrtar -coord_index $coord_index";
+  push @args, ("-pdbid", $pdbid, "-bmrbid", $acc_num, "-do_rrtar",
+    $do_rrtar, "-coord_index", $coord_index);
 } elsif ($do_s2p) {
-  $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_s2p $do_s2p -coord_index $coord_index -s2_frame_index $frame_index";
+  push @args, ("-pdbid", $pdbid, "-bmrbid", $acc_num, "-do_s2p", $do_s2p,
+    "-coord_index", $coord_index, "-s2_frame_index", $frame_index);
 } else {
-  $cmd = "./s2d -bmrbid $acc_num";
+  push @args, ("-bmrbid", $acc_num);
 }
 if ($dist_url) {
-  $cmd = $cmd . " -dist_url " . $dist_url;
+  push @args, ("-dist_url", $dist_url);
 }
 if ($tar_url) {
-  $cmd = $cmd . " -tar_url " . $tar_url;
+  push @args, ("-tar_url", $tar_url);
 }
 if ($force) {
-  $cmd = $cmd . " -force";
+  push @args, "-force";
 }
 if ($xbmrbid) {
-  $cmd = $cmd . " -xbmrbid " . $xbmrbid;
+  push @args, ("-xbmrbid", $xbmrbid);
 }
 
-print "Cmd: <$cmd>\n" if ($debug);
+print "Args <@args>\n" if ($debug);
 
-my $result = `$cmd`;
+open(OUT, "-|", @args);
+my $result = <OUT>;
+close(OUT);
 chomp $result;
 if ($result ne "OK") {
   my ($tmpmsg);
