@@ -997,6 +997,10 @@ Num Date        Status  Pri     Description
 				install location would have to be part of
 				the Peptide-CGI config). (wenger)
 
+220 1/29/16	OPEN	4	Change directory setup so that visualization
+				server ID is only in the link string once.
+				(hongyang/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
