@@ -519,6 +519,9 @@ the regular installation uses. (wenger)  (141222:  Also session files.)
 (141230:  Also data, palette files.)
 (Done by wenger, 12/30/14)
 
+13.012 2/18/16	OPEN	1
+Convert the JavaScreen to use Java Web Start. (wenger)
+
 ...........................................................................
 SECTION 14 (release/distribution)
 Number Date	Status  Pri
