@@ -1,0 +1,26 @@
+	To-do 13.012: Convert the JavaScreen to use Java Web Start
+				2016-02-23
+
+Right now (2016-02-23) I'm still figuring out the details of how web
+start works.  I've been able to run the JavaScreen via web start
+from the command line (javaws), but it has been prohibited from
+connecting to a web server.  I'm not sure if that's maybe because
+so far I've run an application instead of an applet?
+
+I think that, to get things to work in a browser, you need a bit of
+Javascript in the "referring" HTML page.  (It doesn't seem to work
+to directly point the browser to the JNLP page, unless you've already
+gone there from the "referring" HTML page, so I assume the browser
+caches the information that it should run Web Start on the JNLP
+page.)
+
+Anyhow, assuming I get that to work, my plan is to add a link or
+button to the JavaScreen pages that launches the JavaScreen via
+Web Start.  (My plan is to, at least initially, leave the existing
+applet code in place for browsers that support it.  We could take
+that out eventually.)
+
+Note for Peptide-CGI implementation:  Once I figure out the details
+of how Web Start works, I'll obviously have to modify the Peptide-CGI
+code accordingly, and have it generate .JNLP files corresponding to
+the session-specific .HTML files it currently generates
