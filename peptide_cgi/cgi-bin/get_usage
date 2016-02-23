@@ -1,2 +1,0 @@
-#! /bin/csh -f
-bin/java -classpath ./s2d.jar star2devise.S2DMain -usage

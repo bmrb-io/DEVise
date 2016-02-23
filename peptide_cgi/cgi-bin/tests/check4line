@@ -1,5 +1,0 @@
-if (`grep -l "$line" $file` == "") then
-  echo "Error: missing '$line' in $file"
-  set result = 1
-endif
-

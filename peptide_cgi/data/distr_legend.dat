@@ -1,7 +1,0 @@
-# $Id$
-# Attributes: name, color
-
-Non-viol/non-ambig	36	#yellow
-Violated/non-ambig	34	#orange
-Non-viol/ambiguous	8	#cyan
-Violated/ambiguous	32	#magenta

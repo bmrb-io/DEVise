@@ -1,5 +1,0 @@
-setenv DEVISE_LIB /p/devise/src/lib
-setenv DEVISE_TMP /tmp/devise-tmp
-setenv DEVISE_WORK /tmp/devise-work
-setenv TCL_LIBRARY /p/devise/solaris/tcl/lib/tcl
-setenv TK_LIBRARY /p/devise/solaris/tcl/lib/tk

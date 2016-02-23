@@ -1,1 +1,0 @@
-select 2*R.i+1, R.i>20 from 1.4 as R where 2*(2*R.i-10)/5> R.d 

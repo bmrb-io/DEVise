@@ -1,6 +1,0 @@
-# $Id$
-# Attributes: x, y, normal color, color print color, text, comment
-0.0	0.0	32	32	Helix	Chemical shift differences for helix secondary structures
-1.0	0.0	6	3	Sheet	Chemical shift differences for sheet secondary structures
-2.0	0.0	36	34	Other	Chemical shift differences for secondary structures other than helix and sheet
-3.0	0.0	31	31	Average	Average chemical shift differences for the selected atom type, for helix and sheet secondary structures

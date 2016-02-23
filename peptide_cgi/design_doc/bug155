@@ -1,9 +1,0 @@
-Maybe put dynamics movie stuff into uvd or some other subdirectory?
-Although that might not totally solve it.  (The problem is that the
-data for each entry doesn't have its own directory, so it's hard to
-come up with an expression that will delete the right data for the
-tests but not delete the dynamics movie data.)
-
-Hmm -- another way to do it might be to name the dynamics movie stuff
-something like dyn_movie_15451 instead of 15451_dyn_movie, because
-we delete things with a command like this:  rm -r -f */15451*.

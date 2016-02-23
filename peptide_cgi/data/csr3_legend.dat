@@ -1,5 +1,0 @@
-# $Id$
-# Attributes: x, y, normal color, color print color, text, comment
-0.0	0.0	32	32	Helix	Chemical shifts for helix secondary structures
-1.0	0.0	6	3	Sheet	Chemical shifts for sheet secondary structures
-2.0	0.0	36	34	Other	Chemical shifts for secondary structures other than helix and sheet

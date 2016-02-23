@@ -1,6 +1,0 @@
-#!/bin/csh -f
-# Generate a tar file with no symlinks so things work right for Windows.
-# This should be done *after* 'make setup' and 'make testsetup'.
-rm cgi-bin/bin/perl
-cd ..
-tar cvfzh peptide-cgi-win.tgz peptide-cgi
