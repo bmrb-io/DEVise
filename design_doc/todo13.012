@@ -23,4 +23,8 @@ that out eventually.)
 Note for Peptide-CGI implementation:  Once I figure out the details
 of how Web Start works, I'll obviously have to modify the Peptide-CGI
 code accordingly, and have it generate .JNLP files corresponding to
-the session-specific .HTML files it currently generates
+the session-specific .HTML files it currently generates.  I think
+there should be config knobs for whether to generate the applet
+code and the web start code; both should initially default to true,
+but we might want to eventually turn off the applet option once
+browsers don't support that anymore.
