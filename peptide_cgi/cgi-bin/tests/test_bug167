@@ -12,7 +12,7 @@ rm tmp/uvd.out
 echo -n "Processing NMR-STAR: "
 # Note: need single quotes here to prevent backtick expansion!
 set args = 'number=4267&force=1&dist_url=`touch%20foobar`'
-./make_view $args
+./make_view $args >& test_bug167.out1
 if ($status != 0) then
   echo "First invocation of make_view failed!"
   set result = 1
@@ -21,7 +21,7 @@ endif
 echo -n "Processing NMR-STAR: "
 # Note: need single quotes here to prevent backtick expansion!
 set args = 'file=test_data/bmr4267.str&name=test_bug167_out&force=1&dist_url=`touch%20barfoo`'
-./make_uvd $args
+./make_uvd $args >& test_bug167.out2
 if ($status != 0) then
   echo "First invocation of make_uvd failed!"
   set result = 1

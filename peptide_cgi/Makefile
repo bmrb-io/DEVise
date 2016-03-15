@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2014
+#  (c) Copyright 2001-2016
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -97,6 +97,12 @@ peaklist_setup:
 	chmod g+rwx cgi-bin/tmp
 	chmod g+rwx test_html test_data test_session
 
+all:
+	cd src; make all jar
+
+test:
+	cd cgi-bin; ./test_all
+
 # Goofiness here is because we don't want to use Gnu make's .PHONY feature.
 install: do_install histogram_install uvd_install example_install \
 	movie_install
@@ -153,6 +159,7 @@ uvd_test_install:
 	cp -p uvd*.html $(HTML_HOME)/uvd
 
 clean:
+	cd src; make clean
 	-rm $(S2D_PROPS_FILE)
 	-rm -rf cgi-bin/bin
 	-rm -rf cgi-bin/tmp

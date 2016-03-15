@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2013
+#  (c) Copyright 2000-2016
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -56,8 +56,7 @@ endif
 echo ""
 echo ""
 echo You are about to install the histogram setup.  This
-echo will install files in $demohome, $wwwhome, $datahome
-echo and $htmlhome.
+echo will install files in $demohome, $wwwhome, and $htmlhome.
 endif
 echo ""
 echo -n "Are you absolutely sure you want to do this? [n] "
