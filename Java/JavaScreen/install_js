@@ -383,7 +383,7 @@ if (! -d $popdir/logs) then
 endif
 
 # Keep run_check last because of cron job.
-set files = (check_connect check_jsall check_jspop jspop js cgi-bin/js_cgi \
+set files = (check_connect check_jsall check_jspop jspop js js_cgi \
     restart_jspop jspop.kill kill_jsall ports+files get_timestamp \
     run_top jspop_savepid)
 set files = ($files run_check)
