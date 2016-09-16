@@ -1,0 +1,59 @@
+#! /bin/csh -f
+
+# Tests visualization-server mode with local bmr4096 (has coordinates).
+
+set result = 0
+
+rm -r */test7_out* >& /dev/null
+rm -r */*/test7_out* >& /dev/null
+
+echo -n "Processing NMR-STAR: "
+./vsc -file test_data/bmr4096.str -name test7_out -force -check_res_list \
+  -check_pct
+if ($status != 0) then
+  echo "First invocation of vsc failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = (data_dir/vis_server/test7_outac1.dat \
+	data_dir/vis_server/test7_outg1.dat \
+	data_dir/vis_server/test7_outmd.dat \
+	data_dir/vis_server/test7_outn1.dat \
+	data_dir/vis_server/test7_outrl.dat \
+	data_dir/vis_server/test7_outt11.dat \
+	data_dir/vis_server/test7_outt21.dat \
+	data_dir/vis_server/test7_outt22.dat \
+	html_dir/test7_out/test7_outac1.html \
+	html_dir/test7_out/test7_outg1.html \
+	html_dir/test7_out/test7_outn1.html \
+	html_dir/test7_out/test7_outt11.html \
+	html_dir/test7_out/test7_outt21.html \
+	html_dir/test7_out/test7_outt22.html \
+	html_dir/test7_out/test7_outy.html \
+	session_dir/vis_server/test7_out/test7_outac1.ds \
+	session_dir/vis_server/test7_out/test7_outacdd \
+	session_dir/vis_server/test7_out/test7_outg1.ds \
+	session_dir/vis_server/test7_out/test7_outn1.ds \
+	session_dir/vis_server/test7_out/test7_outt11.ds \
+	session_dir/vis_server/test7_out/test7_outt21.ds \
+	session_dir/vis_server/test7_out/test7_outt22.ds )
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test7 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

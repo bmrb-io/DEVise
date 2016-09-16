@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>S2 Predicted vs. Experimental Help Page</title>
+<link REL="stylesheet" TYPE="text/css" HREF="visualization.css" TITLE="main stylesheet">
+</head>
+
+<h2>S2 Predicted vs. Experimental Values</h2>
+
+<p>
+This visualization shows the 3D structure of the relevant molecule,
+in combination with the predicted and experimental S2 order parameter
+values.  (Predicted values are determined from the relevant PDB structure
+by <a href="http://spin.ccic.ohio-state.edu/index.php/bbs2">
+s2predict</a>.  Secondary structures are determined by
+<a href="http://www.cmbi.ru.nl/dssp.html">DSSP</a>
+(Define Secondary Structure of Proteins).)
+</p>
+
+<h3>Main Visualization Window</h3>
+
+<p>
+The visualization is laid out as shown below; the view names are
+referred to in the text.
+</p>
+
+<p>
+<center>
+<img src="s2pred.png">
+</center>
+</p>
+
+<p>
+The <strong>structure (main) view</strong> shows the 3D structure
+(rendered by <a href="http://jmol.sourceforge.net/">Jmol</a>).
+Note that you can control many options in the structure view with the
+popup menus in that view and the Jmol menu in the JavaScreen menu bar.
+</p>
+
+<p>
+The residues and atoms selected in the <a href="#atom_select_tree">
+atom select tree</a> (see below) are highlighted in green.  You have
+the option
+of highlighting the atoms with a "selection halo" or by coloring the
+atoms themselves (Jmol->View->Highlight in the menu bar).
+Atoms not colored for highlighting are colored as follows:
+</p>
+
+<table border="1">
+<caption>
+<strong>
+Atom type colors
+</strong>
+</caption>
+  <tr>
+    <th>
+      Element
+    </th>
+    <th>
+      Color
+    </th>
+  </tr>
+  <tr>
+    <td>
+      Carbon
+    </td>
+    <td>
+      Gray
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Hydrogen
+    </td>
+    <td>
+      White
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Oxygen
+    </td>
+    <td>
+      Red
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Nitrogen
+    </td>
+    <td>
+      Blue
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Sulfur
+    </td>
+    <td>
+      Yellow
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Phosphorus
+    </td>
+    <td>
+      Orange
+    </td>
+  </tr>
+</table>
+
+<a name="data_view"></a>
+<p>
+The <strong>data view</strong> shows the predicted and experimental
+S2 order parameter values for each residue.  The DEVise cursor in this
+view selects a residue to highlight.  By default, residues selected
+in this view are selected in the <a href="#atom_select_tree">
+atom select tree</a> (see below).
+</p>
+
+<p>
+The <strong>data scroll view</strong> scrolls the X axis of the data
+view.  The DEVise cursor selects the range of residues shown in the data view
+-- you can drag the entire cursor, or drag the left or right edge to
+change its size.
+</p>
+
+<p>
+The <strong>primary structure view</strong> shows the single-letter
+abbreviation for the amino acid for each residue in the molecule.
+</p>
+
+<p>
+The <strong>secondary structure view</strong> shows a color code for the
+secondary structure of the molecule at each residue.
+</p>
+
+<p>
+The <strong>secondary structure legend</strong> shows a legend for the
+colors in the secondary structure view.
+</p>
+
+<p>
+The <strong>info view</strong> shows the BMRB accession number and
+PDB ID and the generation date of the visualization; show
+the view help (F1 key) to see the Peptide-CGI version and exact
+generation timestamp.
+</p>
+
+<h3>Structure Selection Window</h3>
+
+<p>
+Selection of which atoms to display and highlight is now done in a
+separate window, to allow more space in the main window to be used for
+the structure view and data view.
+</p>
+
+<p>
+<center>
+<img src="coordinate_vis_select.png">
+</center>
+</p>
+
+<p>
+The <strong>structure type tree</strong> selects which atoms are shown
+in the structure view by structure type (backbone, backbone and side chains,
+or backbone, side chains, and hydrogens).  Changing what's selected in
+this tree also changes what is displayed in the atom display tree and
+the atom select tree.
+</p>
+
+<p>
+The <strong>atom display tree</strong> selects which atoms are displayed
+in the structure view.  The atom display tree allows selection of the entire
+molecule, or parts of the molecule by residue and individual atom.
+Changing what's selected in this tree also changes what is displayed
+in the atom select tree.
+</p>
+
+<a name="atom_select_tree"></a>
+<p>
+The <strong>atom select tree</strong> selects which atoms are highlighted
+in the structure view.  The atom select tree allows selection of the entire
+molecule, or parts of the molecule by residue and individual atom.
+By default, the residues selected in the <a href="#data_view">
+data view</a> are also selected in the atom select tree.  You can change
+which residues and atoms are selected by manipulating the tree.  The
+Reset button sets the selection in the tree back to the residues selected
+in the
+data view.
+</p>
+
+<h3>JavaScreen Menubar Jmol Menu</h3>
+
+<p>
+Left-clicking the Jmol button in the JavaScreen menu bar brings up
+this menu.
+</p>
+
+<p>
+<center>
+<img src="jmol_menubar_menu.png">
+</center>
+</p>
+
+<h3>Jmol Popup Menu</h3>
+
+<p>
+Right-clicking in the structure (Jmol) view brings up this menu.
+</p>
+
+<p>
+<center>
+<img src="jmol_popup_menu.png">
+</center>
+</p>
+
+<h3>Jmol Mouse Functions</h3>
+
+<ul>
+<li><b>Drag, left button</b>: rotate object
+<li><b>Alt-drag, left button (vertically)</b>: enlarge or shrink object
+<li><b>Alt-drag, left button (horizontally)</b>: rotate object around
+  axis normal to screen
+<li><b>Drag, middle button (vertically)</b>: enlarge or shrink object
+<li><b>Drag, middle button (horizontally)</b>: rotate object around axis
+  normal to screen
+<li><b>Control-drag, right button</b>: translate object
+<li><b>Scroll wheel</b>: enlarge or shrink object
+</ul>
+
+<!-- $Id$ -->
+
+</body>
+</html>

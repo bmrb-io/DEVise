@@ -1,0 +1,12 @@
+For the original images, set the JavaScreen size to 320x240 (except 3D
+ones are 400x300, because Jmol doesn't seem to work right if things
+are too small).
+Note: 320x240 original didn't work for ambiguity code visualization, either.
+
+Icons are 200x150, with some of the visualization cropped out to emphasize
+the "main" window.  Some of them have also been fixed up manually to
+restore the axes, etc.
+
+I'm saving the full-size images in case we ever want to make different-size
+icons -- we can create them from the saved full-size images instead of
+having to re-do the screen grabs...

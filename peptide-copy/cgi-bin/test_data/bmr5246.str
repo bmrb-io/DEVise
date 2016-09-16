@@ -1,0 +1,1234 @@
+data_5246
+
+#######################
+#  Entry information  #
+#######################
+
+save_entry_information
+   _Saveframe_category      entry_information
+
+   _Entry_title            
+;
+Chiral Mutagenesis of Insulin's Hidden Receptor-Binding Surface: Structure of an
+ Allo-isoleucine A2 Analogue 
+;
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+       1   Xu           Bin        .   . 
+       2   Hua          Qing-xin   .   . 
+       3   Nakagawa     Satoe      H.  . 
+       4   Jia          Wenhua     .   . 
+       5   Chu          Ying-Chi   .   . 
+       6   Katsoyannis  Panayotis  G.  . 
+       7   Weiss        Michael    A.  . 
+
+   stop_
+
+   _BMRB_accession_number   5246
+   _BMRB_flat_file_name     bmr5246.str
+   _Entry_type              new
+   _Submission_date         2001-12-27
+   _Accession_date          2001-12-27
+   _Entry_origination       author
+   _NMR_STAR_version        2.1.1
+   _Experimental_method     NMR
+
+   loop_
+      _Saveframe_category_type
+      _Saveframe_category_type_count
+
+       assigned_chemical_shifts  4  
+
+   stop_
+
+   loop_
+      _Data_type
+      _Data_type_count
+
+      '1H chemical shifts'  475  
+
+   stop_
+
+save_
+
+
+#############################
+#  Citation for this entry  #
+#############################
+
+save_entry_citation
+   _Saveframe_category     entry_citation
+
+   _Citation_title        
+;
+Chiral Mutagenesis of Insulin's Hidden Receptor-binding Surface: Structure of an
+Allo-isoleucine(A2) Analogue 
+;
+   _Citation_status        published
+   _Citation_type          journal
+   _MEDLINE_UI_code        21856752
+   _PubMed_ID              11866509
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+       1   Xu           Bin        .   . 
+       2   Hua          Qing-xin   .   . 
+       3   Nakagawa     Satoe      H.  . 
+       4   Jia          Wenhua     .   . 
+       5   Chu          Ying-Chi   .   . 
+       6   Katsoyannis  Panayotis  G.  . 
+       7   Weiss        Michael    A.  . 
+
+   stop_
+
+   _Journal_abbreviation  "J. Mol. Biol."
+   _Journal_volume         316
+   _Journal_issue          3
+   _Page_first             435
+   _Page_last              441
+   _Year                   2002
+
+   loop_
+      _Keyword
+
+      "protein folding"           
+      "insulin"                   
+      "insulin analogues"         
+      "insulin receptor"          
+      "insulin chain combination" 
+
+   stop_
+
+save_
+
+
+##################################
+#  Molecular system description  #
+##################################
+
+save_system_HI
+   _Saveframe_category         molecular_system
+
+   _Mol_system_name           "Human insulin mutant"
+   _Abbreviation_common        HI
+   _Enzyme_commission_number   .
+
+   loop_
+      _Mol_system_component_name
+      _Mol_label
+
+      "allo-IleA2-DKP-insulin, chain A" $HI_A 
+      "allo-IleA2-DKP-insulin, chain B" $HI_B 
+
+   stop_
+
+   _System_physical_state      native
+   _System_oligomer_state      dimer
+   _System_paramagnetic        no
+   _System_thiol_state        'all disulfide bound'
+
+   loop_
+      _Biological_function
+
+      "hormone"            
+      "glucose metabolism" 
+      "disease mutation"   
+      "diabetes"           
+
+   stop_
+
+   loop_
+      _Database_name
+      _Database_accession_code
+      _Database_entry_mol_name
+      _Database_entry_details
+
+       PDB  1KMF  ?  . 
+
+   stop_
+
+save_
+
+
+    ########################
+    #  Monomeric polymers  #
+    ########################
+
+save_HI_A
+   _Saveframe_category                          monomeric_polymer
+
+   _Mol_type                                    polymer
+   _Mol_polymer_class                           protein
+   _Name_common                                "human insulin"
+   _Name_variant                               "Ile-A2-allo-Ile, His-B10-Asp, Pro-B28-Lys, Lys-B29-Pro"
+   _Abbreviation_common                         HI
+   _Mol_thiol_state                            'all disulfide bound'
+   
+   	##############################
+   	#  Polymer residue sequence  #
+   	##############################
+   
+   _Residue_count                               21
+   _Mol_residue_sequence                       
+;
+GXVEQCCTSICSLYQLENYC
+N
+;
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+
+        1   GLY    2   IIL    3   VAL    4   GLU    5   GLN 
+        6   CYS    7   CYS    8   THR    9   SER   10   ILE 
+       11   CYS   12   SER   13   LEU   14   TYR   15   GLN 
+       16   LEU   17   GLU   18   ASN   19   TYR   20   CYS 
+       21   ASN 
+
+   stop_
+
+   _Sequence_homology_query_date                2007-01-04
+   _Sequence_homology_query_revised_last_date   2006-07-20
+
+   loop_
+      _Database_name
+      _Database_accession_code
+      _Database_entry_mol_name
+      _Sequence_query_to_submitted_percentage
+      _Sequence_subject_length
+      _Sequence_identity
+      _Sequence_positive
+      _Sequence_homology_expectation_value
+
+       BMRB  1585  "insulin A chain"                                                                                                            105.00  20   100   100   2e-04 
+       BMRB  1587  "insulin A chain"                                                                                                            105.00  20   100   100   2e-04 
+       BMRB  1023  "insulin B chain"                                                                                                             50.00  42   100   100   2e-04 
+       PDB   1KMF  "A Chain A, Nmr Structure Of Human InsulinMutant Ile-A2-Allo-Ile, His- B10-Asp, Pro-B28-Lys,Lys-B29-Pro, 15 Structures"      100.00  21   100   100   5e-05 
+       PDB   1MHI  "A Chain A, Mol_id: 1; Molecule: Insulin;Chain: A, B; Engineered: Yes Mutation: S(B 9)d;"                                    100.00  21   100   100   2e-04 
+       PDB   1Q4V  "A Chain A, Crystal Structure OfAllo-Ilea2-Insulin, An Inactive Chiral Analogue:Implications For The Mechanism Of Receptor"  100.00  21   100   100   5e-05 
+
+   stop_
+
+save_
+
+
+save_HI_B
+   _Saveframe_category                          monomeric_polymer
+
+   _Mol_type                                    polymer
+   _Mol_polymer_class                           protein
+   _Name_common                                "human insulin"
+   _Name_variant                               "Ile-A2-allo-Ile, His-B10-Asp, Pro-B28-Lys, Lys-B29-Pro"
+   _Abbreviation_common                         HI
+   _Mol_thiol_state                            'all disulfide bound'
+   _Residue_count                               30
+   _Mol_residue_sequence                       
+;
+FVNQHLCGSDLVEALYLVCG
+ERGFFYTKPT
+;
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+
+        1   PHE    2   VAL    3   ASN    4   GLN    5   HIS 
+        6   LEU    7   CYS    8   GLY    9   SER   10   ASP 
+       11   LEU   12   VAL   13   GLU   14   ALA   15   LEU 
+       16   TYR   17   LEU   18   VAL   19   CYS   20   GLY 
+       21   GLU   22   ARG   23   GLY   24   PHE   25   PHE 
+       26   TYR   27   THR   28   LYS   29   PRO   30   THR 
+
+   stop_
+
+   _Sequence_homology_query_date                2007-01-04
+   _Sequence_homology_query_revised_last_date   2006-12-28
+
+   loop_
+      _Database_name
+      _Database_accession_code
+      _Database_entry_mol_name
+      _Sequence_query_to_submitted_percentage
+      _Sequence_subject_length
+      _Sequence_identity
+      _Sequence_positive
+      _Sequence_homology_expectation_value
+
+       BMRB  1760  "insulin B chain"                                                                                                                                                   100.00  30   100   100   8e-11 
+       BMRB  1762  "insulin B chain"                                                                                                                                                   100.00  30   100   100   8e-11 
+       PDB   1SJT  "B Chain B, Mini-Proinsulin, Two Chain InsulinAnalog Mutant: Des B30, His(B 10)asp, Pro(B 28)asp,Nmr, 20 Structures"                                                103.45  29   100   100   8e-09 
+       PDB   1K3M  "B Chain B, Nmr Structure Of Human InsulinMutant Ile-A2-Ala, His-B10- Asp, Pro-B28-Lys,Lys-B29-Pro, 15 Structures"                                                  100.00  30   100   100   8e-11 
+       PDB   1KMF  "B Chain B, Nmr Structure Of Human InsulinMutant Ile-A2-Allo-Ile, His- B10-Asp, Pro-B28-Lys,Lys-B29-Pro, 15 Structures"                                             100.00  30   100   100   8e-11 
+       PDB   1LKQ  "B Chain B, Nmr Structure Of Human InsulinMutant Ile-A2-Gly, Val-A3- Gly, His-B10-Asp,Pro-B28-Lys, Lys-B29-Pro, 20 Structures"                                      100.00  30   100   100   8e-11 
+       PDB   1VKT  "B Chain B, Human Insulin Two Disulfide Model,Nmr, 10 Structures"                                                                                                   100.00  30   100   100   8e-11 
+       PDB   2JMN  "B Chain B, Nmr Structure Of Human InsulinMutant His-B10-Asp, Pro-B28- Lys, Lys-B29-Pro, 20Structures"                                                              100.00  30   100   100   8e-11 
+       PDB   1SJU  "Chain  , Mini-Proinsulin, Single ChainInsulin Analog Mutant: Des B30, His(B 10)asp, Pro(B28)asp And Peptide Bond Between Lys B 29 And Gly A 1,Nmr, 20 Structures"   60.00  50   100   100   8e-09 
+
+   stop_
+
+save_
+
+
+    ######################
+    #  Polymer residues  #
+    ######################
+
+save_IIL
+   _Saveframe_category            polymer_residue
+
+   _Mol_type                      non-polymer
+   _Name_common                   allo-ISOLEUCINE
+   _Abbreviation_common           IIL
+   _Name_IUPAC                    .
+   _BMRB_code                     IIL
+   _PDB_code                      IIL
+   _Standard_residue_derivative   ILE
+
+   loop_
+      _Mol_label
+      _Residue_seq_code
+
+      $HI_A  2  
+
+   stop_
+
+   _Mol_empirical_formula        'C6 H11 N1 O1'
+   _Mol_paramagnetic              no
+   _Details                       .
+
+   loop_
+      _Atom_name
+      _PDB_atom_name
+      _Atom_type
+      _Atom_chirality
+      _Atom_charge
+      _Atom_oxidation_number
+      _Atom_unpaired_electrons
+
+       N     N     N  ?  0   ?  ? 
+       CA    CA    C  ?  0   ?  ? 
+       C     C     C  ?  0   ?  ? 
+       O     O     O  ?  0   ?  ? 
+       CB    CB    C  ?  0   ?  ? 
+       CG1   CG1   C  ?  0   ?  ? 
+       CG2   CG2   C  ?  0   ?  ? 
+       CD1   CD1   C  ?  0   ?  ? 
+       H     H     H  ?  0   ?  ? 
+       HA    HA    H  ?  0   ?  ? 
+       HB    HB    H  ?  0   ?  ? 
+       HG12  1HG1  H  ?  0   ?  ? 
+       HG13  2HG1  H  ?  0   ?  ? 
+       HG21  1HG2  H  ?  0   ?  ? 
+       HG22  2HG2  H  ?  0   ?  ? 
+       HG23  3HG2  H  ?  0   ?  ? 
+       HD11  1HD1  H  ?  0   ?  ? 
+       HD12  2HD1  H  ?  0   ?  ? 
+       HD13  3HD1  H  ?  0   ?  ? 
+
+   stop_
+
+   loop_
+      _Bond_order
+      _Bond_atom_one_atom_name
+      _Bond_atom_two_atom_name
+      _PDB_bond_atom_one_atom_name
+      _PDB_bond_atom_two_atom_name
+
+       SING  N    CA    N    CA   
+       SING  N    H     N    H    
+       SING  CA   C     CA   C    
+       SING  CA   CB    CA   CB   
+       SING  CA   HA    CA   HA   
+       DOUB  C    O     C    O    
+       SING  CB   CG1   CB   CG1  
+       SING  CB   CG2   CB   CG2  
+       SING  CB   HB    CB   HB   
+       SING  CG1  CD1   CG1  CD1  
+       SING  CG1  HG12  CG1  1HG1 
+       SING  CG1  HG13  CG1  2HG1 
+       SING  CG2  HG21  CG2  1HG2 
+       SING  CG2  HG22  CG2  2HG2 
+       SING  CG2  HG23  CG2  3HG2 
+       SING  CD1  HD11  CD1  1HD1 
+       SING  CD1  HD12  CD1  2HD1 
+       SING  CD1  HD13  CD1  3HD1 
+
+   stop_
+
+save_
+
+
+    ########################################
+    #  Molecular bond linkage definitions  #
+    ########################################
+
+save_crosslink_bonds
+   _Saveframe_category   crosslink_bonds
+
+
+   loop_
+      _Bond_order
+      _Bond_type
+      _Atom_one_mol_system_component_name
+      _Atom_one_residue_seq_code
+      _Atom_one_residue_label
+      _Atom_one_atom_name
+      _Atom_two_mol_system_component_name
+      _Atom_two_residue_seq_code
+      _Atom_two_residue_label
+      _Atom_two_atom_name
+
+       single  disulfide "allo-IleA2-DKP-insulin, chain A"  20   CYS  SG "allo-IleA2-DKP-insulin, chain B"  19   CYS  SG 
+       single  disulfide "allo-IleA2-DKP-insulin, chain A"   7   CYS  SG "allo-IleA2-DKP-insulin, chain B"   7   CYS  SG 
+       single  disulfide "allo-IleA2-DKP-insulin, chain A"   6   CYS  SG "allo-IleA2-DKP-insulin, chain A"  11   CYS  SG 
+
+   stop_
+
+save_
+
+
+    ####################
+    #  Natural source  #
+    ####################
+
+save_natural_source
+   _Saveframe_category   natural_source
+
+
+   loop_
+      _Mol_label
+      _Organism_name_common
+      _NCBI_taxonomy_ID
+      _Superkingdom
+      _Kingdom
+      _Genus
+      _Species
+
+      $HI_A  Human  9606   Eukaryota  Metazoa  Homo  sapiens 
+      $HI_B  Human  9606   Eukaryota  Metazoa  Homo  sapiens 
+
+   stop_
+
+save_
+
+
+    #########################
+    #  Experimental source  #
+    #########################
+
+save_experimental_source
+   _Saveframe_category   experimental_source
+
+
+   loop_
+      _Mol_label
+      _Production_method
+      _Host_organism_name_common
+      _Genus
+      _Species
+      _Strain
+      _Vector_name
+
+      $HI_A 'chemical synthesis'  .  .  .  .  . 
+      $HI_B 'chemical synthesis'  .  .  .  .  . 
+
+   stop_
+
+save_
+
+
+#####################################
+#  Sample contents and methodology  #
+#####################################
+	 
+    ########################
+    #  Sample description  #
+    ########################
+
+save_sample_1
+   _Saveframe_category   sample
+
+   _Sample_type          solution
+
+   loop_
+      _Mol_label
+      _Concentration_value
+      _Concentration_value_units
+      _Concentration_min_value
+      _Concentration_max_value
+      _Isotopic_labeling
+
+      $HI_A  1.2  mM  1.0  3.0  . 
+      $HI_B  1.2  mM  1.0  3.0  . 
+
+   stop_
+
+save_
+
+
+############################
+#  Computer software used  #
+############################
+
+save_VNMR
+   _Saveframe_category   software
+
+   _Name                 VNMR
+   _Version              6.1B
+
+   loop_
+      _Task
+
+      "NMR data processing" 
+
+   stop_
+
+save_
+
+
+#########################
+#  Experimental detail  #
+#########################
+
+    ##################################
+    #  NMR Spectrometer definitions  #
+    ##################################
+
+save_NMR_spectrometer
+   _Saveframe_category   NMR_spectrometer
+
+   _Manufacturer         Varian
+   _Model                INOVA
+   _Field_strength       600
+
+save_
+
+
+    #############################
+    #  NMR applied experiments  #
+    #############################
+
+save_NMR_applied_experiment
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     
+;
+2D 1H-1H NOESY
+2D 1H-1H TOCSY
+2D 1H-1H DQF-COSY
+;
+
+save_
+
+
+#######################
+#  Sample conditions  #
+#######################
+
+save_cond_1
+   _Saveframe_category   sample_conditions
+
+
+   loop_
+      _Variable_type
+      _Variable_value
+      _Variable_value_error
+      _Variable_value_units
+
+       pH             7.0  0.1  n/a 
+       temperature  298    1    K   
+
+   stop_
+
+save_
+
+
+save_cond_2
+   _Saveframe_category   sample_conditions
+
+
+   loop_
+      _Variable_type
+      _Variable_value
+      _Variable_value_error
+      _Variable_value_units
+
+       pD             7.6  0.1  n/a 
+       temperature  305    1    K   
+
+   stop_
+
+save_
+
+
+####################
+#  NMR parameters  #
+####################
+
+    ##############################
+    #  Assigned chemical shifts  #
+    ##############################
+
+	################################
+	#  Chemical shift referencing  #
+	################################
+
+save_chemical_shift_reference
+   _Saveframe_category   chemical_shift_reference
+
+
+   loop_
+      _Mol_common_name
+      _Atom_type
+      _Atom_isotope_number
+      _Atom_group
+      _Chem_shift_units
+      _Chem_shift_value
+      _Reference_method
+      _Reference_type
+      _External_reference_sample_geometry
+      _External_reference_location
+      _External_reference_axis
+      _Indirect_shift_ratio
+
+       DSS  H  1  'methyl protons'  ppm  0.0  internal  direct  .  .  .  1.0 
+
+   stop_
+
+save_
+
+
+	###################################
+	#  Assigned chemical shift lists  #
+	###################################
+
+###################################################################
+#       Chemical Shift Ambiguity Index Value Definitions          #
+#                                                                 #
+#   Index Value            Definition                             #
+#                                                                 #
+#      1             Unique (geminal atoms and geminal methyl     #
+#                         groups with identical chemical shifts   #
+#                         are assumed to be assigned to           #
+#                         stereospecific atoms)                   #
+#      2             Ambiguity of geminal atoms or geminal methyl #
+#                         proton groups                           #
+#      3             Aromatic atoms on opposite sides of          #
+#                         symmetrical rings (e.g. Tyr HE1 and HE2 #
+#                         protons)                                #
+#      4             Intraresidue ambiguities (e.g. Lys HG and    #
+#                         HD protons or Trp HZ2 and HZ3 protons)  #
+#      5             Interresidue ambiguities (Lys 12 vs. Lys 27) #
+#      9             Ambiguous, specific ambiguity not defined    #
+#                                                                 #
+###################################################################
+
+save_shift_set_1
+   _Saveframe_category               assigned_chemical_shifts
+
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label         $cond_1
+   _Chem_shift_reference_set_label  $chemical_shift_reference
+   _Mol_system_component_name       "allo-IleA2-DKP-insulin, chain A"
+
+   loop_
+      _Atom_shift_assign_ID
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _Atom_type
+      _Chem_shift_value
+      _Chem_shift_value_error
+      _Chem_shift_ambiguity_code
+
+         1    2   IIL  H     H  8.39  0.02  1  
+         2    2   IIL  HA    H  3.83  0.02  1  
+         3    2   IIL  HB    H  1.98  0.02  1  
+         4    2   IIL  HG12  H  1.02  0.02  1  
+         5    2   IIL  HG13  H  1.02  0.02  1  
+         6    2   IIL  HG2   H  0.64  0.02  1  
+         7    2   IIL  HD1   H  0.51  0.02  1  
+         8    3   VAL  H     H  8.33  0.02  1  
+         9    3   VAL  HA    H  3.54  0.02  1  
+        10    3   VAL  HB    H  1.98  0.02  1  
+        11    3   VAL  HG1   H  1.02  0.02  2  
+        12    3   VAL  HG2   H  0.91  0.02  2  
+        13    4   GLU  H     H  8.40  0.02  1  
+        14    4   GLU  HA    H  4.11  0.02  1  
+        15    4   GLU  HB2   H  2.19  0.02  2  
+        16    4   GLU  HB3   H  2.02  0.02  2  
+        17    4   GLU  HG2   H  2.52  0.02  2  
+        18    4   GLU  HG3   H  2.31  0.02  2  
+        19    5   GLN  H     H  8.40  0.02  1  
+        20    5   GLN  HA    H  4.11  0.02  1  
+        21    5   GLN  HB2   H  2.19  0.02  2  
+        22    5   GLN  HB3   H  2.02  0.02  2  
+        23    5   GLN  HG2   H  2.52  0.02  2  
+        24    5   GLN  HG3   H  2.29  0.02  2  
+        25    6   CYS  H     H  8.32  0.02  1  
+        26    6   CYS  HA    H  4.98  0.02  1  
+        27    6   CYS  HB2   H  3.19  0.02  2  
+        28    6   CYS  HB3   H  2.90  0.02  2  
+        29    7   CYS  H     H  8.37  0.02  1  
+        30    7   CYS  HA    H  4.90  0.02  1  
+        31    7   CYS  HB2   H  3.88  0.02  2  
+        32    7   CYS  HB3   H  3.46  0.02  2  
+        33    8   THR  H     H  8.28  0.02  1  
+        34    8   THR  HA    H  4.00  0.02  1  
+        35    8   THR  HB    H  4.49  0.02  1  
+        36    8   THR  HG2   H  1.28  0.02  1  
+        37    9   SER  HA    H  4.76  0.02  1  
+        38    9   SER  HB2   H  4.07  0.02  2  
+        39    9   SER  HB3   H  3.86  0.02  2  
+        40   10   ILE  H     H  7.77  0.02  1  
+        41   10   ILE  HA    H  4.38  0.02  1  
+        42   10   ILE  HB    H  1.50  0.02  1  
+        43   10   ILE  HG12  H  1.23  0.02  2  
+        44   10   ILE  HG13  H  0.32  0.02  2  
+        45   10   ILE  HG2   H  0.63  0.02  1  
+        46   10   ILE  HD1   H  0.50  0.02  1  
+        47   11   CYS  H     H  9.92  0.02  1  
+        48   11   CYS  HA    H  5.13  0.02  1  
+        49   11   CYS  HB2   H  3.10  0.02  2  
+        50   11   CYS  HB3   H  2.90  0.02  2  
+        51   12   SER  H     H  8.55  0.02  1  
+        52   12   SER  HA    H  4.63  0.02  1  
+        53   12   SER  HB2   H  4.15  0.02  2  
+        54   12   SER  HB3   H  3.97  0.02  2  
+        55   13   LEU  H     H  8.75  0.02  1  
+        56   13   LEU  HA    H  3.90  0.02  1  
+        57   13   LEU  HB2   H  1.56  0.02  2  
+        58   13   LEU  HB3   H  1.44  0.02  2  
+        59   13   LEU  HG    H  1.39  0.02  1  
+        60   13   LEU  HD1   H  0.82  0.02  1  
+        61   13   LEU  HD2   H  0.71  0.02  1  
+        62   14   TYR  H     H  7.63  0.02  1  
+        63   14   TYR  HA    H  4.31  0.02  1  
+        64   14   TYR  HB2   H  3.00  0.02  1  
+        65   14   TYR  HB3   H  3.00  0.02  1  
+        66   14   TYR  HD1   H  7.11  0.02  1  
+        67   14   TYR  HE1   H  6.85  0.02  1  
+        68   15   GLN  H     H  7.54  0.02  1  
+        69   15   GLN  HA    H  3.99  0.02  1  
+        70   15   GLN  HB2   H  2.05  0.02  2  
+        71   15   GLN  HB3   H  1.95  0.02  2  
+        72   15   GLN  HG2   H  2.41  0.02  2  
+        73   15   GLN  HG3   H  2.24  0.02  2  
+        74   16   LEU  H     H  7.89  0.02  1  
+        75   16   LEU  HA    H  4.11  0.02  1  
+        76   16   LEU  HB2   H  1.95  0.02  2  
+        77   16   LEU  HB3   H  1.51  0.02  2  
+        78   16   LEU  HG    H  1.71  0.02  1  
+        79   16   LEU  HD1   H  0.78  0.02  1  
+        80   16   LEU  HD2   H  0.71  0.02  1  
+        81   17   GLU  H     H  7.90  0.02  1  
+        82   17   GLU  HA    H  4.20  0.02  1  
+        83   17   GLU  HB2   H  2.02  0.02  2  
+        84   17   GLU  HB3   H  1.95  0.02  2  
+        85   17   GLU  HG2   H  2.36  0.02  2  
+        86   17   GLU  HG3   H  2.28  0.02  2  
+        87   18   ASN  H     H  7.32  0.02  1  
+        88   18   ASN  HA    H  4.44  0.02  1  
+        89   18   ASN  HB2   H  2.60  0.02  2  
+        90   18   ASN  HB3   H  2.47  0.02  2  
+        91   19   TYR  H     H  7.90  0.02  1  
+        92   19   TYR  HA    H  4.19  0.02  1  
+        93   19   TYR  HB2   H  3.52  0.02  2  
+        94   19   TYR  HB3   H  2.65  0.02  2  
+        95   19   TYR  HD1   H  7.25  0.02  1  
+        96   19   TYR  HE1   H  6.74  0.02  1  
+        97   20   CYS  H     H  7.22  0.02  1  
+        98   20   CYS  HA    H  5.13  0.02  1  
+        99   20   CYS  HB2   H  3.33  0.02  2  
+       100   20   CYS  HB3   H  2.82  0.02  2  
+       101   21   ASN  H     H  8.06  0.02  1  
+       102   21   ASN  HA    H  4.52  0.02  1  
+       103   21   ASN  HB2   H  2.79  0.02  2  
+       104   21   ASN  HB3   H  2.61  0.02  2  
+       105   21   ASN  HD21  H  7.54  0.02  1  
+
+   stop_
+
+save_
+
+
+save_shift_set_2
+   _Saveframe_category               assigned_chemical_shifts
+
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label         $cond_1
+   _Chem_shift_reference_set_label  $chemical_shift_reference
+   _Mol_system_component_name       "allo-IleA2-DKP-insulin, chain B"
+
+   loop_
+      _Atom_shift_assign_ID
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _Atom_type
+      _Chem_shift_value
+      _Chem_shift_value_error
+      _Chem_shift_ambiguity_code
+
+         1    1   PHE  HA   H   4.15  0.02  1  
+         2    1   PHE  HB2  H   3.75  0.02  2  
+         3    1   PHE  HB3  H   3.15  0.02  2  
+         4    1   PHE  HD1  H   7.23  0.02  1  
+         5    1   PHE  HE1  H   7.32  0.02  1  
+         6    2   VAL  H    H   8.24  0.02  1  
+         7    2   VAL  HA   H   4.07  0.02  1  
+         8    2   VAL  HB   H   2.06  0.02  1  
+         9    2   VAL  HG1  H   0.86  0.02  1  
+        10    3   ASN  H    H   8.55  0.02  1  
+        11    3   ASN  HA   H   4.63  0.02  1  
+        12    3   ASN  HB2  H   2.82  0.02  2  
+        13    3   ASN  HB3  H   2.71  0.02  2  
+        14    4   GLN  H    H   8.23  0.02  1  
+        15    4   GLN  HA   H   4.49  0.02  1  
+        16    4   GLN  HB2  H   2.10  0.02  2  
+        17    4   GLN  HB3  H   1.93  0.02  2  
+        18    4   GLN  HG2  H   2.18  0.02  2  
+        19    4   GLN  HG3  H   2.08  0.02  2  
+        20    5   HIS  H    H   8.55  0.02  1  
+        21    5   HIS  HA   H   4.38  0.02  1  
+        22    5   HIS  HB2  H   3.52  0.02  2  
+        23    5   HIS  HB3  H   3.18  0.02  2  
+        24    6   LEU  H    H   9.07  0.02  1  
+        25    6   LEU  HA   H   4.59  0.02  1  
+        26    6   LEU  HB2  H   1.71  0.02  2  
+        27    6   LEU  HB3  H   0.72  0.02  2  
+        28    6   LEU  HG   H   1.59  0.02  1  
+        29    6   LEU  HD1  H   0.80  0.02  2  
+        30    6   LEU  HD2  H   0.72  0.02  2  
+        31    7   CYS  H    H   8.71  0.02  1  
+        32    7   CYS  HA   H   5.00  0.02  1  
+        33    7   CYS  HB2  H   3.22  0.02  2  
+        34    7   CYS  HB3  H   2.92  0.02  2  
+        35    8   GLY  H    H   9.44  0.02  1  
+        36    8   GLY  HA2  H   3.99  0.02  2  
+        37    8   GLY  HA3  H   3.89  0.02  2  
+        38    9   SER  H    H   9.10  0.02  1  
+        39    9   SER  HA   H   4.20  0.02  1  
+        40    9   SER  HB2  H   3.83  0.02  1  
+        41    9   SER  HB3  H   3.83  0.02  1  
+        42   10   ASP  H    H   7.97  0.02  1  
+        43   10   ASP  HA   H   4.41  0.02  1  
+        44   10   ASP  HB2  H   3.06  0.02  2  
+        45   10   ASP  HB3  H   2.65  0.02  2  
+        46   11   LEU  H    H   6.84  0.02  1  
+        47   11   LEU  HA   H   3.89  0.02  1  
+        48   11   LEU  HB2  H   1.88  0.02  2  
+        49   11   LEU  HB3  H   1.17  0.02  2  
+        50   11   LEU  HG   H   1.24  0.02  1  
+        51   11   LEU  HD1  H   0.79  0.02  2  
+        52   11   LEU  HD2  H   0.73  0.02  2  
+        53   12   VAL  H    H   6.82  0.02  1  
+        54   12   VAL  HA   H   3.32  0.02  1  
+        55   12   VAL  HB   H   2.09  0.02  1  
+        56   12   VAL  HG1  H   0.99  0.02  1  
+        57   13   GLU  H    H   8.06  0.02  1  
+        58   13   GLU  HA   H   4.05  0.02  1  
+        59   13   GLU  HB2  H   2.13  0.02  2  
+        60   13   GLU  HB3  H   2.09  0.02  2  
+        61   13   GLU  HG2  H   2.60  0.02  2  
+        62   13   GLU  HG3  H   2.43  0.02  2  
+        63   14   ALA  H    H   7.67  0.02  1  
+        64   14   ALA  HA   H   4.05  0.02  1  
+        65   14   ALA  HB   H   1.37  0.02  1  
+        66   15   LEU  H    H   8.07  0.02  1  
+        67   15   LEU  HA   H   3.71  0.02  1  
+        68   15   LEU  HB2  H   1.06  0.02  2  
+        69   15   LEU  HB3  H   0.27  0.02  2  
+        70   15   LEU  HG   H   1.23  0.02  1  
+        71   15   LEU  HD1  H   0.52  0.02  2  
+        72   15   LEU  HD2  H  -0.02  0.02  2  
+        73   16   TYR  H    H   8.29  0.02  1  
+        74   16   TYR  HA   H   4.38  0.02  1  
+        75   16   TYR  HB2  H   3.17  0.02  2  
+        76   16   TYR  HB3  H   3.13  0.02  2  
+        77   16   TYR  HD1  H   7.21  0.02  1  
+        78   16   TYR  HE1  H   6.80  0.02  1  
+        79   17   LEU  H    H   7.72  0.02  1  
+        80   17   LEU  HA   H   4.07  0.02  1  
+        81   17   LEU  HB2  H   1.90  0.02  2  
+        82   17   LEU  HB3  H   1.76  0.02  2  
+        83   17   LEU  HG   H   1.78  0.02  1  
+        84   17   LEU  HD1  H   0.93  0.02  2  
+        85   17   LEU  HD2  H   0.90  0.02  2  
+        86   18   VAL  H    H   8.34  0.02  1  
+        87   18   VAL  HA   H   3.77  0.02  1  
+        88   18   VAL  HB   H   1.98  0.02  1  
+        89   18   VAL  HG1  H   1.01  0.02  2  
+        90   18   VAL  HG2  H   0.89  0.02  2  
+        91   19   CYS  H    H   8.84  0.02  1  
+        92   19   CYS  HA   H   4.84  0.02  1  
+        93   19   CYS  HB2  H   3.32  0.02  2  
+        94   19   CYS  HB3  H   2.88  0.02  2  
+        95   20   GLY  H    H   7.79  0.02  1  
+        96   20   GLY  HA2  H   3.99  0.02  2  
+        97   20   GLY  HA3  H   3.83  0.02  2  
+        98   21   GLU  H    H   9.11  0.02  1  
+        99   21   GLU  HA   H   4.20  0.02  1  
+       100   21   GLU  HB2  H   2.21  0.02  2  
+       101   21   GLU  HB3  H   2.06  0.02  2  
+       102   21   GLU  HG2  H   2.38  0.02  1  
+       103   22   ARG  H    H   8.12  0.02  1  
+       104   22   ARG  HA   H   4.19  0.02  1  
+       105   22   ARG  HB2  H   2.16  0.02  2  
+       106   22   ARG  HB3  H   2.06  0.02  2  
+       107   22   ARG  HG2  H   1.90  0.02  2  
+       108   22   ARG  HG3  H   1.85  0.02  2  
+       109   22   ARG  HD2  H   3.39  0.02  2  
+       110   22   ARG  HD3  H   3.32  0.02  2  
+       111   23   GLY  H    H   7.37  0.02  1  
+       112   23   GLY  HA2  H   4.13  0.02  2  
+       113   23   GLY  HA3  H   3.80  0.02  2  
+       114   24   PHE  H    H   7.55  0.02  1  
+       115   24   PHE  HA   H   5.31  0.02  1  
+       116   24   PHE  HB2  H   3.07  0.02  2  
+       117   24   PHE  HB3  H   2.87  0.02  2  
+       118   24   PHE  HD1  H   6.66  0.02  1  
+       119   24   PHE  HE1  H   6.82  0.02  1  
+       120   25   PHE  H    H   8.56  0.02  1  
+       121   25   PHE  HA   H   4.94  0.02  1  
+       122   25   PHE  HB2  H   3.19  0.02  2  
+       123   25   PHE  HB3  H   3.04  0.02  2  
+       124   25   PHE  HD1  H   7.19  0.02  1  
+       125   25   PHE  HE1  H   7.26  0.02  1  
+       126   26   TYR  H    H   8.31  0.02  1  
+       127   26   TYR  HA   H   4.57  0.02  1  
+       128   26   TYR  HB2  H   2.89  0.02  1  
+       129   26   TYR  HD1  H   7.10  0.02  1  
+       130   26   TYR  HE1  H   6.76  0.02  1  
+       131   27   THR  H    H   7.80  0.02  1  
+       132   27   THR  HA   H   4.59  0.02  1  
+       133   27   THR  HB   H   4.13  0.02  1  
+       134   27   THR  HG2  H   1.20  0.02  1  
+       135   28   LYS  H    H   8.54  0.02  1  
+       136   28   LYS  HA   H   4.38  0.02  1  
+       137   28   LYS  HB2  H   1.80  0.02  2  
+       138   28   LYS  HB3  H   1.70  0.02  2  
+       139   28   LYS  HG2  H   1.42  0.02  1  
+       140   28   LYS  HD2  H   1.62  0.02  1  
+       141   28   LYS  HE2  H   2.89  0.02  1  
+       142   29   PRO  HA   H   4.47  0.02  1  
+       143   29   PRO  HB2  H   2.29  0.02  2  
+       144   29   PRO  HB3  H   1.97  0.02  2  
+       145   29   PRO  HG2  H   1.97  0.02  1  
+       146   29   PRO  HD2  H   3.63  0.02  2  
+       147   29   PRO  HD3  H   3.53  0.02  2  
+       148   30   THR  H    H   7.80  0.02  1  
+       149   30   THR  HA   H   4.13  0.02  1  
+       150   30   THR  HB   H   4.23  0.02  1  
+       151   30   THR  HG2  H   1.20  0.02  1  
+
+   stop_
+
+save_
+
+
+save_shift_set_3
+   _Saveframe_category               assigned_chemical_shifts
+
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label         $cond_2
+   _Chem_shift_reference_set_label  $chemical_shift_reference
+   _Mol_system_component_name       "allo-IleA2-DKP-insulin, chain A"
+
+   loop_
+      _Atom_shift_assign_ID
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _Atom_type
+      _Chem_shift_value
+      _Chem_shift_value_error
+      _Chem_shift_ambiguity_code
+
+        1    2   IIL  HA    H  3.90  0.02  1  
+        2    2   IIL  HB    H  1.47  0.02  1  
+        3    2   IIL  HG12  H  1.50  0.02  2  
+        4    2   IIL  HG13  H  1.03  0.02  2  
+        5    2   IIL  HG2   H  0.68  0.02  1  
+        6    2   IIL  HD1   H  0.50  0.02  1  
+        7    3   VAL  HA    H  3.57  0.02  1  
+        8    3   VAL  HB    H  1.96  0.02  1  
+        9    3   VAL  HG1   H  1.02  0.02  2  
+       10    3   VAL  HG2   H  0.89  0.02  2  
+       11    5   GLN  HA    H  4.10  0.02  1  
+       12    5   GLN  HB2   H  2.14  0.02  2  
+       13    5   GLN  HB3   H  2.00  0.02  2  
+       14    5   GLN  HG2   H  2.23  0.02  1  
+       15    6   CYS  H     H  8.26  0.02  1  
+       16    6   CYS  HA    H  4.95  0.02  1  
+       17    6   CYS  HB2   H  3.20  0.02  2  
+       18    6   CYS  HB3   H  2.86  0.02  2  
+       19    7   CYS  HA    H  4.88  0.02  1  
+       20    7   CYS  HB2   H  3.83  0.02  2  
+       21    7   CYS  HB3   H  3.40  0.02  2  
+       22    8   THR  HA    H  4.07  0.02  1  
+       23    8   THR  HB    H  4.66  0.02  1  
+       24    8   THR  HG2   H  1.25  0.02  1  
+       25    9   SER  HA    H  4.70  0.02  1  
+       26    9   SER  HB2   H  3.95  0.02  2  
+       27    9   SER  HB3   H  3.80  0.02  2  
+       28   10   ILE  HA    H  4.33  0.02  1  
+       29   10   ILE  HB    H  1.51  0.02  1  
+       30   10   ILE  HG11  H  1.12  0.02  1  
+       31   10   ILE  HG12  H  1.12  0.02  1  
+       32   10   ILE  HG2   H  0.62  0.02  1  
+       33   10   ILE  HD1   H  0.50  0.02  1  
+       34   12   SER  HA    H  4.62  0.02  1  
+       35   12   SER  HB2   H  4.07  0.02  2  
+       36   12   SER  HB3   H  3.94  0.02  2  
+       37   13   LEU  H     H  8.73  0.02  1  
+       38   13   LEU  HA    H  3.97  0.02  1  
+       39   13   LEU  HB2   H  1.53  0.02  2  
+       40   13   LEU  HB3   H  1.48  0.02  2  
+       41   13   LEU  HG    H  1.53  0.02  1  
+       42   13   LEU  HD1   H  0.90  0.02  1  
+       43   13   LEU  HD2   H  0.82  0.02  1  
+       44   14   TYR  H     H  7.57  0.02  1  
+       45   14   TYR  HA    H  4.36  0.02  1  
+       46   14   TYR  HB2   H  3.01  0.02  1  
+       47   14   TYR  HB3   H  3.01  0.02  1  
+       48   14   TYR  HD1   H  7.12  0.02  1  
+       49   14   TYR  HE1   H  6.85  0.02  1  
+       50   15   GLN  H     H  7.53  0.02  1  
+       51   15   GLN  HA    H  4.00  0.02  1  
+       52   15   GLN  HG2   H  2.37  0.02  2  
+       53   15   GLN  HG3   H  2.19  0.02  2  
+       54   16   LEU  H     H  7.85  0.02  1  
+       55   16   LEU  HA    H  4.10  0.02  1  
+       56   16   LEU  HB2   H  1.96  0.02  2  
+       57   16   LEU  HB3   H  1.48  0.02  2  
+       58   16   LEU  HG    H  1.71  0.02  1  
+       59   16   LEU  HD1   H  0.74  0.02  1  
+       60   16   LEU  HD2   H  0.68  0.02  1  
+       61   17   GLU  H     H  7.87  0.02  1  
+       62   17   GLU  HA    H  4.18  0.02  1  
+       63   17   GLU  HB2   H  1.99  0.02  1  
+       64   17   GLU  HB3   H  1.99  0.02  1  
+       65   17   GLU  HG2   H  2.36  0.02  2  
+       66   17   GLU  HG3   H  2.20  0.02  2  
+       67   18   ASN  H     H  7.32  0.02  1  
+       68   18   ASN  HA    H  4.43  0.02  1  
+       69   18   ASN  HB2   H  2.57  0.02  2  
+       70   18   ASN  HB3   H  2.47  0.02  2  
+       71   19   TYR  H     H  7.87  0.02  1  
+       72   19   TYR  HA    H  4.20  0.02  1  
+       73   19   TYR  HB2   H  3.52  0.02  2  
+       74   19   TYR  HB3   H  2.63  0.02  2  
+       75   19   TYR  HD1   H  7.23  0.02  1  
+       76   19   TYR  HE1   H  6.74  0.02  1  
+       77   20   CYS  H     H  7.17  0.02  1  
+       78   20   CYS  HA    H  5.12  0.02  1  
+       79   20   CYS  HB2   H  3.30  0.02  2  
+       80   20   CYS  HB3   H  2.78  0.02  2  
+       81   21   ASN  H     H  8.02  0.02  1  
+       82   21   ASN  HA    H  4.50  0.02  1  
+       83   21   ASN  HB2   H  2.77  0.02  2  
+       84   21   ASN  HB3   H  2.58  0.02  2  
+       85   21   ASN  HD21  H  7.47  0.02  2  
+       86   21   ASN  HD22  H  6.38  0.02  2  
+
+   stop_
+
+save_
+
+
+save_shift_set_4
+   _Saveframe_category               assigned_chemical_shifts
+
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label         $cond_2
+   _Chem_shift_reference_set_label  $chemical_shift_reference
+   _Mol_system_component_name       "allo-IleA2-DKP-insulin, chain B"
+
+   loop_
+      _Atom_shift_assign_ID
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _Atom_type
+      _Chem_shift_value
+      _Chem_shift_value_error
+      _Chem_shift_ambiguity_code
+
+         1    1   PHE  HA   H   3.94  0.02  1  
+         2    1   PHE  HB2  H   3.20  0.02  2  
+         3    1   PHE  HB3  H   3.03  0.02  2  
+         4    3   ASN  HA   H   4.57  0.02  1  
+         5    3   ASN  HB2  H   2.83  0.02  2  
+         6    3   ASN  HB3  H   2.73  0.02  2  
+         7    4   GLN  HA   H   4.47  0.02  1  
+         8    4   GLN  HB2  H   1.92  0.02  1  
+         9    4   GLN  HG2  H   2.10  0.02  1  
+        10    5   HIS  HA   H   4.34  0.02  1  
+        11    5   HIS  HB2  H   3.44  0.02  2  
+        12    5   HIS  HB3  H   3.08  0.02  2  
+        13    6   LEU  H    H   8.92  0.02  1  
+        14    6   LEU  HA   H   4.57  0.02  1  
+        15    6   LEU  HB2  H   1.70  0.02  2  
+        16    6   LEU  HB3  H   0.80  0.02  2  
+        17    6   LEU  HG   H   1.54  0.02  1  
+        18    6   LEU  HD1  H   0.90  0.02  2  
+        19    6   LEU  HD2  H   0.80  0.02  2  
+        20    7   CYS  H    H   8.63  0.02  1  
+        21    7   CYS  HA   H   4.98  0.02  1  
+        22    7   CYS  HB2  H   3.22  0.02  2  
+        23    7   CYS  HB3  H   2.93  0.02  2  
+        24    8   GLY  HA2  H   4.00  0.02  2  
+        25    8   GLY  HA3  H   3.86  0.02  2  
+        26    9   SER  HA   H   4.15  0.02  1  
+        27    9   SER  HB2  H   4.02  0.02  2  
+        28    9   SER  HB3  H   3.92  0.02  2  
+        29   10   ASP  H    H   7.98  0.02  1  
+        30   10   ASP  HA   H   4.38  0.02  1  
+        31   10   ASP  HB2  H   3.00  0.02  2  
+        32   10   ASP  HB3  H   2.65  0.02  2  
+        33   11   LEU  H    H   6.93  0.02  1  
+        34   11   LEU  HA   H   3.88  0.02  1  
+        35   11   LEU  HB2  H   1.85  0.02  2  
+        36   11   LEU  HB3  H   1.16  0.02  2  
+        37   11   LEU  HG   H   1.23  0.02  1  
+        38   11   LEU  HD1  H   0.75  0.02  2  
+        39   11   LEU  HD2  H   0.63  0.02  2  
+        40   12   VAL  H    H   7.13  0.02  1  
+        41   12   VAL  HA   H   3.20  0.02  1  
+        42   12   VAL  HB   H   2.09  0.02  1  
+        43   12   VAL  HG1  H   1.06  0.02  2  
+        44   12   VAL  HG2  H   0.98  0.02  2  
+        45   13   GLU  HA   H   4.06  0.02  1  
+        46   13   GLU  HB2  H   2.13  0.02  2  
+        47   13   GLU  HB3  H   2.07  0.02  2  
+        48   13   GLU  HG2  H   2.54  0.02  1  
+        49   14   ALA  H    H   7.56  0.02  1  
+        50   14   ALA  HA   H   4.13  0.02  1  
+        51   14   ALA  HB   H   1.40  0.02  1  
+        52   15   LEU  H    H   8.03  0.02  1  
+        53   15   LEU  HA   H   3.72  0.02  1  
+        54   15   LEU  HB2  H   1.07  0.02  2  
+        55   15   LEU  HB3  H   0.28  0.02  2  
+        56   15   LEU  HG   H   1.20  0.02  1  
+        57   15   LEU  HD1  H   0.50  0.02  2  
+        58   15   LEU  HD2  H  -0.02  0.02  2  
+        59   16   TYR  H    H   8.23  0.02  1  
+        60   16   TYR  HA   H   4.38  0.02  1  
+        61   16   TYR  HB2  H   3.15  0.02  1  
+        62   16   TYR  HB3  H   3.15  0.02  1  
+        63   16   TYR  HD1  H   7.23  0.02  1  
+        64   16   TYR  HE1  H   6.78  0.02  1  
+        65   17   LEU  H    H   7.63  0.02  1  
+        66   17   LEU  HA   H   4.08  0.02  1  
+        67   17   LEU  HB2  H   1.90  0.02  2  
+        68   17   LEU  HB3  H   1.77  0.02  2  
+        69   17   LEU  HG   H   1.77  0.02  1  
+        70   17   LEU  HD1  H   0.94  0.02  1  
+        71   17   LEU  HD2  H   0.94  0.02  1  
+        72   18   VAL  H    H   8.17  0.02  1  
+        73   18   VAL  HA   H   3.82  0.02  1  
+        74   18   VAL  HB   H   1.97  0.02  1  
+        75   18   VAL  HG1  H   1.04  0.02  2  
+        76   18   VAL  HG2  H   0.89  0.02  2  
+        77   19   CYS  H    H   8.82  0.02  1  
+        78   19   CYS  HA   H   4.80  0.02  1  
+        79   19   CYS  HB2  H   3.30  0.02  2  
+        80   19   CYS  HB3  H   2.83  0.02  2  
+        81   20   GLY  H    H   7.78  0.02  1  
+        82   20   GLY  HA2  H   4.03  0.02  2  
+        83   20   GLY  HA3  H   3.93  0.02  2  
+        84   21   GLU  HA   H   4.10  0.02  1  
+        85   21   GLU  HB2  H   2.16  0.02  1  
+        86   21   GLU  HG2  H   2.26  0.02  1  
+        87   22   ARG  H    H   8.07  0.02  1  
+        88   22   ARG  HA   H   4.15  0.02  1  
+        89   22   ARG  HB2  H   2.13  0.02  2  
+        90   22   ARG  HB3  H   2.07  0.02  2  
+        91   22   ARG  HG2  H   1.85  0.02  1  
+        92   22   ARG  HG3  H   1.85  0.02  1  
+        93   22   ARG  HD2  H   3.37  0.02  2  
+        94   22   ARG  HD3  H   3.30  0.02  2  
+        95   23   GLY  H    H   7.34  0.02  1  
+        96   23   GLY  HA2  H   4.15  0.02  2  
+        97   23   GLY  HA3  H   3.80  0.02  2  
+        98   24   PHE  H    H   7.53  0.02  1  
+        99   24   PHE  HA   H   5.30  0.02  1  
+       100   24   PHE  HB2  H   3.08  0.02  2  
+       101   24   PHE  HB3  H   2.86  0.02  2  
+       102   24   PHE  HD1  H   6.63  0.02  1  
+       103   24   PHE  HE1  H   6.79  0.02  1  
+       104   25   PHE  H    H   8.53  0.02  1  
+       105   25   PHE  HA   H   4.80  0.02  1  
+       106   25   PHE  HB2  H   3.27  0.02  2  
+       107   25   PHE  HB3  H   3.18  0.02  2  
+       108   25   PHE  HD1  H   7.19  0.02  1  
+       109   25   PHE  HE1  H   7.27  0.02  1  
+       110   26   TYR  H    H   8.26  0.02  1  
+       111   26   TYR  HA   H   4.55  0.02  1  
+       112   26   TYR  HB2  H   3.01  0.02  1  
+       113   26   TYR  HD1  H   7.13  0.02  1  
+       114   26   TYR  HE1  H   6.74  0.02  1  
+       115   27   THR  H    H   7.73  0.02  1  
+       116   27   THR  HA   H   4.57  0.02  1  
+       117   27   THR  HB   H   4.13  0.02  1  
+       118   28   LYS  HA   H   4.38  0.02  1  
+       119   28   LYS  HB2  H   1.78  0.02  2  
+       120   28   LYS  HB3  H   1.70  0.02  2  
+       121   28   LYS  HG2  H   1.40  0.02  1  
+       122   28   LYS  HD2  H   1.63  0.02  1  
+       123   28   LYS  HE2  H   2.90  0.02  1  
+       124   29   PRO  HA   H   4.46  0.02  1  
+       125   29   PRO  HB2  H   2.27  0.02  2  
+       126   29   PRO  HB3  H   2.00  0.02  2  
+       127   29   PRO  HG2  H   1.96  0.02  1  
+       128   29   PRO  HD2  H   3.66  0.02  2  
+       129   29   PRO  HD3  H   3.54  0.02  2  
+       130   30   THR  H    H   7.73  0.02  1  
+       131   30   THR  HA   H   4.12  0.02  1  
+       132   30   THR  HB   H   4.22  0.02  1  
+       133   30   THR  HG2  H   1.19  0.02  1  
+
+   stop_
+
+save_
+

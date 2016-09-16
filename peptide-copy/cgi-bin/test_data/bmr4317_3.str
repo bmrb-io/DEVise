@@ -1,0 +1,1684 @@
+data_4317
+
+save_entry_information
+   _Entry.Sf_category           entry_information
+   _Entry.Sf_framecode          entry_information
+   _Entry.ID                    4317
+   _Entry.Title                
+;
+1H, 13C, and 15N Chemical Shift Assignments for NS1(1-73)
+;
+   _Entry.Version_type          new
+   _Entry.Submission_date       1999-03-12
+   _Entry.Accession_date        1999-03-12
+   _Entry.Origination           author
+   _Entry.NMR_STAR_version     "3.1"
+   _Entry.Experimental_method   NMR
+
+   loop_
+      _Entry_author.Ordinal
+      _Entry_author.Given_name
+      _Entry_author.Family_name
+      _Entry_author.Middle_initials
+      _Entry_author.Family_title
+      _Entry_author.Entry_ID
+
+      1 Chen-ya Chien      .  . 4317 
+      2 Gaetano Montelione T. . 4317 
+
+   stop_
+
+   loop_
+      _Data_set.Type
+      _Data_set.Count
+      _Data_set.Entry_ID
+
+      assigned_chemical_shifts 1 4317 
+
+   stop_
+
+   loop_
+      _Datum.Type
+      _Datum.Count
+      _Datum.Entry_ID
+
+      '1H chemical shifts'  448 4317 
+      '13C chemical shifts' 303 4317 
+      '15N chemical shifts'  85 4317 
+
+   stop_
+
+   loop_
+      _Release.Date
+      _Release.Type
+      _Release.Author
+      _Release.Detail
+      _Release.Entry_ID
+
+      2004-12-07 update   BMRB   "update entry citation" 4317 
+      1999-06-11 original author "original release"      4317 
+
+   stop_
+
+save_
+
+
+save_entry_citation
+   _Citation.Sf_category       citations
+   _Citation.Sf_framecode      entry_citation
+   _Citation.Entry_ID          4317
+   _Citation.ID                1
+   _Citation.Class            "entry citation"
+   _Citation.MEDLINE_UI_code   .
+   _Citation.PubMed_ID         .
+   _Citation.Title            
+;
+A novel RNA-binding motif in influenza A virus non-structural protein 1
+;
+   _Citation.Status            published
+   _Citation.Type              journal
+   _Citation.Journal_abbrev   "Nat. Struct. Biol."
+   _Citation.Journal_volume    4
+   _Citation.Journal_issue     ?
+   _Citation.Page_first        891
+   _Citation.Page_last         ?
+   _Citation.Year              1997
+
+   loop_
+      _Citation_author.Ordinal
+      _Citation_author.Given_name
+      _Citation_author.Family_name
+      _Citation_author.Middle_initials
+      _Citation_author.Family_title
+      _Citation_author.Entry_ID
+      _Citation_author.Citation_ID
+
+      1 Chen-ya Chien      .  . 4317 1 
+      2 R.      Tejero     .  . 4317 1 
+      3 Y.      Huang      .  . 4317 1 
+      4 D.      Zimmerman  E. . 4317 1 
+      5 C.      Rios       B. . 4317 1 
+      6 R.      Krug       M. . 4317 1 
+      7 Gaetano Montelione T. . 4317 1 
+
+   stop_
+
+save_
+
+
+save_NS1(1-73)_dimer
+   _Assembly.Sf_category      assembly
+   _Assembly.Sf_framecode     NS1(1-73)_dimer
+   _Assembly.Entry_ID         4317
+   _Assembly.ID               1
+   _Assembly.Name            "NS1(1-73) dimer"
+   _Assembly.Paramagnetic     no
+   _Assembly.Molecular_mass   16600
+
+   loop_
+      _Assembly_type.Type
+      _Assembly_type.Entry_ID
+      _Assembly_type.Assembly_ID
+
+      dimer 4317 1 
+
+   stop_
+
+   loop_
+      _Entity_assembly.ID
+      _Entity_assembly.Entity_assembly_name
+      _Entity_assembly.Entity_ID
+      _Entity_assembly.Entity_label
+      _Entity_assembly.Physical_state
+      _Entity_assembly.Magnetic_equivalence_group_code
+      _Entity_assembly.Entry_ID
+      _Entity_assembly.Assembly_ID
+
+      1 'NS1(1-73) subunit 1' 1 $NS1(1-73) native 1 4317 1 
+      2 'NS1(1-73) subunit 2' 1 $NS1(1-73) native 1 4317 1 
+
+   stop_
+
+   loop_
+      _Assembly_db_link.Database_code
+      _Assembly_db_link.Accession_code
+      _Assembly_db_link.Entry_mol_name
+      _Assembly_db_link.Entry_relation_type
+      _Assembly_db_link.Entry_details
+      _Assembly_db_link.Entry_ID
+      _Assembly_db_link.Assembly_ID
+
+      PDB 1AIL "N-Terminal Fragment Of Ns1 Protein From Influenza A Virus"                                          ? . 4317 1 
+      PDB 1NS1 "A Chain A, Rna-Binding Domain Of Non-Structural Protein 1 From Influenza Virus, Nmr, 16 Structures" ? . 4317 1 
+
+   stop_
+
+   loop_
+      _Assembly_common_name.Name
+      _Assembly_common_name.Type
+      _Assembly_common_name.Entry_ID
+      _Assembly_common_name.Assembly_ID
+
+      "NS1(1-73) dimer" system       4317 1 
+       NS1(1-73)        abbreviation 4317 1 
+
+   stop_
+
+   loop_
+      _Assembly_bio_function.Biological_function
+      _Assembly_bio_function.Entry_ID
+      _Assembly_bio_function.Assembly_ID
+
+      'Double-stranded RNA binding protein' 4317 1 
+      'Inhibit RNA splicing'                4317 1 
+
+   stop_
+
+save_
+
+
+save_NS1(1-73)
+   _Entity.Sf_category                       entity
+   _Entity.Sf_framecode                      NS1(1-73)
+   _Entity.Entry_ID                          4317
+   _Entity.ID                                1
+   _Entity.Name                             "Non-structural protein 1"
+   _Entity.Type                              polymer
+   _Entity.Polymer_type                     "polypeptide(L)"
+   _Entity.Polymer_seq_one_letter_code_can  
+;
+MDSNTVSSFQVDCFLWHVRK
+QVVDQELGDAPFLDRLRRDQ
+KSLRGRGSTLGLNIEAATHV
+GKQIVEKILKEES
+;
+   _Entity.Polymer_seq_one_letter_code      
+;
+MDSNTVSSFQVDCFLWHVRK
+QVVDQELGDAPFLDRLRRDQ
+KSLRGRGSTLGLNIEAATHV
+GKQIVEKILKEES
+;
+   _Entity.Number_of_monomers                73
+   _Entity.Formula_weight                    8300
+   _Entity.Details                          "Molecular weight of monomer is 8300 Da."
+   _Entity.DB_query_date                     2007-10-08
+   _Entity.DB_query_revised_last_date        2007-05-31
+
+   loop_
+      _Entity_db_link.Database_code
+      _Entity_db_link.Accession_code
+      _Entity_db_link.Entry_mol_name
+      _Entity_db_link.Seq_query_to_submitted_percent
+      _Entity_db_link.Seq_subject_length
+      _Entity_db_link.Seq_identity
+      _Entity_db_link.Seq_positive
+      _Entity_db_link.Seq_homology_expectation_val
+      _Entity_db_link.Seq_difference_details
+      _Entity_db_link.Seq_alignment_details
+      _Entity_db_link.Entry_ID
+      _Entity_db_link.Entity_ID
+
+      PDB        1AIL       "Chain  , N-Terminal Fragment Of Ns1 ProteinFrom Influenza A Virus"                                100.00  73 100 100 3e-34  ? ? 4317 1 
+      PDB        1NS1       "A Chain A, Rna-Binding Domain OfNon-Structural Protein 1 From Influenza Virus, Nmr, 16Structures" 100.00  73 100 100 4e-34  ? ? 4317 1 
+      EMBL       CAA24288.1 "NS1 protein [Influenza A virus(A/Udorn/8/1972(H3N2))]"                                             30.80 237 100 100 10e-35 ? ? 4317 1 
+      GenBank    AAO46771.1 "non-structural protein NS1 [InfluenzaA virus (A/PuertoRico/3/72(H3N2))]"                           31.74 230 100 100 10e-35 ? ? 4317 1 
+      GenBank    ABP49189.1 "nonstructural protein 1 [Influenza Avirus (A/Memphis/3/1971(H3N2))]"                               31.74 230 100 100 10e-35 ? ? 4317 1 
+      GenBank    AAO46767.1 "non-structural protein NS1 [InfluenzaA virus (A/Hungary/2/71(H3N2))]"                              30.80 237 100 100 10e-35 ? ? 4317 1 
+      GenBank    AAO46769.1 "non-structural protein NS1 [InfluenzaA virus (A/England/42/72(H3N2))]"                             30.80 237 100 100 10e-35 ? ? 4317 1 
+      GenBank    ABO52340.1 "nonstructural protein 1 [Influenza Avirus (A/Albany/20/1974(H3N2))]"                               30.80 237 100 100 10e-35 ? ? 4317 1 
+      SWISS-PROT P03495     "NS1_IAUDO Non-structural protein 1 (NS1)(NS1A)"                                                    30.80 237 100 100 10e-35 ? ? 4317 1 
+
+   stop_
+
+   loop_
+      _Entity_common_name.Name
+      _Entity_common_name.Type
+      _Entity_common_name.Entry_ID
+      _Entity_common_name.Entity_ID
+
+      "Non-structural protein 1" common       4317 1 
+       NS1(1-73)                 abbreviation 4317 1 
+
+   stop_
+
+   loop_
+      _Entity_comp_index.ID
+      _Entity_comp_index.Auth_seq_ID
+      _Entity_comp_index.Comp_ID
+      _Entity_comp_index.Entry_ID
+      _Entity_comp_index.Entity_ID
+
+       1 ? MET 4317 1 
+       2 ? ASP 4317 1 
+       3 ? SER 4317 1 
+       4 ? ASN 4317 1 
+       5 ? THR 4317 1 
+       6 ? VAL 4317 1 
+       7 ? SER 4317 1 
+       8 ? SER 4317 1 
+       9 ? PHE 4317 1 
+      10 ? GLN 4317 1 
+      11 ? VAL 4317 1 
+      12 ? ASP 4317 1 
+      13 ? CYS 4317 1 
+      14 ? PHE 4317 1 
+      15 ? LEU 4317 1 
+      16 ? TRP 4317 1 
+      17 ? HIS 4317 1 
+      18 ? VAL 4317 1 
+      19 ? ARG 4317 1 
+      20 ? LYS 4317 1 
+      21 ? GLN 4317 1 
+      22 ? VAL 4317 1 
+      23 ? VAL 4317 1 
+      24 ? ASP 4317 1 
+      25 ? GLN 4317 1 
+      26 ? GLU 4317 1 
+      27 ? LEU 4317 1 
+      28 ? GLY 4317 1 
+      29 ? ASP 4317 1 
+      30 ? ALA 4317 1 
+      31 ? PRO 4317 1 
+      32 ? PHE 4317 1 
+      33 ? LEU 4317 1 
+      34 ? ASP 4317 1 
+      35 ? ARG 4317 1 
+      36 ? LEU 4317 1 
+      37 ? ARG 4317 1 
+      38 ? ARG 4317 1 
+      39 ? ASP 4317 1 
+      40 ? GLN 4317 1 
+      41 ? LYS 4317 1 
+      42 ? SER 4317 1 
+      43 ? LEU 4317 1 
+      44 ? ARG 4317 1 
+      45 ? GLY 4317 1 
+      46 ? ARG 4317 1 
+      47 ? GLY 4317 1 
+      48 ? SER 4317 1 
+      49 ? THR 4317 1 
+      50 ? LEU 4317 1 
+      51 ? GLY 4317 1 
+      52 ? LEU 4317 1 
+      53 ? ASN 4317 1 
+      54 ? ILE 4317 1 
+      55 ? GLU 4317 1 
+      56 ? ALA 4317 1 
+      57 ? ALA 4317 1 
+      58 ? THR 4317 1 
+      59 ? HIS 4317 1 
+      60 ? VAL 4317 1 
+      61 ? GLY 4317 1 
+      62 ? LYS 4317 1 
+      63 ? GLN 4317 1 
+      64 ? ILE 4317 1 
+      65 ? VAL 4317 1 
+      66 ? GLU 4317 1 
+      67 ? LYS 4317 1 
+      68 ? ILE 4317 1 
+      69 ? LEU 4317 1 
+      70 ? LYS 4317 1 
+      71 ? GLU 4317 1 
+      72 ? GLU 4317 1 
+      73 ? SER 4317 1 
+
+   stop_
+
+save_
+
+
+save_natural_source
+   _Entity_natural_src_list.Sf_category    natural_source
+   _Entity_natural_src_list.Sf_framecode   natural_source
+   _Entity_natural_src_list.Entry_ID       4317
+   _Entity_natural_src_list.ID             1
+
+   loop_
+      _Entity_natural_src.ID
+      _Entity_natural_src.Entity_ID
+      _Entity_natural_src.Entity_label
+      _Entity_natural_src.NCBI_taxonomy_ID
+      _Entity_natural_src.Organism_name_scientific
+      _Entity_natural_src.Organism_name_common
+      _Entity_natural_src.Organism_acronym
+      _Entity_natural_src.ICTVdb_decimal_code
+      _Entity_natural_src.Superkingdom
+      _Entity_natural_src.Kingdom
+      _Entity_natural_src.Genus
+      _Entity_natural_src.Species
+      _Entity_natural_src.Strain
+      _Entity_natural_src.Variant
+      _Entity_natural_src.Subvariant
+      _Entity_natural_src.Organ
+      _Entity_natural_src.Tissue
+      _Entity_natural_src.Cell_line
+      _Entity_natural_src.Cell_type
+      _Entity_natural_src.ATCC_number
+      _Entity_natural_src.Organelle
+      _Entity_natural_src.Fraction
+      _Entity_natural_src.Secretion
+      _Entity_natural_src.Plasmid
+      _Entity_natural_src.Gene_mnemonic
+      _Entity_natural_src.Details
+      _Entity_natural_src.Entry_ID
+      _Entity_natural_src.Entity_natural_src_list_ID
+
+      1 1 $NS1(1-73) 11320 "Influenza virus A and B group Influenza A Virus" "Flu Virus" ? ? Viruses . "Influenza virus A and B group" "Influenza A Virus" Udorn30772 ? ? ? ? ? ? ? ? ? ? ? ? ? 4317 1 
+
+   stop_
+
+save_
+
+
+save_experimental_source
+   _Entity_experimental_src_list.Sf_category    experimental_source
+   _Entity_experimental_src_list.Sf_framecode   experimental_source
+   _Entity_experimental_src_list.Entry_ID       4317
+   _Entity_experimental_src_list.ID             1
+
+   loop_
+      _Entity_experimental_src.ID
+      _Entity_experimental_src.Entity_ID
+      _Entity_experimental_src.Entity_label
+      _Entity_experimental_src.Production_method
+      _Entity_experimental_src.Host_org_scientific_name
+      _Entity_experimental_src.Host_org_name_common
+      _Entity_experimental_src.Host_org_genus
+      _Entity_experimental_src.Host_org_species
+      _Entity_experimental_src.Host_org_strain
+      _Entity_experimental_src.Host_org_variant
+      _Entity_experimental_src.Host_org_organ
+      _Entity_experimental_src.Host_org_tissue
+      _Entity_experimental_src.Host_org_cell_line
+      _Entity_experimental_src.Host_org_cell_type
+      _Entity_experimental_src.Host_org_ATCC_number
+      _Entity_experimental_src.Vector_type
+      _Entity_experimental_src.Vector_name
+      _Entity_experimental_src.Vendor_name
+      _Entity_experimental_src.Details
+      _Entity_experimental_src.Entry_ID
+      _Entity_experimental_src.Entity_experimental_src_list_ID
+
+      1 1 $NS1(1-73) 'recombinant technology' " " . . . . ? ? ? ? ? ? ? . ? ? 4317 1 
+
+   stop_
+
+save_
+
+
+save_sample_1
+   _Sample.Sf_category    sample
+   _Sample.Sf_framecode   sample_1
+   _Sample.Entry_ID       4317
+   _Sample.ID             1
+   _Sample.Type           solution
+
+   loop_
+      _Sample_component.ID
+      _Sample_component.Mol_common_name
+      _Sample_component.Isotopic_labeling
+      _Sample_component.Assembly_ID
+      _Sample_component.Assembly_label
+      _Sample_component.Entity_ID
+      _Sample_component.Entity_label
+      _Sample_component.Concentration_val
+      _Sample_component.Concentration_val_min
+      _Sample_component.Concentration_val_max
+      _Sample_component.Concentration_val_units
+      _Sample_component.Entry_ID
+      _Sample_component.Sample_ID
+
+      1 "NS1(1-73) dimer" . 1 $NS1(1-73)_dimer . .  2.0 ? ? mM 4317 1 
+      2  NH4)Ac           .  .  .               . . 50   ? ? mM 4317 1 
+      3  D2O              .  .  .               . .  5   ? ? %  4317 1 
+      4  H2O              .  .  .               . . 95   ? ? %  4317 1 
+
+   stop_
+
+save_
+
+
+save_sample_2
+   _Sample.Sf_category    sample
+   _Sample.Sf_framecode   sample_2
+   _Sample.Entry_ID       4317
+   _Sample.ID             2
+   _Sample.Type           solution
+
+   loop_
+      _Sample_component.ID
+      _Sample_component.Mol_common_name
+      _Sample_component.Isotopic_labeling
+      _Sample_component.Assembly_ID
+      _Sample_component.Assembly_label
+      _Sample_component.Entity_ID
+      _Sample_component.Entity_label
+      _Sample_component.Concentration_val
+      _Sample_component.Concentration_val_min
+      _Sample_component.Concentration_val_max
+      _Sample_component.Concentration_val_units
+      _Sample_component.Entry_ID
+      _Sample_component.Sample_ID
+
+      1 "NS1(1-73) dimer" "[U-100% 15N]" 1 $NS1(1-73)_dimer . .  2.5 ? ? mM 4317 2 
+      2  NH4)Ac            .              .  .               . . 50   ? ? mM 4317 2 
+      3  D2O               .              .  .               . .  5   ? ? %  4317 2 
+      4  H2O               .              .  .               . . 95   ? ? %  4317 2 
+
+   stop_
+
+save_
+
+
+save_sample_3
+   _Sample.Sf_category    sample
+   _Sample.Sf_framecode   sample_3
+   _Sample.Entry_ID       4317
+   _Sample.ID             3
+   _Sample.Type           solution
+
+   loop_
+      _Sample_component.ID
+      _Sample_component.Mol_common_name
+      _Sample_component.Isotopic_labeling
+      _Sample_component.Assembly_ID
+      _Sample_component.Assembly_label
+      _Sample_component.Entity_ID
+      _Sample_component.Entity_label
+      _Sample_component.Concentration_val
+      _Sample_component.Concentration_val_min
+      _Sample_component.Concentration_val_max
+      _Sample_component.Concentration_val_units
+      _Sample_component.Entry_ID
+      _Sample_component.Sample_ID
+
+      1 "NS1(1-73) dimer" "[U-100% 15N; U-100% 13C]" 1 $NS1(1-73)_dimer . .  2.0 ? ? mM 4317 3 
+      2  NH4)Ac            .                          .  .               . . 50   ? ? mM 4317 3 
+      3  D2O               .                          .  .               . .  5   ? ? %  4317 3 
+      4  H2O               .                          .  .               . . 95   ? ? %  4317 3 
+
+   stop_
+
+save_
+
+
+save_condition_1
+   _Sample_condition_list.Sf_category    sample_conditions
+   _Sample_condition_list.Sf_framecode   condition_1
+   _Sample_condition_list.Entry_ID       4317
+   _Sample_condition_list.ID             1
+   _Sample_condition_list.Details       
+;
+All samples were in H2O solvent containing 50 mM NH4OAc, 1 mM NaN3, 5% D2O
+;
+
+   loop_
+      _Sample_condition_variable.Type
+      _Sample_condition_variable.Val
+      _Sample_condition_variable.Val_err
+      _Sample_condition_variable.Val_units
+      _Sample_condition_variable.Entry_ID
+      _Sample_condition_variable.Sample_condition_list_ID
+
+      pH            6.0 0.1 na 4317 1 
+      temperature 293   0.1 K  4317 1 
+
+   stop_
+
+save_
+
+
+save_vnmr
+   _Software.Sf_category    software
+   _Software.Sf_framecode   vnmr
+   _Software.Entry_ID       4317
+   _Software.ID             1
+   _Software.Name           vnmr
+   _Software.Version        5.3
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      "Data processing" 4317 1 
+
+   stop_
+
+save_
+
+
+save_NMRcompass
+   _Software.Sf_category    software
+   _Software.Sf_framecode   NMRcompass
+   _Software.Entry_ID       4317
+   _Software.ID             2
+   _Software.Name           NMRcompass
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      "Spectra analysis and peakpicking" 4317 2 
+
+   stop_
+
+save_
+
+
+save_AUTOASSIGN
+   _Software.Sf_category    software
+   _Software.Sf_framecode   AUTOASSIGN
+   _Software.Entry_ID       4317
+   _Software.ID             3
+   _Software.Name           AUTOASSIGN
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      "1H, 13C, 15N  resonance assignment" 4317 3 
+      
+;
+Software developed in Montelione lab [Zimmerman et al. (1997) 
+J. Mol. Biol. 269:592-610] for automating the peak assignment
+; 4317 3 
+
+   stop_
+
+save_
+
+
+save_NMR_spectrometer-1
+   _NMR_spectrometer.Sf_category      NMR_spectrometer
+   _NMR_spectrometer.Sf_framecode     NMR_spectrometer-1
+   _NMR_spectrometer.Entry_ID         4317
+   _NMR_spectrometer.ID               1
+   _NMR_spectrometer.Manufacturer     Varian
+   _NMR_spectrometer.Model            .
+   _NMR_spectrometer.Field_strength   500
+
+save_
+
+
+save_NMR_spectrometer-2
+   _NMR_spectrometer.Sf_category      NMR_spectrometer
+   _NMR_spectrometer.Sf_framecode     NMR_spectrometer-2
+   _NMR_spectrometer.Entry_ID         4317
+   _NMR_spectrometer.ID               2
+   _NMR_spectrometer.Manufacturer     Varian
+   _NMR_spectrometer.Model            .
+   _NMR_spectrometer.Field_strength   600
+
+save_
+
+
+save_spectrometer_list
+   _NMR_spectrometer_list.Sf_category   'NMR_spectrometer_list'
+   _NMR_spectrometer_list.Sf_framecode   spectrometer_list
+   _NMR_spectrometer_list.Entry_ID       4317
+   _NMR_spectrometer_list.ID             1
+
+   loop_
+      _NMR_spectrometer_view.ID
+      _NMR_spectrometer_view.Name
+      _NMR_spectrometer_view.Manufacturer
+      _NMR_spectrometer_view.Model
+      _NMR_spectrometer_view.Serial_number
+      _NMR_spectrometer_view.Field_strength
+      _NMR_spectrometer_view.Details
+      _NMR_spectrometer_view.Entry_ID
+      _NMR_spectrometer_view.NMR_spectrometer_list_ID
+
+      1 NMR_spectrometer-1 Varian . ? 500 ? 4317 1 
+      2 NMR_spectrometer-2 Varian . ? 600 ? 4317 1 
+
+   stop_
+
+save_
+
+
+save_experiment_list
+   _Experiment_list.Sf_category    experiment_list
+   _Experiment_list.Sf_framecode   experiment_list
+   _Experiment_list.Entry_ID       4317
+   _Experiment_list.ID             1
+
+save_
+
+
+save_NMR_applied_experiment
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_applied_experiment
+   _NMR_spec_expt.Entry_ID       4317
+   _NMR_spec_expt.ID             1
+   _NMR_spec_expt.Details       
+;
+1H-15N HSQC
+HNCO
+CANH
+CA(CO)NH
+H(CA)NH
+H(CA)(CO)NH
+CBCANH
+CBCA(CO)NH
+HCC(CO)NH-TOCSY
+HCCH-COSY
+
+4 channel probe with pulse field gradient
+;
+
+save_
+
+
+save_chemical_shift_reference
+   _Chem_shift_reference.Sf_category              chem_shift_reference
+   _Chem_shift_reference.Sf_framecode             chemical_shift_reference
+   _Chem_shift_reference.Entry_ID                 4317
+   _Chem_shift_reference.ID                       1
+   _Chem_shift_reference.Proton_shifts_flag      "yes"
+   _Chem_shift_reference.Carbon_shifts_flag      "yes"
+   _Chem_shift_reference.Nitrogen_shifts_flag    "yes"
+   _Chem_shift_reference.Phosphorus_shifts_flag   no
+
+   loop_
+      _Chem_shift_ref.Atom_type
+      _Chem_shift_ref.Atom_isotope_number
+      _Chem_shift_ref.Mol_common_name
+      _Chem_shift_ref.Atom_group
+      _Chem_shift_ref.Chem_shift_units
+      _Chem_shift_ref.Chem_shift_val
+      _Chem_shift_ref.Ref_method
+      _Chem_shift_ref.Ref_type
+      _Chem_shift_ref.Indirect_shift_ratio
+      _Chem_shift_ref.External_ref_loc
+      _Chem_shift_ref.External_ref_sample_geometry
+      _Chem_shift_ref.External_ref_axis
+      _Chem_shift_ref.Indirect_shift_ratio_cit_ID
+      _Chem_shift_ref.Indirect_shift_ratio_cit_label
+      _Chem_shift_ref.Ref_correction_type
+      _Chem_shift_ref.Correction_val
+      _Chem_shift_ref.Correction_val_cit_ID
+      _Chem_shift_ref.Correction_val_cit_label
+      _Chem_shift_ref.Entry_ID
+      _Chem_shift_ref.Chem_shift_reference_ID
+
+      H  1 DSS 'methyl protons' ppm 0.0 internal direct   1.0         . . . . ? ? ? . ? 4317 1 
+      N 15 DSS 'methyl protons' ppm 0.0 .        indirect 0.101329118 . . . . ? ? ? . ? 4317 1 
+      C 13 DSS 'methyl protons' ppm 0.0 .        indirect 0.251449530 . . . . ? ? ? . ? 4317 1 
+
+   stop_
+
+save_
+
+
+save_shift_set_1
+   _Assigned_chem_shift_list.Sf_category                   assigned_chemical_shifts
+   _Assigned_chem_shift_list.Sf_framecode                  shift_set_1
+   _Assigned_chem_shift_list.Entry_ID                      4317
+   _Assigned_chem_shift_list.ID                            1
+   _Assigned_chem_shift_list.Sample_condition_list_ID      1
+   _Assigned_chem_shift_list.Sample_condition_list_label  $condition_1
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_label   $chemical_shift_reference
+
+   loop_
+      _Chem_shift_experiment.Experiment_ID
+      _Chem_shift_experiment.Experiment_name
+      _Chem_shift_experiment.Sample_ID
+      _Chem_shift_experiment.Sample_label
+      _Chem_shift_experiment.Entry_ID
+      _Chem_shift_experiment.Assigned_chem_shift_list_ID
+
+      . ? 1 $sample_1 4317 1 
+      . ? 2 $sample_2 4317 1 
+      . ? 3 $sample_3 4317 1 
+
+   stop_
+
+   loop_
+      _Atom_chem_shift.ID
+      _Atom_chem_shift.Entity_assembly_ID
+      _Atom_chem_shift.Entity_ID
+      _Atom_chem_shift.Comp_index_ID
+      _Atom_chem_shift.Seq_ID
+      _Atom_chem_shift.Comp_ID
+      _Atom_chem_shift.Atom_ID
+      _Atom_chem_shift.Atom_type
+      _Atom_chem_shift.Val
+      _Atom_chem_shift.Val_err
+      _Atom_chem_shift.Ambiguity_code
+      _Atom_chem_shift.Auth_seq_ID
+      _Atom_chem_shift.Entry_ID
+      _Atom_chem_shift.Assigned_chem_shift_list_ID
+
+        1 1 1  1  1 MET HA   H   4.12 0.02 1 ? 4317 1 
+        2 1 1  1  1 MET HB2  H   2.10 0.02 1 ? 4317 1 
+        3 1 1  1  1 MET HB3  H   2.10 0.02 1 ? 4317 1 
+        4 1 1  1  1 MET HG2  H   2.53 0.02 1 ? 4317 1 
+        5 1 1  1  1 MET HG3  H   2.53 0.02 1 ? 4317 1 
+        6 1 1  1  1 MET HE1  H   1.53 0.02 1 ? 4317 1 
+        7 1 1  1  1 MET HE2  H   1.53 0.02 1 ? 4317 1 
+        8 1 1  1  1 MET HE3  H   1.53 0.02 1 ? 4317 1 
+        9 1 1  1  1 MET C    C 174.6  0.1  1 ? 4317 1 
+       10 1 1  1  1 MET CA   C  54.5  0.1  1 ? 4317 1 
+       11 1 1  1  1 MET CB   C  32.7  0.1  1 ? 4317 1 
+       12 1 1  1  1 MET CG   C  32.7  0.1  1 ? 4317 1 
+       13 1 1  1  1 MET CE   C  27.2  0.1  1 ? 4317 1 
+       14 1 1  2  2 ASP H    H   8.96 0.02 1 ? 4317 1 
+       15 1 1  2  2 ASP HA   H   4.80 0.02 1 ? 4317 1 
+       16 1 1  2  2 ASP HB2  H   2.71 0.02 2 ? 4317 1 
+       17 1 1  2  2 ASP HB3  H   2.83 0.02 2 ? 4317 1 
+       18 1 1  2  2 ASP C    C 178.0  0.1  1 ? 4317 1 
+       19 1 1  2  2 ASP CA   C  54.2  0.1  1 ? 4317 1 
+       20 1 1  2  2 ASP CB   C  41.7  0.1  1 ? 4317 1 
+       21 1 1  2  2 ASP N    N 125.7  0.1  1 ? 4317 1 
+       22 1 1  3  3 SER H    H   8.93 0.02 1 ? 4317 1 
+       23 1 1  3  3 SER HA   H   4.28 0.02 1 ? 4317 1 
+       24 1 1  3  3 SER HB2  H   3.97 0.02 2 ? 4317 1 
+       25 1 1  3  3 SER HB3  H   4.04 0.02 2 ? 4317 1 
+       26 1 1  3  3 SER C    C 177.5  0.1  1 ? 4317 1 
+       27 1 1  3  3 SER CA   C  60.1  0.1  1 ? 4317 1 
+       28 1 1  3  3 SER CB   C  63.3  0.1  1 ? 4317 1 
+       29 1 1  3  3 SER N    N 119.1  0.1  1 ? 4317 1 
+       30 1 1  4  4 ASN H    H   8.90 0.02 1 ? 4317 1 
+       31 1 1  4  4 ASN HA   H   4.77 0.02 1 ? 4317 1 
+       32 1 1  4  4 ASN HB2  H   2.53 0.02 1 ? 4317 1 
+       33 1 1  4  4 ASN HB3  H   2.53 0.02 1 ? 4317 1 
+       34 1 1  4  4 ASN HD21 H   6.56 0.02 2 ? 4317 1 
+       35 1 1  4  4 ASN HD22 H   7.00 0.02 2 ? 4317 1 
+       36 1 1  4  4 ASN C    C 179.0  0.1  1 ? 4317 1 
+       37 1 1  4  4 ASN CA   C  53.9  0.1  1 ? 4317 1 
+       38 1 1  4  4 ASN CB   C  35.8  0.1  1 ? 4317 1 
+       39 1 1  4  4 ASN N    N 120.3  0.1  1 ? 4317 1 
+       40 1 1  4  4 ASN ND2  N 110.0  0.1  1 ? 4317 1 
+       41 1 1  5  5 THR H    H   8.12 0.02 1 ? 4317 1 
+       42 1 1  5  5 THR HA   H   4.38 0.02 1 ? 4317 1 
+       43 1 1  5  5 THR HB   H   4.17 0.02 1 ? 4317 1 
+       44 1 1  5  5 THR HG21 H   1.34 0.02 1 ? 4317 1 
+       45 1 1  5  5 THR HG22 H   1.34 0.02 1 ? 4317 1 
+       46 1 1  5  5 THR HG23 H   1.34 0.02 1 ? 4317 1 
+       47 1 1  5  5 THR C    C 178.4  0.1  1 ? 4317 1 
+       48 1 1  5  5 THR CA   C  65.6  0.1  1 ? 4317 1 
+       49 1 1  5  5 THR CB   C  69.2  0.1  1 ? 4317 1 
+       50 1 1  5  5 THR CG2  C  22.1  0.1  1 ? 4317 1 
+       51 1 1  5  5 THR N    N 123.2  0.1  1 ? 4317 1 
+       52 1 1  6  6 VAL H    H   7.66 0.02 1 ? 4317 1 
+       53 1 1  6  6 VAL HA   H   3.54 0.02 1 ? 4317 1 
+       54 1 1  6  6 VAL HB   H   2.29 0.02 1 ? 4317 1 
+       55 1 1  6  6 VAL HG11 H   0.92 0.02 2 ? 4317 1 
+       56 1 1  6  6 VAL HG12 H   0.92 0.02 2 ? 4317 1 
+       57 1 1  6  6 VAL HG13 H   0.92 0.02 2 ? 4317 1 
+       58 1 1  6  6 VAL HG21 H   1.03 0.02 2 ? 4317 1 
+       59 1 1  6  6 VAL HG22 H   1.03 0.02 2 ? 4317 1 
+       60 1 1  6  6 VAL HG23 H   1.03 0.02 2 ? 4317 1 
+       61 1 1  6  6 VAL C    C 178.6  0.1  1 ? 4317 1 
+       62 1 1  6  6 VAL CA   C  67.3  0.1  1 ? 4317 1 
+       63 1 1  6  6 VAL CB   C  31.3  0.1  1 ? 4317 1 
+       64 1 1  6  6 VAL CG1  C  20.2  0.1  2 ? 4317 1 
+       65 1 1  6  6 VAL CG2  C  22.3  0.1  2 ? 4317 1 
+       66 1 1  6  6 VAL N    N 124.3  0.1  1 ? 4317 1 
+       67 1 1  7  7 SER H    H   8.49 0.02 1 ? 4317 1 
+       68 1 1  7  7 SER HA   H   4.70 0.02 1 ? 4317 1 
+       69 1 1  7  7 SER HB2  H   3.82 0.02 1 ? 4317 1 
+       70 1 1  7  7 SER HB3  H   3.82 0.02 1 ? 4317 1 
+       71 1 1  7  7 SER C    C 178.5  0.1  1 ? 4317 1 
+       72 1 1  7  7 SER CA   C  61.1  0.1  1 ? 4317 1 
+       73 1 1  7  7 SER CB   C  62.2  0.1  1 ? 4317 1 
+       74 1 1  7  7 SER N    N 115.0  0.1  1 ? 4317 1 
+       75 1 1  8  8 SER H    H   8.04 0.02 1 ? 4317 1 
+       76 1 1  8  8 SER HA   H   3.56 0.02 1 ? 4317 1 
+       77 1 1  8  8 SER HB2  H   4.00 0.02 2 ? 4317 1 
+       78 1 1  8  8 SER HB3  H   4.16 0.02 2 ? 4317 1 
+       79 1 1  8  8 SER C    C 176.4  0.1  1 ? 4317 1 
+       80 1 1  8  8 SER CA   C  63.2  0.1  1 ? 4317 1 
+       81 1 1  8  8 SER CB   C  63.1  0.1  1 ? 4317 1 
+       82 1 1  8  8 SER N    N 117.5  0.1  1 ? 4317 1 
+       83 1 1  9  9 PHE H    H   7.42 0.02 1 ? 4317 1 
+       84 1 1  9  9 PHE HA   H   4.45 0.02 1 ? 4317 1 
+       85 1 1  9  9 PHE HB2  H   3.88 0.02 2 ? 4317 1 
+       86 1 1  9  9 PHE HB3  H   3.14 0.02 2 ? 4317 1 
+       87 1 1  9  9 PHE HD1  H   6.96 0.02 1 ? 4317 1 
+       88 1 1  9  9 PHE HD2  H   6.96 0.02 1 ? 4317 1 
+       89 1 1  9  9 PHE HE1  H   7.11 0.02 1 ? 4317 1 
+       90 1 1  9  9 PHE HE2  H   7.11 0.02 1 ? 4317 1 
+       91 1 1  9  9 PHE HZ   H   7.44 0.02 1 ? 4317 1 
+       92 1 1  9  9 PHE C    C 178.5  0.1  1 ? 4317 1 
+       93 1 1  9  9 PHE CA   C  61.1  0.1  1 ? 4317 1 
+       94 1 1  9  9 PHE CB   C  39.3  0.1  1 ? 4317 1 
+       95 1 1  9  9 PHE N    N 121.6  0.1  1 ? 4317 1 
+       96 1 1 10 10 GLN H    H   8.66 0.02 1 ? 4317 1 
+       97 1 1 10 10 GLN HA   H   3.54 0.02 1 ? 4317 1 
+       98 1 1 10 10 GLN HB2  H   1.63 0.02 2 ? 4317 1 
+       99 1 1 10 10 GLN HB3  H   1.78 0.02 2 ? 4317 1 
+      100 1 1 10 10 GLN HG2  H   2.48 0.02 2 ? 4317 1 
+      101 1 1 10 10 GLN HG3  H   2.62 0.02 2 ? 4317 1 
+      102 1 1 10 10 GLN HE21 H   6.65 0.02 2 ? 4317 1 
+      103 1 1 10 10 GLN HE22 H   7.40 0.02 2 ? 4317 1 
+      104 1 1 10 10 GLN C    C 179.6  0.1  1 ? 4317 1 
+      105 1 1 10 10 GLN CA   C  59.2  0.1  1 ? 4317 1 
+      106 1 1 10 10 GLN CB   C  28.4  0.1  1 ? 4317 1 
+      107 1 1 10 10 GLN CG   C  35.5  0.1  1 ? 4317 1 
+      108 1 1 10 10 GLN N    N 120.1  0.1  1 ? 4317 1 
+      109 1 1 10 10 GLN NE2  N 108.6  0.1  1 ? 4317 1 
+      110 1 1 11 11 VAL H    H   8.67 0.02 1 ? 4317 1 
+      111 1 1 11 11 VAL HA   H   3.44 0.02 1 ? 4317 1 
+      112 1 1 11 11 VAL HB   H   2.16 0.02 1 ? 4317 1 
+      113 1 1 11 11 VAL HG11 H   1.00 0.02 2 ? 4317 1 
+      114 1 1 11 11 VAL HG12 H   1.00 0.02 2 ? 4317 1 
+      115 1 1 11 11 VAL HG13 H   1.00 0.02 2 ? 4317 1 
+      116 1 1 11 11 VAL HG21 H   1.10 0.02 2 ? 4317 1 
+      117 1 1 11 11 VAL HG22 H   1.10 0.02 2 ? 4317 1 
+      118 1 1 11 11 VAL HG23 H   1.10 0.02 2 ? 4317 1 
+      119 1 1 11 11 VAL C    C 178.6  0.1  1 ? 4317 1 
+      120 1 1 11 11 VAL CA   C  68.0  0.1  1 ? 4317 1 
+      121 1 1 11 11 VAL CB   C  31.2  0.1  1 ? 4317 1 
+      122 1 1 11 11 VAL CG1  C  23.1  0.1  2 ? 4317 1 
+      123 1 1 11 11 VAL CG2  C  24.3  0.1  2 ? 4317 1 
+      124 1 1 11 11 VAL N    N 119.4  0.1  1 ? 4317 1 
+      125 1 1 12 12 ASP H    H   8.59 0.02 1 ? 4317 1 
+      126 1 1 12 12 ASP HA   H   4.57 0.02 1 ? 4317 1 
+      127 1 1 12 12 ASP HB2  H   2.85 0.02 2 ? 4317 1 
+      128 1 1 12 12 ASP HB3  H   2.65 0.02 2 ? 4317 1 
+      129 1 1 12 12 ASP C    C 180.9  0.1  1 ? 4317 1 
+      130 1 1 12 12 ASP CA   C  58.0  0.1  1 ? 4317 1 
+      131 1 1 12 12 ASP CB   C  40.6  0.1  1 ? 4317 1 
+      132 1 1 12 12 ASP N    N 120.3  0.1  1 ? 4317 1 
+      133 1 1 13 13 CYS H    H   8.68 0.02 1 ? 4317 1 
+      134 1 1 13 13 CYS HA   H   4.09 0.02 1 ? 4317 1 
+      135 1 1 13 13 CYS HB2  H   2.86 0.02 2 ? 4317 1 
+      136 1 1 13 13 CYS HB3  H   2.73 0.02 2 ? 4317 1 
+      137 1 1 13 13 CYS C    C 179.0  0.1  1 ? 4317 1 
+      138 1 1 13 13 CYS CA   C  64.7  0.1  1 ? 4317 1 
+      139 1 1 13 13 CYS CB   C  26.4  0.1  1 ? 4317 1 
+      140 1 1 13 13 CYS N    N 119.9  0.1  1 ? 4317 1 
+      141 1 1 14 14 PHE H    H   8.40 0.02 1 ? 4317 1 
+      142 1 1 14 14 PHE HA   H   4.64 0.02 1 ? 4317 1 
+      143 1 1 14 14 PHE HB2  H   2.85 0.02 2 ? 4317 1 
+      144 1 1 14 14 PHE HB3  H   3.70 0.02 2 ? 4317 1 
+      145 1 1 14 14 PHE HD1  H   6.85 0.02 1 ? 4317 1 
+      146 1 1 14 14 PHE HD2  H   6.85 0.02 1 ? 4317 1 
+      147 1 1 14 14 PHE HE1  H   7.22 0.02 1 ? 4317 1 
+      148 1 1 14 14 PHE HE2  H   7.22 0.02 1 ? 4317 1 
+      149 1 1 14 14 PHE HZ   H   7.04 0.02 1 ? 4317 1 
+      150 1 1 14 14 PHE C    C 178.2  0.1  1 ? 4317 1 
+      151 1 1 14 14 PHE CA   C  62.0  0.1  1 ? 4317 1 
+      152 1 1 14 14 PHE CB   C  38.7  0.1  1 ? 4317 1 
+      153 1 1 14 14 PHE N    N 121.4  0.1  1 ? 4317 1 
+      154 1 1 15 15 LEU H    H   9.37 0.02 1 ? 4317 1 
+      155 1 1 15 15 LEU HA   H   3.76 0.02 1 ? 4317 1 
+      156 1 1 15 15 LEU HB2  H   2.08 0.02 2 ? 4317 1 
+      157 1 1 15 15 LEU HB3  H   2.18 0.02 2 ? 4317 1 
+      158 1 1 15 15 LEU HG   H   1.44 0.02 1 ? 4317 1 
+      159 1 1 15 15 LEU HD11 H   0.90 0.02 2 ? 4317 1 
+      160 1 1 15 15 LEU HD12 H   0.90 0.02 2 ? 4317 1 
+      161 1 1 15 15 LEU HD13 H   0.90 0.02 2 ? 4317 1 
+      162 1 1 15 15 LEU HD21 H   1.01 0.02 2 ? 4317 1 
+      163 1 1 15 15 LEU HD22 H   1.01 0.02 2 ? 4317 1 
+      164 1 1 15 15 LEU HD23 H   1.01 0.02 2 ? 4317 1 
+      165 1 1 15 15 LEU C    C 179.6  0.1  1 ? 4317 1 
+      166 1 1 15 15 LEU CA   C  57.7  0.1  1 ? 4317 1 
+      167 1 1 15 15 LEU CB   C  39.2  0.1  1 ? 4317 1 
+      168 1 1 15 15 LEU CG   C  24.4  0.1  1 ? 4317 1 
+      169 1 1 15 15 LEU CD1  C  20.5  0.1  2 ? 4317 1 
+      170 1 1 15 15 LEU CD2  C  20.3  0.1  2 ? 4317 1 
+      171 1 1 15 15 LEU N    N 118.2  0.1  1 ? 4317 1 
+      172 1 1 16 16 TRP H    H   8.36 0.02 1 ? 4317 1 
+      173 1 1 16 16 TRP HA   H   3.68 0.02 1 ? 4317 1 
+      174 1 1 16 16 TRP HB2  H   3.48 0.02 2 ? 4317 1 
+      175 1 1 16 16 TRP HB3  H   3.16 0.02 2 ? 4317 1 
+      176 1 1 16 16 TRP HD1  H   6.93 0.02 1 ? 4317 1 
+      177 1 1 16 16 TRP HE1  H  10.52 0.02 1 ? 4317 1 
+      178 1 1 16 16 TRP HE3  H   7.46 0.02 1 ? 4317 1 
+      179 1 1 16 16 TRP HZ2  H   7.15 0.02 1 ? 4317 1 
+      180 1 1 16 16 TRP HZ3  H   7.17 0.02 1 ? 4317 1 
+      181 1 1 16 16 TRP HH2  H   6.76 0.02 1 ? 4317 1 
+      182 1 1 16 16 TRP C    C 178.0  0.1  1 ? 4317 1 
+      183 1 1 16 16 TRP CA   C  63.5  0.1  1 ? 4317 1 
+      184 1 1 16 16 TRP CB   C  28.7  0.1  1 ? 4317 1 
+      185 1 1 16 16 TRP N    N 121.0  0.1  1 ? 4317 1 
+      186 1 1 16 16 TRP NE1  N 128.6  0.1  1 ? 4317 1 
+      187 1 1 17 17 HIS H    H   7.80 0.02 1 ? 4317 1 
+      188 1 1 17 17 HIS HA   H   4.16 0.02 1 ? 4317 1 
+      189 1 1 17 17 HIS HB2  H   3.44 0.02 2 ? 4317 1 
+      190 1 1 17 17 HIS HB3  H   3.64 0.02 2 ? 4317 1 
+      191 1 1 17 17 HIS HD2  H   7.34 0.02 1 ? 4317 1 
+      192 1 1 17 17 HIS HE1  H   8.41 0.02 1 ? 4317 1 
+      193 1 1 17 17 HIS C    C 178.1  0.1  1 ? 4317 1 
+      194 1 1 17 17 HIS CA   C  59.6  0.1  1 ? 4317 1 
+      195 1 1 17 17 HIS CB   C  27.7  0.1  1 ? 4317 1 
+      196 1 1 17 17 HIS N    N 117.7  0.1  1 ? 4317 1 
+      197 1 1 18 18 VAL H    H   7.93 0.02 1 ? 4317 1 
+      198 1 1 18 18 VAL HA   H   3.10 0.02 1 ? 4317 1 
+      199 1 1 18 18 VAL HB   H   2.03 0.02 1 ? 4317 1 
+      200 1 1 18 18 VAL HG11 H   0.43 0.02 2 ? 4317 1 
+      201 1 1 18 18 VAL HG12 H   0.43 0.02 2 ? 4317 1 
+      202 1 1 18 18 VAL HG13 H   0.43 0.02 2 ? 4317 1 
+      203 1 1 18 18 VAL HG21 H   0.84 0.02 2 ? 4317 1 
+      204 1 1 18 18 VAL HG22 H   0.84 0.02 2 ? 4317 1 
+      205 1 1 18 18 VAL HG23 H   0.84 0.02 2 ? 4317 1 
+      206 1 1 18 18 VAL C    C 178.5  0.1  1 ? 4317 1 
+      207 1 1 18 18 VAL CA   C  66.8  0.1  1 ? 4317 1 
+      208 1 1 18 18 VAL CB   C  31.1  0.1  1 ? 4317 1 
+      209 1 1 18 18 VAL CG1  C  23.1  0.1  1 ? 4317 1 
+      210 1 1 18 18 VAL CG2  C  23.1  0.1  1 ? 4317 1 
+      211 1 1 18 18 VAL N    N 119.0  0.1  1 ? 4317 1 
+      212 1 1 19 19 ARG H    H   7.83 0.02 1 ? 4317 1 
+      213 1 1 19 19 ARG HA   H   3.67 0.02 1 ? 4317 1 
+      214 1 1 19 19 ARG HB2  H   2.82 0.02 2 ? 4317 1 
+      215 1 1 19 19 ARG HB3  H   2.99 0.02 2 ? 4317 1 
+      216 1 1 19 19 ARG HG2  H   1.73 0.02 1 ? 4317 1 
+      217 1 1 19 19 ARG HG3  H   1.73 0.02 1 ? 4317 1 
+      218 1 1 19 19 ARG HD2  H   1.43 0.02 1 ? 4317 1 
+      219 1 1 19 19 ARG HD3  H   1.43 0.02 1 ? 4317 1 
+      220 1 1 19 19 ARG HE   H   5.88 0.02 1 ? 4317 1 
+      221 1 1 19 19 ARG C    C 178.6  0.1  1 ? 4317 1 
+      222 1 1 19 19 ARG CA   C  59.9  0.1  1 ? 4317 1 
+      223 1 1 19 19 ARG CB   C  30.4  0.1  1 ? 4317 1 
+      224 1 1 19 19 ARG CG   C  27.0  0.1  1 ? 4317 1 
+      225 1 1 19 19 ARG CD   C  39.2  0.1  1 ? 4317 1 
+      226 1 1 19 19 ARG N    N 118.8  0.1  1 ? 4317 1 
+      227 1 1 19 19 ARG NE   N  82.2  0.1  1 ? 4317 1 
+      228 1 1 20 20 LYS H    H   8.24 0.02 1 ? 4317 1 
+      229 1 1 20 20 LYS HA   H   3.43 0.02 1 ? 4317 1 
+      230 1 1 20 20 LYS HB2  H   1.60 0.02 1 ? 4317 1 
+      231 1 1 20 20 LYS HB3  H   1.60 0.02 1 ? 4317 1 
+      232 1 1 20 20 LYS HG2  H   0.58 0.02 1 ? 4317 1 
+      233 1 1 20 20 LYS HG3  H   0.58 0.02 1 ? 4317 1 
+      234 1 1 20 20 LYS HD2  H   1.26 0.02 1 ? 4317 1 
+      235 1 1 20 20 LYS HD3  H   1.26 0.02 1 ? 4317 1 
+      236 1 1 20 20 LYS HE2  H   3.04 0.02 1 ? 4317 1 
+      237 1 1 20 20 LYS HE3  H   3.04 0.02 1 ? 4317 1 
+      238 1 1 20 20 LYS C    C 179.0  0.1  1 ? 4317 1 
+      239 1 1 20 20 LYS CA   C  58.5  0.1  1 ? 4317 1 
+      240 1 1 20 20 LYS CB   C  30.6  0.1  1 ? 4317 1 
+      241 1 1 20 20 LYS CG   C  30.2  0.1  1 ? 4317 1 
+      242 1 1 20 20 LYS CD   C  23.5  0.1  1 ? 4317 1 
+      243 1 1 20 20 LYS CE   C  41.4  0.1  1 ? 4317 1 
+      244 1 1 20 20 LYS N    N 122.2  0.1  1 ? 4317 1 
+      245 1 1 21 21 GLN H    H   7.55 0.02 1 ? 4317 1 
+      246 1 1 21 21 GLN HA   H   4.00 0.02 1 ? 4317 1 
+      247 1 1 21 21 GLN HB2  H   2.21 0.02 1 ? 4317 1 
+      248 1 1 21 21 GLN HB3  H   2.21 0.02 1 ? 4317 1 
+      249 1 1 21 21 GLN HG2  H   2.10 0.02 2 ? 4317 1 
+      250 1 1 21 21 GLN HG3  H   2.41 0.02 2 ? 4317 1 
+      251 1 1 21 21 GLN HE21 H   6.80 0.02 2 ? 4317 1 
+      252 1 1 21 21 GLN HE22 H   7.39 0.02 2 ? 4317 1 
+      253 1 1 21 21 GLN C    C 179.3  0.1  1 ? 4317 1 
+      254 1 1 21 21 GLN CA   C  58.2  0.1  1 ? 4317 1 
+      255 1 1 21 21 GLN CB   C  28.9  0.1  1 ? 4317 1 
+      256 1 1 21 21 GLN CG   C  36.1  0.1  1 ? 4317 1 
+      257 1 1 21 21 GLN N    N 118.4  0.1  1 ? 4317 1 
+      258 1 1 21 21 GLN NE2  N 111.3  0.1  1 ? 4317 1 
+      259 1 1 22 22 VAL H    H   7.80 0.02 1 ? 4317 1 
+      260 1 1 22 22 VAL HA   H   3.21 0.02 1 ? 4317 1 
+      261 1 1 22 22 VAL HB   H   2.62 0.02 1 ? 4317 1 
+      262 1 1 22 22 VAL HG11 H   0.31 0.02 2 ? 4317 1 
+      263 1 1 22 22 VAL HG12 H   0.31 0.02 2 ? 4317 1 
+      264 1 1 22 22 VAL HG13 H   0.31 0.02 2 ? 4317 1 
+      265 1 1 22 22 VAL HG21 H   0.89 0.02 2 ? 4317 1 
+      266 1 1 22 22 VAL HG22 H   0.89 0.02 2 ? 4317 1 
+      267 1 1 22 22 VAL HG23 H   0.89 0.02 2 ? 4317 1 
+      268 1 1 22 22 VAL C    C 179.0  0.1  1 ? 4317 1 
+      269 1 1 22 22 VAL CA   C  66.8  0.1  1 ? 4317 1 
+      270 1 1 22 22 VAL CB   C  31.1  0.1  1 ? 4317 1 
+      271 1 1 22 22 VAL CG1  C  21.9  0.1  2 ? 4317 1 
+      272 1 1 22 22 VAL CG2  C  20.5  0.1  2 ? 4317 1 
+      273 1 1 22 22 VAL N    N 120.4  0.1  1 ? 4317 1 
+      274 1 1 23 23 VAL H    H   7.82 0.02 1 ? 4317 1 
+      275 1 1 23 23 VAL HA   H   3.76 0.02 1 ? 4317 1 
+      276 1 1 23 23 VAL HB   H   2.33 0.02 1 ? 4317 1 
+      277 1 1 23 23 VAL HG11 H   1.00 0.02 2 ? 4317 1 
+      278 1 1 23 23 VAL HG12 H   1.00 0.02 2 ? 4317 1 
+      279 1 1 23 23 VAL HG13 H   1.00 0.02 2 ? 4317 1 
+      280 1 1 23 23 VAL HG21 H   1.25 0.02 2 ? 4317 1 
+      281 1 1 23 23 VAL HG22 H   1.25 0.02 2 ? 4317 1 
+      282 1 1 23 23 VAL HG23 H   1.25 0.02 2 ? 4317 1 
+      283 1 1 23 23 VAL C    C 181.1  0.1  1 ? 4317 1 
+      284 1 1 23 23 VAL CA   C  65.6  0.1  1 ? 4317 1 
+      285 1 1 23 23 VAL CB   C  31.1  0.1  1 ? 4317 1 
+      286 1 1 23 23 VAL CG1  C  21.1  0.1  2 ? 4317 1 
+      287 1 1 23 23 VAL CG2  C  23.7  0.1  2 ? 4317 1 
+      288 1 1 23 23 VAL N    N 120.2  0.1  1 ? 4317 1 
+      289 1 1 24 24 ASP H    H   8.78 0.02 1 ? 4317 1 
+      290 1 1 24 24 ASP HA   H   4.43 0.02 1 ? 4317 1 
+      291 1 1 24 24 ASP HB2  H   2.75 0.02 1 ? 4317 1 
+      292 1 1 24 24 ASP HB3  H   2.75 0.02 1 ? 4317 1 
+      293 1 1 24 24 ASP C    C 178.8  0.1  1 ? 4317 1 
+      294 1 1 24 24 ASP CA   C  56.8  0.1  1 ? 4317 1 
+      295 1 1 24 24 ASP CB   C  39.6  0.1  1 ? 4317 1 
+      296 1 1 24 24 ASP N    N 124.8  0.1  1 ? 4317 1 
+      297 1 1 25 25 GLN H    H   7.61 0.02 1 ? 4317 1 
+      298 1 1 25 25 GLN HA   H   4.32 0.02 1 ? 4317 1 
+      299 1 1 25 25 GLN HB2  H   1.80 0.02 2 ? 4317 1 
+      300 1 1 25 25 GLN HB3  H   2.38 0.02 2 ? 4317 1 
+      301 1 1 25 25 GLN HG2  H   2.42 0.02 1 ? 4317 1 
+      302 1 1 25 25 GLN HG3  H   2.42 0.02 1 ? 4317 1 
+      303 1 1 25 25 GLN HE21 H   6.90 0.02 2 ? 4317 1 
+      304 1 1 25 25 GLN HE22 H   6.85 0.02 2 ? 4317 1 
+      305 1 1 25 25 GLN C    C 176.2  0.1  1 ? 4317 1 
+      306 1 1 25 25 GLN CA   C  55.3  0.1  1 ? 4317 1 
+      307 1 1 25 25 GLN CB   C  27.7  0.1  1 ? 4317 1 
+      308 1 1 25 25 GLN CG   C  35.6  0.1  1 ? 4317 1 
+      309 1 1 25 25 GLN N    N 117.6  0.1  1 ? 4317 1 
+      310 1 1 25 25 GLN NE2  N 111.4  0.1  1 ? 4317 1 
+      311 1 1 26 26 GLU H    H   8.13 0.02 1 ? 4317 1 
+      312 1 1 26 26 GLU HA   H   4.12 0.02 1 ? 4317 1 
+      313 1 1 26 26 GLU HB2  H   2.19 0.02 2 ? 4317 1 
+      314 1 1 26 26 GLU HB3  H   2.27 0.02 2 ? 4317 1 
+      315 1 1 26 26 GLU HG2  H   2.10 0.02 1 ? 4317 1 
+      316 1 1 26 26 GLU HG3  H   2.10 0.02 1 ? 4317 1 
+      317 1 1 26 26 GLU C    C 177.6  0.1  1 ? 4317 1 
+      318 1 1 26 26 GLU CA   C  57.0  0.1  1 ? 4317 1 
+      319 1 1 26 26 GLU CB   C  25.5  0.1  1 ? 4317 1 
+      320 1 1 26 26 GLU CG   C  32.3  0.1  1 ? 4317 1 
+      321 1 1 26 26 GLU N    N 112.7  0.1  1 ? 4317 1 
+      322 1 1 27 27 LEU H    H   7.42 0.02 1 ? 4317 1 
+      323 1 1 27 27 LEU HA   H   4.37 0.02 1 ? 4317 1 
+      324 1 1 27 27 LEU HB2  H   1.15 0.02 2 ? 4317 1 
+      325 1 1 27 27 LEU HB3  H   1.50 0.02 2 ? 4317 1 
+      326 1 1 27 27 LEU HG   H   1.00 0.02 1 ? 4317 1 
+      327 1 1 27 27 LEU HD11 H   0.75 0.02 1 ? 4317 1 
+      328 1 1 27 27 LEU HD12 H   0.75 0.02 1 ? 4317 1 
+      329 1 1 27 27 LEU HD13 H   0.75 0.02 1 ? 4317 1 
+      330 1 1 27 27 LEU HD21 H   0.75 0.02 1 ? 4317 1 
+      331 1 1 27 27 LEU HD22 H   0.75 0.02 1 ? 4317 1 
+      332 1 1 27 27 LEU HD23 H   0.75 0.02 1 ? 4317 1 
+      333 1 1 27 27 LEU C    C 177.8  0.1  1 ? 4317 1 
+      334 1 1 27 27 LEU CA   C  53.7  0.1  1 ? 4317 1 
+      335 1 1 27 27 LEU CB   C  44.4  0.1  1 ? 4317 1 
+      336 1 1 27 27 LEU CG   C  23.1  0.1  1 ? 4317 1 
+      337 1 1 27 27 LEU CD1  C  22.4  0.1  1 ? 4317 1 
+      338 1 1 27 27 LEU CD2  C  22.4  0.1  1 ? 4317 1 
+      339 1 1 27 27 LEU N    N 116.0  0.1  1 ? 4317 1 
+      340 1 1 28 28 GLY H    H   7.97 0.02 1 ? 4317 1 
+      341 1 1 28 28 GLY HA2  H   2.87 0.02 2 ? 4317 1 
+      342 1 1 28 28 GLY HA3  H   4.16 0.02 2 ? 4317 1 
+      343 1 1 28 28 GLY C    C 175.8  0.1  1 ? 4317 1 
+      344 1 1 28 28 GLY CA   C  43.2  0.1  1 ? 4317 1 
+      345 1 1 28 28 GLY N    N 105.0  0.1  1 ? 4317 1 
+      346 1 1 29 29 ASP H    H   7.90 0.02 1 ? 4317 1 
+      347 1 1 29 29 ASP HA   H   4.70 0.02 1 ? 4317 1 
+      348 1 1 29 29 ASP HB2  H   2.17 0.02 2 ? 4317 1 
+      349 1 1 29 29 ASP HB3  H   3.14 0.02 2 ? 4317 1 
+      350 1 1 29 29 ASP C    C 177.2  0.1  1 ? 4317 1 
+      351 1 1 29 29 ASP CA   C  51.3  0.1  1 ? 4317 1 
+      352 1 1 29 29 ASP CB   C  41.2  0.1  1 ? 4317 1 
+      353 1 1 29 29 ASP N    N 124.4  0.1  1 ? 4317 1 
+      354 1 1 30 30 ALA H    H   8.59 0.02 1 ? 4317 1 
+      355 1 1 30 30 ALA HA   H   4.38 0.02 1 ? 4317 1 
+      356 1 1 30 30 ALA HB1  H   1.53 0.02 1 ? 4317 1 
+      357 1 1 30 30 ALA HB2  H   1.53 0.02 1 ? 4317 1 
+      358 1 1 30 30 ALA HB3  H   1.53 0.02 1 ? 4317 1 
+      359 1 1 30 30 ALA CA   C  56.8  0.1  1 ? 4317 1 
+      360 1 1 30 30 ALA CB   C  15.5  0.1  1 ? 4317 1 
+      361 1 1 30 30 ALA N    N 120.3  0.1  1 ? 4317 1 
+      362 1 1 31 31 PRO HA   H   4.43 0.02 1 ? 4317 1 
+      363 1 1 31 31 PRO HB2  H   2.30 0.02 2 ? 4317 1 
+      364 1 1 31 31 PRO HB3  H   2.03 0.02 2 ? 4317 1 
+      365 1 1 31 31 PRO HG2  H   1.87 0.02 2 ? 4317 1 
+      366 1 1 31 31 PRO HG3  H   1.80 0.02 2 ? 4317 1 
+      367 1 1 31 31 PRO HD2  H   3.66 0.02 2 ? 4317 1 
+      368 1 1 31 31 PRO HD3  H   3.75 0.02 2 ? 4317 1 
+      369 1 1 31 31 PRO C    C 179.0  0.1  1 ? 4317 1 
+      370 1 1 31 31 PRO CA   C  65.8  0.1  1 ? 4317 1 
+      371 1 1 31 31 PRO CB   C  30.6  0.1  1 ? 4317 1 
+      372 1 1 31 31 PRO CG   C  29.5  0.1  1 ? 4317 1 
+      373 1 1 31 31 PRO CD   C  49.7  0.1  1 ? 4317 1 
+      374 1 1 32 32 PHE H    H   8.08 0.02 1 ? 4317 1 
+      375 1 1 32 32 PHE HA   H   3.93 0.02 1 ? 4317 1 
+      376 1 1 32 32 PHE HB2  H   3.66 0.02 2 ? 4317 1 
+      377 1 1 32 32 PHE HB3  H   3.36 0.02 2 ? 4317 1 
+      378 1 1 32 32 PHE HD1  H   7.04 0.02 1 ? 4317 1 
+      379 1 1 32 32 PHE HD2  H   7.04 0.02 1 ? 4317 1 
+      380 1 1 32 32 PHE HE1  H   7.55 0.02 1 ? 4317 1 
+      381 1 1 32 32 PHE HE2  H   7.55 0.02 1 ? 4317 1 
+      382 1 1 32 32 PHE HZ   H   6.88 0.02 1 ? 4317 1 
+      383 1 1 32 32 PHE C    C 180.1  0.1  1 ? 4317 1 
+      384 1 1 32 32 PHE CA   C  61.8  0.1  1 ? 4317 1 
+      385 1 1 32 32 PHE CB   C  39.7  0.1  1 ? 4317 1 
+      386 1 1 32 32 PHE N    N 120.5  0.1  1 ? 4317 1 
+      387 1 1 33 33 LEU H    H   8.42 0.02 1 ? 4317 1 
+      388 1 1 33 33 LEU HA   H   4.07 0.02 1 ? 4317 1 
+      389 1 1 33 33 LEU HB2  H   1.77 0.02 2 ? 4317 1 
+      390 1 1 33 33 LEU HB3  H   2.04 0.02 2 ? 4317 1 
+      391 1 1 33 33 LEU HG   H   1.60 0.02 1 ? 4317 1 
+      392 1 1 33 33 LEU HD11 H   1.00 0.02 2 ? 4317 1 
+      393 1 1 33 33 LEU HD12 H   1.00 0.02 2 ? 4317 1 
+      394 1 1 33 33 LEU HD13 H   1.00 0.02 2 ? 4317 1 
+      395 1 1 33 33 LEU HD21 H   1.25 0.02 2 ? 4317 1 
+      396 1 1 33 33 LEU HD22 H   1.25 0.02 2 ? 4317 1 
+      397 1 1 33 33 LEU HD23 H   1.25 0.02 2 ? 4317 1 
+      398 1 1 33 33 LEU C    C 179.2  0.1  1 ? 4317 1 
+      399 1 1 33 33 LEU CA   C  58.0  0.1  1 ? 4317 1 
+      400 1 1 33 33 LEU CB   C  41.5  0.1  1 ? 4317 1 
+      401 1 1 33 33 LEU CG   C  27.0  0.1  1 ? 4317 1 
+      402 1 1 33 33 LEU CD1  C  24.8  0.1  2 ? 4317 1 
+      403 1 1 33 33 LEU CD2  C  24.0  0.1  2 ? 4317 1 
+      404 1 1 33 33 LEU N    N 123.2  0.1  1 ? 4317 1 
+      405 1 1 34 34 ASP H    H   8.46 0.02 1 ? 4317 1 
+      406 1 1 34 34 ASP HA   H   4.42 0.02 1 ? 4317 1 
+      407 1 1 34 34 ASP HB2  H   2.79 0.02 1 ? 4317 1 
+      408 1 1 34 34 ASP HB3  H   2.79 0.02 1 ? 4317 1 
+      409 1 1 34 34 ASP C    C 179.8  0.1  1 ? 4317 1 
+      410 1 1 34 34 ASP CA   C  57.7  0.1  1 ? 4317 1 
+      411 1 1 34 34 ASP CB   C  41.2  0.1  1 ? 4317 1 
+      412 1 1 34 34 ASP N    N 121.0  0.1  1 ? 4317 1 
+      413 1 1 35 35 ARG H    H   8.44 0.02 1 ? 4317 1 
+      414 1 1 35 35 ARG HA   H   3.87 0.02 1 ? 4317 1 
+      415 1 1 35 35 ARG HB2  H   1.88 0.02 1 ? 4317 1 
+      416 1 1 35 35 ARG HB3  H   1.88 0.02 1 ? 4317 1 
+      417 1 1 35 35 ARG HG2  H   1.40 0.02 1 ? 4317 1 
+      418 1 1 35 35 ARG HG3  H   1.40 0.02 1 ? 4317 1 
+      419 1 1 35 35 ARG HD2  H   2.98 0.02 2 ? 4317 1 
+      420 1 1 35 35 ARG HD3  H   3.36 0.02 2 ? 4317 1 
+      421 1 1 35 35 ARG HE   H   8.16 0.02 1 ? 4317 1 
+      422 1 1 35 35 ARG C    C 179.4  0.1  1 ? 4317 1 
+      423 1 1 35 35 ARG CA   C  59.8  0.1  1 ? 4317 1 
+      424 1 1 35 35 ARG CB   C  30.6  0.1  1 ? 4317 1 
+      425 1 1 35 35 ARG CG   C  24.3  0.1  1 ? 4317 1 
+      426 1 1 35 35 ARG CD   C  41.9  0.1  1 ? 4317 1 
+      427 1 1 35 35 ARG N    N 118.4  0.1  1 ? 4317 1 
+      428 1 1 35 35 ARG NE   N  84.0  0.1  1 ? 4317 1 
+      429 1 1 36 36 LEU H    H   7.71 0.02 1 ? 4317 1 
+      430 1 1 36 36 LEU HA   H   3.87 0.02 1 ? 4317 1 
+      431 1 1 36 36 LEU HB2  H   2.28 0.02 1 ? 4317 1 
+      432 1 1 36 36 LEU HB3  H   2.28 0.02 1 ? 4317 1 
+      433 1 1 36 36 LEU HG   H   0.60 0.02 1 ? 4317 1 
+      434 1 1 36 36 LEU HD11 H  -0.32 0.02 2 ? 4317 1 
+      435 1 1 36 36 LEU HD12 H  -0.32 0.02 2 ? 4317 1 
+      436 1 1 36 36 LEU HD13 H  -0.32 0.02 2 ? 4317 1 
+      437 1 1 36 36 LEU HD21 H   1.43 0.02 2 ? 4317 1 
+      438 1 1 36 36 LEU HD22 H   1.43 0.02 2 ? 4317 1 
+      439 1 1 36 36 LEU HD23 H   1.43 0.02 2 ? 4317 1 
+      440 1 1 36 36 LEU C    C 181.0  0.1  1 ? 4317 1 
+      441 1 1 36 36 LEU CA   C  58.7  0.1  1 ? 4317 1 
+      442 1 1 36 36 LEU CB   C  42.4  0.1  1 ? 4317 1 
+      443 1 1 36 36 LEU CG   C  25.8  0.1  1 ? 4317 1 
+      444 1 1 36 36 LEU CD1  C  23.6  0.1  2 ? 4317 1 
+      445 1 1 36 36 LEU CD2  C  24.3  0.1  2 ? 4317 1 
+      446 1 1 36 36 LEU N    N 121.5  0.1  1 ? 4317 1 
+      447 1 1 37 37 ARG H    H   8.52 0.02 1 ? 4317 1 
+      448 1 1 37 37 ARG HA   H   4.27 0.02 1 ? 4317 1 
+      449 1 1 37 37 ARG HB2  H   1.98 0.02 2 ? 4317 1 
+      450 1 1 37 37 ARG HB3  H   2.08 0.02 2 ? 4317 1 
+      451 1 1 37 37 ARG HG2  H   1.76 0.02 1 ? 4317 1 
+      452 1 1 37 37 ARG HG3  H   1.76 0.02 1 ? 4317 1 
+      453 1 1 37 37 ARG HD2  H   3.38 0.02 2 ? 4317 1 
+      454 1 1 37 37 ARG HD3  H   3.05 0.02 2 ? 4317 1 
+      455 1 1 37 37 ARG HE   H   7.38 0.02 1 ? 4317 1 
+      456 1 1 37 37 ARG C    C 180.3  0.1  1 ? 4317 1 
+      457 1 1 37 37 ARG CA   C  59.4  0.1  1 ? 4317 1 
+      458 1 1 37 37 ARG CB   C  30.1  0.1  1 ? 4317 1 
+      459 1 1 37 37 ARG CG   C  33.0  0.1  1 ? 4317 1 
+      460 1 1 37 37 ARG CD   C  43.6  0.1  1 ? 4317 1 
+      461 1 1 37 37 ARG N    N 121.2  0.1  1 ? 4317 1 
+      462 1 1 37 37 ARG NE   N  84.8  0.1  1 ? 4317 1 
+      463 1 1 38 38 ARG H    H   8.52 0.02 1 ? 4317 1 
+      464 1 1 38 38 ARG HA   H   4.07 0.02 1 ? 4317 1 
+      465 1 1 38 38 ARG HB2  H   1.91 0.02 2 ? 4317 1 
+      466 1 1 38 38 ARG HB3  H   1.80 0.02 2 ? 4317 1 
+      467 1 1 38 38 ARG HG2  H   1.60 0.02 2 ? 4317 1 
+      468 1 1 38 38 ARG HG3  H   1.38 0.02 2 ? 4317 1 
+      469 1 1 38 38 ARG HD2  H   3.28 0.02 2 ? 4317 1 
+      470 1 1 38 38 ARG HD3  H   2.95 0.02 2 ? 4317 1 
+      471 1 1 38 38 ARG HE   H   7.49 0.02 1 ? 4317 1 
+      472 1 1 38 38 ARG C    C 180.4  0.1  1 ? 4317 1 
+      473 1 1 38 38 ARG CA   C  59.4  0.1  1 ? 4317 1 
+      474 1 1 38 38 ARG CB   C  30.1  0.1  1 ? 4317 1 
+      475 1 1 38 38 ARG CG   C  26.7  0.1  1 ? 4317 1 
+      476 1 1 38 38 ARG CD   C  43.1  0.1  1 ? 4317 1 
+      477 1 1 38 38 ARG N    N 121.5  0.1  1 ? 4317 1 
+      478 1 1 38 38 ARG NE   N  85.9  0.1  1 ? 4317 1 
+      479 1 1 39 39 ASP H    H   8.77 0.02 1 ? 4317 1 
+      480 1 1 39 39 ASP HA   H   4.63 0.02 1 ? 4317 1 
+      481 1 1 39 39 ASP HB2  H   2.98 0.02 1 ? 4317 1 
+      482 1 1 39 39 ASP HB3  H   2.98 0.02 1 ? 4317 1 
+      483 1 1 39 39 ASP C    C 178.6  0.1  1 ? 4317 1 
+      484 1 1 39 39 ASP CA   C  56.1  0.1  1 ? 4317 1 
+      485 1 1 39 39 ASP CB   C  40.0  0.1  1 ? 4317 1 
+      486 1 1 39 39 ASP N    N 120.2  0.1  1 ? 4317 1 
+      487 1 1 40 40 GLN H    H   8.27 0.02 1 ? 4317 1 
+      488 1 1 40 40 GLN HA   H   3.15 0.02 1 ? 4317 1 
+      489 1 1 40 40 GLN HB2  H   2.31 0.02 2 ? 4317 1 
+      490 1 1 40 40 GLN HB3  H   2.40 0.02 2 ? 4317 1 
+      491 1 1 40 40 GLN HG2  H   1.75 0.02 2 ? 4317 1 
+      492 1 1 40 40 GLN HG3  H   1.96 0.02 2 ? 4317 1 
+      493 1 1 40 40 GLN HE21 H   6.89 0.02 2 ? 4317 1 
+      494 1 1 40 40 GLN HE22 H   7.19 0.02 2 ? 4317 1 
+      495 1 1 40 40 GLN C    C 178.8  0.1  1 ? 4317 1 
+      496 1 1 40 40 GLN CA   C  59.2  0.1  1 ? 4317 1 
+      497 1 1 40 40 GLN CB   C  28.3  0.1  1 ? 4317 1 
+      498 1 1 40 40 GLN CG   C  33.0  0.1  1 ? 4317 1 
+      499 1 1 40 40 GLN N    N 122.2  0.1  1 ? 4317 1 
+      500 1 1 40 40 GLN NE2  N 111.8  0.1  1 ? 4317 1 
+      501 1 1 41 41 LYS H    H   7.11 0.02 1 ? 4317 1 
+      502 1 1 41 41 LYS HA   H   4.01 0.02 1 ? 4317 1 
+      503 1 1 41 41 LYS HB2  H   1.99 0.02 2 ? 4317 1 
+      504 1 1 41 41 LYS HB3  H   1.73 0.02 2 ? 4317 1 
+      505 1 1 41 41 LYS HG2  H   1.45 0.02 2 ? 4317 1 
+      506 1 1 41 41 LYS HG3  H   1.62 0.02 2 ? 4317 1 
+      507 1 1 41 41 LYS HD2  H   1.67 0.02 1 ? 4317 1 
+      508 1 1 41 41 LYS HD3  H   1.67 0.02 1 ? 4317 1 
+      509 1 1 41 41 LYS HE2  H   2.95 0.02 1 ? 4317 1 
+      510 1 1 41 41 LYS HE3  H   2.95 0.02 1 ? 4317 1 
+      511 1 1 41 41 LYS C    C 180.3  0.1  1 ? 4317 1 
+      512 1 1 41 41 LYS CA   C  59.2  0.1  1 ? 4317 1 
+      513 1 1 41 41 LYS CB   C  32.2  0.1  1 ? 4317 1 
+      514 1 1 41 41 LYS CG   C  25.6  0.1  1 ? 4317 1 
+      515 1 1 41 41 LYS CD   C  33.8  0.1  1 ? 4317 1 
+      516 1 1 41 41 LYS CE   C  41.9  0.1  1 ? 4317 1 
+      517 1 1 41 41 LYS N    N 117.4  0.1  1 ? 4317 1 
+      518 1 1 42 42 SER H    H   7.87 0.02 1 ? 4317 1 
+      519 1 1 42 42 SER HA   H   4.35 0.02 1 ? 4317 1 
+      520 1 1 42 42 SER HB2  H   4.03 0.02 1 ? 4317 1 
+      521 1 1 42 42 SER HB3  H   4.03 0.02 1 ? 4317 1 
+      522 1 1 42 42 SER C    C 179.0  0.1  1 ? 4317 1 
+      523 1 1 42 42 SER CA   C  60.6  0.1  1 ? 4317 1 
+      524 1 1 42 42 SER CB   C  62.7  0.1  1 ? 4317 1 
+      525 1 1 42 42 SER N    N 115.8  0.1  1 ? 4317 1 
+      526 1 1 43 43 LEU H    H   8.88 0.02 1 ? 4317 1 
+      527 1 1 43 43 LEU HA   H   4.17 0.02 1 ? 4317 1 
+      528 1 1 43 43 LEU HB2  H   1.23 0.02 1 ? 4317 1 
+      529 1 1 43 43 LEU HB3  H   1.75 0.02 1 ? 4317 1 
+      530 1 1 43 43 LEU HG   H   1.60 0.02 1 ? 4317 1 
+      531 1 1 43 43 LEU HD11 H   0.85 0.02 2 ? 4317 1 
+      532 1 1 43 43 LEU HD12 H   0.85 0.02 2 ? 4317 1 
+      533 1 1 43 43 LEU HD13 H   0.85 0.02 2 ? 4317 1 
+      534 1 1 43 43 LEU HD21 H   0.56 0.02 2 ? 4317 1 
+      535 1 1 43 43 LEU HD22 H   0.56 0.02 2 ? 4317 1 
+      536 1 1 43 43 LEU HD23 H   0.56 0.02 2 ? 4317 1 
+      537 1 1 43 43 LEU C    C 179.9  0.1  1 ? 4317 1 
+      538 1 1 43 43 LEU CA   C  58.2  0.1  1 ? 4317 1 
+      539 1 1 43 43 LEU CB   C  41.6  0.1  1 ? 4317 1 
+      540 1 1 43 43 LEU CG   C  27.1  0.1  1 ? 4317 1 
+      541 1 1 43 43 LEU CD1  C  22.8  0.1  2 ? 4317 1 
+      542 1 1 43 43 LEU CD2  C  24.5  0.1  2 ? 4317 1 
+      543 1 1 43 43 LEU N    N 123.6  0.1  1 ? 4317 1 
+      544 1 1 44 44 ARG H    H   7.83 0.02 1 ? 4317 1 
+      545 1 1 44 44 ARG HA   H   4.09 0.02 1 ? 4317 1 
+      546 1 1 44 44 ARG HB2  H   1.79 0.02 2 ? 4317 1 
+      547 1 1 44 44 ARG HB3  H   1.92 0.02 2 ? 4317 1 
+      548 1 1 44 44 ARG HG2  H   1.58 0.02 1 ? 4317 1 
+      549 1 1 44 44 ARG HG3  H   1.58 0.02 1 ? 4317 1 
+      550 1 1 44 44 ARG HD2  H   3.26 0.02 2 ? 4317 1 
+      551 1 1 44 44 ARG HD3  H   2.92 0.02 2 ? 4317 1 
+      552 1 1 44 44 ARG HE   H   7.29 0.02 1 ? 4317 1 
+      553 1 1 44 44 ARG C    C 180.5  0.1  1 ? 4317 1 
+      554 1 1 44 44 ARG CA   C  59.4  0.1  1 ? 4317 1 
+      555 1 1 44 44 ARG CB   C  29.7  0.1  1 ? 4317 1 
+      556 1 1 44 44 ARG CG   C  27.1  0.1  1 ? 4317 1 
+      557 1 1 44 44 ARG CD   C  43.1  0.1  1 ? 4317 1 
+      558 1 1 44 44 ARG N    N 119.1  0.1  1 ? 4317 1 
+      559 1 1 44 44 ARG NE   N  84.6  0.1  1 ? 4317 1 
+      560 1 1 45 45 GLY H    H   7.84 0.02 1 ? 4317 1 
+      561 1 1 45 45 GLY HA2  H   3.98 0.02 1 ? 4317 1 
+      562 1 1 45 45 GLY HA3  H   3.98 0.02 1 ? 4317 1 
+      563 1 1 45 45 GLY C    C 178.0  0.1  1 ? 4317 1 
+      564 1 1 45 45 GLY CA   C  46.8  0.1  1 ? 4317 1 
+      565 1 1 45 45 GLY N    N 107.2  0.1  1 ? 4317 1 
+      566 1 1 46 46 ARG H    H   8.47 0.02 1 ? 4317 1 
+      567 1 1 46 46 ARG HA   H   3.99 0.02 1 ? 4317 1 
+      568 1 1 46 46 ARG HB2  H   1.90 0.02 1 ? 4317 1 
+      569 1 1 46 46 ARG HB3  H   1.90 0.02 1 ? 4317 1 
+      570 1 1 46 46 ARG HG2  H   1.50 0.02 2 ? 4317 1 
+      571 1 1 46 46 ARG HG3  H   1.59 0.02 2 ? 4317 1 
+      572 1 1 46 46 ARG HD2  H   3.41 0.02 2 ? 4317 1 
+      573 1 1 46 46 ARG HD3  H   3.04 0.02 2 ? 4317 1 
+      574 1 1 46 46 ARG HE   H   7.66 0.02 1 ? 4317 1 
+      575 1 1 46 46 ARG C    C 179.3  0.1  1 ? 4317 1 
+      576 1 1 46 46 ARG CA   C  58.9  0.1  1 ? 4317 1 
+      577 1 1 46 46 ARG CB   C  31.9  0.1  1 ? 4317 1 
+      578 1 1 46 46 ARG CG   C  27.2  0.1  1 ? 4317 1 
+      579 1 1 46 46 ARG CD   C  43.6  0.1  1 ? 4317 1 
+      580 1 1 46 46 ARG N    N 123.7  0.1  1 ? 4317 1 
+      581 1 1 46 46 ARG NE   N  83.0  0.1  1 ? 4317 1 
+      582 1 1 47 47 GLY H    H   8.94 0.02 1 ? 4317 1 
+      583 1 1 47 47 GLY HA2  H   3.06 0.02 2 ? 4317 1 
+      584 1 1 47 47 GLY HA3  H   3.72 0.02 2 ? 4317 1 
+      585 1 1 47 47 GLY C    C 177.5  0.1  1 ? 4317 1 
+      586 1 1 47 47 GLY CA   C  47.8  0.1  1 ? 4317 1 
+      587 1 1 47 47 GLY N    N 107.3  0.1  1 ? 4317 1 
+      588 1 1 48 48 SER H    H   7.84 0.02 1 ? 4317 1 
+      589 1 1 48 48 SER HA   H   4.27 0.02 1 ? 4317 1 
+      590 1 1 48 48 SER HB2  H   4.04 0.02 1 ? 4317 1 
+      591 1 1 48 48 SER HB3  H   4.04 0.02 1 ? 4317 1 
+      592 1 1 48 48 SER C    C 178.6  0.1  1 ? 4317 1 
+      593 1 1 48 48 SER CA   C  61.0  0.1  1 ? 4317 1 
+      594 1 1 48 48 SER CB   C  62.7  0.1  1 ? 4317 1 
+      595 1 1 48 48 SER N    N 116.2  0.1  1 ? 4317 1 
+      596 1 1 49 49 THR H    H   7.95 0.02 1 ? 4317 1 
+      597 1 1 49 49 THR HA   H   3.94 0.02 1 ? 4317 1 
+      598 1 1 49 49 THR HB   H   4.17 0.02 1 ? 4317 1 
+      599 1 1 49 49 THR HG21 H   1.19 0.02 1 ? 4317 1 
+      600 1 1 49 49 THR HG22 H   1.19 0.02 1 ? 4317 1 
+      601 1 1 49 49 THR HG23 H   1.19 0.02 1 ? 4317 1 
+      602 1 1 49 49 THR C    C 177.6  0.1  1 ? 4317 1 
+      603 1 1 49 49 THR CA   C  65.8  0.1  1 ? 4317 1 
+      604 1 1 49 49 THR CB   C  68.8  0.1  1 ? 4317 1 
+      605 1 1 49 49 THR CG2  C  21.3  0.1  1 ? 4317 1 
+      606 1 1 49 49 THR N    N 118.5  0.1  1 ? 4317 1 
+      607 1 1 50 50 LEU H    H   7.90 0.02 1 ? 4317 1 
+      608 1 1 50 50 LEU HA   H   4.12 0.02 1 ? 4317 1 
+      609 1 1 50 50 LEU HB2  H   0.89 0.02 2 ? 4317 1 
+      610 1 1 50 50 LEU HB3  H   1.26 0.02 2 ? 4317 1 
+      611 1 1 50 50 LEU HG   H   1.55 0.02 1 ? 4317 1 
+      612 1 1 50 50 LEU HD11 H   0.29 0.02 2 ? 4317 1 
+      613 1 1 50 50 LEU HD12 H   0.29 0.02 2 ? 4317 1 
+      614 1 1 50 50 LEU HD13 H   0.29 0.02 2 ? 4317 1 
+      615 1 1 50 50 LEU HD21 H   0.72 0.02 2 ? 4317 1 
+      616 1 1 50 50 LEU HD22 H   0.72 0.02 2 ? 4317 1 
+      617 1 1 50 50 LEU HD23 H   0.72 0.02 2 ? 4317 1 
+      618 1 1 50 50 LEU C    C 178.2  0.1  1 ? 4317 1 
+      619 1 1 50 50 LEU CA   C  55.1  0.1  1 ? 4317 1 
+      620 1 1 50 50 LEU CB   C  42.9  0.1  1 ? 4317 1 
+      621 1 1 50 50 LEU CG   C  26.4  0.1  1 ? 4317 1 
+      622 1 1 50 50 LEU CD1  C  21.9  0.1  2 ? 4317 1 
+      623 1 1 50 50 LEU CD2  C  22.3  0.1  2 ? 4317 1 
+      624 1 1 50 50 LEU N    N 118.6  0.1  1 ? 4317 1 
+      625 1 1 51 51 GLY H    H   7.79 0.02 1 ? 4317 1 
+      626 1 1 51 51 GLY HA2  H   3.90 0.02 1 ? 4317 1 
+      627 1 1 51 51 GLY HA3  H   3.90 0.02 1 ? 4317 1 
+      628 1 1 51 51 GLY C    C 176.5  0.1  1 ? 4317 1 
+      629 1 1 51 51 GLY CA   C  45.8  0.1  1 ? 4317 1 
+      630 1 1 51 51 GLY N    N 109.1  0.1  1 ? 4317 1 
+      631 1 1 52 52 LEU H    H   7.77 0.02 1 ? 4317 1 
+      632 1 1 52 52 LEU HA   H   4.69 0.02 1 ? 4317 1 
+      633 1 1 52 52 LEU HB2  H   1.26 0.02 2 ? 4317 1 
+      634 1 1 52 52 LEU HB3  H   1.55 0.02 2 ? 4317 1 
+      635 1 1 52 52 LEU HG   H   1.38 0.02 1 ? 4317 1 
+      636 1 1 52 52 LEU HD11 H   0.89 0.02 1 ? 4317 1 
+      637 1 1 52 52 LEU HD12 H   0.89 0.02 1 ? 4317 1 
+      638 1 1 52 52 LEU HD13 H   0.89 0.02 1 ? 4317 1 
+      639 1 1 52 52 LEU HD21 H   0.89 0.02 1 ? 4317 1 
+      640 1 1 52 52 LEU HD22 H   0.89 0.02 1 ? 4317 1 
+      641 1 1 52 52 LEU HD23 H   0.89 0.02 1 ? 4317 1 
+      642 1 1 52 52 LEU C    C 176.8  0.1  1 ? 4317 1 
+      643 1 1 52 52 LEU CA   C  52.7  0.1  1 ? 4317 1 
+      644 1 1 52 52 LEU CB   C  40.7  0.1  1 ? 4317 1 
+      645 1 1 52 52 LEU CG   C  27.2  0.1  1 ? 4317 1 
+      646 1 1 52 52 LEU CD1  C  22.1  0.1  1 ? 4317 1 
+      647 1 1 52 52 LEU CD2  C  22.1  0.1  1 ? 4317 1 
+      648 1 1 52 52 LEU N    N 118.7  0.1  1 ? 4317 1 
+      649 1 1 53 53 ASN H    H   8.40 0.02 1 ? 4317 1 
+      650 1 1 53 53 ASN HA   H   4.75 0.02 1 ? 4317 1 
+      651 1 1 53 53 ASN HB2  H   2.73 0.02 2 ? 4317 1 
+      652 1 1 53 53 ASN HB3  H   2.93 0.02 2 ? 4317 1 
+      653 1 1 53 53 ASN HD21 H   7.27 0.02 2 ? 4317 1 
+      654 1 1 53 53 ASN HD22 H   7.91 0.02 2 ? 4317 1 
+      655 1 1 53 53 ASN C    C 177.8  0.1  1 ? 4317 1 
+      656 1 1 53 53 ASN CA   C  52.7  0.1  1 ? 4317 1 
+      657 1 1 53 53 ASN CB   C  40.7  0.1  1 ? 4317 1 
+      658 1 1 53 53 ASN N    N 121.5  0.1  1 ? 4317 1 
+      659 1 1 53 53 ASN ND2  N 114.9  0.1  1 ? 4317 1 
+      660 1 1 54 54 ILE H    H   9.10 0.02 1 ? 4317 1 
+      661 1 1 54 54 ILE HA   H   3.84 0.02 1 ? 4317 1 
+      662 1 1 54 54 ILE HB   H   1.78 0.02 1 ? 4317 1 
+      663 1 1 54 54 ILE HG12 H   1.31 0.02 1 ? 4317 1 
+      664 1 1 54 54 ILE HG13 H   1.31 0.02 1 ? 4317 1 
+      665 1 1 54 54 ILE HG21 H   0.77 0.02 1 ? 4317 1 
+      666 1 1 54 54 ILE HG22 H   0.77 0.02 1 ? 4317 1 
+      667 1 1 54 54 ILE HG23 H   0.77 0.02 1 ? 4317 1 
+      668 1 1 54 54 ILE HD11 H   0.88 0.02 1 ? 4317 1 
+      669 1 1 54 54 ILE HD12 H   0.88 0.02 1 ? 4317 1 
+      670 1 1 54 54 ILE HD13 H   0.88 0.02 1 ? 4317 1 
+      671 1 1 54 54 ILE C    C 179.5  0.1  1 ? 4317 1 
+      672 1 1 54 54 ILE CA   C  65.1  0.1  1 ? 4317 1 
+      673 1 1 54 54 ILE CB   C  38.4  0.1  1 ? 4317 1 
+      674 1 1 54 54 ILE CG1  C  22.5  0.1  1 ? 4317 1 
+      675 1 1 54 54 ILE CG2  C  22.4  0.1  1 ? 4317 1 
+      676 1 1 54 54 ILE CD1  C  12.9  0.1  1 ? 4317 1 
+      677 1 1 54 54 ILE N    N 128.0  0.1  1 ? 4317 1 
+      678 1 1 55 55 GLU H    H   8.76 0.02 1 ? 4317 1 
+      679 1 1 55 55 GLU HA   H   3.99 0.02 1 ? 4317 1 
+      680 1 1 55 55 GLU HB2  H   2.06 0.02 2 ? 4317 1 
+      681 1 1 55 55 GLU HB3  H   2.21 0.02 2 ? 4317 1 
+      682 1 1 55 55 GLU HG2  H   2.25 0.02 2 ? 4317 1 
+      683 1 1 55 55 GLU HG3  H   2.29 0.02 2 ? 4317 1 
+      684 1 1 55 55 GLU C    C 179.8  0.1  1 ? 4317 1 
+      685 1 1 55 55 GLU CA   C  60.6  0.1  1 ? 4317 1 
+      686 1 1 55 55 GLU CB   C  28.3  0.1  1 ? 4317 1 
+      687 1 1 55 55 GLU CG   C  36.2  0.1  1 ? 4317 1 
+      688 1 1 55 55 GLU N    N 126.0  0.1  1 ? 4317 1 
+      689 1 1 56 56 ALA H    H   8.42 0.02 1 ? 4317 1 
+      690 1 1 56 56 ALA HA   H   4.21 0.02 1 ? 4317 1 
+      691 1 1 56 56 ALA HB1  H   1.55 0.02 1 ? 4317 1 
+      692 1 1 56 56 ALA HB2  H   1.55 0.02 1 ? 4317 1 
+      693 1 1 56 56 ALA HB3  H   1.55 0.02 1 ? 4317 1 
+      694 1 1 56 56 ALA C    C 181.1  0.1  1 ? 4317 1 
+      695 1 1 56 56 ALA CA   C  54.7  0.1  1 ? 4317 1 
+      696 1 1 56 56 ALA CB   C  18.1  0.1  1 ? 4317 1 
+      697 1 1 56 56 ALA N    N 122.8  0.1  1 ? 4317 1 
+      698 1 1 57 57 ALA H    H   8.36 0.02 1 ? 4317 1 
+      699 1 1 57 57 ALA HA   H   4.33 0.02 1 ? 4317 1 
+      700 1 1 57 57 ALA HB1  H   1.58 0.02 1 ? 4317 1 
+      701 1 1 57 57 ALA HB2  H   1.58 0.02 1 ? 4317 1 
+      702 1 1 57 57 ALA HB3  H   1.58 0.02 1 ? 4317 1 
+      703 1 1 57 57 ALA C    C 180.1  0.1  1 ? 4317 1 
+      704 1 1 57 57 ALA CA   C  54.9  0.1  1 ? 4317 1 
+      705 1 1 57 57 ALA CB   C  19.7  0.1  1 ? 4317 1 
+      706 1 1 57 57 ALA N    N 121.2  0.1  1 ? 4317 1 
+      707 1 1 58 58 THR H    H   8.46 0.02 1 ? 4317 1 
+      708 1 1 58 58 THR HA   H   3.69 0.02 1 ? 4317 1 
+      709 1 1 58 58 THR HB   H   4.43 0.02 1 ? 4317 1 
+      710 1 1 58 58 THR HG21 H   1.20 0.02 1 ? 4317 1 
+      711 1 1 58 58 THR HG22 H   1.20 0.02 1 ? 4317 1 
+      712 1 1 58 58 THR HG23 H   1.20 0.02 1 ? 4317 1 
+      713 1 1 58 58 THR C    C 177.0  0.1  1 ? 4317 1 
+      714 1 1 58 58 THR CA   C  67.4  0.1  1 ? 4317 1 
+      715 1 1 58 58 THR CB   C  68.7  0.1  1 ? 4317 1 
+      716 1 1 58 58 THR CG2  C  20.5  0.1  1 ? 4317 1 
+      717 1 1 58 58 THR N    N 115.5  0.1  1 ? 4317 1 
+      718 1 1 59 59 HIS H    H   7.35 0.02 1 ? 4317 1 
+      719 1 1 59 59 HIS HA   H   4.35 0.02 1 ? 4317 1 
+      720 1 1 59 59 HIS HB2  H   3.32 0.02 2 ? 4317 1 
+      721 1 1 59 59 HIS HB3  H   3.37 0.02 2 ? 4317 1 
+      722 1 1 59 59 HIS HD2  H   7.25 0.02 1 ? 4317 1 
+      723 1 1 59 59 HIS HE1  H   8.44 0.02 1 ? 4317 1 
+      724 1 1 59 59 HIS C    C 178.3  0.1  1 ? 4317 1 
+      725 1 1 59 59 HIS CA   C  58.4  0.1  1 ? 4317 1 
+      726 1 1 59 59 HIS CB   C  28.3  0.1  1 ? 4317 1 
+      727 1 1 59 59 HIS N    N 118.4  0.1  1 ? 4317 1 
+      728 1 1 60 60 VAL H    H   7.47 0.02 1 ? 4317 1 
+      729 1 1 60 60 VAL HA   H   3.73 0.02 1 ? 4317 1 
+      730 1 1 60 60 VAL HB   H   1.76 0.02 1 ? 4317 1 
+      731 1 1 60 60 VAL HG11 H   0.87 0.02 2 ? 4317 1 
+      732 1 1 60 60 VAL HG12 H   0.87 0.02 2 ? 4317 1 
+      733 1 1 60 60 VAL HG13 H   0.87 0.02 2 ? 4317 1 
+      734 1 1 60 60 VAL HG21 H   1.05 0.02 2 ? 4317 1 
+      735 1 1 60 60 VAL HG22 H   1.05 0.02 2 ? 4317 1 
+      736 1 1 60 60 VAL HG23 H   1.05 0.02 2 ? 4317 1 
+      737 1 1 60 60 VAL C    C 179.4  0.1  1 ? 4317 1 
+      738 1 1 60 60 VAL CA   C  65.8  0.1  1 ? 4317 1 
+      739 1 1 60 60 VAL CB   C  31.9  0.1  1 ? 4317 1 
+      740 1 1 60 60 VAL CG1  C  21.4  0.1  1 ? 4317 1 
+      741 1 1 60 60 VAL CG2  C  21.4  0.1  1 ? 4317 1 
+      742 1 1 60 60 VAL N    N 119.7  0.1  1 ? 4317 1 
+      743 1 1 61 61 GLY H    H   8.73 0.02 1 ? 4317 1 
+      744 1 1 61 61 GLY HA2  H   3.35 0.02 1 ? 4317 1 
+      745 1 1 61 61 GLY HA3  H   3.94 0.02 1 ? 4317 1 
+      746 1 1 61 61 GLY C    C 176.2  0.1  1 ? 4317 1 
+      747 1 1 61 61 GLY CA   C  46.6  0.1  1 ? 4317 1 
+      748 1 1 61 61 GLY N    N 108.0  0.1  1 ? 4317 1 
+      749 1 1 62 62 LYS H    H   7.77 0.02 1 ? 4317 1 
+      750 1 1 62 62 LYS HA   H   1.76 0.02 1 ? 4317 1 
+      751 1 1 62 62 LYS HB2  H   1.50 0.02 2 ? 4317 1 
+      752 1 1 62 62 LYS HB3  H   1.19 0.02 2 ? 4317 1 
+      753 1 1 62 62 LYS HG2  H   0.85 0.02 2 ? 4317 1 
+      754 1 1 62 62 LYS HG3  H   1.07 0.02 2 ? 4317 1 
+      755 1 1 62 62 LYS HD2  H   0.70 0.02 1 ? 4317 1 
+      756 1 1 62 62 LYS HD3  H   0.70 0.02 1 ? 4317 1 
+      757 1 1 62 62 LYS HE2  H   2.91 0.02 1 ? 4317 1 
+      758 1 1 62 62 LYS HE3  H   2.91 0.02 1 ? 4317 1 
+      759 1 1 62 62 LYS C    C 178.4  0.1  1 ? 4317 1 
+      760 1 1 62 62 LYS CA   C  59.2  0.1  1 ? 4317 1 
+      761 1 1 62 62 LYS CB   C  32.5  0.1  1 ? 4317 1 
+      762 1 1 62 62 LYS CG   C  27.3  0.1  1 ? 4317 1 
+      763 1 1 62 62 LYS CD   C  28.8  0.1  1 ? 4317 1 
+      764 1 1 62 62 LYS CE   C  41.2  0.1  1 ? 4317 1 
+      765 1 1 62 62 LYS N    N 121.8  0.1  1 ? 4317 1 
+      766 1 1 63 63 GLN H    H   6.84 0.02 1 ? 4317 1 
+      767 1 1 63 63 GLN HA   H   3.92 0.02 1 ? 4317 1 
+      768 1 1 63 63 GLN HB2  H   2.05 0.02 2 ? 4317 1 
+      769 1 1 63 63 GLN HB3  H   2.28 0.02 2 ? 4317 1 
+      770 1 1 63 63 GLN HG2  H   2.28 0.02 2 ? 4317 1 
+      771 1 1 63 63 GLN HG3  H   2.39 0.02 2 ? 4317 1 
+      772 1 1 63 63 GLN HE21 H   6.81 0.02 2 ? 4317 1 
+      773 1 1 63 63 GLN HE22 H   7.25 0.02 2 ? 4317 1 
+      774 1 1 63 63 GLN C    C 180.0  0.1  1 ? 4317 1 
+      775 1 1 63 63 GLN CA   C  58.2  0.1  1 ? 4317 1 
+      776 1 1 63 63 GLN CB   C  28.1  0.1  1 ? 4317 1 
+      777 1 1 63 63 GLN CG   C  36.1  0.1  1 ? 4317 1 
+      778 1 1 63 63 GLN N    N 116.6  0.1  1 ? 4317 1 
+      779 1 1 63 63 GLN NE2  N 111.1  0.1  1 ? 4317 1 
+      780 1 1 64 64 ILE H    H   8.00 0.02 1 ? 4317 1 
+      781 1 1 64 64 ILE HA   H   3.51 0.02 1 ? 4317 1 
+      782 1 1 64 64 ILE HB   H   1.71 0.02 1 ? 4317 1 
+      783 1 1 64 64 ILE HG12 H   1.06 0.02 2 ? 4317 1 
+      784 1 1 64 64 ILE HG13 H   1.54 0.02 2 ? 4317 1 
+      785 1 1 64 64 ILE HG21 H   0.88 0.02 1 ? 4317 1 
+      786 1 1 64 64 ILE HG22 H   0.88 0.02 1 ? 4317 1 
+      787 1 1 64 64 ILE HG23 H   0.88 0.02 1 ? 4317 1 
+      788 1 1 64 64 ILE HD11 H   0.67 0.02 1 ? 4317 1 
+      789 1 1 64 64 ILE HD12 H   0.67 0.02 1 ? 4317 1 
+      790 1 1 64 64 ILE HD13 H   0.67 0.02 1 ? 4317 1 
+      791 1 1 64 64 ILE C    C 179.3  0.1  1 ? 4317 1 
+      792 1 1 64 64 ILE CA   C  64.9  0.1  1 ? 4317 1 
+      793 1 1 64 64 ILE CB   C  38.9  0.1  1 ? 4317 1 
+      794 1 1 64 64 ILE CG1  C  21.5  0.1  1 ? 4317 1 
+      795 1 1 64 64 ILE CG2  C  21.4  0.1  1 ? 4317 1 
+      796 1 1 64 64 ILE CD1  C  16.0  0.1  1 ? 4317 1 
+      797 1 1 64 64 ILE N    N 120.1  0.1  1 ? 4317 1 
+      798 1 1 65 65 VAL H    H   8.35 0.02 1 ? 4317 1 
+      799 1 1 65 65 VAL HA   H   3.44 0.02 1 ? 4317 1 
+      800 1 1 65 65 VAL HB   H   2.06 0.02 1 ? 4317 1 
+      801 1 1 65 65 VAL HG11 H   0.81 0.02 2 ? 4317 1 
+      802 1 1 65 65 VAL HG12 H   0.81 0.02 2 ? 4317 1 
+      803 1 1 65 65 VAL HG13 H   0.81 0.02 2 ? 4317 1 
+      804 1 1 65 65 VAL HG21 H   1.03 0.02 2 ? 4317 1 
+      805 1 1 65 65 VAL HG22 H   1.03 0.02 2 ? 4317 1 
+      806 1 1 65 65 VAL HG23 H   1.03 0.02 2 ? 4317 1 
+      807 1 1 65 65 VAL C    C 178.5  0.1  1 ? 4317 1 
+      808 1 1 65 65 VAL CA   C  66.8  0.1  1 ? 4317 1 
+      809 1 1 65 65 VAL CB   C  31.1  0.1  1 ? 4317 1 
+      810 1 1 65 65 VAL CG1  C  22.8  0.1  2 ? 4317 1 
+      811 1 1 65 65 VAL CG2  C  23.5  0.1  2 ? 4317 1 
+      812 1 1 65 65 VAL N    N 118.5  0.1  1 ? 4317 1 
+      813 1 1 66 66 GLU H    H   8.91 0.02 1 ? 4317 1 
+      814 1 1 66 66 GLU HA   H   3.87 0.02 1 ? 4317 1 
+      815 1 1 66 66 GLU HB2  H   1.86 0.02 2 ? 4317 1 
+      816 1 1 66 66 GLU HB3  H   2.07 0.02 2 ? 4317 1 
+      817 1 1 66 66 GLU HG2  H   2.13 0.02 2 ? 4317 1 
+      818 1 1 66 66 GLU HG3  H   2.44 0.02 2 ? 4317 1 
+      819 1 1 66 66 GLU C    C 179.6  0.1  1 ? 4317 1 
+      820 1 1 66 66 GLU CA   C  60.1  0.1  1 ? 4317 1 
+      821 1 1 66 66 GLU CB   C  28.6  0.1  1 ? 4317 1 
+      822 1 1 66 66 GLU CG   C  36.5  0.1  1 ? 4317 1 
+      823 1 1 66 66 GLU N    N 119.0  0.1  1 ? 4317 1 
+      824 1 1 67 67 LYS H    H   7.39 0.02 1 ? 4317 1 
+      825 1 1 67 67 LYS HA   H   4.01 0.02 1 ? 4317 1 
+      826 1 1 67 67 LYS HB2  H   1.87 0.02 2 ? 4317 1 
+      827 1 1 67 67 LYS HB3  H   2.00 0.02 2 ? 4317 1 
+      828 1 1 67 67 LYS HG2  H   1.35 0.02 2 ? 4317 1 
+      829 1 1 67 67 LYS HG3  H   1.45 0.02 2 ? 4317 1 
+      830 1 1 67 67 LYS HD2  H   1.67 0.02 1 ? 4317 1 
+      831 1 1 67 67 LYS HD3  H   1.67 0.02 1 ? 4317 1 
+      832 1 1 67 67 LYS HE2  H   2.98 0.02 1 ? 4317 1 
+      833 1 1 67 67 LYS HE3  H   2.98 0.02 1 ? 4317 1 
+      834 1 1 67 67 LYS C    C 179.4  0.1  1 ? 4317 1 
+      835 1 1 67 67 LYS CA   C  59.6  0.1  1 ? 4317 1 
+      836 1 1 67 67 LYS CB   C  32.2  0.1  1 ? 4317 1 
+      837 1 1 67 67 LYS CG   C  24.5  0.1  1 ? 4317 1 
+      838 1 1 67 67 LYS CD   C  29.2  0.1  1 ? 4317 1 
+      839 1 1 67 67 LYS CE   C  39.2  0.1  1 ? 4317 1 
+      840 1 1 67 67 LYS N    N 119.5  0.1  1 ? 4317 1 
+      841 1 1 68 68 ILE H    H   7.42 0.02 1 ? 4317 1 
+      842 1 1 68 68 ILE HA   H   3.77 0.02 1 ? 4317 1 
+      843 1 1 68 68 ILE HB   H   2.00 0.02 1 ? 4317 1 
+      844 1 1 68 68 ILE HG12 H   1.05 0.02 1 ? 4317 1 
+      845 1 1 68 68 ILE HG13 H   1.05 0.02 1 ? 4317 1 
+      846 1 1 68 68 ILE HG21 H   0.81 0.02 1 ? 4317 1 
+      847 1 1 68 68 ILE HG22 H   0.81 0.02 1 ? 4317 1 
+      848 1 1 68 68 ILE HG23 H   0.81 0.02 1 ? 4317 1 
+      849 1 1 68 68 ILE HD11 H   0.62 0.02 1 ? 4317 1 
+      850 1 1 68 68 ILE HD12 H   0.62 0.02 1 ? 4317 1 
+      851 1 1 68 68 ILE HD13 H   0.62 0.02 1 ? 4317 1 
+      852 1 1 68 68 ILE C    C 180.0  0.1  1 ? 4317 1 
+      853 1 1 68 68 ILE CA   C  64.2  0.1  1 ? 4317 1 
+      854 1 1 68 68 ILE CB   C  38.1  0.1  1 ? 4317 1 
+      855 1 1 68 68 ILE CG1  C  22.7  0.1  1 ? 4317 1 
+      856 1 1 68 68 ILE CG2  C  16.8  0.1  1 ? 4317 1 
+      857 1 1 68 68 ILE CD1  C  13.8  0.1  1 ? 4317 1 
+      858 1 1 68 68 ILE N    N 120.1  0.1  1 ? 4317 1 
+      859 1 1 69 69 LEU H    H   8.45 0.02 1 ? 4317 1 
+      860 1 1 69 69 LEU HA   H   4.21 0.02 1 ? 4317 1 
+      861 1 1 69 69 LEU HB2  H   1.70 0.02 2 ? 4317 1 
+      862 1 1 69 69 LEU HB3  H   1.87 0.02 2 ? 4317 1 
+      863 1 1 69 69 LEU HG   H   1.01 0.02 1 ? 4317 1 
+      864 1 1 69 69 LEU HD11 H   0.56 0.02 2 ? 4317 1 
+      865 1 1 69 69 LEU HD12 H   0.56 0.02 2 ? 4317 1 
+      866 1 1 69 69 LEU HD13 H   0.56 0.02 2 ? 4317 1 
+      867 1 1 69 69 LEU HD21 H   0.81 0.02 2 ? 4317 1 
+      868 1 1 69 69 LEU HD22 H   0.81 0.02 2 ? 4317 1 
+      869 1 1 69 69 LEU HD23 H   0.81 0.02 2 ? 4317 1 
+      870 1 1 69 69 LEU C    C 180.1  0.1  1 ? 4317 1 
+      871 1 1 69 69 LEU CA   C  57.0  0.1  1 ? 4317 1 
+      872 1 1 69 69 LEU CB   C  41.0  0.1  1 ? 4317 1 
+      873 1 1 69 69 LEU CG   C  22.7  0.1  1 ? 4317 1 
+      874 1 1 69 69 LEU CD1  C  16.4  0.1  2 ? 4317 1 
+      875 1 1 69 69 LEU CD2  C  16.0  0.1  2 ? 4317 1 
+      876 1 1 69 69 LEU N    N 119.0  0.1  1 ? 4317 1 
+      877 1 1 70 70 LYS H    H   7.92 0.02 1 ? 4317 1 
+      878 1 1 70 70 LYS HA   H   4.16 0.02 1 ? 4317 1 
+      879 1 1 70 70 LYS HB2  H   1.95 0.02 1 ? 4317 1 
+      880 1 1 70 70 LYS HB3  H   1.95 0.02 1 ? 4317 1 
+      881 1 1 70 70 LYS HG2  H   1.51 0.02 2 ? 4317 1 
+      882 1 1 70 70 LYS HG3  H   1.59 0.02 2 ? 4317 1 
+      883 1 1 70 70 LYS HD2  H   1.63 0.02 1 ? 4317 1 
+      884 1 1 70 70 LYS HD3  H   1.63 0.02 1 ? 4317 1 
+      885 1 1 70 70 LYS HE2  H   2.97 0.02 1 ? 4317 1 
+      886 1 1 70 70 LYS HE3  H   2.97 0.02 1 ? 4317 1 
+      887 1 1 70 70 LYS C    C 179.1  0.1  1 ? 4317 1 
+      888 1 1 70 70 LYS CA   C  58.0  0.1  1 ? 4317 1 
+      889 1 1 70 70 LYS CB   C  32.6  0.1  1 ? 4317 1 
+      890 1 1 70 70 LYS CG   C  25.0  0.1  1 ? 4317 1 
+      891 1 1 70 70 LYS CD   C  24.6  0.1  1 ? 4317 1 
+      892 1 1 70 70 LYS CE   C  41.5  0.1  1 ? 4317 1 
+      893 1 1 70 70 LYS N    N 119.5  0.1  1 ? 4317 1 
+      894 1 1 71 71 GLU H    H   7.75 0.02 1 ? 4317 1 
+      895 1 1 71 71 GLU HA   H   4.26 0.02 1 ? 4317 1 
+      896 1 1 71 71 GLU HB2  H   2.07 0.02 2 ? 4317 1 
+      897 1 1 71 71 GLU HB3  H   2.14 0.02 2 ? 4317 1 
+      898 1 1 71 71 GLU HG2  H   2.28 0.02 2 ? 4317 1 
+      899 1 1 71 71 GLU HG3  H   2.48 0.02 2 ? 4317 1 
+      900 1 1 71 71 GLU C    C 178.0  0.1  1 ? 4317 1 
+      901 1 1 71 71 GLU CA   C  56.6  0.1  1 ? 4317 1 
+      902 1 1 71 71 GLU CB   C  29.2  0.1  1 ? 4317 1 
+      903 1 1 71 71 GLU CG   C  35.3  0.1  1 ? 4317 1 
+      904 1 1 71 71 GLU N    N 118.0  0.1  1 ? 4317 1 
+      905 1 1 72 72 GLU H    H   7.74 0.02 1 ? 4317 1 
+      906 1 1 72 72 GLU HA   H   4.49 0.02 1 ? 4317 1 
+      907 1 1 72 72 GLU HB2  H   2.14 0.02 1 ? 4317 1 
+      908 1 1 72 72 GLU HB3  H   2.14 0.02 1 ? 4317 1 
+      909 1 1 72 72 GLU HG2  H   2.41 0.02 1 ? 4317 1 
+      910 1 1 72 72 GLU HG3  H   2.41 0.02 1 ? 4317 1 
+      911 1 1 72 72 GLU C    C 177.2  0.1  1 ? 4317 1 
+      912 1 1 72 72 GLU CA   C  55.9  0.1  1 ? 4317 1 
+      913 1 1 72 72 GLU CB   C  30.1  0.1  1 ? 4317 1 
+      914 1 1 72 72 GLU CG   C  35.4  0.1  1 ? 4317 1 
+      915 1 1 72 72 GLU N    N 119.3  0.1  1 ? 4317 1 
+      916 1 1 73 73 SER H    H   7.90 0.02 1 ? 4317 1 
+      917 1 1 73 73 SER HA   H   4.32 0.02 1 ? 4317 1 
+      918 1 1 73 73 SER HB2  H   3.83 0.02 2 ? 4317 1 
+      919 1 1 73 73 SER HB3  H   3.90 0.02 2 ? 4317 1 
+      920 1 1 73 73 SER CA   C  59.9  0.1  1 ? 4317 1 
+      921 1 1 73 73 SER CB   C  64.7  0.1  1 ? 4317 1 
+      922 1 1 73 73 SER N    N 122.6  0.1  1 ? 4317 1 
+
+   stop_
+
+save_
+

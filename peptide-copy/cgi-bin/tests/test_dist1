@@ -1,0 +1,37 @@
+#! /bin/csh -f
+
+# First test of distance restraints -- use an explicitly-specified
+# remediated restraints file.
+
+set result = 0
+
+rm -r -f */16270*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 16270 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out1
+
+echo -n "Processing coordinates and distance restraints: "
+./s2d -nomail -bmrbid 16270 -pdbid 2kid -coord_index 2 -force \
+  -dist_file test_data/2kid_linked.str -do_rrdist 3 -check_res_list -check_pct
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+source tests/test_dist1_check
+
+
+echo -n "Test_dist1 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

@@ -1,0 +1,91 @@
+#! /bin/csh -f
+
+# Initial test for processing unreleased BMRB entries.
+
+set result = 0
+
+rm -r -f */6521ur*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./vur -file test_data/bmr6521.str.nmrstr -name 6521ur -check_pct
+if ($status != 0) then
+  echo "First invocation of vur failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = (data_dir/6521urac1.dat \
+	data_dir/6521urac2.dat \
+	data_dir/6521urac3.dat \
+	data_dir/6521urac4.dat \
+	data_dir/6521urac5.dat \
+	data_dir/6521urac6.dat \
+	data_dir/6521urac7.dat \
+	data_dir/6521uras1.dat \
+	data_dir/6521uras2.dat \
+	data_dir/6521urc1.dat \
+	data_dir/6521urc2.dat \
+	data_dir/6521urd1.dat \
+	data_dir/6521urd2.dat \
+	data_dir/6521urhn1.dat \
+	data_dir/6521urhn2.dat \
+	data_dir/6521urmd.dat \
+	data_dir/6521urp1.dat \
+	data_dir/6521urp2.dat \
+	data_dir/6521urrc1.dat \
+	data_dir/6521urrc2.dat \
+	data_dir/6521urrl.dat \
+	html_unreleased/6521ur/6521urac1.html \
+	html_unreleased/6521ur/6521urac2.html \
+	html_unreleased/6521ur/6521urac3.html \
+	html_unreleased/6521ur/6521urac4.html \
+	html_unreleased/6521ur/6521urac5.html \
+	html_unreleased/6521ur/6521urac6.html \
+	html_unreleased/6521ur/6521urac7.html \
+	html_unreleased/6521ur/6521uras1.html \
+	html_unreleased/6521ur/6521uras2.html \
+	html_unreleased/6521ur/6521urc1.html \
+	html_unreleased/6521ur/6521urc2.html \
+	html_unreleased/6521ur/6521urd1.html \
+	html_unreleased/6521ur/6521urd2.html \
+	html_unreleased/6521ur/6521urhn1.html \
+	html_unreleased/6521ur/6521urhn2.html \
+	html_unreleased/6521ur/6521urp1.html \
+	html_unreleased/6521ur/6521urp2.html \
+	html_unreleased/6521ur/6521ury.html \
+	session_dir/.unreleased/6521ur/6521urac1.ds \
+	session_dir/.unreleased/6521ur/6521urac2.ds \
+	session_dir/.unreleased/6521ur/6521urac3.ds \
+	session_dir/.unreleased/6521ur/6521urac4.ds \
+	session_dir/.unreleased/6521ur/6521urac5.ds \
+	session_dir/.unreleased/6521ur/6521urac6.ds \
+	session_dir/.unreleased/6521ur/6521urac7.ds \
+	session_dir/.unreleased/6521ur/6521uracdd \
+	session_dir/.unreleased/6521ur/6521uras1.ds \
+	session_dir/.unreleased/6521ur/6521uras2.ds \
+	session_dir/.unreleased/6521ur/6521urc1.ds \
+	session_dir/.unreleased/6521ur/6521urc2.ds \
+	session_dir/.unreleased/6521ur/6521urd1.ds \
+	session_dir/.unreleased/6521ur/6521urd2.ds \
+	session_dir/.unreleased/6521ur/6521urhn1.ds \
+	session_dir/.unreleased/6521ur/6521urhn2.ds \
+	session_dir/.unreleased/6521ur/6521urp1.ds \
+	session_dir/.unreleased/6521ur/6521urp2.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+echo -n "Test34 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

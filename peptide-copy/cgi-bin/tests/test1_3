@@ -1,0 +1,84 @@
+#! /bin/csh -f
+
+# This is the same as test1, except on an NMR-STAR v3 file.
+
+# Tests both BMRB and PDB processing with local files, so we can run this
+# test without a web connection.
+
+set result = 0
+
+ln -s test_data/1dfv.cif.gz .
+
+rm -r -f */4267*
+mkdir session_dir/4267
+set coord_file = "session_dir/4267/4267ac1.ds"
+touch $coord_file
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -name 4267 -file test_data/bmr4267_3.str -local -force \
+  -check_res_list -lacs_file test_data/bmr4267_LACS.str -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out1
+
+if (-f $coord_file) then
+  echo "Error: $coord_file was not deleted!"
+  set result = 1
+endif
+
+echo -n "Processing mmCIF: "
+./s2d -nomail -pdbid 1dfv -name 4267 -file test_data/bmr4267_3.str \
+  -do_pdb 2 -coord_index 1 -local -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+rm 1dfv.cif.gz
+
+
+source tests/test1_check
+
+# Sample data is somewhat different in 2.1 and 3.1...
+set file = "data_dir/4267md.dat"
+set attr = '$HA_DeltaShift'
+set line = "^EA 1 (polypeptide(L))	1	HA delta chem shift \[1\]	  Many methylene and valine/luecine methyl groups have been stereospecifically assigned.   those ...	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL Human Neutrophil Gelatinase-Associated L...	pH: 6.0; temperature: 298 K	4267d1	$attr"
+source tests/check4line
+set attr = '$HA_Csi'
+set line = "^EA 1 (polypeptide(L))	1	HA CSI \[1\]	  Many methylene and valine/luecine methyl groups have been stereospecifically assigned.   those ...	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL Human Neutrophil Gelatinase-Associated L...	pH: 6.0; temperature: 298 K	4267c1	$attr"
+source tests/check4line
+set attr = '$assigForH'
+set line = "^EA 1 (polypeptide(L))	1	% 1H assign per res \[1\]	  Many methylene and valine/luecine methyl groups have been stereospecifically assigned.   those ...	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL Human Neutrophil Gelatinase-Associated L...	pH: 6.0; temperature: 298 K	4267p1	$attr"
+source tests/check4line
+#TEMP -- 3.1 file doesn't have sample info for relaxation, heteronuclear
+# NOE, and S2 order save frames
+set attr = '$relax_value'
+set line = "^EA 1 (polypeptide(L))	1	T1 Relaxation (750) \[1\]	   N15 T1 relaxation data with decoupling of CSA/DD cross-relaxation,    water flipback.  Interle...	-	pH: 6.0; temperature: 298 K	4267t11	$attr"
+source tests/check4line
+set attr = '$relax_value'
+set line = "^EA 1 (polypeptide(L))	1	T2 Relaxation (750) \[1\]	   N15 T2 relaxation data with decoupling of CSA/DD cross-relaxation,    water flipback.  Interle...	-	pH: 6.0; temperature: 298 K	4267t21	$attr"
+source tests/check4line
+set attr = '$NOE_value'
+#TEMP -- 3.1 is missing atom names
+set line = "^EA 1 (polypeptide(L))	1	Het NOE (750)   \[1\]	   N15{1H} Heteronuclear steady-state NOE using 3s 1H presat. time. water flipback.    Reference ...	-	pH: 6.0; temperature: 298 K	4267n1	$attr"
+source tests/check4line
+set attr = '$Coupling_constant_value'
+set line = "^EA 1 (polypeptide(L))	1	3JHNHA coupling const \[1\]	        3JHNHA couplings measured from ratio of cross to diagonal peaks in an HNHA    experiment. 	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL Human Neutrophil Gelatinase-Associated L...	pH: 6.0; temperature: 298 K	4267g1	$attr"
+source tests/check4line
+set attr = '$S2order_value'
+set line = "^EA 1 (polypeptide(L))	1	S2 Order Parameters \[1\]	  Order parameters are generalised, where applicable (i.e. S2=S2f\*S2s),   derived from model-free...	-	pH: 6.0; temperature: 298 K	4267o1	$attr"
+source tests/check4line
+
+
+
+
+echo -n "Test1_3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

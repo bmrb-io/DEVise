@@ -1,0 +1,29 @@
+#! /bin/csh -f
+
+# Tests peak-only processing.
+
+set result = 0
+
+rm -r -f */11017*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -name 11017 -file test_data/bmr11017_3.str -force \
+  -check_res_list -check_pct -peakonly
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/test_peak5.out
+
+
+source tests/test_peak5_check
+
+
+echo -n "Test_peak5 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

@@ -1,0 +1,134 @@
+#! /bin/csh -f
+
+# Tests visualization-server mode -- local NMR-STAR file, but will try
+# to get and process data from PDB.
+
+set result = 0
+
+ln -s test_data/bmr4267.str .
+
+rm -r -f */*/test2_out*
+rm -r -f */.*/test2_out*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./make_uvd file=bmr4267.str\&name=test2_out\&force=1\&lacs_file=test_data/bmr4267_LACS.str\&force=1
+if ($status != 0) then
+  echo "First invocation of make_uvd failed!"
+  set result = 1
+endif
+
+rm bmr4267.str
+
+
+echo "Checking output files"
+
+set files = ( data_dir/uvd/test2_outas1.dat \
+	data_dir/uvd/test2_outc1.dat \
+	data_dir/uvd/test2_outd1.dat \
+	data_dir/uvd/test2_outg1.dat \
+	data_dir/uvd/test2_outhc1.dat \
+	data_dir/uvd/test2_outhn1.dat \
+	data_dir/uvd/test2_outmd.dat \
+	data_dir/uvd/test2_outn1.dat \
+	data_dir/uvd/test2_outn2.dat \
+	data_dir/uvd/test2_outn3.dat \
+	data_dir/uvd/test2_outn4.dat \
+	data_dir/uvd/test2_outn5.dat \
+	data_dir/uvd/test2_outn6.dat \
+	data_dir/uvd/test2_outn7.dat \
+	data_dir/uvd/test2_outn8.dat \
+	data_dir/uvd/test2_outn9.dat \
+	data_dir/uvd/test2_outp1.dat \
+	data_dir/uvd/test2_outrc1.dat \
+	data_dir/uvd/test2_outrl.dat \
+	data_dir/uvd/test2_outt11.dat \
+	data_dir/uvd/test2_outt12.dat \
+	data_dir/uvd/test2_outt13.dat \
+	data_dir/uvd/test2_outt21.dat \
+	data_dir/uvd/test2_outt22.dat \
+	data_dir/uvd/test2_outt23.dat \
+	html_dir/uvd/test2_out/test2_outas1.html \
+	html_dir/uvd/test2_out/test2_outc1.html \
+	html_dir/uvd/test2_out/test2_outd1.html \
+	html_dir/uvd/test2_out/test2_outg1.html \
+	html_dir/uvd/test2_out/test2_outhc1.html \
+	html_dir/uvd/test2_out/test2_outhn1.html \
+	html_dir/uvd/test2_out/test2_outn1.html \
+	html_dir/uvd/test2_out/test2_outn2.html \
+	html_dir/uvd/test2_out/test2_outn3.html \
+	html_dir/uvd/test2_out/test2_outn4.html \
+	html_dir/uvd/test2_out/test2_outn5.html \
+	html_dir/uvd/test2_out/test2_outn6.html \
+	html_dir/uvd/test2_out/test2_outn7.html \
+	html_dir/uvd/test2_out/test2_outn8.html \
+	html_dir/uvd/test2_out/test2_outn9.html \
+	html_dir/uvd/test2_out/test2_outp1.html \
+	html_dir/uvd/test2_out/test2_outt11.html \
+	html_dir/uvd/test2_out/test2_outt12.html \
+	html_dir/uvd/test2_out/test2_outt13.html \
+	html_dir/uvd/test2_out/test2_outt21.html \
+	html_dir/uvd/test2_out/test2_outt22.html \
+	html_dir/uvd/test2_out/test2_outt23.html \
+	html_dir/uvd/test2_out/test2_outy.html \
+	session_dir/.uvd/test2_out/test2_outas1.ds \
+	session_dir/.uvd/test2_out/test2_outc1.ds \
+	session_dir/.uvd/test2_out/test2_outd1.ds \
+	session_dir/.uvd/test2_out/test2_outg1.ds \
+	session_dir/.uvd/test2_out/test2_outhc1.ds \
+	session_dir/.uvd/test2_out/test2_outhn1.ds \
+	session_dir/.uvd/test2_out/test2_outn1.ds \
+	session_dir/.uvd/test2_out/test2_outn2.ds \
+	session_dir/.uvd/test2_out/test2_outn3.ds \
+	session_dir/.uvd/test2_out/test2_outn4.ds \
+	session_dir/.uvd/test2_out/test2_outn5.ds \
+	session_dir/.uvd/test2_out/test2_outn6.ds \
+	session_dir/.uvd/test2_out/test2_outn7.ds \
+	session_dir/.uvd/test2_out/test2_outn8.ds \
+	session_dir/.uvd/test2_out/test2_outn9.ds \
+	session_dir/.uvd/test2_out/test2_outp1.ds \
+	session_dir/.uvd/test2_out/test2_outt11.ds \
+	session_dir/.uvd/test2_out/test2_outt12.ds \
+	session_dir/.uvd/test2_out/test2_outt13.ds \
+	session_dir/.uvd/test2_out/test2_outt21.ds \
+	session_dir/.uvd/test2_out/test2_outt22.ds \
+	session_dir/.uvd/test2_out/test2_outt23.ds \
+	html_dir/uvd/test2_out/test2_outam1.html \
+	data_dir/uvd/test2_outam1.dat \
+	session_dir/.uvd/test2_out/test2_outam1.ds \
+	data_dir/uvd/test2_outlacsc1.dat \
+	data_dir/uvd/test2_outlacsc2.dat \
+	data_dir/uvd/test2_outlacsc3.dat \
+	data_dir/uvd/test2_outlacsc4.dat \
+	data_dir/uvd/test2_outlacsl1.dat \
+	data_dir/uvd/test2_outlacsl2.dat \
+	data_dir/uvd/test2_outlacsl3.dat \
+	data_dir/uvd/test2_outlacsl4.dat \
+	data_dir/uvd/test2_outlacsp1.dat \
+	data_dir/uvd/test2_outlacsp2.dat \
+	data_dir/uvd/test2_outlacsp3.dat \
+	data_dir/uvd/test2_outlacsp4.dat \
+	html_dir/uvd/test2_out/test2_outlacs1.html \
+	html_dir/uvd/test2_out/test2_outlacs2.html \
+	html_dir/uvd/test2_out/test2_outlacs3.html \
+	html_dir/uvd/test2_out/test2_outlacs4.html \
+	session_dir/.uvd/test2_out/test2_outlacs1.ds \
+	session_dir/.uvd/test2_out/test2_outlacs2.ds \
+	session_dir/.uvd/test2_out/test2_outlacs3.ds \
+	session_dir/.uvd/test2_out/test2_outlacs4.ds )
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test2mu result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

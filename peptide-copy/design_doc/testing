@@ -1,0 +1,211 @@
+			Testing Peptide-CGI
+		$Id$
+
+This testing must be done before any release of Peptide-CGI or DEVise/
+JavaScreen.
+
+NOTE: when adding a new visualization, be sure to test color print and
+black/white print display modes!
+
+TEMPTEMP -- add testing of data download, especially for histograms!!
+
+TEMPTEMP -- add stuff about testing js collab & keyboard links
+
+TEMPTEMP -- add testing visualization server + released multi-entry vis
+
+TEMPTEMP -- change this so that no sessions are tested with the entry
+that's used in the session template.
+
+The following testing steps must be done:
+
+- Run make_view manually in cgi-bin.  Make sure it doesn't generate any
+  error messages.
+
+- Run test_all in cgi-bin.  Make sure all tests succeed.
+
+- Install the relevant software on condor-websrv-7.
+
+- Run test_all in /var/home/www/public/cgi-bin/bmrb or
+  /var/home/www/public/cgi-bin/bmrb_test as appropriate on condor-websrv-7.
+  All tests except for test32 and test34 must succeed.  (Test32 and test34
+  can fail because they test for viewing unreleased entries, and the CGI
+  directory on condor-websrv-7 isn't set up for that.)
+
+- Access the visualizations on condor-websrv-7 via the following URL:
+    http://devise.cs.wisc.edu/devise/bmrb/bmrb_select.html
+      or
+    http://devise.cs.wisc.edu/devise/test/bmrb_test/bmrb_select.html
+      as appropriate
+
+- Run 's2d -bmrbid 4267 -force' in
+  /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on condor-websrv-7.
+
+- View the following visualizations for the entry 4267 and MAKE SURE THEY
+  ARE CORRECT:
+    - Chemical Shift Delta
+    	- Follow the link to the tutorial videos and make sure it works.
+    - Chemical Shift Index
+    - Percent Assigned Atoms
+    - Chemical shift distributions by amino acid
+    - Simulated 1H-15N backbone HSQC spectrum
+    - Assigned chemical shift ambiguity code data (make sure data
+      cursor shows up at correct initial size/location)
+    - T1 Relaxation (750 MHz)
+    - T2 Relaxation (750 MHz)
+    - Heteronuclear NOE (750 MHz) N H
+    - Coupling constants
+    - 3D structure from PDB ID 1NGL (make sure the Jmol menu button shows
+      up in the JavaScreen) (make sure data cursor shows up at correct
+      initial size/location)
+        - Make sure that frame details/sample/sample conditions drill-
+	  down works.
+    	- Follow the link to the tutorial videos and make sure it works.
+	- Re-size the JavaScreen and make sure that works correctly.
+    - S2 order parameters
+- Click the 'Force Reprocessing' button and make sure the summary page
+  gets updated.
+
+- Run tests/test3 in /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on
+  condor-websrv-7.
+
+- View the following visualizations for the entry 4081 and MAKE SURE THEY
+  ARE CORRECT:
+    - LACS Data (CA vs. CA-CB)
+    - LACS Data (CB vs. CA-CB)
+    - LACS Data (HA vs. CA-CB)
+    - LACS Data (CO vs. CA-CB)
+    - Test LACS help page.
+    - Simulated 1H-13C HSQC spectrum
+    - Test 1H-13C HSQC help page.
+
+- Run 's2d -bmrbid 4096 -force' in
+  /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on condor-websrv-7.
+
+- View the following visualizations for the entry 4096 and MAKE SURE THEY
+  ARE CORRECT:
+    - 3D structure (make sure data cursor shows up at correct initial
+      size/location)
+    - Test 3D help page.
+
+- Run tests/test19 in /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on
+  condor-websrv-7.
+
+- View the following visualizations for the entry 6318 and MAKE SURE THEY
+  ARE CORRECT:
+    - Assignment figure of merit data (make sure data cursor shows up
+      at correct initial size/location)
+
+- View the following visualizations for the entry 4001:
+    - 3D structure from PDB ID 1QLK (make sure data cursor shows up at
+      correct initial size/location)
+    - Chemical shift distributions by amino acid (from the first save
+      frame)
+
+- View the following visualizations for entry 5246:
+    - The 3D structure visualization for 5246/1KMF; select data sets
+      from the two different entity assemblies (e.g., HA delta chem shift
+      [1] and HA delta chem shift [2]) and make sure that selecting
+      residues in the data view correctly highlights them in the structure
+      selection window and structure view.
+    - The first two assigned chemical shift ambiguity code data
+      visualizations -- make sure that the structure is the correct one
+      for the given entity assembly ID, and selecting data highlights
+      the residues correctly.
+
+- (RNA) view the following visualizations for 15080:
+    - Chemical shift delta for entity assembly 1.
+    - 3D structure from PDB 2O33.
+
+- (DNA) view the following visualizations for 15083:
+    - Chemical shift delta for entity assembly 1.
+    - 3D structure for PDB 2O8K (make sure that selection of data for
+      the different entity assemblies works, and highlighting in the
+      atom selection tree works).
+
+- (SPARTA) Run 'tests/test_sparta5_3' in
+  /var/home/www/public/cgi-bin/[bmrb|bmrb_test]
+  on condor-websrv-7.  View the following visualization for entry 16387:
+    - SPARTA-calculated chemical shift deltas.  Make sure model # on
+      drill-down matches model # selected with cursor, etc.
+
+- Go to http://devise.cs.wisc.edu/devise/bmrb/uvd/uvd_works.html and click
+  the "Test" link.  Make sure the summary page is correct and some of
+  the visualizations work.
+- Click the 'Force Reprocessing' button and make sure the summary page
+  gets updated.
+
+- (Torsion angle restraints) View the following visualizations for
+  entry 5246:
+    - Restraints grid torsion angles for 1LKQ (make sure that torsion
+      angle data shows up for both entity assemblies, and that atoms
+      in the correct entity assembly are highlighted in the 3D view).
+    - Remediated restraints torsion angles for 1LKQ (make sure that torsion
+      angle data shows up for both entity assemblies, and that atoms
+      in the correct entity assembly are highlighted in the 3D view).
+    - Test torsion angle help page.
+    - 3D structure for 1LKQ (make sure the right data sets show up, and
+      highlighting works).
+
+- (Distance restraints) View the following visualizations for
+  entry 5246:
+    - Restraints grid distance restraints for 1LKQ (make sure that distance
+      restraint data shows up for both entity assemblies, and that the
+      restraints connect correct atoms in the 3D view).
+    - Remediated restraints distance restraints for 1LKQ (make sure that
+      distance restraint data shows up for both entity assemblies, and
+      that the restraints connect correct atoms in the 3D view).
+    - Test distance restraints help page.
+
+- (PDB-only restraints) Go to
+  http://devise.cs.wisc.edu/devise/bmrb/restraint_select.html, view the
+  following visualizations for 1eza:
+    - Restraints grid distance restraints (make sure highlighting works
+      right).
+    - Remediated restraints distance restraints (make sure highlighting
+      works right).
+    - Restraints grid torsion angles (make sure there is both angle
+      and violation data, make sure highlighting works right).
+    - Remediated restraints torsion angles (make sure highlighting works
+      right).
+
+- (Restraints) Test all four restraint visualizations with 4264/3EZA
+  (because 4264 isn't generated by test_all).
+
+- (Multi-entry) View the 1H-15N and 1H-13C spectra for 4081/4267:
+    - Make sure H/N and H/C peaks show up for both entries.
+    - Make sure HE1/NE1 peaks show up for both entries.
+    - Check help pages.
+
+- (Multi-entry/multi-entity assembly) view the 1H-15N and 1H-13C spectra
+  for 15418/4099
+    - Make sure that spectra show up for EA 1 and 3 of 15418 and
+      EA 1 and 2 of 4099.
+
+- (s2predict) view the S2 predicted vs. experimental visualization
+  for 17306/2l6B and make sure it works.
+
+- (dynamics movies) View the s2 predicted vs. experimental visualization
+  for 15451/2JUO and make sure the movie menu works.
+
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram.html
+  (make sure drill-down works).
+
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram2.html
+  (make sure drill-down works).
+
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/dna_histogram.html
+  (make sure drill-down works).
+
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/rna_histogram.html
+  (make sure drill-down works).
+
+
+* Things to do to this document:
+
+- Find an ambiguity code visualization that has more interesting values
+  than 4267 does.
+
+- Find a chem shift reference test that has all secondary structures (helix,
+  sheet, and other).
+
+- Maybe specifically list visualizations to test for UVD.

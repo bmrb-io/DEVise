@@ -1,0 +1,41 @@
+		Directory Setup for Peptide-CGI at BMRB
+		$Id$
+
+This is on moray.bmrb.wisc.edu and swordfish.bmrb.wisc.edu.
+
+/website/devise/demo
+  dat                          
+    bmrb                          
+      (dynamic_data) <---------------+ 
+  schema                             |              
+    schema                           |              
+      physical                       |              
+  session.js                         |              
+    bmrb                             |              
+      (dynamic_sessions) <-----------|--+             
+                                     |  |        
+/website/devise/ChemShift            |  |           
+  (data_dir) <-----------------------+  | 
+                                     |  |      
+/website/htdocs                      |  |     
+  cgi-bin                            |  |  
+    peptide-cgi                      |  |        
+      bin                            |  |  
+      (data_dir) <-------------------+  |  
+      (session_dir) <----------------|--+  
+      (html_dir) <-------------------|--|--+       
+      (upload_data) <----------------|--|--|--+
+  devise [JS jar files]              |  |  |  |    
+    peptide-cgi [bmrb_select.html]   |  |  |  | 
+      (html) <-----------------------|--|--+  |
+  vis_serv                           |  |  |  |
+    upload_data >--------------------|--|--|--+
+                                     |  |  |         
+/website/devise/bmrb                 |  |  |          
+  dynamic_data >---------------------+  |  |    
+  dynamic_sessions >--------------------+  |        
+  dynamic_html >---------------------------+    
+
+
+Note: a >---> (b) is a symlink from a to b.
+Note: [file(s)] means the directory on that line contains the file(s).

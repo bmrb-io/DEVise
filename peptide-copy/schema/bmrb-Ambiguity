@@ -1,0 +1,23 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:56:00
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# $Id$
+
+type bmrb-Ambiguity ascii
+comment #
+whitespace ' '
+
+attr Ambig1 float
+attr Ambig2 float
+attr Ambig3 float
+attr Ambig4 float
+attr Ambig5 float
+attr Ambig9 float
+
+attr Residue_seq_code int
+attr Residue_label string 4
+attr Entity_assembly_ID int

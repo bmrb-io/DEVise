@@ -1,0 +1,39 @@
+#! /bin/csh -f
+
+# First test of torsion angle restraints -- use an explicitly-specified
+# restraint file.
+
+set result = 0
+
+rm -r -f */4020*
+
+# Note: this is commented out to test the automatic re-doing of 'basic'
+# processing.
+# echo -n "Processing NMR-STAR: "
+# ./s2d -nomail -bmrbid 4020 -force -check_res_list -check_pct
+# if ($status != 0) then
+#   echo "First invocation of s2d failed!"
+#   set result = 1
+# endif
+# mv tmp/s2d.out tmp/s2d.out1
+
+echo -n "Processing mmCIF and torsion angle restraints: "
+./s2d -nomail -bmrbid 4020 -pdbid 1brv -coord_index 1 -force \
+  -tar_file test_data/1brv_ta.str -do_tar 3 -check_res_list -check_pct
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+source tests/test_tar1_check
+
+
+echo -n "Test_tar1 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

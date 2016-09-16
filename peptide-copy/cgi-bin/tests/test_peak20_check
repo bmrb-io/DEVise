@@ -1,0 +1,47 @@
+echo "Checking output files"
+
+set files = ( 16943_peaks.str )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "16943_peaks.str"
+set line = '^save_peak_list_1'
+source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = '1   H   1    1H1   .   .   .   .   16943   1'
+source tests/check4line
+set line = '2   H   1    1H2   .   .   .   .   16943   1'
+source tests/check4line
+
+#TEMPTEMP -- add stuff here; check values
+#TEMPTEMP -- why don't we get a peak 821?
+set line = '2 . . 16943 1'
+source tests/check4line
+set line = '820 . . 16943 1'
+source tests/check4line
+set line = '2 2.418756375E7 . volume 16943 1'
+source tests/check4line
+set line = '820 3.179799225E7 . volume 16943 1'
+source tests/check4line
+set line = '2 1 7.84 ? ? ? ? ? ? ? ? ? ? ? ? ? 16943 1'
+source tests/check4line
+set line = '2 2 4.647 ? ? ? ? ? ? ? ? ? ? ? ? ? 16943 1'
+source tests/check4line
+set line = '820 1 4.298 ? ? ? ? ? ? ? ? ? ? ? ? ? 16943 1'
+source tests/check4line
+set line = '820 2 7.752 ? ? ? ? ? ? ? ? ? ? ? ? ? 16943 1'
+source tests/check4line
+set line = '2 1 ? ? ? ? 7.84 ? ? ? ? ? ? ? ? . ? 7 . HN 1 ? ? 16943 1'
+source tests/check4line
+set line = '2 2 ? ? ? ? 4.647 ? ? ? ? ? ? ? ? . ? 7 . HA 1 ? ? 16943 1'
+source tests/check4line
+set line = '792 1 ? ? ? ? 2.121 ? ? ? ? ? ? ? ? . ? 14 . HB 1 ? ? 16943 1'
+source tests/check4line
+set line = '792 2 ? ? ? ? 3.982 ? ? ? ? ? ? ? ? . ? 11 . HA2 1 ? ? 16943 1'
+source tests/check4line

@@ -1,0 +1,24 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jun 11 1999 16:14:09
+# DEVise version: 1.6.3
+# DEVise date: Jun 11 1999
+# DEVise endHeader
+
+# $Id$
+
+type bmrb-tar-meta ascii
+comment #
+whitespace '	'
+
+attr Entity_assembly_name string 30
+attr Entity_assembly_ID int
+
+attr name string 35
+attr angle_type string 30
+
+attr ViewUnselectedDataChild string 40
+attr ViewSelectedDataChild string 40
+attr ViewDataDotsChild string 40
+
+attr ChildViewYAttribute string 40

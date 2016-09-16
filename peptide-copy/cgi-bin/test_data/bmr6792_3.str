@@ -1,0 +1,1551 @@
+data_6792
+
+
+save_entry_interview
+    _Entry_interview.Sf_category                       entry_interview 
+    _Entry_interview.Sf_framecode                      entry_interview 
+    _Entry_interview.Entry_ID                          6792 
+    _Entry_interview.ID                                1 
+    _Entry_interview.PDB_deposition                    . 
+    _Entry_interview.BMRB_deposition                   . 
+    _Entry_interview.View_mode                         . 
+    _Entry_interview.Previous_BMRB_entry_used          ? 
+    _Entry_interview.Structural_genomics               no 
+    _Entry_interview.Ligands                           no 
+    _Entry_interview.Non_standard_residues             no 
+    _Entry_interview.Constraints                       . 
+    _Entry_interview.Assigned_chem_shifts              yes 
+    _Entry_interview.Coupling_constants                no 
+    _Entry_interview.Chem_shift_anisotropy             . 
+    _Entry_interview.Heteronucl_NOEs                   no 
+    _Entry_interview.Heteronucl_T1_relaxation          no 
+    _Entry_interview.Heteronucl_T2_relaxation          no 
+    _Entry_interview.Heteronucl_T1rho_relaxation       no 
+    _Entry_interview.Order_parameters                  no 
+    _Entry_interview.Residual_dipolar_couplings        no 
+    _Entry_interview.H_exchange_rate                   no 
+    _Entry_interview.H_exchange_protection_factors     no 
+    _Entry_interview.Spectral_peak_lists               yes 
+    _Entry_interview.Dipole_dipole_couplings           . 
+    _Entry_interview.Quadrupolar_couplings             . 
+    _Entry_interview.Homonucl_NOEs                     no 
+    _Entry_interview.Dipole_dipole_relaxation          no 
+    _Entry_interview.DD_cross_correlation              no 
+    _Entry_interview.Dipole_CSA_cross_correlation      . 
+    _Entry_interview.PKa_value_data_set                no 
+    _Entry_interview.D_H_fractionation_factors         no 
+    _Entry_interview.Theoretical_chem_shifts           no 
+    _Entry_interview.Spectral_density_values           no 
+    _Entry_interview.Timedomain_data                   yes 
+    _Entry_interview.Molecular_interactions            . 
+    _Entry_interview.Secondary_structure_orientations  . 
+    _Entry_interview.Metabolite_coordinates            . 
+    _Entry_interview.Mass_spec_data                    . 
+    _Entry_interview.Other_kind_of_data                no 
+save_
+
+
+save_deposited_data_files
+    _Deposited_data_files.Sf_category                    deposited_data_files 
+    _Deposited_data_files.Sf_framecode                   deposited_data_files 
+    _Deposited_data_files.Entry_ID                       6792 
+    _Deposited_data_files.ID                             1 
+    _Deposited_data_files.Atomic_coordinate_file_name    . 
+    _Deposited_data_files.Atomic_coordinate_file_syntax  . 
+    _Deposited_data_files.Constraint_file_name           . 
+    _Deposited_data_files.Constraint_file_syntax         . 
+    _Deposited_data_files.Precheck_flag                  . 
+    _Deposited_data_files.Validate_flag                  . 
+
+    loop_
+        _Upload_data.Data_file_ID 
+        _Upload_data.Data_file_name 
+        _Upload_data.Data_file_Sf_category 
+        _Upload_data.Data_file_syntax 
+        _Upload_data.Entry_ID 
+        _Upload_data.Deposited_data_files_ID 
+
+        1   h2o_noesy.peaks       "Other kinds of data"         other   6792   1   
+        2   AST8_secondrun.upl    "Other kinds of data"         other   6792   1   
+        3   AST8_secondrun.prot   "Assigned chemical shifts"    other   6792   1   
+        4   AST8_secondrun.aco    "Other kinds of data"         other   6792   1   
+    stop_
+
+save_
+
+ 
+
+save_entry_information
+    _Entry.Sf_category                       entry_information 
+    _Entry.Sf_framecode                      entry_information 
+    _Entry.ID                                6792 
+    _Entry.Title                            
+;
+Conformation of two oppositely functioning Allatostatin peptides for 2D NMR
+;
+
+    _Entry.Version_type                      original 
+    _Entry.Submission_date                   2005-08-27 
+    _Entry.Accession_date                    2005-08-29 
+    _Entry.Last_release_date                 ? 
+    _Entry.Original_release_date             ? 
+    _Entry.Origination                       author 
+    _Entry.NMR_STAR_version                  production.3.0.2.3 
+    _Entry.Original_NMR_STAR_version         . 
+    _Entry.Experimental_method               NMR 
+    _Entry.Experimental_method_subtype       . 
+    _Entry.Dep_release_code_coordinates      . 
+    _Entry.Dep_release_code_nmr_constraints  . 
+    _Entry.Dep_release_code_chemical_shifts  ? 
+    _Entry.Dep_release_code_nmr_exptl        . 
+    _Entry.Dep_release_code_sequence         . 
+    _Entry.CASP_target                       . 
+    _Entry.Details                          
+;
+The 3D conformations of Dip-AST8 is determined from 2D NMR
+;
+
+    _Entry.Special_processing_instructions  
+;
+Note that each of these peptides ends with an NH2 (the C-terminal end is
+amidated)
+;
+
+    _Entry.Update_BMRB_accession_code        . 
+    _Entry.Replace_BMRB_accession_code       . 
+    _Entry.Update_PDB_accession_code         . 
+    _Entry.Replace_PDB_accession_code        . 
+    _Entry.BMRB_update_details               . 
+    _Entry.PDB_update_details                . 
+    _Entry.Release_request                  "On publication" 
+    _Entry.Release_date_request              . 
+    _Entry.Release_date_justification        . 
+    _Entry.Status_code                       . 
+    _Entry.Recvd_deposit_form                . 
+    _Entry.Date_deposition_form              . 
+    _Entry.Recvd_coordinates                 . 
+    _Entry.Date_coordinates                  . 
+    _Entry.Recvd_nmr_constraints             . 
+    _Entry.Date_nmr_constraints              . 
+    _Entry.Recvd_manuscript                  . 
+    _Entry.Date_manuscript                   . 
+    _Entry.Recvd_author_approval             . 
+    _Entry.Date_author_approval              . 
+    _Entry.Recvd_initial_deposition_date     . 
+    _Entry.PDB_date_submitted                . 
+    _Entry.Author_release_status_code        . 
+    _Entry.Date_of_PDB_release               . 
+    _Entry.Date_hold_coordinates             . 
+    _Entry.Date_hold_nmr_constraints         . 
+    _Entry.PDB_deposit_site                  . 
+    _Entry.PDB_process_site                  . 
+    _Entry.BMRB_deposit_site                 . 
+    _Entry.BMRB_process_site                 . 
+    _Entry.BMRB_annotator                    . 
+    _Entry.BMRB_internal_directory_name      . 
+    _Entry.RCSB_annotator                    . 
+    _Entry.Author_approval_type              . 
+    _Entry.Assigned_BMRB_ID                  . 
+    _Entry.Assigned_BMRB_deposition_code     . 
+    _Entry.Assigned_PDB_ID                   . 
+    _Entry.Assigned_PDB_deposition_code      . 
+    _Entry.Assigned_restart_ID               . 
+
+    loop_
+        _Contact_person.ID 
+        _Contact_person.Email_address 
+        _Contact_person.Name_salutation 
+        _Contact_person.Given_name 
+        _Contact_person.Family_name 
+        _Contact_person.Middle_initials 
+        _Contact_person.Family_title 
+        _Contact_person.Department_and_institution 
+        _Contact_person.Mailing_address 
+        _Contact_person.Address_1 
+        _Contact_person.Address_2 
+        _Contact_person.Address_3 
+        _Contact_person.City 
+        _Contact_person.State_province 
+        _Contact_person.Country 
+        _Contact_person.Postal_code 
+        _Contact_person.Phone_number 
+        _Contact_person.FAX_number 
+        _Contact_person.Role 
+        _Contact_person.Organization_type 
+        _Contact_person.Entry_ID 
+
+        1   "smohanty@ notes.cc.sunysb.edu"    .   Smita   Mohanty      ?    ?   
+;
+Department of Biochemistry and Cell Biology at the State University of New York at Stony Brook
+;
+   
+;
+Department of Biochemistry and Cell Biology    
+State University of New York at Stony Brook    
+Life Science Building Room 404    
+Stony Brook, NY 11794-5215
+;
+   .   .   .   .   .   .   .   631-632-1550   ?   .   .   6792   
+        2    nymetsfan312004@yahoo.com         .   Eric    Meyerowitz   A.   ?   "Northport High School"    
+;
+10 Crinkle Ct.     
+Northport NY 11768
+;
+   .   .   .   .   .   .   .   631-261-9408   ?   .   .   6792   
+    stop_
+
+
+    loop_
+        _Entry_author.Ordinal 
+        _Entry_author.Given_name 
+        _Entry_author.Family_name 
+        _Entry_author.First_initial 
+        _Entry_author.Middle_initials 
+        _Entry_author.Family_title 
+        _Entry_author.Entry_ID 
+
+        1   Eric     Meyerowitz   ?   A.   ?   6792   
+        2   Sergey   Zubkov       ?   ?    ?   6792   
+        3   Smita    Mohanty      ?   ?    ?   6792   
+    stop_
+
+
+    loop_
+        _Entry_src.Project_name 
+        _Entry_src.Organization_full_name 
+        _Entry_src.Organization_initials 
+        _Entry_src.Entry_ID 
+
+        .   "SUNY Stony Brook"    .   6792   
+    stop_
+
+
+    loop_
+        _Data_set.Type 
+        _Data_set.Count 
+        _Data_set.Entry_ID 
+
+        assigned_chemical_shifts   1   6792   
+    stop_
+
+
+    loop_
+        _Datum.Type 
+        _Datum.Count 
+        _Datum.Entry_ID 
+
+        "1H chemical shifts"     46   6792   
+        "13C chemical shifts"    27   6792   
+    stop_
+
+
+    loop_
+        _Release.Release_number 
+        _Release.Date 
+        _Release.Submission_date 
+        _Release.Type 
+        _Release.Author 
+        _Release.Detail 
+        _Release.Entry_ID 
+
+        ?   ?   ?   ?   ?   ?   6792   
+    stop_
+
+
+    loop_
+        _Related_entries.Database_name 
+        _Related_entries.Database_accession_code 
+        _Related_entries.Relationship 
+        _Related_entries.Entry_ID 
+
+        BMRB    5990   "Structure for AST5 calculated at different concentration of SDS"    6792   
+        BMRB    5991   "Structures of Allatostatin Family Members AST5 and AST8 from 2D NMR Data"      6792  
+    stop_
+
+save_
+
+
+save_The_Journal_of_Peptides
+    _Citation.Sf_category                 citations 
+    _Citation.Sf_framecode                The_Journal_of_Peptides 
+    _Citation.Entry_ID                    6792 
+    _Citation.ID                          1 
+    _Citation.Class                      "entry citation" 
+    _Citation.CAS_abstract_code           . 
+    _Citation.MEDLINE_UI_code             . 
+    _Citation.DOI                         . 
+    _Citation.PubMed_ID                   18191874 
+    _Citation.Full_citation               . 
+    _Citation.Title                      
+;
+Probing the conformation and dynamics of allatostatin neuropeptides: a structural model for functional differences
+;
+
+    _Citation.Status                      published 
+    _Citation.Type                        journal 
+    _Citation.Journal_abbrev              Peptides 
+    _Citation.Journal_name_full           . 
+    _Citation.Journal_volume              29 
+    _Citation.Journal_issue               3 
+    _Citation.Journal_ASTM                . 
+    _Citation.Journal_ISSN                . 
+    _Citation.Journal_CSD                 . 
+    _Citation.Book_title                  . 
+    _Citation.Book_chapter_title          . 
+    _Citation.Book_volume                 . 
+    _Citation.Book_series                 . 
+    _Citation.Book_publisher              . 
+    _Citation.Book_publisher_city         . 
+    _Citation.Book_ISBN                   . 
+    _Citation.Conference_title            . 
+    _Citation.Conference_site             . 
+    _Citation.Conference_state_province   . 
+    _Citation.Conference_country          . 
+    _Citation.Conference_start_date       . 
+    _Citation.Conference_end_date         . 
+    _Citation.Conference_abstract_number  . 
+    _Citation.Thesis_institution          . 
+    _Citation.Thesis_institution_city     . 
+    _Citation.Thesis_institution_country  . 
+    _Citation.WWW_URL                     . 
+    _Citation.Page_first                  375 
+    _Citation.Page_last                   385 
+    _Citation.Year                        2008 
+    _Citation.Details                     . 
+
+    loop_
+        _Citation_author.Ordinal 
+        _Citation_author.Given_name 
+        _Citation_author.Family_name 
+        _Citation_author.First_initial 
+        _Citation_author.Middle_initials 
+        _Citation_author.Family_title 
+        _Citation_author.Entry_ID 
+        _Citation_author.Citation_ID 
+
+        1   Monimoy     Banerjeea     ?   ?    ?   6792   1   
+        2   Eric        Meyerowitza   ?   A.   ?   6792   1   
+        3   Chengdong   Huanga        ?   ?    ?   6792   1   
+        4   Smita       Mohanty       ?   ?    ?   6792   1   
+    stop_
+
+save_
+
+
+save_assembly
+    _Assembly.Sf_category                      assembly 
+    _Assembly.Sf_framecode                     assembly 
+    _Assembly.Entry_ID                         6792 
+    _Assembly.ID                               1 
+    _Assembly.Name                             Dip-AST8 
+    _Assembly.BMRB_code                        . 
+    _Assembly.Number_of_components             1 
+    _Assembly.Organic_ligands                  0 
+    _Assembly.Metal_ions                       0 
+    _Assembly.Non_standard_bonds               . 
+    _Assembly.Ambiguous_conformational_states  no 
+    _Assembly.Ambiguous_chem_comp_sites        no 
+    _Assembly.Molecules_in_chemical_exchange   no 
+    _Assembly.Paramagnetic                     no 
+    _Assembly.Thiol_state                     "not present" 
+    _Assembly.Molecular_mass                   . 
+    _Assembly.Enzyme_commission_number         . 
+    _Assembly.Details                          . 
+    _Assembly.DB_query_date                    . 
+    _Assembly.DB_query_revised_last_date       . 
+
+    loop_
+        _Assembly_type.Type 
+        _Assembly_type.Entry_ID 
+        _Assembly_type.Assembly_ID 
+
+        protein   6792   1   
+    stop_
+
+
+    loop_
+        _Entity_assembly.ID 
+        _Entity_assembly.Entity_assembly_name 
+        _Entity_assembly.Entity_ID 
+        _Entity_assembly.Entity_label 
+        _Entity_assembly.Asym_ID 
+        _Entity_assembly.PDB_chain_ID 
+        _Entity_assembly.Experimental_data_reported 
+        _Entity_assembly.Physical_state 
+        _Entity_assembly.Conformational_isomer 
+        _Entity_assembly.Chemical_exchange_state 
+        _Entity_assembly.Magnetic_equivalence_group_code 
+        _Entity_assembly.Role 
+        _Entity_assembly.Details 
+        _Entity_assembly.Entry_ID 
+        _Entity_assembly.Assembly_ID 
+
+        1   Dip-AST8    1   $Dip-AST8    .   .   yes   native   no   no   ?   ?   ?   6792   1   
+    stop_
+
+
+    loop_
+        _Assembly_systematic_name.Name 
+        _Assembly_systematic_name.Naming_system 
+        _Assembly_systematic_name.Entry_ID 
+        _Assembly_systematic_name.Assembly_ID 
+
+        Dip-AST8   ?   6792   1   
+    stop_
+
+
+    loop_
+        _Assembly_bio_function.Biological_function 
+        _Assembly_bio_function.Entry_ID 
+        _Assembly_bio_function.Assembly_ID 
+
+        
+;
+Inhibitor of Juvenile Hormone production in Corpora Allata of cockroach Diploptera Punctata
+;
+   6792   1   
+        "Inhibitor of gut muscle contraction in Diploptera Puncata"    6792   1   
+    stop_
+
+save_
+
+
+save_Dip-AST8
+    _Entity.Sf_category                      entity 
+    _Entity.Sf_framecode                     Dip-AST8 
+    _Entity.Entry_ID                         6792 
+    _Entity.ID                               1 
+    _Entity.BMRB_code                        . 
+    _Entity.Name                            "Dippu Allatostatin 8" 
+    _Entity.Type                             polymer 
+    _Entity.Polymer_common_type              . 
+    _Entity.Polymer_type                     polypeptide(L) 
+    _Entity.Polymer_type_details             . 
+    _Entity.Polymer_strand_ID                . 
+    _Entity.Polymer_seq_one_letter_code_can  ? 
+    _Entity.Polymer_seq_one_letter_code     
+;
+GGSLYSFGLX
+;
+
+    _Entity.Target_identifier                . 
+    _Entity.Polymer_author_defined_seq       . 
+    _Entity.Polymer_author_seq_details      
+;
+Note that Leu8 is amidated (it has an extra NH2 on its C-terminal side)
+;
+
+    _Entity.Ambiguous_conformational_states  no 
+    _Entity.Ambiguous_chem_comp_sites        no 
+    _Entity.Nstd_monomer                     no 
+    _Entity.Nstd_chirality                   no 
+    _Entity.Nstd_linkage                     no 
+    _Entity.Nonpolymer_comp_ID               ? 
+    _Entity.Nonpolymer_comp_label            ? 
+    _Entity.Number_of_monomers               10
+    _Entity.Number_of_nonpolymer_components  . 
+    _Entity.Paramagnetic                     no 
+    _Entity.Thiol_state                     "not present" 
+    _Entity.Src_method                       . 
+    _Entity.Parent_entity_ID                 1 
+    _Entity.Fragment                         . 
+    _Entity.Mutation                         . 
+    _Entity.EC_number                        . 
+    _Entity.Calc_isoelectric_point           . 
+    _Entity.Formula_weight                   . 
+    _Entity.Formula_weight_exptl             . 
+    _Entity.Formula_weight_exptl_meth        . 
+    _Entity.Details                          . 
+    _Entity.DB_query_date                    . 
+    _Entity.DB_query_revised_last_date       . 
+
+    loop_
+        _Entity_biological_function.Biological_function 
+        _Entity_biological_function.Entry_ID 
+        _Entity_biological_function.Entity_ID 
+
+        "Inhibitor of JH in Corpora Allata (CA) of cockroach"    6792   1   
+        "Inhibitor of gut muscle contraction in cockroach"       6792   1   
+    stop_
+
+
+    loop_
+        _Entity_common_name.Name 
+        _Entity_common_name.Type 
+        _Entity_common_name.Entry_ID 
+        _Entity_common_name.Entity_ID 
+
+        Dip-AST8   ?   6792   1   
+    stop_
+
+
+    loop_
+        _Entity_systematic_name.Name 
+        _Entity_systematic_name.Naming_system 
+        _Entity_systematic_name.Entry_ID 
+        _Entity_systematic_name.Entity_ID 
+
+        Dip-AST8   ?   6792   1   
+    stop_
+
+
+    loop_
+        _Entity_keyword.Keyword 
+        _Entity_keyword.Entry_ID 
+        _Entity_keyword.Entity_ID 
+
+         AST                     6792   1   
+        "Diploptera Punctata"    6792   1   
+    stop_
+
+
+    loop_
+        _Entity_comp_index.ID 
+        _Entity_comp_index.Auth_seq_ID 
+        _Entity_comp_index.Comp_ID 
+        _Entity_comp_index.Comp_label 
+        _Entity_comp_index.Entry_ID 
+        _Entity_comp_index.Entity_ID 
+
+         1   .   GLY   .   6792   1   
+         2   .   GLY   .   6792   1   
+         3   .   SER   .   6792   1   
+         4   .   LEU   .   6792   1   
+         5   .   TYR   .   6792   1   
+         6   .   SER   .   6792   1   
+         7   .   PHE   .   6792   1   
+         8   .   GLY   .   6792   1   
+         9   .   LEU   .   6792   1   
+        10   .   NH2   .   6792   1   
+    stop_
+
+
+    loop_
+        _Entity_poly_seq.Hetero 
+        _Entity_poly_seq.Mon_ID 
+        _Entity_poly_seq.Num 
+        _Entity_poly_seq.Comp_index_ID 
+        _Entity_poly_seq.Entry_ID 
+        _Entity_poly_seq.Entity_ID 
+
+        .   GLY    1    1   6792   1   
+        .   GLY    2    2   6792   1   
+        .   SER    3    3   6792   1   
+        .   LEU    4    4   6792   1   
+        .   TYR    5    5   6792   1   
+        .   SER    6    6   6792   1   
+        .   PHE    7    7   6792   1   
+        .   GLY    8    8   6792   1   
+        .   LEU    9    9   6792   1   
+        .   NH2   10   10   6792   1   
+    stop_
+
+save_
+
+
+save_natural_source
+    _Entity_natural_src_list.Sf_category   natural_source 
+    _Entity_natural_src_list.Sf_framecode  natural_source 
+    _Entity_natural_src_list.Entry_ID      6792 
+    _Entity_natural_src_list.ID            1 
+
+    loop_
+        _Entity_natural_src.ID 
+        _Entity_natural_src.Entity_ID 
+        _Entity_natural_src.Entity_label 
+        _Entity_natural_src.Entity_chimera_segment_ID 
+        _Entity_natural_src.NCBI_taxonomy_ID 
+        _Entity_natural_src.Type 
+        _Entity_natural_src.Common 
+        _Entity_natural_src.Organism_name_scientific 
+        _Entity_natural_src.Organism_name_common 
+        _Entity_natural_src.Organism_acronym 
+        _Entity_natural_src.ICTVdb_decimal_code 
+        _Entity_natural_src.Superkingdom 
+        _Entity_natural_src.Kingdom 
+        _Entity_natural_src.Genus 
+        _Entity_natural_src.Species 
+        _Entity_natural_src.Strain 
+        _Entity_natural_src.Variant 
+        _Entity_natural_src.Subvariant 
+        _Entity_natural_src.Organ 
+        _Entity_natural_src.Tissue 
+        _Entity_natural_src.Tissue_fraction 
+        _Entity_natural_src.Cell_line 
+        _Entity_natural_src.Cell_type 
+        _Entity_natural_src.ATCC_number 
+        _Entity_natural_src.Organelle 
+        _Entity_natural_src.Cellular_location 
+        _Entity_natural_src.Fragment 
+        _Entity_natural_src.Fraction 
+        _Entity_natural_src.Secretion 
+        _Entity_natural_src.Plasmid 
+        _Entity_natural_src.Plasmid_details 
+        _Entity_natural_src.Gene_mnemonic 
+        _Entity_natural_src.Dev_stage 
+        _Entity_natural_src.Details 
+        _Entity_natural_src.Citation_ID 
+        _Entity_natural_src.Citation_label 
+        _Entity_natural_src.Entry_ID 
+        _Entity_natural_src.Entity_natural_src_list_ID 
+
+        1   1   $Dip-AST8    ?   6984   organism   no   .   "Pacific Beetle Cockroach"    ?   .   Eukaryota   Metazoa   Diploptera   Punctata   ?   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   6792   1   
+    stop_
+
+save_
+
+
+save_experimental_source
+    _Entity_experimental_src_list.Sf_category   experimental_source 
+    _Entity_experimental_src_list.Sf_framecode  experimental_source 
+    _Entity_experimental_src_list.Entry_ID      6792 
+    _Entity_experimental_src_list.ID            1 
+
+    loop_
+        _Entity_experimental_src.ID 
+        _Entity_experimental_src.Entity_ID 
+        _Entity_experimental_src.Entity_label 
+        _Entity_experimental_src.Entity_chimera_segment_ID 
+        _Entity_experimental_src.Production_method 
+        _Entity_experimental_src.Host_org_scientific_name 
+        _Entity_experimental_src.Host_org_name_common 
+        _Entity_experimental_src.Host_org_details 
+        _Entity_experimental_src.Host_org_NCBI_taxonomy_ID 
+        _Entity_experimental_src.Host_org_genus 
+        _Entity_experimental_src.Host_org_species 
+        _Entity_experimental_src.Host_org_strain 
+        _Entity_experimental_src.Host_org_variant 
+        _Entity_experimental_src.Host_org_subvariant 
+        _Entity_experimental_src.Host_org_organ 
+        _Entity_experimental_src.Host_org_tissue 
+        _Entity_experimental_src.Host_org_tissue_fraction 
+        _Entity_experimental_src.Host_org_cell_line 
+        _Entity_experimental_src.Host_org_cell_type 
+        _Entity_experimental_src.Host_org_cellular_location 
+        _Entity_experimental_src.Host_org_organelle 
+        _Entity_experimental_src.Host_org_gene 
+        _Entity_experimental_src.Host_org_culture_collection 
+        _Entity_experimental_src.Host_org_ATCC_number 
+        _Entity_experimental_src.Vector_type 
+        _Entity_experimental_src.PDBview_host_org_vector_name 
+        _Entity_experimental_src.PDBview_plasmid_name 
+        _Entity_experimental_src.Vector_name 
+        _Entity_experimental_src.Vector_details 
+        _Entity_experimental_src.Vendor_name 
+        _Entity_experimental_src.Host_org_dev_stage 
+        _Entity_experimental_src.Details 
+        _Entity_experimental_src.Citation_ID 
+        _Entity_experimental_src.Citation_label 
+        _Entity_experimental_src.Entry_ID 
+        _Entity_experimental_src.Entity_experimental_src_list_ID 
+
+        1   1   $Dip-AST8    .   "obtained from a vendor"    .   ?   .   6984   Diploptera   Puncata   ?   ?   .   ?   ?   .   ?   ?   .   .   .   .   ?   ?   .   .   ?   ?   "Genemed Synthesis"    .   ?   ?   ?   6792   1   
+    stop_
+
+save_
+
+
+save_chem_comp_NH2
+    _Chem_comp.Sf_category                      chem_comp 
+    _Chem_comp.Sf_framecode                     chem_comp_NH2 
+    _Chem_comp.Entry_ID                         6792 
+    _Chem_comp.ID                               NH2 
+    _Chem_comp.Provenance                       PDB 
+    _Chem_comp.Name                            "AMINO GROUP" 
+    _Chem_comp.Type                             NON-POLYMER 
+    _Chem_comp.BMRB_code                        NH2 
+    _Chem_comp.PDB_code                         NH2 
+    _Chem_comp.Ambiguous_flag                   yes 
+    _Chem_comp.Initial_date                     1999-07-08 
+    _Chem_comp.Modified_date                    2011-12-14 
+    _Chem_comp.Release_status                   REL 
+    _Chem_comp.Replaced_by                      . 
+    _Chem_comp.Replaces                         . 
+    _Chem_comp.One_letter_code                  . 
+    _Chem_comp.Three_letter_code                NH2 
+    _Chem_comp.Number_atoms_all                 3 
+    _Chem_comp.Number_atoms_nh                  1 
+    _Chem_comp.PubChem_code                     . 
+    _Chem_comp.Subcomponent_list                . 
+    _Chem_comp.InCHi_code                       InChI=1/H3N/h1H3 
+    _Chem_comp.Mon_nstd_flag                    . 
+    _Chem_comp.Mon_nstd_class                   . 
+    _Chem_comp.Mon_nstd_details                 . 
+    _Chem_comp.Mon_nstd_parent                  . 
+    _Chem_comp.Mon_nstd_parent_comp_ID          . 
+    _Chem_comp.Std_deriv_one_letter_code        . 
+    _Chem_comp.Std_deriv_three_letter_code      . 
+    _Chem_comp.Std_deriv_BMRB_code              . 
+    _Chem_comp.Std_deriv_PDB_code               . 
+    _Chem_comp.Std_deriv_chem_comp_name         . 
+    _Chem_comp.Synonyms                         . 
+    _Chem_comp.Formal_charge                    0 
+    _Chem_comp.Paramagnetic                     . 
+    _Chem_comp.Aromatic                         no 
+    _Chem_comp.Formula                         "H2 N" 
+    _Chem_comp.Formula_weight                   16.023 
+    _Chem_comp.Formula_mono_iso_wt_nat          . 
+    _Chem_comp.Formula_mono_iso_wt_13C          . 
+    _Chem_comp.Formula_mono_iso_wt_15N          . 
+    _Chem_comp.Formula_mono_iso_wt_13C_15N      . 
+    _Chem_comp.Image_file_name                  . 
+    _Chem_comp.Image_file_format                . 
+    _Chem_comp.Topo_file_name                   . 
+    _Chem_comp.Topo_file_format                 . 
+    _Chem_comp.Struct_file_name                 . 
+    _Chem_comp.Struct_file_format               . 
+    _Chem_comp.Stereochem_param_file_name       . 
+    _Chem_comp.Stereochem_param_file_format     . 
+    _Chem_comp.Model_details                    . 
+    _Chem_comp.Model_erf                        . 
+    _Chem_comp.Model_source                     . 
+    _Chem_comp.Model_coordinates_details        . 
+    _Chem_comp.Model_coordinates_missing_flag   no 
+    _Chem_comp.Ideal_coordinates_details       "OpenEye OEToolkits" 
+    _Chem_comp.Ideal_coordinates_missing_flag   no 
+    _Chem_comp.Model_coordinates_db_code        2FLY 
+    _Chem_comp.Processing_site                  RCSB 
+    _Chem_comp.Vendor                           . 
+    _Chem_comp.Vendor_product_code              . 
+    _Chem_comp.Details                          . 
+    _Chem_comp.DB_query_date                    . 
+    _Chem_comp.DB_last_query_revised_last_date  . 
+
+    loop_
+        _Chem_comp_descriptor.Descriptor 
+        _Chem_comp_descriptor.Type 
+        _Chem_comp_descriptor.Program 
+        _Chem_comp_descriptor.Program_version 
+        _Chem_comp_descriptor.Entry_ID 
+        _Chem_comp_descriptor.Comp_ID 
+
+        InChI=1/H3N/h1H3            InChI               InChI                  1.02b       6792   NH2   
+        QGZKDVFQNNGYKY-UHFFFAOYAF   InChIKey            InChI                  1.02b       6792   NH2   
+        N                           SMILES              ACDLabs                   10.04    6792   NH2   
+        [NH2]                       SMILES              CACTVS                     3.341   6792   NH2   
+        [NH2]                       SMILES             "OpenEye OEToolkits"    1.5.0       6792   NH2   
+        [NH2]                       SMILES_CANONICAL    CACTVS                     3.341   6792   NH2   
+        [NH2]                       SMILES_CANONICAL   "OpenEye OEToolkits"    1.5.0       6792   NH2   
+    stop_
+
+
+    loop_
+        _Chem_comp_identifier.Identifier 
+        _Chem_comp_identifier.Type 
+        _Chem_comp_identifier.Program 
+        _Chem_comp_identifier.Program_version 
+        _Chem_comp_identifier.Entry_ID 
+        _Chem_comp_identifier.Comp_ID 
+
+        ammonia       "SYSTEMATIC NAME"     ACDLabs                   10.04   6792   NH2   
+        l^{2}-azane   "SYSTEMATIC NAME"    "OpenEye OEToolkits"    1.5.0      6792   NH2   
+    stop_
+
+
+    loop_
+        _Chem_comp_atom.Atom_ID 
+        _Chem_comp_atom.BMRB_code 
+        _Chem_comp_atom.PDB_atom_ID 
+        _Chem_comp_atom.Alt_atom_ID 
+        _Chem_comp_atom.Auth_atom_ID 
+        _Chem_comp_atom.Type_symbol 
+        _Chem_comp_atom.Isotope_number 
+        _Chem_comp_atom.Chirality 
+        _Chem_comp_atom.Stereo_config 
+        _Chem_comp_atom.Charge 
+        _Chem_comp_atom.Partial_charge 
+        _Chem_comp_atom.Oxidation_number 
+        _Chem_comp_atom.Unpaired_electron_number 
+        _Chem_comp_atom.Align 
+        _Chem_comp_atom.Aromatic_flag 
+        _Chem_comp_atom.Leaving_atom_flag 
+        _Chem_comp_atom.Substruct_code 
+        _Chem_comp_atom.Ionizable 
+        _Chem_comp_atom.Drawing_2D_coord_x 
+        _Chem_comp_atom.Drawing_2D_coord_y 
+        _Chem_comp_atom.Model_Cartn_x 
+        _Chem_comp_atom.Model_Cartn_x_esd 
+        _Chem_comp_atom.Model_Cartn_y 
+        _Chem_comp_atom.Model_Cartn_y_esd 
+        _Chem_comp_atom.Model_Cartn_z 
+        _Chem_comp_atom.Model_Cartn_z_esd 
+        _Chem_comp_atom.Model_Cartn_x_ideal 
+        _Chem_comp_atom.Model_Cartn_y_ideal 
+        _Chem_comp_atom.Model_Cartn_z_ideal 
+        _Chem_comp_atom.PDBX_ordinal 
+        _Chem_comp_atom.Details 
+        _Chem_comp_atom.Entry_ID 
+        _Chem_comp_atom.Comp_ID 
+
+        HN1   HN1   HN1   1HN   .   H   .   .   N   0   .   .   .   1   no   no   .   .   .   .    9.517   .   8.769   .   -7.044   .   -0.385   -0.545   -0.771   2   .   6792   NH2   
+        HN2   HN2   HN2   2HN   .   H   .   .   N   0   .   .   .   1   no   no   .   .   .   .   10.323   .   9.890   .   -8.082   .    1.020    0.000    0.000   3   .   6792   NH2   
+        N     N     N     N     .   N   .   .   N   0   .   .   .   1   no   no   .   .   .   .   10.091   .   8.978   .   -7.810   .    0.000    0.000    0.000   1   .   6792   NH2   
+    stop_
+
+
+    loop_
+        _Chem_comp_bond.ID 
+        _Chem_comp_bond.Type 
+        _Chem_comp_bond.Value_order 
+        _Chem_comp_bond.Atom_ID_1 
+        _Chem_comp_bond.Atom_ID_2 
+        _Chem_comp_bond.Aromatic_flag 
+        _Chem_comp_bond.Stereo_config 
+        _Chem_comp_bond.Ordinal 
+        _Chem_comp_bond.Details 
+        _Chem_comp_bond.Entry_ID 
+        _Chem_comp_bond.Comp_ID 
+
+        1   .   SING   N   HN1   no   N   1   .   6792   NH2   
+        2   .   SING   N   HN2   no   N   2   .   6792   NH2   
+    stop_
+
+save_
+
+
+save_AST8
+    _Sample.Sf_category                     sample 
+    _Sample.Sf_framecode                    AST8 
+    _Sample.Entry_ID                        6792 
+    _Sample.ID                              1 
+    _Sample.Type                            micelle 
+    _Sample.Sub_type                        . 
+    _Sample.Details                        
+;
+deuterated 30mM SDS    
+H2O or D2O
+;
+
+    _Sample.Aggregate_sample_number         . 
+    _Sample.Solvent_system                  . 
+    _Sample.Preparation_date                . 
+    _Sample.Preparation_expiration_date     . 
+    _Sample.Polycrystallization_protocol    . 
+    _Sample.Single_crystal_protocol         . 
+    _Sample.Crystal_grow_apparatus          . 
+    _Sample.Crystal_grow_atmosphere         . 
+    _Sample.Crystal_grow_details            . 
+    _Sample.Crystal_grow_method             . 
+    _Sample.Crystal_grow_method_cit_ID      . 
+    _Sample.Crystal_grow_pH                 . 
+    _Sample.Crystal_grow_pH_range           . 
+    _Sample.Crystal_grow_pressure           . 
+    _Sample.Crystal_grow_pressure_esd       . 
+    _Sample.Crystal_grow_seeding            . 
+    _Sample.Crystal_grow_seeding_cit_ID     . 
+    _Sample.Crystal_grow_temp               . 
+    _Sample.Crystal_grow_temp_details       . 
+    _Sample.Crystal_grow_temp_esd           . 
+    _Sample.Crystal_grow_time               . 
+    _Sample.Oriented_sample_prep_protocol   . 
+    _Sample.Lyophilization_cryo_protectant  . 
+    _Sample.Storage_protocol                . 
+
+    loop_
+        _Sample_component.ID 
+        _Sample_component.Mol_common_name 
+        _Sample_component.Isotopic_labeling 
+        _Sample_component.Assembly_ID 
+        _Sample_component.Assembly_label 
+        _Sample_component.Entity_ID 
+        _Sample_component.Entity_label 
+        _Sample_component.Product_ID 
+        _Sample_component.Type 
+        _Sample_component.Concentration_val 
+        _Sample_component.Concentration_val_min 
+        _Sample_component.Concentration_val_max 
+        _Sample_component.Concentration_val_units 
+        _Sample_component.Concentration_val_err 
+        _Sample_component.Vendor 
+        _Sample_component.Vendor_product_name 
+        _Sample_component.Vendor_product_code 
+        _Sample_component.Entry_ID 
+        _Sample_component.Sample_ID 
+
+        1   "Dippu Allatostatin 8"              ?               ?   ?   1   $Dip-AST8    .   protein      1    0.8    2.0   mM   0.5   .   .   .   6792   1   
+        2   "SDS -- Sodium dodecyl sulfate"    "[U-100% 2H]"    ?   ?   ?    ?           .   lipid       30   29.9   30.1   mM   0.1   .   .   .   6792   1   
+        3    water                             "[U-10% 2H]"     ?   ?   ?    ?           .   solvent     ?    ?      ?      ?    ?     .   .   .   6792   1   
+    stop_
+
+save_
+
+
+save_conditions_1
+    _Sample_condition_list.Sf_category   sample_conditions 
+    _Sample_condition_list.Sf_framecode  conditions_1 
+    _Sample_condition_list.Entry_ID      6792 
+    _Sample_condition_list.ID            1 
+    _Sample_condition_list.Details       . 
+
+    loop_
+        _Sample_condition_variable.Type 
+        _Sample_condition_variable.Val 
+        _Sample_condition_variable.Val_err 
+        _Sample_condition_variable.Val_units 
+        _Sample_condition_variable.Entry_ID 
+        _Sample_condition_variable.Sample_condition_list_ID 
+
+        temperature   303   0.1   K   6792   1   
+    stop_
+
+save_
+
+
+save_600MHz_spectrometer
+    _NMR_spectrometer.Sf_category     NMR_spectrometer 
+    _NMR_spectrometer.Sf_framecode    600MHz_spectrometer 
+    _NMR_spectrometer.Entry_ID        6792 
+    _NMR_spectrometer.ID              1 
+    _NMR_spectrometer.Details        "All Spectrometers from NYSBC in New York, New York" 
+    _NMR_spectrometer.Manufacturer    Bruker 
+    _NMR_spectrometer.Model           ? 
+    _NMR_spectrometer.Serial_number   . 
+    _NMR_spectrometer.Field_strength  600 
+save_
+
+
+save_700MHz_spectrometer
+    _NMR_spectrometer.Sf_category     NMR_spectrometer 
+    _NMR_spectrometer.Sf_framecode    700MHz_spectrometer 
+    _NMR_spectrometer.Entry_ID        6792 
+    _NMR_spectrometer.ID              2 
+    _NMR_spectrometer.Details         . 
+    _NMR_spectrometer.Manufacturer    Bruker 
+    _NMR_spectrometer.Model           ? 
+    _NMR_spectrometer.Serial_number   . 
+    _NMR_spectrometer.Field_strength  700 
+save_
+
+
+save_800MHz_spectrometer
+    _NMR_spectrometer.Sf_category     NMR_spectrometer 
+    _NMR_spectrometer.Sf_framecode    800MHz_spectrometer 
+    _NMR_spectrometer.Entry_ID        6792 
+    _NMR_spectrometer.ID              3 
+    _NMR_spectrometer.Details         . 
+    _NMR_spectrometer.Manufacturer    Bruker 
+    _NMR_spectrometer.Model           ? 
+    _NMR_spectrometer.Serial_number   . 
+    _NMR_spectrometer.Field_strength  600 
+save_
+
+
+save_500MHz_spectrometer
+    _NMR_spectrometer.Sf_category     NMR_spectrometer 
+    _NMR_spectrometer.Sf_framecode    500MHz_spectrometer 
+    _NMR_spectrometer.Entry_ID        6792 
+    _NMR_spectrometer.ID              4 
+    _NMR_spectrometer.Details         . 
+    _NMR_spectrometer.Manufacturer    Bruker 
+    _NMR_spectrometer.Model           ? 
+    _NMR_spectrometer.Serial_number   . 
+    _NMR_spectrometer.Field_strength  500 
+save_
+
+
+save_NMR_experiment_list
+    _Experiment_list.Sf_category   experiment_list 
+    _Experiment_list.Sf_framecode  NMR_experiment_list 
+    _Experiment_list.Entry_ID      6792 
+    _Experiment_list.ID            1 
+    _Experiment_list.Details       . 
+
+    loop_
+        _Experiment.ID 
+        _Experiment.Name 
+        _Experiment.Raw_data_flag 
+        _Experiment.NMR_spec_expt_ID 
+        _Experiment.NMR_spec_expt_label 
+        _Experiment.Sample_ID 
+        _Experiment.Sample_label 
+        _Experiment.Sample_state 
+        _Experiment.Sample_volume 
+        _Experiment.Sample_volume_units 
+        _Experiment.Sample_condition_list_ID 
+        _Experiment.Sample_condition_list_label 
+        _Experiment.Sample_spinning_rate 
+        _Experiment.Sample_angle 
+        _Experiment.NMR_tube_type 
+        _Experiment.NMR_spectrometer_ID 
+        _Experiment.NMR_spectrometer_label 
+        _Experiment.NMR_spectrometer_probe_ID 
+        _Experiment.NMR_spectrometer_probe_label 
+        _Experiment.NMR_spectral_processing_ID 
+        _Experiment.NMR_spectral_processing_label 
+        _Experiment.Entry_ID 
+        _Experiment.Experiment_list_ID 
+
+        1   DQFCOSY      no    1   $NOESY    1   $AST8    ?           .   .   1   $conditions_1    .   .   .   ?   ?   .   .   .   .   6792   1   
+        2   TOCSY        no    1   $NOESY    1   $AST8    ?           .   .   1   $conditions_1    .   .   .   ?   ?   .   .   .   .   6792   1   
+        3   NOESY        yes   1   $NOESY    1   $AST8    isotropic   .   .   1   $conditions_1    .   .   .   ?   ?   .   .   .   .   6792   1   
+        4   1H13C_HMQC   no    1   $NOESY    1   $AST8    ?           .   .   1   $conditions_1    .   .   .   ?   ?   .   .   .   .   6792   1   
+    stop_
+
+save_
+
+
+save_NOESY
+    _NMR_spec_expt.Sf_category                    NMR_spectrometer_expt 
+    _NMR_spec_expt.Sf_framecode                   NOESY 
+    _NMR_spec_expt.Entry_ID                       6792 
+    _NMR_spec_expt.ID                             1 
+    _NMR_spec_expt.Name                           NOESY 
+    _NMR_spec_expt.Type                          "NOE proton proton experiment" 
+    _NMR_spec_expt.Sample_volume                  ? 
+    _NMR_spec_expt.Sample_volume_units            . 
+    _NMR_spec_expt.NMR_tube_type                  ? 
+    _NMR_spec_expt.Sample_spinning_rate           ? 
+    _NMR_spec_expt.Sample_angle                   ? 
+    _NMR_spec_expt.NMR_spectrometer_ID            ? 
+    _NMR_spec_expt.NMR_spectrometer_label         ? 
+    _NMR_spec_expt.NMR_spectrometer_probe_ID      ? 
+    _NMR_spec_expt.NMR_spectrometer_probe_label   ? 
+    _NMR_spec_expt.Carrier_freq_switch_time       . 
+    _NMR_spec_expt.Software_ID                    ? 
+    _NMR_spec_expt.Software_label                 ? 
+    _NMR_spec_expt.Method_ID                      ? 
+    _NMR_spec_expt.Method_label                   ? 
+    _NMR_spec_expt.Pulse_seq_accession_BMRB_code  . 
+    _NMR_spec_expt.Details                        . 
+save_
+
+
+save_chemical_shift_referencing
+    _Chem_shift_reference.Sf_category             chem_shift_reference 
+    _Chem_shift_reference.Sf_framecode            chemical_shift_referencing 
+    _Chem_shift_reference.Entry_ID                6792 
+    _Chem_shift_reference.ID                      1 
+    _Chem_shift_reference.Proton_shifts_flag      yes 
+    _Chem_shift_reference.Carbon_shifts_flag      yes 
+    _Chem_shift_reference.Nitrogen_shifts_flag    no 
+    _Chem_shift_reference.Phosphorus_shifts_flag  no 
+    _Chem_shift_reference.Other_shifts_flag       . 
+    _Chem_shift_reference.Details                 . 
+
+    loop_
+        _Chem_shift_ref.Atom_type 
+        _Chem_shift_ref.Atom_isotope_number 
+        _Chem_shift_ref.Mol_common_name 
+        _Chem_shift_ref.Atom_group 
+        _Chem_shift_ref.Concentration_val 
+        _Chem_shift_ref.Concentration_units 
+        _Chem_shift_ref.Solvent 
+        _Chem_shift_ref.Rank 
+        _Chem_shift_ref.Chem_shift_units 
+        _Chem_shift_ref.Chem_shift_val 
+        _Chem_shift_ref.Ref_method 
+        _Chem_shift_ref.Ref_type 
+        _Chem_shift_ref.Indirect_shift_ratio 
+        _Chem_shift_ref.External_ref_loc 
+        _Chem_shift_ref.External_ref_sample_geometry 
+        _Chem_shift_ref.External_ref_axis 
+        _Chem_shift_ref.Indirect_shift_ratio_cit_ID 
+        _Chem_shift_ref.Indirect_shift_ratio_cit_label 
+        _Chem_shift_ref.Ref_correction_type 
+        _Chem_shift_ref.Correction_val 
+        _Chem_shift_ref.Correction_val_cit_ID 
+        _Chem_shift_ref.Correction_val_cit_label 
+        _Chem_shift_ref.Entry_ID 
+        _Chem_shift_ref.Chem_shift_reference_ID 
+
+        H    1   Water   protons   .   .   .   .   ppm   4.7   internal   direct     1.0   .   .   .   .   .    .   .   .   .    6792   1   
+        C   13   Water   protons   .   .   .   .   ppm   4.7   internal   indirect   ?     .   .   .   .   .    .   .   .   .    6792   1   
+    stop_
+
+save_
+
+
+save_chem_shift_list_1
+    _Assigned_chem_shift_list.Sf_category                  assigned_chemical_shifts 
+    _Assigned_chem_shift_list.Sf_framecode                 chem_shift_list_1 
+    _Assigned_chem_shift_list.Entry_ID                     6792 
+    _Assigned_chem_shift_list.ID                           1 
+    _Assigned_chem_shift_list.Data_file_name               . 
+    _Assigned_chem_shift_list.Sample_condition_list_ID     1 
+    _Assigned_chem_shift_list.Sample_condition_list_label $conditions_1 
+    _Assigned_chem_shift_list.Chem_shift_reference_ID      1 
+    _Assigned_chem_shift_list.Chem_shift_reference_label  $chemical_shift_referencing 
+    _Assigned_chem_shift_list.Chem_shift_1H_err            0.1 
+    _Assigned_chem_shift_list.Chem_shift_13C_err           1.0 
+    _Assigned_chem_shift_list.Chem_shift_15N_err           . 
+    _Assigned_chem_shift_list.Chem_shift_31P_err           . 
+    _Assigned_chem_shift_list.Chem_shift_2H_err            . 
+    _Assigned_chem_shift_list.Chem_shift_19F_err           . 
+    _Assigned_chem_shift_list.Error_derivation_method      . 
+    _Assigned_chem_shift_list.Details                     "List of all 1H and 13C chemical shifts found in this study (for AST8)" 
+    _Assigned_chem_shift_list.Text_data_format             . 
+    _Assigned_chem_shift_list.Text_data                    . 
+
+    loop_
+        _Chem_shift_experiment.Experiment_ID 
+        _Chem_shift_experiment.Experiment_name 
+        _Chem_shift_experiment.Sample_ID 
+        _Chem_shift_experiment.Sample_label 
+        _Chem_shift_experiment.Sample_state 
+        _Chem_shift_experiment.Entry_ID 
+        _Chem_shift_experiment.Assigned_chem_shift_list_ID 
+
+        1   $NOESY    1   $AST8    isotropic   6792   1   
+    stop_
+
+
+    loop_
+        _Atom_chem_shift.ID 
+        _Atom_chem_shift.Assembly_atom_ID 
+        _Atom_chem_shift.Entity_assembly_ID 
+        _Atom_chem_shift.Entity_ID 
+        _Atom_chem_shift.Comp_index_ID 
+        _Atom_chem_shift.Seq_ID 
+        _Atom_chem_shift.Comp_ID 
+        _Atom_chem_shift.Atom_ID 
+        _Atom_chem_shift.Atom_type 
+        _Atom_chem_shift.Atom_isotope_number 
+        _Atom_chem_shift.Val 
+        _Atom_chem_shift.Val_err 
+        _Atom_chem_shift.Assign_fig_of_merit 
+        _Atom_chem_shift.Ambiguity_code 
+        _Atom_chem_shift.Occupancy 
+        _Atom_chem_shift.Resonance_ID 
+        _Atom_chem_shift.Auth_entity_assembly_ID 
+        _Atom_chem_shift.Auth_asym_ID 
+        _Atom_chem_shift.Auth_seq_ID 
+        _Atom_chem_shift.Auth_comp_ID 
+        _Atom_chem_shift.Auth_atom_ID 
+        _Atom_chem_shift.PDB_record_ID 
+        _Atom_chem_shift.PDB_model_num 
+        _Atom_chem_shift.PDB_strand_ID 
+        _Atom_chem_shift.PDB_ins_code 
+        _Atom_chem_shift.PDB_residue_no 
+        _Atom_chem_shift.PDB_residue_name 
+        _Atom_chem_shift.PDB_atom_name 
+        _Atom_chem_shift.Original_PDB_strand_ID 
+        _Atom_chem_shift.Original_PDB_residue_no 
+        _Atom_chem_shift.Original_PDB_residue_name 
+        _Atom_chem_shift.Original_PDB_atom_name 
+        _Atom_chem_shift.Details 
+        _Atom_chem_shift.Entry_ID 
+        _Atom_chem_shift.Assigned_chem_shift_list_ID 
+
+         1   .   1   1   1   1   GLY   HA2    H    1     3.948   0.01   .   .   .   .   .   ?   1   GLY   HA1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+         2   .   1   1   1   1   GLY   HA3    H    1     3.924   0.01   .   .   .   .   .   ?   1   GLY   HA2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+         3   .   1   1   1   1   GLY   CA     C   13    43.391   1      .   .   .   .   .   ?   1   GLY   CA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+         4   .   1   1   2   2   GLY   H      H    1     8.462   0.01   .   .   .   .   .   ?   2   GLY   HN     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+         5   .   1   1   2   2   GLY   HA2    H    1     4.082   0.01   .   .   .   .   .   ?   2   GLY   HA1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+         6   .   1   1   2   2   GLY   HA3    H    1     4.075   0.01   .   .   .   .   .   ?   2   GLY   HA2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+         7   .   1   1   2   2   GLY   CA     C   13    45.493   1      .   .   .   .   .   ?   2   GLY   CA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+         8   .   1   1   3   3   SER   H      H    1     8.215   0.01   .   .   .   .   .   ?   3   SER   HN     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+         9   .   1   1   3   3   SER   HA     H    1     4.469   0.01   .   .   .   .   .   ?   3   SER   HA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        10   .   1   1   3   3   SER   HB2    H    1     3.884   0.01   .   .   .   .   .   ?   3   SER   HB2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        11   .   1   1   3   3   SER   HB3    H    1     3.884   0.01   .   .   .   .   .   ?   3   SER   HB3    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        12   .   1   1   3   3   SER   CA     C   13    58.866   1      .   .   .   .   .   ?   3   SER   CA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        13   .   1   1   3   3   SER   CB     C   13    63.933   1      .   .   .   .   .   ?   3   SER   CB     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        14   .   1   1   4   4   LEU   H      H    1     8.239   0.01   .   .   .   .   .   ?   4   LEU   HN     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        15   .   1   1   4   4   LEU   HA     H    1     4.201   0.01   .   .   .   .   .   ?   4   LEU   HA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        16   .   1   1   4   4   LEU   HB2    H    1     1.617   0.01   .   .   .   .   .   ?   4   LEU   HB2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        17   .   1   1   4   4   LEU   HB3    H    1     1.624   0.01   .   .   .   .   .   ?   4   LEU   HB3    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        18   .   1   1   4   4   LEU   HG     H    1     1.449   0.01   .   .   .   .   .   ?   4   LEU   HG     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        19   .   1   1   4   4   LEU   HD11   H    1     0.904   0.01   .   .   .   .   .   ?   4   LEU   HD11   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        20   .   1   1   4   4   LEU   HD12   H    1     0.904   0.01   .   .   .   .   .   ?   4   LEU   HD11   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        21   .   1   1   4   4   LEU   HD13   H    1     0.904   0.01   .   .   .   .   .   ?   4   LEU   HD11   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        22   .   1   1   4   4   LEU   HD21   H    1     0.839   0.01   .   .   .   .   .   ?   4   LEU   HD21   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        23   .   1   1   4   4   LEU   HD22   H    1     0.839   0.01   .   .   .   .   .   ?   4   LEU   HD21   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        24   .   1   1   4   4   LEU   HD23   H    1     0.839   0.01   .   .   .   .   .   ?   4   LEU   HD21   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        25   .   1   1   4   4   LEU   CA     C   13    56.621   1      .   .   .   .   .   ?   4   LEU   CA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        26   .   1   1   4   4   LEU   CB     C   13    42.210   1      .   .   .   .   .   ?   4   LEU   CB     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        27   .   1   1   4   4   LEU   CG     C   13    27.225   1      .   .   .   .   .   ?   4   LEU   CG     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        28   .   1   1   4   4   LEU   CD1    C   13    25.082   1      .   .   .   .   .   ?   4   LEU   CD1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        29   .   1   1   4   4   LEU   CD2    C   13    24.066   1      .   .   .   .   .   ?   4   LEU   CD2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        30   .   1   1   5   5   TYR   H      H    1     7.706   0.01   .   .   .   .   .   ?   5   TYR   HN     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        31   .   1   1   5   5   TYR   HA     H    1     4.427   0.01   .   .   .   .   .   ?   5   TYR   HA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        32   .   1   1   5   5   TYR   HB2    H    1     2.888   0.01   .   .   .   .   .   ?   5   TYR   HB2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        33   .   1   1   5   5   TYR   HB3    H    1     2.889   0.01   .   .   .   .   .   ?   5   TYR   HB3    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        34   .   1   1   5   5   TYR   HD1    H    1     6.996   0.01   .   .   .   .   .   ?   5   TYR   HD1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        35   .   1   1   5   5   TYR   HD2    H    1     6.996   0.01   .   .   .   .   .   ?   5   TYR   HD2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        36   .   1   1   5   5   TYR   HE1    H    1     6.766   0.01   .   .   .   .   .   ?   5   TYR   HE1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        37   .   1   1   5   5   TYR   HE2    H    1     6.767   0.01   .   .   .   .   .   ?   5   TYR   HE2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        38   .   1   1   5   5   TYR   CA     C   13    58.391   1      .   .   .   .   .   ?   5   TYR   CA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        39   .   1   1   5   5   TYR   CB     C   13    39.021   1      .   .   .   .   .   ?   5   TYR   CB     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        40   .   1   1   5   5   TYR   CD1    C   13   133.142   1      .   .   .   .   .   ?   5   TYR   CD1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        41   .   1   1   5   5   TYR   CD2    C   13   133.142   1      .   .   .   .   .   ?   5   TYR   CD2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        42   .   1   1   6   6   SER   H      H    1     7.734   0.01   .   .   .   .   .   ?   6   SER   HN     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        43   .   1   1   6   6   SER   HA     H    1     4.362   0.01   .   .   .   .   .   ?   6   SER   HA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        44   .   1   1   6   6   SER   HB2    H    1     3.756   0.01   .   .   .   .   .   ?   6   SER   HB2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        45   .   1   1   6   6   SER   HB3    H    1     3.707   0.01   .   .   .   .   .   ?   6   SER   HB3    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        46   .   1   1   6   6   SER   CA     C   13    58.536   1      .   .   .   .   .   ?   6   SER   CA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        47   .   1   1   6   6   SER   CB     C   13    63.573   1      .   .   .   .   .   ?   6   SER   CB     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        48   .   1   1   7   7   PHE   H      H    1     7.840   0.01   .   .   .   .   .   ?   7   PHE   HN     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        49   .   1   1   7   7   PHE   HA     H    1     4.547   0.01   .   .   .   .   .   ?   7   PHE   HA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        50   .   1   1   7   7   PHE   HB2    H    1     3.081   0.01   .   .   .   .   .   ?   7   PHE   HB2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        51   .   1   1   7   7   PHE   HB3    H    1     3.245   0.01   .   .   .   .   .   ?   7   PHE   HB3    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        52   .   1   1   7   7   PHE   HD1    H    1     7.293   0.01   .   .   .   .   .   ?   7   PHE   HD1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        53   .   1   1   7   7   PHE   HD2    H    1     7.292   0.01   .   .   .   .   .   ?   7   PHE   HD2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        54   .   1   1   7   7   PHE   HE1    H    1     7.173   0.01   .   .   .   .   .   ?   7   PHE   HE1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        55   .   1   1   7   7   PHE   HE2    H    1     7.173   0.01   .   .   .   .   .   ?   7   PHE   HE2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        56   .   1   1   7   7   PHE   CA     C   13    58.474   1      .   .   .   .   .   ?   7   PHE   CA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        57   .   1   1   7   7   PHE   CB     C   13    39.564   1      .   .   .   .   .   ?   7   PHE   CB     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        58   .   1   1   7   7   PHE   CD1    C   13   131.978   1      .   .   .   .   .   ?   7   PHE   CD1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        59   .   1   1   7   7   PHE   CD2    C   13   131.987   1      .   .   .   .   .   ?   7   PHE   CD2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        60   .   1   1   7   7   PHE   CE1    C   13   129.589   1      .   .   .   .   .   ?   7   PHE   CE1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        61   .   1   1   7   7   PHE   CE2    C   13   131.299   1      .   .   .   .   .   ?   7   PHE   CE2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        62   .   1   1   8   8   GLY   H      H    1     8.076   0.01   .   .   .   .   .   ?   8   GLY   HN     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        63   .   1   1   8   8   GLY   HA2    H    1     3.903   0.01   .   .   .   .   .   ?   8   GLY   HA1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        64   .   1   1   8   8   GLY   HA3    H    1     3.898   0.01   .   .   .   .   .   ?   8   GLY   HA2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        65   .   1   1   8   8   GLY   CA     C   13    45.844   1      .   .   .   .   .   ?   8   GLY   CA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        66   .   1   1   9   9   LEU   H      H    1     7.693   0.01   .   .   .   .   .   ?   9   LEU   HN     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        67   .   1   1   9   9   LEU   HA     H    1     4.296   0.01   .   .   .   .   .   ?   9   LEU   HA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        68   .   1   1   9   9   LEU   HB2    H    1     1.705   0.01   .   .   .   .   .   ?   9   LEU   HB2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        69   .   1   1   9   9   LEU   HB3    H    1     1.699   0.01   .   .   .   .   .   ?   9   LEU   HB3    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        70   .   1   1   9   9   LEU   HG     H    1     1.560   0.01   .   .   .   .   .   ?   9   LEU   HG     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        71   .   1   1   9   9   LEU   HD11   H    1     0.934   0.01   .   .   .   .   .   ?   9   LEU   HD11   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        72   .   1   1   9   9   LEU   HD12   H    1     0.934   0.01   .   .   .   .   .   ?   9   LEU   HD11   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        73   .   1   1   9   9   LEU   HD13   H    1     0.934   0.01   .   .   .   .   .   ?   9   LEU   HD11   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        74   .   1   1   9   9   LEU   HD21   H    1     0.892   0.01   .   .   .   .   .   ?   9   LEU   HD21   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        75   .   1   1   9   9   LEU   HD22   H    1     0.892   0.01   .   .   .   .   .   ?   9   LEU   HD21   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        76   .   1   1   9   9   LEU   HD23   H    1     0.892   0.01   .   .   .   .   .   ?   9   LEU   HD21   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        77   .   1   1   9   9   LEU   CA     C   13    55.004   1      .   .   .   .   .   ?   9   LEU   CA     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        78   .   1   1   9   9   LEU   CB     C   13    42.820   1      .   .   .   .   .   ?   9   LEU   CB     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        79   .   1   1   9   9   LEU   CG     C   13    27.266   1      .   .   .   .   .   ?   9   LEU   CG     ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        80   .   1   1   9   9   LEU   CD1    C   13    25.554   1      .   .   .   .   .   ?   9   LEU   CD1    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+        81   .   1   1   9   9   LEU   CD2    C   13    23.536   1      .   .   .   .   .   ?   9   LEU   CD2    ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?   .   6792   1   
+    stop_
+
+save_
+
+
+save_1H-1H_NOESY_Peaklist
+   _Spectral_peak_list.Sf_category                     spectral_peak_list
+   _Spectral_peak_list.Sf_framecode                    1H-1H_NOESY_Peaklist
+   _Spectral_peak_list.Entry_ID                        6792
+   _Spectral_peak_list.ID                              1
+   _Spectral_peak_list.Data_file_name                  .
+   _Spectral_peak_list.Sample_ID                       1
+   _Spectral_peak_list.Sample_label                   $AST8
+   _Spectral_peak_list.Sample_condition_list_ID        1
+   _Spectral_peak_list.Sample_condition_list_label    $conditions_1
+   _Spectral_peak_list.Experiment_ID                   1
+   _Spectral_peak_list.Experiment_name                $NOESY
+   _Spectral_peak_list.Number_of_spectral_dimensions   2
+   _Spectral_peak_list.Details                         .
+   _Spectral_peak_list.Text_data_format                text
+   _Spectral_peak_list.Text_data                      
+;
+# Number of dimensions 2
+#FORMAT xeasy2D
+#INAME 1 h
+#INAME 2 H
+#CYANAFORMAT hH
+   1   7.841   3.080 1 ?          3.245e+01  0.00e+00 e   0   704   708 0
+   2   7.692   1.565 1 ?          9.659e+00  0.00e+00 e   0   904   912 0
+   3   7.691   0.937 1 ?          1.327e+00  0.00e+00 e   0   904   916 0
+   4   7.691   0.900 1 ?          8.230e-01  0.00e+00 e   0   904   920 0
+   5   7.703   4.429 1 ?          6.307e+00  0.00e+00 e   0   504   506 0
+   6   7.702   2.889 1 ?          1.289e+01  0.00e+00 e   0   504   509 0
+
+   7   7.730   4.362 1 ?          6.186e+00  0.00e+00 e   0   604   606 0
+   8   7.734   3.757 1 ?          1.056e+00  0.00e+00 e   0   604   608 0
+   9   7.736   3.697 1 ?          1.826e+00  0.00e+00 e   0   604   609 0
+  10   8.462   4.070 1 ?          8.693e-01  0.00e+00 e   0   204   206 0
+
+  11   8.238   4.186 1 ?          4.559e+00  0.00e+00 e   0   404   406 0
+  12   8.217   3.871 1 ?          3.156e-01  0.00e+00 e   0   304   309 0
+
+  13   8.242   1.603 1 ?          1.046e+01  0.00e+00 e   0   404   408 0
+  14   8.242   1.456 1 ?          1.334e+01  0.00e+00 e   0   404   412 0
+  15   8.242   0.909 1 ?          6.241e-01  0.00e+00 e   0   404   416 0
+  16   8.242   0.841 1 ?          1.033e+00  0.00e+00 e   0   404   420 0
+  17   8.208   4.467 1 ?          4.556e+00  0.00e+00 e   0   304   306 0
+  18   8.076   3.907 1 ?          2.447e+00  0.00e+00 e   0   804   806 0
+
+  19   8.461   8.214 1 ?          2.795e+00  0.00e+00 e   0   204   304 0
+  20   8.242   7.700 1 ?          7.868e+00  0.00e+00 e   0   404   504 0
+  21   8.076   7.840 1 ?          5.721e+00  0.00e+00 e   0   804   704 0
+  22   8.076   7.693 1 ?          5.705e+00  0.00e+00 e   0   804   904 0
+  23   8.076   7.299 1 ?          2.260e+00  0.00e+00 e   0   804   716 0
+
+  24   7.841   7.733 1 ?          4.205e+00  0.00e+00 e   0   704   604 0
+  25   7.840   7.708 1 ?          5.054e+00  0.00e+00 e   0   704   504 0
+  26   7.840   7.298 1 ?          7.072e+00  0.00e+00 e   0   704   716 0
+
+  27   7.844   6.995 1 ?          1.070e-01  0.00e+00 e   0   704   516 0
+
+  28   7.702   6.997 1 ?          4.962e-01  0.00e+00 e   0   504   516 0
+
+  29   7.700   7.296 1 ?          8.024e-01  0.00e+00 e   0   504   716 0
+
+  30   7.689   7.454 1 ?          1.427e+00  0.00e+00 e   0   904     0 0
+  31   7.456   6.883 1 ?          2.555e+01  0.00e+00 e   0     0     0 0
+  32   7.298   6.766 1 ?          3.545e-01  0.00e+00 e   0   716   518 0
+
+  33   7.298   6.999 1 ?          2.394e-01  0.00e+00 e   0   716   516 0
+
+  34   7.280   7.174 1 ?          2.505e+01  0.00e+00 e   0   716   718 0
+
+  35   6.993   6.768 1 ?          9.347e+00  0.00e+00 e   0   516   518 0
+
+  36   7.298   4.549 1 ?          9.863e+00  0.00e+00 e   0   716   706 0
+
+  37   7.454   4.297 1 ?          4.298e+00  0.00e+00 e   0     0   906 0
+  38   7.298   3.251 1 ?          6.653e+00  0.00e+00 e   0   716   709 0
+
+  39   7.306   3.084 1 ?          2.423e+00  0.00e+00 e   0   716   708 0
+
+  40   6.988   2.897 1 ?          2.213e+00  0.00e+00 e   0   516   509 0
+
+  41   7.005   4.428 1 ?          1.897e+00  0.00e+00 e   0   516   506 0
+
+  42   6.774   4.426 1 ?          3.561e-01  0.00e+00 e   0   518   506 0
+
+  43   6.774   2.895 1 ?          3.818e-01  0.00e+00 e   0   518   509 0
+
+  44   7.298   0.938 1 ?          8.707e-01  0.00e+00 e   0   716   916 0
+  45   6.757   0.841 1 ?          2.366e-01  0.00e+00 e   0   518   420 0
+
+  46   6.988   1.447 1 ?          1.316e-01  0.00e+00 e   0   516   412 0
+
+  47   6.987   1.631 1 ?          1.993e-01  0.00e+00 e   0   516   409 0
+
+  48   7.730   6.995 1 ?          4.602e-01  0.00e+00 e   0   604   516 0
+
+  49   7.735   7.291 1 ?          2.119e+00  0.00e+00 e   0   604   716 0
+
+  50   6.758   0.909 1 ?          1.823e-01  0.00e+00 e   0   521   416 0
+
+  51   7.455   1.558 1 ?          8.562e-01  0.00e+00 e   0     0   912 0
+  52   7.298   2.887 1 ?          1.322e-01  0.00e+00 e   0   724   509 0
+
+  53   7.005   0.907 1 ?          1.237e-01  0.00e+00 e   0   516   416 0
+
+  54   6.989   0.841 1 ?          1.303e-01  0.00e+00 e   0   523   420 0
+
+  55   6.774   4.544 1 ?          2.362e-01  0.00e+00 e   0   518   706 0
+
+  56   6.775   1.587 1 ?          1.234e-01  0.00e+00 e   0   518   409 0
+
+  57   7.690   3.086 1 ?          1.346e+00  0.00e+00 e   0   904   708 0
+  58   7.689   3.240 1 ?          3.293e-01  0.00e+00 e   0   904   709 0
+  59   7.689   3.908 1 ?          1.218e+01  0.00e+00 e   0   904   806 0
+  60   7.839   3.711 1 ?          3.360e+00  0.00e+00 e   0   704   609 0
+  61   8.077   3.230 1 ?          3.277e+00  0.00e+00 e   0   804   709 0
+  62   8.076   3.081 1 ?          2.987e+00  0.00e+00 e   0   804   708 0
+  63   8.076   4.548 1 ?          1.649e+01  0.00e+00 e   0   804   706 0
+  64   3.252   3.081 1 ?          1.750e+01  0.00e+00 e   0   709   708 0
+  65   7.707   4.187 1 ?          7.470e+00  0.00e+00 e   0   504   406 0
+  66   7.834   2.898 1 ?          5.710e-01  0.00e+00 e   0   704   509 0
+  67   8.231   6.993 1 ?          1.251e-01  0.00e+00 e   0   404   516 0
+
+  68   7.298   4.187 1 ?          1.294e+00  0.00e+00 e   0   716   406 0
+
+  69   7.298   4.363 1 ?          1.786e+00  0.00e+00 e   0   716   606 0
+
+  70   7.834   4.362 1 ?          9.374e+00  0.00e+00 e   0   704   606 0
+  71   6.884   1.560 1 ?          6.148e-01  0.00e+00 e   0     0   912 0
+  72   7.696   6.769 1 ?          1.318e-01  0.00e+00 e   0   904   521 0
+
+  73   7.701   6.886 1 ?          3.556e-01  0.00e+00 e   0   904     0 0
+  74   4.097   4.077 1 ?          1.015e+01  0.00e+00 e   0   206   207 0
+  75   3.908   3.872 1 ?          3.003e+01  0.00e+00 e   0   806   807 0
+  76   3.959   3.919 1 ?          3.592e+00  0.00e+00 e   0   106   107 0
+  77   1.711   1.561 1 ?          7.809e+01  0.00e+00 e   0   909   912 0
+  78   1.711   1.709 1 ?          5.089e+01  0.00e+00 e   0   909   908 0
+
+  79   1.603   1.440 1 ?          5.768e+01  0.00e+00 e   0   408   412 0
+  80   4.185   1.450 1 ?          2.031e+00  0.00e+00 e   0   406   412 0
+  81   3.079   1.672 1 ?          0.000e+00  0.00e+00 e   0   708   909 0
+
+  82   3.257   0.936 1 ?          3.281e-01  0.00e+00 e   0   709   916 0
+  83   1.627   4.183 1 ?          0.000e+00  0.00e+00 e   0   409   406 0
+  84   3.082   0.935 1 ?          0.000e+00  0.00e+00 e   0   708   916 0
+  85   0.926   3.258 1 ?          4.304e-01  0.00e+00 e   0   916   709 0
+  86   2.868   4.428 1 ?          2.526e+01  0.00e+00 e   0   509   506 0
+
+  87   3.082   4.548 1 ?          1.094e+01  0.00e+00 e   0   708   706 0
+  88   3.254   4.548 1 ?          6.136e+00  0.00e+00 e   0   709   706 0
+  89   3.714   4.362 1 ?          1.015e+01  0.00e+00 e   0   609   606 0
+  90   3.861   4.469 1 ?          6.658e+00  0.00e+00 e   0   309   306 0
+
+  91   1.560   4.293 1 ?          9.910e+00  0.00e+00 e   0   912   906 0
+  92   1.639   3.922 1 ?          5.871e-01  0.00e+00 e   0   408   308 0
+
+  93   0.834   4.185 1 ?          9.409e+00  0.00e+00 e   0   420   406 0
+  94   0.886   1.669 1 ?          8.902e+00  0.00e+00 e   0   920   909 0
+  95   0.932   3.073 1 ?          1.165e+00  0.00e+00 e   0   916   708 0
+  96   0.891   3.924 1 ?          1.029e+00  0.00e+00 e   0   920   806 0
+
+  97   0.944   3.856 1 ?          3.624e-01  0.00e+00 e   0   916   806 0
+  98   7.835   8.076 1 ?          3.462e+00  0.00e+00 e   0   704   804 0
+  99   7.701   8.076 1 ?          1.343e+00  0.00e+00 e   0   904   804 0
+ 100   7.729   7.840 1 ?          1.253e+01  0.00e+00 e   0   604   704 0
+ 101   7.298   7.840 1 ?          6.464e+00  0.00e+00 e   0   724   704 0
+
+ 102   6.775   7.297 1 ?          2.192e-01  0.00e+00 e   0   518   716 0
+
+ 103   7.456   7.692 1 ?          2.693e+00  0.00e+00 e   0     0   904 0
+ 104   6.884   7.455 1 ?          6.924e+01  0.00e+00 e   0     0     0 0
+ 105   6.767   6.990 1 ?          6.024e+00  0.00e+00 e   0   521   523 0
+
+ 106   2.891   6.996 1 ?          1.266e+00  0.00e+00 e   0   509   516 0
+
+ 107   3.081   7.298 1 ?          9.882e+00  0.00e+00 e   0   708   724 0
+ 108   3.252   7.298 1 ?          6.469e+00  0.00e+00 e   0   709   716 0
+ 109   2.889   7.701 1 ?          1.419e+01  0.00e+00 e   0   509   504 0
+
+ 110   1.711   7.693 1 ?          1.393e+01  0.00e+00 e   0   908   904 0
+
+ 111   0.926   7.696 1 ?          1.278e+00  0.00e+00 e   0   916   904 0
+ 112   1.605   8.237 1 ?          1.012e+01  0.00e+00 e   0   408   404 0
+
+ 113   3.082   7.840 1 ?          1.252e+01  0.00e+00 e   0   708   704 0
+ 114   3.253   7.840 1 ?          1.064e+01  0.00e+00 e   0   709   704 0
+ 115   3.233   8.075 1 ?          3.638e+00  0.00e+00 e   0   709   804 0
+ 116   3.892   8.075 1 ?          3.803e+00  0.00e+00 e   0   807   804 0
+
+ 117   4.075   8.216 1 ?          2.273e+00  0.00e+00 e   0   206   304 0
+
+ 118   3.913   7.694 1 ?          3.366e+00  0.00e+00 e   0   806   904 0
+
+ 119   3.713   7.735 1 ?          5.213e+00  0.00e+00 e   0   609   604 0
+ 120   4.086   8.466 1 ?          1.308e+00  0.00e+00 e   0   206   204 0
+
+ 121   8.208   8.461 1 ?          4.005e+00  0.00e+00 e   0   304   204 0
+ 122   3.891   8.219 1 ?          5.336e+00  0.00e+00 e   0   308   304 0
+
+ 123   1.461   8.237 1 ?          3.829e+00  0.00e+00 e   0   412   404 0
+ 124   1.438   7.699 1 ?          2.103e+00  0.00e+00 e   0   412   504 0
+ 125   0.900   8.236 1 ?          2.441e+00  0.00e+00 e   0   416   404 0
+ 126   7.298   8.070 1 ?          1.151e+00  0.00e+00 e   0   716   804 0
+
+ 127   6.989   7.843 1 ?          2.338e-01  0.00e+00 e   0   516   704 0
+
+ 128   6.988   7.701 1 ?          1.070e+00  0.00e+00 e   0   516   504 0
+
+ 129   6.763   7.699 1 ?          2.575e-01  0.00e+00 e   0   518   504 0
+
+ 130   3.084   7.691 1 ?          8.893e-01  0.00e+00 e   0   708   504 0
+ 131   4.195   7.702 1 ?          0.000e+00  0.00e+00 e   0   406   504 0
+ 132   7.696   8.236 1 ?          1.097e+01  0.00e+00 e   0   504   404 0
+ 133   7.298   7.732 1 ?          1.021e+00  0.00e+00 e   0   716   604 0
+
+ 134   3.758   7.839 1 ?          1.337e+00  0.00e+00 e   0   608   704 0
+ 135   4.196   8.235 1 ?          1.099e+00  0.00e+00 e   0   406   404 0
+ 136   1.450   4.187 1 ?          9.571e+00  0.00e+00 e   0   412   406 0
+ 137   7.005   4.362 1 ?          1.940e-01  0.00e+00 e   0   516   606 0
+
+ 138   3.082   8.075 1 ?          3.678e+00  0.00e+00 e   0   708   804 0
+ 139   2.912   7.839 1 ?          4.929e-01  0.00e+00 e   0   509   704 0
+ 140   2.893   7.294 1 ?          2.078e-01  0.00e+00 e   0   508   716 0
+
+ 141   3.700   7.296 1 ?          6.299e-01  0.00e+00 e   0   609   716 0
+ 142   2.898   6.772 1 ?          9.360e-02  0.00e+00 e   0   508   521 0
+
+ 143   7.834   4.548 1 ?          8.480e+00  0.00e+00 e   0   704   706 0
+ 144   7.690   4.548 1 ?          6.205e-01  0.00e+00 e   0   904   706 0
+ 145   7.688   4.294 1 ?          1.197e+01  0.00e+00 e   0   904   906 0
+ 146   8.216   4.078 1 ?          4.899e+00  0.00e+00 e   0   304   206 0
+
+ 147   7.688   1.710 1 ?          1.823e+01  0.00e+00 e   0   904   908 0
+
+ 148   3.082   3.243 1 ?          2.100e+01  0.00e+00 e   0   708   709 0
+ 149   2.842   2.893 1 ?          4.341e+01  0.00e+00 e   0   509   508 0
+
+ 150   3.873   3.915 1 ?          1.430e+01  0.00e+00 e   0   807   806 0
+ 151   4.064   4.092 1 ?          1.358e+01  0.00e+00 e   0   207   206 0
+ 152   1.560   1.711 1 ?          3.998e+01  0.00e+00 e   0   912   908 0
+
+ 153   1.450   1.626 1 ?          3.479e+01  0.00e+00 e   0   412   408 0
+
+ 154   1.674   3.084 1 ?          1.095e-01  0.00e+00 e   0   909   708 0
+ 155   7.707   1.447 1 ?          4.322e+00  0.00e+00 e   0   504   412 0
+ 156   8.462   8.461 1 ?          1.463e+02  0.00e+00 e   0   204   204 0
+ 157   8.244   8.239 1 ?          2.563e+02  0.00e+00 e   0   404   404 0
+ 158   8.076   8.075 1 ?          1.890e+02  0.00e+00 e   0   804   804 0
+ 159   7.843   7.839 1 ?          6.051e+01  0.00e+00 e   0   704   704 0
+ 160   7.741   7.734 1 ?          1.108e+02  0.00e+00 e   0   604   604 0
+ 161   7.701   7.696 1 ?          5.226e+02  0.00e+00 e   0   504   504 0
+ 162   7.297   7.296 1 ?          4.606e+02  0.00e+00 e   0   716   716 0
+
+ 163   7.455   7.454 1 ?          8.961e+01  0.00e+00 e   0     0     0 0
+ 164   7.173   7.173 1 ?          1.195e+02  0.00e+00 e   0   718   718 0
+
+ 165   6.758   6.766 1 ?          6.607e+01  0.00e+00 e   0   521   518 0
+
+ 166   1.560   7.693 1 ?          9.251e+00  0.00e+00 e   0   912   904 0
+ 167   3.253   3.232 1 ?          4.453e+01  0.00e+00 e   0   709   709 0
+ 168   3.233   3.252 1 ?          4.680e+01  0.00e+00 e   0   709   709 0
+ 169   1.711   0.936 1 ?          1.292e+01  0.00e+00 e   0   909   916 0
+
+ 170   1.438   0.840 1 ?          3.074e+00  0.00e+00 e   0   412   420 0
+ 171   1.626   0.842 1 ?          6.272e+00  0.00e+00 e   0   408   420 0
+
+ 172   1.450   0.908 1 ?          4.472e+00  0.00e+00 e   0   412   416 0
+ 173   0.834   1.447 1 ?          4.669e+00  0.00e+00 e   0   420   412 0
+ 174   0.927   1.555 1 ?          2.729e+00  0.00e+00 e   0   916   912 0
+ 175   0.834   1.635 1 ?          4.069e+00  0.00e+00 e   0   420   409 0
+
+ 176   8.081   8.081 1 ?          5.418e+01  0.00e+00 e   0   804   804 0
+ 177   8.081   8.081 1 ?          5.418e+01  0.00e+00 e   0   804   804 0
+ 178   7.736   4.428 1 ?          7.879e+00  0.00e+00 e   0   604   506 0
+ 179   7.834   4.431 1 ?          9.697e-01  0.00e+00 e   0   704   506 0
+ 180   7.005   7.291 1 ?          1.564e-01  0.00e+00 e   0   516   724 0
+
+ 181   7.741   7.696 1 ?          1.004e+00  0.00e+00 e   0   604   504 0
+ 182   8.241   4.470 1 ?          1.940e+00  0.00e+00 e   0   404   306 0
+ 183   8.462   3.928 1 ?          5.659e-01  0.00e+00 e   0   204   106 0
+
+ 184   8.076   4.364 1 ?          2.438e-01  0.00e+00 e   0   804   606 0
+ 185   8.240   4.075 1 ?          3.180e-01  0.00e+00 e   0   404   206 0
+
+ 186   7.841   3.753 1 ?          1.613e-01  0.00e+00 e   0   504   608 0
+ 187   6.884   4.295 1 ?          3.481e-01  0.00e+00 e   0     0   906 0
+ 188   8.241   3.877 1 ?          4.688e-01  0.00e+00 e   0   404   309 0
+
+ 189   8.241   4.425 1 ?          2.983e-01  0.00e+00 e   0   404   506 0
+ 190   7.698   3.707 1 ?          2.102e-01  0.00e+00 e   0   504   609 0
+ 191   7.735   2.896 1 ?          4.578e-01  0.00e+00 e   0   604   509 0
+ 192   3.924   3.958 1 ?          1.635e+00  0.00e+00 e   0   107   106 0
+ 193   7.005   1.454 1 ?          1.154e-01  0.00e+00 e   0   516   412 0
+
+ 194   7.004   1.630 1 ?          1.273e-01  0.00e+00 e   0   516   408 0
+
+ 195   7.005   2.897 1 ?          2.401e+00  0.00e+00 e   0   516   509 0
+
+ 196   6.758   4.544 1 ?          2.113e-01  0.00e+00 e   0   518   706 0
+
+ 197   6.759   4.422 1 ?          3.089e-01  0.00e+00 e   0   518   506 0
+
+ 198   6.757   4.299 1 ?          1.129e-01  0.00e+00 e   0   518   906 0
+
+ 199   6.774   4.300 1 ?          1.292e-01  0.00e+00 e   0   521   406 0
+
+ 200   6.758   4.185 1 ?          1.328e-01  0.00e+00 e   0   518   406 0
+
+ 201   6.775   4.186 1 ?          1.095e-01  0.00e+00 e   0   521   406 0
+
+ 202   6.762   2.889 1 ?          3.337e-01  0.00e+00 e   0   518   508 0
+
+ 203   6.774   0.839 1 ?          2.105e-01  0.00e+00 e   0   518   420 0
+
+ 204   7.275   6.997 1 ?          1.385e-01  0.00e+00 e   0   724   523 0
+
+ 205   7.275   6.764 1 ?          1.877e-01  0.00e+00 e   0   724   518 0
+
+ 206   7.276   4.549 1 ?          4.750e-01  0.00e+00 e   0   724   706 0
+ 207   7.276   3.231 1 ?          4.128e-01  0.00e+00 e   0   724   709 0
+
+ 208   7.276   3.080 1 ?          4.022e-01  0.00e+00 e   0   724   708 0
+
+ 209   7.275   2.888 1 ?          1.143e-01  0.00e+00 e   0   724   509 0
+
+ 211   7.275   0.901 1 ?          1.212e-01  0.00e+00 e   0   724   416 0
+
+ 212   7.297   0.899 1 ?          1.166e-01  0.00e+00 e   0   716   416 0
+
+ 213   7.297   0.840 1 ?          1.637e-01  0.00e+00 e   0   724   420 0
+
+ 214   4.357   7.840 1 ?          1.502e-01  0.00e+00 e   0   606   704 0
+ 215   7.696   0.840 1 ?          1.769e-01  0.00e+00 e   0   904   420 0
+216 7.841 3.240 1 ? 4.053e+00 0.00e+00 e 0 704 709 0
+;
+
+save_
+
+

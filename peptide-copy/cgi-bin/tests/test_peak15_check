@@ -1,0 +1,80 @@
+echo "Checking output files"
+
+set files = ( 18561_peaks.str )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "18561_peaks.str"
+set line = '^save_spectral_peak_list_15N'
+source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line  = '1   N   15   HN   ?   2513.855618964   ?   ?   18561   1'
+source tests/check4line
+
+set line  = '1 . . 18561 1'
+source tests/check4line
+set line  = '1581 . . 18561 1'
+source tests/check4line
+
+set line  = '1 -16380.0 . volume 18561 1'
+source tests/check4line
+set line  = '1581 -487.0 . volume 18561 1'
+source tests/check4line
+
+set line  = '1 1 120.254 ? ? ? ? ? ? ? ? ? ? ? ? ? 18561 1'
+source tests/check4line
+set line  = '1 2 4.779 ? ? ? ? ? ? ? ? ? ? ? ? ? 18561 1'
+source tests/check4line
+set line  = '1 3 8.215 ? ? ? ? ? ? ? ? ? ? ? ? ? 18561 1'
+source tests/check4line
+set line  = '1581 3 7.688 ? ? ? ? ? ? ? ? ? ? ? ? ? 18561 1'
+source tests/check4line
+
+set line  = '1 1 ? ? ? ? 120.254 ? ? ? ? ? ? ? ? 51 ? . . . 1 ? ? 18561 1'
+source tests/check4line
+set line  = '1 2 ? ? ? ? 4.779 ? ? ? ? ? ? ? ? 29 ? . . . 1 ? ? 18561 1'
+source tests/check4line
+set line  = '1 3 ? ? ? ? 8.215 ? ? ? ? ? ? ? ? 52 ? . . . 1 ? ? 18561 1'
+source tests/check4line
+set line  = '1581 1 ? ? ? ? 111.81 ? ? ? ? ? ? ? ? 1525 ? . . . 1 ? ? 18561 1'
+source tests/check4line
+set line  = '1581 3 ? ? ? ? 7.688 ? ? ? ? ? ? ? ? 1526 ? . . . 1 ? ? 18561 1'
+source tests/check4line
+
+
+set line  = '^save_spectral_peak_list_13C'
+source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line  = '1   C   13   13C   ?   14084.5070422535   ?   ?   18561   2'
+source tests/check4line
+
+set line  = '1 . . 18561 2'
+source tests/check4line
+set line  = '5706 . . 18561 2'
+source tests/check4line
+
+set line  = '1 3692.0 . volume 18561 2'
+source tests/check4line
+set line  = '5706 670.0 . volume 18561 2'
+source tests/check4line
+
+set line  = '1 1 55.894 ? ? ? ? ? ? ? ? ? ? ? ? ? 18561 2'
+source tests/check4line
+set line  = '5706 3 6.983 ? ? ? ? ? ? ? ? ? ? ? ? ? 18561 2'
+source tests/check4line
+
+set line  = '1 1 ? ? ? ? 55.894 ? ? ? ? ? ? ? ? 28 ? . . . 1 ? ? 18561 2'
+source tests/check4line
+set line  = '1 2 ? ? ? ? 4.779 ? ? ? ? ? ? ? ? 29 ? . . . 1 ? ? 18561 2'
+source tests/check4line
+set line  = '1 3 ? ? ? ? 4.779 ? ? ? ? ? ? ? ? 29 ? . . . 1 ? ? 18561 2'
+source tests/check4line
+set line  = '5706 3 ? ? ? ? 6.983 ? ? ? ? ? ? ? ? 1623 ? . . . 1 ? ? 18561 2'
+source tests/check4line

@@ -1,0 +1,64 @@
+#! /bin/csh -f
+
+# Tests the starlibj fix for the visualization server problem that
+# Hongyang ran into.
+
+set result = 0
+
+rm -r -f */*/test52_out*
+rm -r -f */.*/test52_out*
+
+echo -n "Processing NMR-STAR: "
+./uvd -file test_data/20080425_38208.str -name test52_out -force -check_pct
+if ($status != 0) then
+  echo "First invocation of uvd failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/uvd/test52_outam1.dat \
+	data_dir/uvd/test52_outamac1.dat \
+	data_dir/uvd/test52_outas1.dat \
+	data_dir/uvd/test52_outc1.dat \
+	data_dir/uvd/test52_outd1.dat \
+	data_dir/uvd/test52_outhc1.dat \
+	data_dir/uvd/test52_outhn1.dat \
+	data_dir/uvd/test52_outmd.dat \
+	data_dir/uvd/test52_outp1.dat \
+	data_dir/uvd/test52_outrc1.dat \
+	data_dir/uvd/test52_outrl.dat \
+	html_dir/uvd/test52_out/test52_outam1.html \
+	html_dir/uvd/test52_out/test52_outas1.html \
+	html_dir/uvd/test52_out/test52_outc1.html \
+	html_dir/uvd/test52_out/test52_outd1.html \
+	html_dir/uvd/test52_out/test52_outhc1.html \
+	html_dir/uvd/test52_out/test52_outhn1.html \
+	html_dir/uvd/test52_out/test52_outp1.html \
+	html_dir/uvd/test52_out/test52_outy.html \
+	session_dir/.uvd/test52_out/test52_outacdd \
+	session_dir/.uvd/test52_out/test52_outam1.ds \
+	session_dir/.uvd/test52_out/test52_outas1.ds \
+	session_dir/.uvd/test52_out/test52_outc1.ds \
+	session_dir/.uvd/test52_out/test52_outd1.ds \
+	session_dir/.uvd/test52_out/test52_outhc1.ds \
+	session_dir/.uvd/test52_out/test52_outhn1.ds \
+	session_dir/.uvd/test52_out/test52_outp1.ds )
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test52 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

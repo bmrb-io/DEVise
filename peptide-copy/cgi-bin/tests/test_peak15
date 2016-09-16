@@ -1,0 +1,29 @@
+#! /bin/csh -f
+
+# Tests BMRB 18561 -- caused an error during Hongyang's processing.
+
+set result = 0
+
+rm -r -f */18561*
+
+#TEMP -- get rid of -allow_sd_mismatch if entry is fixed
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -name 18561 -file test_data/bmr18561_3.str -force -check_res_list -check_pct -peakonly -allow_sd_mismatch
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/test_peak15.out
+
+
+source tests/test_peak15_check
+
+
+echo -n "Test_peak15 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

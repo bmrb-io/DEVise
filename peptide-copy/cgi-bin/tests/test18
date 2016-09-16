@@ -1,0 +1,133 @@
+#! /bin/csh -f
+
+# This (along with test17) is to test the 100% (NMR Browser) vs. 97%
+# (Jafar) cutoff for sequence identity for PDB coordinates.
+
+set result = 0
+
+rm -r -f */test18_out*
+rm -r -f */*/test18_out*
+
+echo -n "Processing NMR-STAR: "
+./vsc -file test_data/bmr4267mod -name test18_out -do_pdb 1 -force \
+  -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of vsc failed!"
+  set result = 1
+endif
+
+echo "Checking output files"
+
+set files = (data_dir/vis_server/test18_outas1.dat \
+	data_dir/vis_server/test18_outc1.dat \
+	data_dir/vis_server/test18_outd1.dat \
+	data_dir/vis_server/test18_outg1.dat \
+	data_dir/vis_server/test18_outhc1.dat \
+	data_dir/vis_server/test18_outhn1.dat \
+	data_dir/vis_server/test18_outmd.dat \
+	data_dir/vis_server/test18_outn1.dat \
+	data_dir/vis_server/test18_outn2.dat \
+	data_dir/vis_server/test18_outn3.dat \
+	data_dir/vis_server/test18_outn4.dat \
+	data_dir/vis_server/test18_outn5.dat \
+	data_dir/vis_server/test18_outn6.dat \
+	data_dir/vis_server/test18_outn7.dat \
+	data_dir/vis_server/test18_outn8.dat \
+	data_dir/vis_server/test18_outn9.dat \
+	data_dir/vis_server/test18_outp1.dat \
+	data_dir/vis_server/test18_outrc1.dat \
+	data_dir/vis_server/test18_outrl.dat \
+	data_dir/vis_server/test18_outt11.dat \
+	data_dir/vis_server/test18_outt12.dat \
+	data_dir/vis_server/test18_outt13.dat \
+	data_dir/vis_server/test18_outt21.dat \
+	data_dir/vis_server/test18_outt22.dat \
+	data_dir/vis_server/test18_outt23.dat \
+	html_dir/test18_out/test18_outas1.html \
+	html_dir/test18_out/test18_outc1.html \
+	html_dir/test18_out/test18_outd1.html \
+	html_dir/test18_out/test18_outg1.html \
+	html_dir/test18_out/test18_outhc1.html \
+	html_dir/test18_out/test18_outhn1.html \
+	html_dir/test18_out/test18_outn1.html \
+	html_dir/test18_out/test18_outn2.html \
+	html_dir/test18_out/test18_outn3.html \
+	html_dir/test18_out/test18_outn4.html \
+	html_dir/test18_out/test18_outn5.html \
+	html_dir/test18_out/test18_outn6.html \
+	html_dir/test18_out/test18_outn7.html \
+	html_dir/test18_out/test18_outn8.html \
+	html_dir/test18_out/test18_outn9.html \
+	html_dir/test18_out/test18_outp1.html \
+	html_dir/test18_out/test18_outt11.html \
+	html_dir/test18_out/test18_outt12.html \
+	html_dir/test18_out/test18_outt13.html \
+	html_dir/test18_out/test18_outt21.html \
+	html_dir/test18_out/test18_outt22.html \
+	html_dir/test18_out/test18_outt23.html \
+	html_dir/test18_out/test18_outy.html \
+	session_dir/vis_server/test18_out/test18_outacdd \
+	session_dir/vis_server/test18_out/test18_outas1.ds \
+	session_dir/vis_server/test18_out/test18_outc1.ds \
+	session_dir/vis_server/test18_out/test18_outd1.ds \
+	session_dir/vis_server/test18_out/test18_outg1.ds \
+	session_dir/vis_server/test18_out/test18_outhc1.ds \
+	session_dir/vis_server/test18_out/test18_outhn1.ds \
+	session_dir/vis_server/test18_out/test18_outn1.ds \
+	session_dir/vis_server/test18_out/test18_outn2.ds \
+	session_dir/vis_server/test18_out/test18_outn3.ds \
+	session_dir/vis_server/test18_out/test18_outn4.ds \
+	session_dir/vis_server/test18_out/test18_outn5.ds \
+	session_dir/vis_server/test18_out/test18_outn6.ds \
+	session_dir/vis_server/test18_out/test18_outn7.ds \
+	session_dir/vis_server/test18_out/test18_outn8.ds \
+	session_dir/vis_server/test18_out/test18_outn9.ds \
+	session_dir/vis_server/test18_out/test18_outp1.ds \
+	session_dir/vis_server/test18_out/test18_outt11.ds \
+	session_dir/vis_server/test18_out/test18_outt12.ds \
+	session_dir/vis_server/test18_out/test18_outt13.ds \
+	session_dir/vis_server/test18_out/test18_outt21.ds \
+	session_dir/vis_server/test18_out/test18_outt22.ds \
+	session_dir/vis_server/test18_out/test18_outt23.ds \
+	html_dir/test18_out/test18_outam1.html \
+	data_dir/vis_server/test18_outam1.dat \
+	session_dir/vis_server/test18_out/test18_outam1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+# Check for correct PDB links in summary html file.
+if (`grep -l 1QQS html_dir/test18_out/test18_outy.html` != "") then
+  echo "Error: PDB ID 1QQS should have been rejected because" 
+  echo "  sequence identity is less than 97%."
+  set result = 1
+endif
+
+if (`grep -l 1DFV html_dir/test18_out/test18_outy.html` != "") then
+  echo "Error: PDB ID 1DFV should have been rejected because"
+  echo "  the number of residues does not match."
+  set result = 1
+endif
+
+if (`grep -l 1NGL html_dir/test18_out/test18_outy.html` == "") then
+  echo "Error: PDB ID 1NGL should have been linked."
+  set result = 1
+endif
+
+if (`grep -l 1L6M html_dir/test18_out/test18_outy.html` == "") then
+  echo "Error: PDB ID 1L6M should have been linked."
+  set result = 1
+endif
+
+echo -n "Test18 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

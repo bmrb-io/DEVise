@@ -1,0 +1,40 @@
+echo "Checking output files"
+
+set files = ( data_dir/16576am1.dat \
+	data_dir/16576amac1.dat \
+	data_dir/16576as1.dat \
+	data_dir/16576c1.dat \
+	data_dir/16576d1.dat \
+	data_dir/16576hc1.dat \
+	data_dir/16576hn1.dat \
+	data_dir/16576md.dat \
+	data_dir/16576p1.dat \
+	data_dir/16576pkli1.dat \
+	data_dir/16576pkli2.dat \
+	data_dir/16576rc1.dat \
+	data_dir/16576rl.dat \
+	html_dir/16576/16576am1.html \
+	html_dir/16576/16576as1.html \
+	html_dir/16576/16576c1.html \
+	html_dir/16576/16576d1.html \
+	html_dir/16576/16576hc1.html \
+	html_dir/16576/16576hn1.html \
+	html_dir/16576/16576p1.html \
+	html_dir/16576/16576y.html \
+	session_dir/16576/16576acdd \
+	session_dir/16576/16576am1.ds \
+	session_dir/16576/16576as1.ds \
+	session_dir/16576/16576c1.ds \
+	session_dir/16576/16576d1.ds \
+	session_dir/16576/16576hc1.ds \
+	session_dir/16576/16576hn1.ds \
+	session_dir/16576/16576p1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+#TEMP -- check pkl file contents once that's implemented

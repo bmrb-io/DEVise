@@ -1,0 +1,270 @@
+#! bin/perl -w
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2007-2016
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script generates the data, session files, and html files for a
+#  given uploaded data file (for the BMRB visualization server).
+
+#  Parameters:
+#   file - the name of the uploaded file
+#   name - the name to use for the base of the generated files
+#   pdbid - the PDB ID to process
+#   coord_index - the index of this coordinate frame in the parent
+#   do_pdb - the level of PDB (structure) processing
+#   do_csr - the level of chemical shift reference processing
+#   do_dist - the level of distance restraint processing
+#   dist_url - the URL for the document containing distance restraint data
+#   do_tar - the level of torsion angle restraint processing
+#   tar_url - the URL for the document containing torsion angle data
+
+#  can call using
+#  http://bmrb.wisc.edu/cgi-bin/peptide-cgi/make_uvd?file=test_data/20070430_12345.str&name=20070430_12345
+
+############################################################
+
+# $Id$
+
+############################################################
+
+use CGI; # qw/:standard :html3/;
+use strict;
+#TEMP -- use taint?
+
+my $debug = 0;
+
+print "Content-type: text/plain\n\n" if ($debug);
+
+my ($file, $name, $summary_page, $query);
+$query = new CGI;
+
+# Get file and name parameters.
+$file = $query->param('file');
+$name = $query->param('name');
+
+my ($pdbid, $coord_index, $do_pdb, $do_csr, $csr_index);
+$pdbid = $query->param('pdbid');
+$coord_index = $query->param('coord_index');
+$do_pdb = $query->param('do_pdb');
+$do_csr = $query->param('do_csr');
+$csr_index = $query->param('csr_index');
+my $size_str = $query->param('size_str') || '';
+my $force = $query->param('force') || '';
+my $do_dist = $query->param('do_dist');
+my $do_rrdist = $query->param('do_rrdist');
+my $dist_url = $query->param('dist_url');
+my $do_tar = $query->param('do_tar');
+my $do_rrtar = $query->param('do_rrtar');
+my $tar_url = $query->param('tar_url');
+my $pdb_file = $query->param('pdb_file');
+my $lacs_file = $query->param('lacs_file');
+my $sparta_file = $query->param('sparta_file');
+my $xbmrbid = $query->param('xbmrbid');
+my $do_s2p = $query->param('do_s2p');
+my $frame_index = $query->param('frame_index');
+my $url = $query->param('url');
+
+print "  file = $file\n" if ($debug);
+print "  name = $name\n" if ($debug);
+print "  pdbid = $pdbid\n" if ($debug);
+print "  coord_index = $coord_index\n" if ($debug);
+print "  frame_index = $frame_index\n" if ($debug);
+
+# File name of the html page returned.
+my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
+$summary_page_dir = $summary_page_dir . "/uvd";
+if (defined($url)) {
+  my $fullurl;
+  if ($url =~/^http/) {
+    $fullurl = $url;
+  } else {
+    $fullurl = $summary_page_dir . "/" . $url;
+  }
+  print $query->redirect($fullurl);
+  exit;
+}
+
+$summary_page_dir = $summary_page_dir . "/" . $name;
+
+if ($do_pdb) {
+  print "  has PDB\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $name . 'ac' . $coord_index .
+    $size_str . '.html';
+} elsif ($do_csr) {
+  print "  has CSR\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $name . 'csr' . $csr_index .
+    $coord_index . $size_str . '.html';
+} elsif ($do_dist) {
+  print "  has Dist\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $name . 'distr' . $coord_index .
+    $size_str . '.html';
+} elsif ($do_rrdist) {
+  print "  has RRDist\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $name . 'rrdistr' . $coord_index .
+    $size_str . '.html';
+} elsif ($do_tar) {
+  print "  has TAR\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $name . 'tar' . $coord_index .
+    $size_str . '.html';
+} elsif ($do_rrtar) {
+  print "  has RRTAR\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $name . 'rrtar' . $coord_index .
+    $size_str . '.html';
+} elsif ($do_s2p) {
+  print "  has s2p\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $name . 's2p' .
+    $coord_index . "-" . $frame_index . $size_str . '.html';
+} elsif (defined($xbmrbid)) {
+  print "  Multi-entry\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $name . '+' .
+    $xbmrbid . "y.html";
+} else {
+  print "  does not have PDB or CSR\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $name . 'y' . $size_str .
+    '.html';
+}
+
+my @args = ("./uvd");
+if ($do_pdb) {
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_pdb", $do_pdb, "-coord_index", $coord_index);
+} elsif ($do_csr) {
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_csr", $do_csr, "-coord_index", $coord_index);
+
+} elsif ($do_dist) {
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_dist", $do_dist, "-coord_index", $coord_index);
+} elsif ($do_rrdist) {
+  push @args, ("-pdbid", $pdbid, "-file", $file,"-name", $name,
+    "-do_rrdist", $do_rrdist, "-coord_index", $coord_index);
+} elsif ($do_tar) {
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_tar", $do_tar, "-coord_index", $coord_index);
+} elsif ($do_rrtar) {
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_rrtar", $do_rrtar, "-coord_index", $coord_index);
+} elsif ($do_s2p) {
+  push @args, ("-pdbid", $pdbid, "-file", $file, "-name", $name,
+    "-do_s2p", $do_s2p, "-coord_index", $coord_index, "-s2_frame_index",
+    $frame_index);
+} else {
+  push @args, ("-file", $file, "-name", $name);
+}
+if ($dist_url) {
+  push @args, ("-dist_url", $dist_url);
+}
+if ($tar_url) {
+  push @args, ("-tar_url", $tar_url);
+}
+if ($pdb_file) {
+  push @args, ("-pdb_file", $pdb_file);
+}
+if ($lacs_file) {
+  push @args, ("-lacs_file", $lacs_file);
+}
+if ($sparta_file) {
+  push @args, ("-sparta_file", $sparta_file);
+}
+if ($force) {
+  push @args, "-force";
+}
+if ($xbmrbid) {
+  push @args, ("-xbmrbid", $xbmrbid);
+}
+
+print "Args <@args>\n" if ($debug);
+
+open(OUT, "-|", @args);
+my $result = <OUT>;
+close(OUT);
+chomp $result;
+if ($result ne "OK") {
+  my ($tmpmsg);
+  $tmpmsg = "<p>Unable to process data for " . $name . "</p>\n";
+  $tmpmsg = $tmpmsg . "<pre>\n";
+  if (-e "tmp/s2d.$name.err") {
+    $tmpmsg = $tmpmsg . "---------------------------------------------\n";
+    $tmpmsg = $tmpmsg . "### Errors:\n";
+    open(OUTPUT, "tmp/s2d.$name.err") or dienice("Couldn't open error file: $!\n");
+    while (<OUTPUT>) {
+      $tmpmsg = $tmpmsg . $_;
+    }
+  }
+  if (-e "tmp/s2d.$name.warn") {
+    $tmpmsg = $tmpmsg . "---------------------------------------------\n";
+    $tmpmsg = $tmpmsg . "### Warnings:\n";
+    open(OUTPUT, "tmp/s2d.$name.warn") or dienice("Couldn't open warning file: $!\n");
+    while (<OUTPUT>) {
+      $tmpmsg = $tmpmsg . $_;
+    }
+  }
+  if (-e "tmp/uvd.out") {
+    $tmpmsg = $tmpmsg . "---------------------------------------------\n";
+    $tmpmsg = $tmpmsg . "### Full output:\n";
+    open(OUTPUT, "tmp/uvd.out") or dienice("Couldn't open output file: $!\n");
+    while (<OUTPUT>) {
+      $tmpmsg = $tmpmsg . $_;
+    }
+  }
+  $tmpmsg = $tmpmsg . "</pre>\n";
+  dienice($tmpmsg);
+}
+
+# return summary page
+print $query->redirect($summary_page);
+exit;
+
+#------------------------------------------------------------------------
+# Die in a way that generates output appropriate for a CGI script.
+
+sub dienice {
+  my ($errmsg);
+  ($errmsg) = $_[0];
+  print $query->header;
+  print $query->start_html;
+  print "<h2>CGI Error</h2>\n";
+  print "$errmsg\n";
+  print $query->end_html;
+  exit;
+}
+
+#------------------------------------------------------------------------
+# Get the value of a given s2d property.
+
+# Parameters:
+#   property name
+
+# Returns:
+#   property value
+
+sub getProperty {
+  my $prop_name = shift(@_);
+
+  my $value = "";
+
+  open(PROP_IN, "s2d.props") or dienice("Couldn't open property file: $!\n");
+
+  my $line;
+  while ($line = <PROP_IN>) {
+    chomp $line;
+    if (substr($line, 0, 1) ne "#") {
+      if ($line =~ /^$prop_name=(.*)/) {
+	$value = $1;
+      }
+    }
+  }
+
+  close(PROP_IN);
+
+  return $value;
+}

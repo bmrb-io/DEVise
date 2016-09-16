@@ -1,0 +1,48 @@
+	Plans for 4096-Type 3D Visualizations in Peptide-CGI
+			2002-09-11
+
+- Use separate TDatas for the different variables that can be shown.
+  (That way we can use the existing data files.)
+
+- Can we rely on all entries having the same set of chemical shifts?
+  If not, how are the existing chem shift session files set up to
+  accomodate the differences?
+    - It looks like they are all the same, but I should verify that.
+
+- We need both X and Y attributes in the summary data set.  NO!  Parent
+  view can only control one attribute of child view's mapping.
+
+
+* Steps:
+    x- Add residue-selection and scrolling cursors like 4096.
+    x- Create a data file containing a list of the various data sets
+      available, along with other stuff such as the data source names.
+      (Note that chemical shift indices have to be split up.)
+      	x- What do we need?:
+	    x- Human-readable name.
+	    x- Data source name.
+	    x- Attribute name.
+	    ?- Data source definition.
+        x- Make some class to store this (S2DDatasetInfo?).
+    x- Add a view with the list of data sets, and get its visual filter
+      set properly.
+    x- Add data source definitions to the session file.
+    x- Add the view showing the selected data set.
+    	x- Get the visual filter set up properly.
+    x- Add the view controlling the X axis of the data view.
+    x- Get cursor controlling data view X axis to show the full range of
+      available data when you first open the session (use the session
+      postscript stuff?).  (One acc num that doesn't show the full thing
+      right away is 5275.)
+    x- Add the link between the data view and the 3D and residue list
+      highlights.
+        x- Argh!! We really need a TData attribute link for this!  (Unless
+	  we put *all* of the data into one big file -- then we need to
+	  generate a custom schema file for each visualization.)
+    	x- GData attr links don't seem to work right for 3D views sending
+	  GData to the JS.
+    !- Does the data view need a link on sequence number???  (Probably not --
+      4096 doesn't have this.)
+    x- A few minor cleanups to match the behavior of the original 4096
+      prototype.
+    - Fix bugs.

@@ -1,0 +1,90 @@
+#! /bin/csh -f
+
+# Tests chem shift reference processing (needs stuff on leech at BMRB
+# to work right, unless -noleech argument is given -- then it does
+# a "dummy" chemShift calculation).  The main difference between this
+# test and test15 is that 4974 has some sheet secondary structures,
+# whereas 4317 does not.  So this makes a better data set for the
+# chem shift reference session templates.
+
+set result = 0
+
+set noleech = 0
+
+if ($#argv > 0) then
+  if (xx$1 == xx-noleech) then
+    set noleech = 1
+  endif
+endif
+
+rm -r -f */4974*
+
+if ($noleech) then
+  tests/test16_noleech
+  if ($status) then
+    set result = 1
+  endif
+else
+  tests/test16_main
+  if ($status) then
+    set result = 1
+  endif
+endif
+
+echo "Checking output files"
+
+set files = ( data_dir/4974as1.dat \
+	data_dir/4974c1.dat \
+	data_dir/4974csr1_1.dat \
+	data_dir/4974csr1_2.dat \
+	data_dir/4974csr1_3.dat \
+	data_dir/4974csr1_4.dat \
+	data_dir/4974csr1_5.dat \
+	data_dir/4974csr1src.dat \
+	data_dir/4974d1.dat \
+	data_dir/4974hc1.dat \
+	data_dir/4974hn1.dat \
+	data_dir/4974md.dat \
+	data_dir/4974p1.dat \
+	data_dir/4974rc1.dat \
+	data_dir/4974rl.dat \
+	html_dir/4974/4974as1.html \
+	html_dir/4974/4974c1.html \
+	html_dir/4974/4974csr11.html \
+	html_dir/4974/4974csr21.html \
+	html_dir/4974/4974csr31.html \
+	html_dir/4974/4974d1.html \
+	html_dir/4974/4974hc1.html \
+	html_dir/4974/4974hn1.html \
+	html_dir/4974/4974p1.html \
+	html_dir/4974/4974y.html \
+	session_dir/4974/4974acdd \
+	session_dir/4974/4974as1.ds \
+	session_dir/4974/4974c1.ds \
+	session_dir/4974/4974csr11.ds \
+	session_dir/4974/4974csr21.ds \
+	session_dir/4974/4974csr31.ds \
+	session_dir/4974/4974d1.ds \
+	session_dir/4974/4974hc1.ds \
+	session_dir/4974/4974hn1.ds \
+	session_dir/4974/4974p1.ds \
+	data_dir/4974am1.dat \
+	html_dir/4974/4974am1.html \
+	session_dir/4974/4974am1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test16 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

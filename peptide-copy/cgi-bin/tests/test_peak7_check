@@ -1,0 +1,81 @@
+echo "Checking output files"
+
+set files = ( 16576_peaks.str )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "16576_peaks.str"
+set line = 'save_spectral_peak_list_1'
+source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = '3   N   15   N   .   33   .   .   16576   1'
+source tests/check4line
+
+set line = '1 . . 16576 1'
+source tests/check4line
+set line = '924 . . 16576 1'
+source tests/check4line
+
+set line = '1 54710.0 . volume 16576 1'
+source tests/check4line
+set line = '924 2100.0 . volume 16576 1'
+source tests/check4line
+
+set line = '1 1 122.416 ? ? ? ? ? ? ? ? ? ? ? ? ? 16576 1'
+source tests/check4line
+set line = '924 1 120.609 ? ? ? ? ? ? ? ? ? ? ? ? ? 16576 1'
+source tests/check4line
+set line = '924 2 0.847 ? ? ? ? ? ? ? ? ? ? ? ? ? 16576 1'
+source tests/check4line
+set line = '924 3 8.873 ? ? ? ? ? ? ? ? ? ? ? ? ? 16576 1'
+source tests/check4line
+
+set line = '1 1 ? ? ? ? 122.416 ? ? ? ? ? ? ? ? 48 ? . . . 1 ? ? 16576 1'
+source tests/check4line
+set line = '924 1 ? ? ? ? 120.609 ? ? ? ? ? ? ? ? 964 ? . . . 1 ? ? 16576 1'
+source tests/check4line
+set line = '924 2 ? ? ? ? 0.847 ? ? ? ? ? ? ? ? 1180 ? . . . 1 ? ? 16576 1'
+source tests/check4line
+set line = '924 3 ? ? ? ? 8.873 ? ? ? ? ? ? ? ? 965 ? . . . 1 ? ? 16576 1'
+source tests/check4line
+
+set line = 'save_spectral_peak_list_2'
+source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = '1   H    1   H   .   13   .   .   16576   2'
+source tests/check4line
+
+set line = '1 . . 16576 2'
+source tests/check4line
+set line = '2380 . . 16576 2'
+source tests/check4line
+
+set line = '1 40360.0 . volume 16576 2'
+source tests/check4line
+set line = '2380 716.0 . volume 16576 2'
+source tests/check4line
+
+set line = '1 1 61.964 ? ? ? ? ? ? ? ? ? ? ? ? ? 16576 2'
+source tests/check4line
+set line = '2380 1 131.08 ? ? ? ? ? ? ? ? ? ? ? ? ? 16576 2'
+source tests/check4line
+set line = '2380 2 0.174 ? ? ? ? ? ? ? ? ? ? ? ? ? 16576 2'
+source tests/check4line
+set line = '2380 3 7.207 ? ? ? ? ? ? ? ? ? ? ? ? ? 16576 2'
+source tests/check4line
+
+set line = '1 1 ? ? ? ? 61.964 ? ? ? ? ? ? ? ? 37 ? . . . 1 ? ? 16576 2'
+source tests/check4line
+set line = '2380 1 ? ? ? ? 131.08 ? ? ? ? ? ? ? ? 788 ? . . . 1 ? ? 16576 2'
+source tests/check4line
+set line = '2380 2 ? ? ? ? 0.174 ? ? ? ? ? ? ? ? 620 ? . . . 1 ? ? 16576 2'
+source tests/check4line
+set line = '2380 3 ? ? ? ? 7.207 ? ? ? ? ? ? ? ? 783 ? . . . 1 ? ? 16576 2'
+source tests/check4line

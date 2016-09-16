@@ -1,0 +1,56 @@
+#! /bin/csh -f
+
+# 5962 has RNA only.
+
+set result = 0
+
+rm -r -f */5962*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -bmrbid 5962 -do_pdb 2 -force -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/5962ac1.dat \
+	data_dir/5962as1.dat \
+	data_dir/5962d1.dat \
+	data_dir/5962md.dat \
+	data_dir/5962rc1.dat \
+	data_dir/5962rl.dat \
+	html_dir/5962/5962ac1.html \
+	html_dir/5962/5962as1.html \
+	html_dir/5962/5962d1.html \
+	html_dir/5962/5962y.html \
+	session_dir/5962/5962ac1.ds \
+	session_dir/5962/5962acdd \
+	session_dir/5962/5962as1.ds \
+	session_dir/5962/5962d1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+set file = "data_dir/5962d1.dat"
+set line = '^-1.54 0.0 3.53 3.57 0.0 3.97 0.0 3.53 0.0 2.57 0.0 0.2 0.0 0.368 0.0 0.0 0.0 0.012 0.116 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.596 0.0 0.05 0.0 0.0 0.0 0.0 0.0 0.0 1 G 1$'
+source tests/check4line
+set line = '^0.0 0.0 0.0 0.0 0.0 0.0 0.65 0.0 0.2 0.0 0.0 0.154 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.032 0.0 0.0 0.0010\? 0.0 0.0 0.0 0.0 0.0 0.0 9.46 0.0 0.0 0.0 0.0 36 C 1$'
+source tests/check4line 
+
+
+echo -n "Test63 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

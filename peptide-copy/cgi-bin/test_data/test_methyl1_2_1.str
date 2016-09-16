@@ -1,0 +1,579 @@
+data_16601
+# Modified for methyl group test.  This version has only one H-atom entry
+# for each methyl group.
+save_entry_information
+_Saveframe_category      entry_information
+_Entry_title             kkgf
+loop_
+_Author_ordinal
+_Author_family_name
+_Author_given_name
+_Author_middle_initials
+_Author_family_title
+1 Montserret Roland   . .
+2 Penin      Francois . .
+stop_
+_BMRB_accession_number   16601
+_BMRB_flat_file_name     bmr16601.str
+_Entry_type              new
+_Submission_date         2009-11-09
+_Accession_date          2009-11-09
+_Entry_origination       author
+_NMR_STAR_version        2.1.1
+_Experimental_method     NMR
+_Details                "structure of the HCV Core-E1 signal peptide"
+loop_
+_Saveframe_category_type
+_Saveframe_category_type_count
+assigned_chemical_shifts 1
+stop_
+loop_
+_Data_type
+_Data_type_count
+"1H chemical shifts"  164
+"13C chemical shifts"  75
+stop_
+save_
+save_contact_persons
+_Saveframe_category   contact_persons
+loop_
+_Family_name
+_Given_name
+_Middle_initials
+_Family_title
+_Department_and_Institution
+_Mailing_address
+_Phone_number
+_Email_address
+_FAX_number
+Montserret Roland   ? ?
+;
+Institut de Biologie et Chimie des Proteines            CNRS-UMR 5086            IFR128 BioSciences
+;
+;
+7 passage du Vercors
+Lyon, cedex 07  69367
+France
+; "+33 (0)4 37 65 29 49" r.montserret@ibcp.fr "+33 (0)4 72 72 26 04"
+Penin      Francois ? ?
+;
+Institut de Biologie et Chimie des Proteines            CNRS-UMR 5086            IFR128 BioSciences
+;
+;
+7 passage du Vercors
+Lyon, cedex 07  69367
+France
+; "+33 (0)4 72 72 26 47" f.penin@ibcp.fr      "+33 (0)4 72 72 26 04"
+stop_
+save_
+save_kkgf
+_Saveframe_category     entry_citation
+_Citation_title        "Structure of the HCV Core-E1 signal peptide"
+_Citation_status       "in preparation"
+_Citation_type          journal
+_PubMed_ID              ?
+loop_
+_Author_ordinal
+_Author_family_name
+_Author_given_name
+_Author_middle_initials
+_Author_family_title
+1 Montserret Roland   . .
+2 Penin      Francois . .
+3 McLauchlan John     . .
+stop_
+_Journal_abbreviation  "J. Biol. Chem."
+_Journal_volume         ?
+_Journal_issue          ?
+_Journal_CSD            ?
+_Page_first             ?
+_Page_last              ?
+_Year                   ?
+save_
+save_assembly
+_Saveframe_category      molecular_system
+_Mol_system_name         PROTEIN
+loop_
+_Mol_system_component_name
+_Mol_label
+entity $entity
+stop_
+_System_physical_state   native
+_System_oligomer_state   ?
+_System_paramagnetic     no
+save_
+save_entity
+_Saveframe_category     monomeric_polymer
+_Mol_type               polymer
+_Mol_polymer_class      protein
+_Name_common            entity
+_Molecular_mass         2881.567
+_Mol_thiol_state       "all free"
+loop_
+_Biological_function
+"membrane signal peptide"
+stop_
+_Details               "KK N-terminus solubilization tag"
+_Residue_count          29
+_Mol_residue_sequence
+;
+KKGFPFSIFLLALLSCITVP
+VSAAQVKML
+;
+loop_
+_Residue_seq_code
+_Residue_label
+1 LYS   2 LYS   3 GLY   4 PHE   5 PRO
+6 PHE   7 SER   8 ILE   9 PHE  10 LEU
+11 LEU  12 ALA  13 LEU  14 LEU  15 SER
+16 CYS  17 ILE  18 THR  19 VAL  20 PRO
+21 VAL  22 SER  23 ALA  24 ALA  25 GLN
+26 VAL  27 LYS  28 MET  29 LEU
+stop_
+save_
+save_natural_source
+_Saveframe_category   natural_source
+loop_
+_Mol_label
+_Organism_name_common
+_NCBI_taxonomy_ID
+_Superkingdom
+_Kingdom
+_Genus
+_Species
+_Strain
+$entity "Hepatitis C virus" 11103 virus ? Hepatitis "C virus" JFH1
+stop_
+save_
+save_experimental_source
+_Saveframe_category   experimental_source
+loop_
+_Mol_label
+_Production_method
+_Host_organism_name_common
+_Genus
+_Species
+_Strain
+_Vector_name
+$entity "chemical synthesis" ? none none ? none
+stop_
+save_
+save_sample_1
+_Saveframe_category   sample
+_Sample_type          solution
+loop_
+_Mol_label
+_Concentration_value
+_Concentration_value_units
+_Isotopic_labeling
+$entity                  2    mM  "natural abundance"
+DSS                     0.01 mM  "natural abundance"
+H2O                    50    v/v "natural abundance"
+"trifluoroethanol d2OH" 50    v/v "natural abundance"
+stop_
+save_
+save_TOPSPIN
+_Saveframe_category   software
+_Name                 TOPSPIN
+loop_
+_Vendor
+_Address
+_Electronic_address
+"Bruker Biospin" ? ?
+stop_
+loop_
+_Task
+"data collection"
+stop_
+save_
+save_SPARKY
+_Saveframe_category   software
+_Name                 SPARKY
+loop_
+_Vendor
+_Address
+_Electronic_address
+Goddard ? ?
+stop_
+loop_
+_Task
+"chemical shift assignment"
+stop_
+save_
+save_X-PLOR_NIH
+_Saveframe_category   software
+_Name                 X-PLOR_NIH
+loop_
+_Vendor
+_Address
+_Electronic_address
+"Schwieters, Kuszewski, Tjandra and Clore" ? ?
+stop_
+loop_
+_Task
+"structure solution"
+stop_
+save_
+save_Molmol
+_Saveframe_category   software
+_Name                 Molmol
+loop_
+_Vendor
+_Address
+_Electronic_address
+"Koradi, Billeter and Wuthrich" ? ?
+stop_
+loop_
+_Task
+"structures superposition"
+stop_
+save_
+save_TALOS
+_Saveframe_category   software
+_Name                 TALOS
+loop_
+_Vendor
+_Address
+_Electronic_address
+"Cornilescu, Delaglio and Bax" ? ?
+stop_
+loop_
+_Task
+"dihedral angle calculations"
+stop_
+save_
+save_spectrometer_1
+_Saveframe_category   NMR_spectrometer
+_Manufacturer         Bruker
+_Model                Avance
+_Field_strength       500
+save_
+save_2D_1H-13C_HSQC_1
+_Saveframe_category   NMR_applied_experiment
+_Experiment_name     "2D 1H-13C HSQC"
+_Sample_label        $sample_1
+save_
+save_2D_1H-1H_NOESY_2
+_Saveframe_category   NMR_applied_experiment
+_Experiment_name     "2D 1H-1H NOESY"
+_Sample_label        $sample_1
+save_
+save_2D_1H-1H_TOCSY_3
+_Saveframe_category   NMR_applied_experiment
+_Experiment_name     "2D 1H-1H TOCSY"
+_Sample_label        $sample_1
+save_
+save_2D_DQF-COSY_4
+_Saveframe_category   NMR_applied_experiment
+_Experiment_name     "2D DQF-COSY"
+_Sample_label        $sample_1
+save_
+save_sample_conditions_1
+_Saveframe_category   sample_conditions
+loop_
+_Variable_type
+_Variable_value
+_Variable_value_error
+_Variable_value_units
+temperature     298 ? K
+pH          acidic   ? pH
+pressure    ambient  ? atm
+stop_
+save_
+save_chemical_shift_reference_1
+_Saveframe_category   chemical_shift_reference
+_Details             "DSS in sample"
+loop_
+_Mol_common_name
+_Atom_type
+_Atom_isotope_number
+_Atom_group
+_Chem_shift_units
+_Chem_shift_value
+_Reference_method
+_Reference_type
+_External_reference_sample_geometry
+_External_reference_location
+_External_reference_axis
+_Indirect_shift_ratio
+DSS H  1 "methyl protons" ppm 0.00 internal direct   ? ? ? 1.000000000
+DSS C 13 "methyl protons" ppm 0.00 na       indirect ? ? ? 0.251449530
+stop_
+save_
+save_assigned_chem_shift_list_1
+_Saveframe_category               assigned_chemical_shifts
+loop_
+_Software_label
+$SPARKY
+stop_
+loop_
+_Experiment_label
+"2D 1H-13C HSQC"
+"2D 1H-1H NOESY"
+"2D 1H-1H TOCSY"
+"2D DQF-COSY"
+stop_
+loop_
+_Sample_label
+$sample_1
+stop_
+_Sample_conditions_label         $sample_conditions_1
+_Chem_shift_reference_set_label  $chemical_shift_reference_1
+_Mol_system_component_name        entity
+loop_
+_Atom_shift_assign_ID
+_Residue_author_seq_code
+_Residue_seq_code
+_Residue_label
+_Atom_name
+_Atom_type
+_Chem_shift_value
+_Chem_shift_value_error
+_Chem_shift_ambiguity_code
+1  1  1 LYS HA   H  4.07 0.01 1
+2  1  1 LYS HB2  H  1.97 0.01 2
+3  1  1 LYS HB3  H  1.97 0.01 2
+4  1  1 LYS HD2  H  1.76 0.01 2
+5  1  1 LYS HD3  H  1.76 0.01 2
+6  1  1 LYS HE2  H  3.05 0.01 2
+7  1  1 LYS HE3  H  3.05 0.01 2
+8  1  1 LYS HG2  H  1.53 0.01 2
+9  1  1 LYS HG3  H  1.53 0.01 2
+10  1  1 LYS CA   C 56.66 0.01 1
+11  1  1 LYS CB   C 34.13 0.01 1
+12  1  1 LYS CD   C 29.94 0.01 1
+13  1  1 LYS CE   C 42.88 0.01 1
+14  1  1 LYS CG   C 24.72 0.01 1
+15  2  2 LYS H    H  8.62 0.01 1
+16  2  2 LYS HA   H  4.42 0.01 1
+17  2  2 LYS HB2  H  1.88 0.01 1
+18  2  2 LYS HB3  H  1.83 0.01 1
+19  2  2 LYS HD2  H  1.74 0.01 2
+20  2  2 LYS HD3  H  1.74 0.01 2
+21  2  2 LYS HE2  H  3.03 0.01 2
+22  2  2 LYS HE3  H  3.03 0.01 2
+23  2  2 LYS CA   C 57.51 0.01 1
+24  2  2 LYS CB   C 34.30 0.01 1
+25  2  2 LYS CD   C 29.97 0.01 1
+26  2  2 LYS CE   C 43.04 0.01 1
+27  3  3 GLY H    H  8.21 0.01 1
+28  3  3 GLY HA2  H  3.98 0.01 2
+29  3  3 GLY HA3  H  3.98 0.01 2
+30  3  3 GLY CA   C 45.46 0.01 1
+31  4  4 PHE H    H  7.97 0.01 1
+32  4  4 PHE HA   H  4.90 0.01 1
+33  4  4 PHE HB2  H  2.97 0.01 2
+34  4  4 PHE HB3  H  2.97 0.01 2
+35  4  4 PHE CA   C 56.54 0.01 1
+36  4  4 PHE CB   C 40.69 0.01 1
+37  5  5 PRO HA   H  4.53 0.01 1
+38  5  5 PRO HB2  H  2.13 0.01 1
+39  5  5 PRO HB3  H  1.94 0.01 1
+40  5  5 PRO HD2  H  3.73 0.01 1
+41  5  5 PRO HD3  H  3.19 0.01 1
+42  5  5 PRO HG2  H  1.94 0.01 1
+43  5  5 PRO HG3  H  1.80 0.01 1
+44  5  5 PRO CA   C 64.24 0.01 1
+45  5  5 PRO CB   C 31.54 0.01 1
+46  5  5 PRO CD   C 51.18 0.01 1
+47  5  5 PRO CG   C 27.77 0.01 1
+48  6  6 PHE H    H  7.54 0.01 1
+49  6  6 PHE HA   H  4.52 0.01 1
+50  6  6 PHE HB2  H  3.17 0.01 2
+51  6  6 PHE HB3  H  3.17 0.01 2
+52  6  6 PHE CA   C 60.33 0.01 1
+53  6  6 PHE CB   C 40.35 0.01 1
+54  7  7 SER H    H  7.77 0.01 1
+55  7  7 SER HA   H  4.28 0.01 1
+56  7  7 SER HB2  H  4.00 0.01 1
+57  7  7 SER HB3  H  3.96 0.01 1
+58  7  7 SER CA   C 61.14 0.01 1
+59  7  7 SER CB   C 64.20 0.01 1
+60  8  8 ILE H    H  7.62 0.01 1
+61  8  8 ILE HA   H  3.97 0.01 1
+62  8  8 ILE HB   H  1.87 0.01 1
+63  8  8 ILE HD1  H  0.86 0.01 1
+64  8  8 ILE HG12 H  1.48 0.01 1
+65  8  8 ILE HG13 H  1.26 0.01 1
+66  8  8 ILE HG2  H  0.84 0.01 1
+67  8  8 ILE CA   C 64.29 0.01 1
+68  8  8 ILE CB   C 38.55 0.01 1
+69  8  8 ILE CD1  C 12.71 0.01 1
+70  8  8 ILE CG1  C 28.87 0.01 1
+71  8  8 ILE CG2  C 17.45 0.01 1
+72  9  9 PHE H    H  7.42 0.01 1
+73  9  9 PHE HA   H  4.32 0.01 1
+74  9  9 PHE HB2  H  3.18 0.01 1
+75  9  9 PHE HB3  H  3.12 0.01 1
+76  9  9 PHE CA   C 61.42 0.01 1
+77  9  9 PHE CB   C 39.63 0.01 1
+78 10 10 LEU H    H  7.80 0.01 1
+79 10 10 LEU HA   H  4.06 0.01 1
+80 10 10 LEU HB2  H  1.70 0.01 2
+81 10 10 LEU HB3  H  1.70 0.01 2
+82 10 10 LEU CA   C 58.69 0.01 1
+83 10 10 LEU CB   C 42.69 0.01 1
+84 11 11 LEU H    H  7.72 0.01 1
+85 11 11 LEU HA   H  4.08 0.01 1
+86 11 11 LEU HB2  H  1.84 0.01 1
+87 11 11 LEU HB3  H  1.69 0.01 1
+88 11 11 LEU CA   C 59.32 0.01 1
+89 11 11 LEU CB   C 42.31 0.01 1
+90 12 12 ALA HA   H  4.05 0.01 1
+91 12 12 ALA HB   H  1.51 0.01 1
+92 12 12 ALA CA   C 56.29 0.01 1
+93 12 12 ALA CB   C 18.13 0.01 1
+94 13 13 LEU H    H  8.11 0.01 1
+95 13 13 LEU HA   H  4.08 0.01 1
+96 13 13 LEU HB2  H  1.78 0.01 1
+97 13 13 LEU HB3  H  1.63 0.01 1
+98 13 13 LEU CA   C 58.94 0.01 1
+99 13 13 LEU CB   C 42.75 0.01 1
+100 14 14 LEU H    H  8.67 0.01 1
+101 14 14 LEU HA   H  4.13 0.01 1
+102 14 14 LEU HB2  H  1.93 0.01 1
+103 14 14 LEU HB3  H  1.55 0.01 1
+104 14 14 LEU HD1  H  0.89 0.01 4
+105 14 14 LEU HD2  H  0.89 0.01 4
+106 14 14 LEU CA   C 58.66 0.01 1
+107 14 14 LEU CB   C 42.47 0.01 1
+108 15 15 SER H    H  8.27 0.01 1
+109 15 15 SER HA   H  4.27 0.01 1
+110 15 15 SER HB2  H  4.14 0.01 1
+111 15 15 SER HB3  H  4.02 0.01 1
+112 15 15 SER CA   C 62.57 0.01 1
+113 15 15 SER CB   C 63.88 0.01 1
+114 16 16 CYS H    H  7.85 0.01 1
+115 16 16 CYS HA   H  4.45 0.01 1
+116 16 16 CYS HB2  H  3.23 0.01 1
+117 16 16 CYS HB3  H  2.99 0.01 1
+118 16 16 CYS CA   C 62.66 0.01 1
+119 16 16 CYS CB   C 28.05 0.01 1
+120 17 17 ILE H    H  7.95 0.01 1
+121 17 17 ILE HA   H  4.21 0.01 1
+122 17 17 ILE HB   H  2.08 0.01 1
+123 17 17 ILE HD1  H  0.90 0.01 1
+124 17 17 ILE HG12 H  1.64 0.01 1
+125 17 17 ILE HG13 H  1.37 0.01 1
+126 17 17 ILE HG2  H  1.00 0.01 1
+127 17 17 ILE CA   C 64.13 0.01 1
+128 17 17 ILE CB   C 39.66 0.01 1
+129 17 17 ILE CD1  C 13.54 0.01 1
+130 17 17 ILE CG1  C 28.39 0.01 1
+131 17 17 ILE CG2  C 17.74 0.01 1
+132 18 18 THR H    H  7.78 0.01 1
+133 18 18 THR HA   H  4.29 0.01 1
+134 18 18 THR HB   H  4.34 0.01 1
+135 18 18 THR HG2  H  1.30 0.01 1
+136 18 18 THR CA   C 64.16 0.01 1
+137 18 18 THR CB   C 70.83 0.01 1
+138 18 18 THR CG2  C 21.99 0.01 1
+139 19 19 VAL HA   H  4.25 0.01 1
+140 19 19 VAL HB   H  2.29 0.01 1
+141 19 19 VAL HG1  H  1.10 0.01 1
+142 19 19 VAL HG2  H  1.01 0.01 1
+143 19 19 VAL CA   C 64.85 0.01 1
+144 19 19 VAL CB   C 32.14 0.01 1
+145 19 19 VAL CG1  C 22.41 0.01 1
+146 19 19 VAL CG2  C 21.48 0.01 1
+147 20 20 PRO HA   H  4.46 0.01 1
+148 20 20 PRO HB2  H  2.31 0.01 1
+149 20 20 PRO HB3  H  1.98 0.01 1
+150 20 20 PRO HD2  H  3.80 0.01 1
+151 20 20 PRO HD3  H  3.76 0.01 1
+152 20 20 PRO HG2  H  2.17 0.01 1
+153 20 20 PRO HG3  H  2.04 0.01 1
+154 20 20 PRO CA   C 65.58 0.01 1
+155 20 20 PRO CB   C 31.97 0.01 1
+156 20 20 PRO CD   C 51.22 0.01 1
+157 20 20 PRO CG   C 28.40 0.01 1
+158 21 21 VAL H    H  7.56 0.01 1
+159 21 21 VAL HA   H  4.01 0.01 1
+160 21 21 VAL HB   H  2.18 0.01 1
+161 21 21 VAL HG1  H  1.05 0.01 1
+162 21 21 VAL HG2  H  1.00 0.01 1
+163 21 21 VAL CA   C 65.13 0.01 1
+164 21 21 VAL CB   C 33.19 0.01 1
+165 22 22 SER H    H  8.10 0.01 1
+166 22 22 SER HA   H  4.40 0.01 1
+167 22 22 SER HB2  H  4.07 0.01 1
+168 22 22 SER HB3  H  3.95 0.01 1
+169 22 22 SER CA   C 60.85 0.01 1
+170 22 22 SER CB   C 64.44 0.01 1
+171 23 23 ALA HA   H  4.22 0.01 1
+172 23 23 ALA HB   H  1.49 0.01 1
+173 23 23 ALA CA   C 55.14 0.01 1
+174 23 23 ALA CB   C 18.99 0.01 1
+175 24 24 ALA H    H  7.85 0.01 1
+176 24 24 ALA HA   H  4.18 0.01 1
+177 24 24 ALA HB   H  1.52 0.01 1
+178 24 24 ALA CA   C 55.29 0.01 1
+179 24 24 ALA CB   C 18.63 0.01 1
+180 25 25 GLN H    H  7.87 0.01 1
+181 25 25 GLN HA   H  4.25 0.01 1
+182 25 25 GLN HB2  H  2.22 0.01 2
+183 25 25 GLN HB3  H  2.22 0.01 2
+184 25 25 GLN HG2  H  2.49 0.01 2
+185 25 25 GLN HG3  H  2.49 0.01 2
+186 25 25 GLN CA   C 57.90 0.01 1
+187 25 25 GLN CB   C 30.04 0.01 1
+188 25 25 GLN CG   C 34.83 0.01 1
+189 26 26 VAL H    H  7.71 0.01 1
+190 26 26 VAL HA   H  4.03 0.01 1
+191 26 26 VAL HB   H  2.20 0.01 1
+192 26 26 VAL HG1  H  1.05 0.01 1
+193 26 26 VAL CA   C 64.59 0.01 1
+194 26 26 VAL CB   C 33.18 0.01 1
+195 27 27 LYS H    H  7.96 0.01 1
+196 27 27 LYS HA   H  4.32 0.01 1
+197 27 27 LYS HB2  H  1.93 0.01 1
+198 27 27 LYS HB3  H  1.86 0.01 1
+199 27 27 LYS HD2  H  1.74 0.01 2
+200 27 27 LYS HD3  H  1.74 0.01 2
+201 27 27 LYS HE2  H  3.04 0.01 2
+202 27 27 LYS HE3  H  3.04 0.01 2
+203 27 27 LYS HG2  H  1.56 0.01 1
+204 27 27 LYS HG3  H  1.49 0.01 1
+205 27 27 LYS CA   C 57.12 0.01 1
+206 27 27 LYS CB   C 33.81 0.01 1
+207 27 27 LYS CD   C 29.73 0.01 1
+208 27 27 LYS CE   C 42.86 0.01 1
+209 27 27 LYS CG   C 25.53 0.01 1
+# Stuff below is manually added so we have data for all amino acids
+# that have methyl groups.
+        210   28   28   MET  N     N  121.5   0.25  1  
+        211   28   28   MET  H     H    7.61  0.01  1  
+        212   28   28   MET  CA    C   58.9   0.20  1  
+        213   28   28   MET  HA    H    4.10  0.01  1  
+        214   28   28   MET  CB    C   35.5   0.20  1  
+        215   28   28   MET  HB2   H    2.18  0.01  2  
+        216   28   28   MET  HB3   H    2.13  0.01  2  
+        217   28   28   MET  CG    C   33.0   0.20  1  
+        218   28   28   MET  HG2   H    2.60  0.01  2  
+        219   28   28   MET  HG3   H    2.53  0.01  2  
+        220   28   28   MET  CE    C   14.9   0.20  1  
+        221   28   28   MET  HE    H    2.12  0.01  1  
+
+        222   29   29 LEU H    H   8.835 0.02 1
+        223   29   29 LEU HA   H   5.443 0.02 1
+        224   29   29 LEU HB2  H   1.906 0.02 2
+        225   29   29 LEU HB3  H   1.308 0.02 2
+        226   29   29 LEU HD1  H   1.028 0.02 1
+        227   29   29 LEU HD2  H   0.863 0.02 1
+        228   29   29 LEU HG   H   1.588 0.02 1
+        229   29   29 LEU C    C 177.981 0.2  1
+        230   29   29 LEU CA   C  53.803 0.2  1
+        231   29   29 LEU CB   C  43.299 0.2  1
+        232   29   29 LEU CD1  C  26.184 0.2  1
+        233   29   29 LEU CD2  C  23.893 0.2  1
+        234   29   29 LEU CG   C  27.407 0.2  1
+        235   29   29 LEU N    N 125.960 0.2  1
+
+stop_
+loop_
+_Atom_shift_assign_ID_ambiguity
+104
+'104,104'
+'105,105,105'
+stop_
+save_

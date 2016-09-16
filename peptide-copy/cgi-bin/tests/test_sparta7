@@ -1,0 +1,27 @@
+#! /bin/csh -f
+
+# Test latest SPARTA format with an entry that has two entities.
+
+set result = 0
+
+rm -r -f */15418*
+
+echo -n "Processing NMR-STAR: "
+./s2d -file test_data/bmr15418_3.str -name 15418 -force -check_res_list \
+  -check_pct -sparta_file test_data/bmr15418.sparta.str
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+source tests/test_sparta7_check
+
+
+echo -n "Test_sparta7 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

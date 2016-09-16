@@ -1,0 +1,23 @@
+# Data: torision angle constraint values for 4020
+# Schema: bmrb-TorsionAngle
+# Attributes: Entity_assembly_ID; Residue_seq_code1; Residue_label1; Residue_seq_code2; Residue_label2; Torsion_angle_lower_bound; Torsion_angle_upper_bound; Residue_seq_code; atom1Num; atom2Num; atom3Num; atom4Num; angleType; averageValue
+
+1 14   VALn 15   PRO 178.000   -178.000 14.5 2 3 17 18 omega 178.53 7.41
+1 15   PRO 16   CYS 178.000   -178.000 15.5 18 19 31 32 omega 179.77 4.27
+1 16   CYS 17   SER 178.000   -178.000 16.5 32 33 41 42 omega 167.47 11.82
+1 17   SER 18   THR 178.000   -178.000 17.5 42 43 52 53 omega 177.27 2.44
+1 18   THR 19   CYS 178.000   -178.000 18.5 53 54 66 67 omega 172.77 8.23
+1 19   CYS 20   GLU  178.000   -178.000 19.5 67 68 76 77 omega 169.93 10.07
+1 20   GLU 21   GLY 178.000   -178.000 20.5 77 78 92 93 omega -176.56 3.07
+1 21   GLY 22   ASN 178.000   -178.000 21.5 93 94 99 100 omega 174.06 4.98
+1 22   ASN 23   LEU 178.000   -178.000 22.5 100 101 113 114 omega -172.52 6.63
+1 23   LEU 24   ALA 178.000   -178.000 23.5 114 115 132 133 omega 167.53 11.04
+1 24   ALA 25   CYS 178.000   -178.000 24.5 133 134 142 143 omega 171.41 8.25
+1 25   CYS 26   LEU 178.000   -178.000 25.5 143 144 152 153 omega 170.76 8.15
+1 26   LEU 27   SER 178.000   -178.000 26.5 153 154 171 172 omega 171.52 8.90
+1 27   SER 28   LEU 178.000   -178.000 27.5 172 173 182 183 omega 171.36 8.41
+1 28   LEU 29   CYS 178.000   -178.000 28.5 183 184 201 202 omega -176.55 9.49
+1 29   CYS 30   HIS 178.000   -178.000 29.5 202 203 211 212 omega 173.47 10.87
+1 30   HIS 31   ILE 178.000   -178.000 30.5 212 213 228 229 omega -174.86 7.49
+1 31   ILE 32   GLU 178.000   -178.000 31.5 229 230 247 248 omega -179.33 3.84
+

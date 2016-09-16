@@ -1,0 +1,110 @@
+# <residue number> <atom number> <residue> <atom name> <data source name>
+#   <title>
+
+1 1 DA C1' bmrbhist_dna_DA_C1p DA_C1'
+1 2 DA C2 bmrbhist_dna_DA_C2 DA_C2
+1 3 DA C2' bmrbhist_dna_DA_C2p DA_C2'
+1 4 DA C3' bmrbhist_dna_DA_C3p DA_C3'
+1 5 DA C4 bmrbhist_dna_DA_C4 DA_C4
+1 6 DA C4' bmrbhist_dna_DA_C4p DA_C4'
+1 7 DA C5 bmrbhist_dna_DA_C5 DA_C5
+1 8 DA C5' bmrbhist_dna_DA_C5p DA_C5'
+1 9 DA C6 bmrbhist_dna_DA_C6 DA_C6
+1 10 DA C8 bmrbhist_dna_DA_C8 DA_C8
+1 11 DA H1' bmrbhist_dna_DA_H1p DA_H1'
+1 12 DA H2 bmrbhist_dna_DA_H2 DA_H2
+1 13 DA H2' bmrbhist_dna_DA_H2p DA_H2'
+1 14 DA H2'' bmrbhist_dna_DA_H2pp DA_H2''
+1 15 DA H3' bmrbhist_dna_DA_H3p DA_H3'
+1 16 DA H4' bmrbhist_dna_DA_H4p DA_H4'
+1 17 DA H5' bmrbhist_dna_DA_H5p DA_H5'
+1 18 DA H5'' bmrbhist_dna_DA_H5pp DA_H5''
+1 19 DA H61 bmrbhist_dna_DA_H61 DA_H61
+1 20 DA H62 bmrbhist_dna_DA_H62 DA_H62
+1 21 DA H8 bmrbhist_dna_DA_H8 DA_H8
+1 22 DA N1 bmrbhist_dna_DA_N1 DA_N1
+1 23 DA N3 bmrbhist_dna_DA_N3 DA_N3
+1 24 DA N6 bmrbhist_dna_DA_N6 DA_N6
+1 25 DA N7 bmrbhist_dna_DA_N7 DA_N7
+1 26 DA N9 bmrbhist_dna_DA_N9 DA_N9
+# 1 27 DA P bmrbhist_dna_DA_P DA_P
+
+2 1 DC C1' bmrbhist_dna_DC_C1p DC_C1'
+2 2 DC C2 bmrbhist_dna_DC_C2 DC_C2
+2 3 DC C2' bmrbhist_dna_DC_C2p DC_C2'
+2 4 DC C3' bmrbhist_dna_DC_C3p DC_C3'
+2 5 DC C4 bmrbhist_dna_DC_C4 DC_C4
+2 6 DC C4' bmrbhist_dna_DC_C4p DC_C4'
+2 7 DC C5 bmrbhist_dna_DC_C5 DC_C5
+2 8 DC C5' bmrbhist_dna_DC_C5p DC_C5'
+2 9 DC C6 bmrbhist_dna_DC_C6 DC_C6
+2 10 DC H1' bmrbhist_dna_DC_H1p DC_H1'
+2 11 DC H2' bmrbhist_dna_DC_H2p DC_H2'
+2 12 DC H2'' bmrbhist_dna_DC_H2pp DC_H2''
+2 13 DC H3' bmrbhist_dna_DC_H3p DC_H3'
+2 14 DC H41 bmrbhist_dna_DC_H41 DC_H41
+2 15 DC H42 bmrbhist_dna_DC_H42 DC_H42
+2 16 DC H4' bmrbhist_dna_DC_H4p DC_H4'
+2 17 DC H5 bmrbhist_dna_DC_H5 DC_H5
+2 18 DC H5' bmrbhist_dna_DC_H5p DC_H5'
+2 19 DC H5'' bmrbhist_dna_DC_H5pp DC_H5''
+2 20 DC H6 bmrbhist_dna_DC_H6 DC_H6
+2 21 DC N1 bmrbhist_dna_DC_N1 DC_N1
+2 22 DC N3 bmrbhist_dna_DC_N3 DC_N3
+2 23 DC N4 bmrbhist_dna_DC_N4 DC_N4
+# 2 24 DC P bmrbhist_dna_DC_P DC_P
+
+3 1 DG C1' bmrbhist_dna_DG_C1p DG_C1'
+3 2 DG C2 bmrbhist_dna_DG_C2 DG_C2
+3 3 DG C2' bmrbhist_dna_DG_C2p DG_C2'
+3 4 DG C3' bmrbhist_dna_DG_C3p DG_C3'
+3 5 DG C4 bmrbhist_dna_DG_C4 DG_C4
+3 6 DG C4' bmrbhist_dna_DG_C4p DG_C4'
+3 7 DG C5 bmrbhist_dna_DG_C5 DG_C5
+3 8 DG C5' bmrbhist_dna_DG_C5p DG_C5'
+3 9 DG C6 bmrbhist_dna_DG_C6 DG_C6
+3 10 DG C8 bmrbhist_dna_DG_C8 DG_C8
+3 11 DG H1 bmrbhist_dna_DG_H1 DG_H1
+3 12 DG H1' bmrbhist_dna_DG_H1p DG_H1'
+3 13 DG H21 bmrbhist_dna_DG_H21 DG_H21
+3 14 DG H22 bmrbhist_dna_DG_H22 DG_H22
+3 15 DG H2' bmrbhist_dna_DG_H2p DG_H2'
+3 16 DG H2'' bmrbhist_dna_DG_H2pp DG_H2''
+3 17 DG H3' bmrbhist_dna_DG_H3p DG_H3'
+3 18 DG H4' bmrbhist_dna_DG_H4p DG_H4'
+3 19 DG H5' bmrbhist_dna_DG_H5p DG_H5'
+3 20 DG H5'' bmrbhist_dna_DG_H5pp DG_H5''
+3 21 DG H8 bmrbhist_dna_DG_H8 DG_H8
+3 22 DG N1 bmrbhist_dna_DG_N1 DG_N1
+3 23 DG N2 bmrbhist_dna_DG_N2 DG_N2
+3 24 DG N3 bmrbhist_dna_DG_N3 DG_N3
+3 25 DG N7 bmrbhist_dna_DG_N7 DG_N7
+3 26 DG N9 bmrbhist_dna_DG_N9 DG_N9
+# 3 27 DG P bmrbhist_dna_DG_P DG_P
+
+4 1 DT C1' bmrbhist_dna_DT_C1p DT_C1'
+4 2 DT C2 bmrbhist_dna_DT_C2 DT_C2
+4 3 DT C2' bmrbhist_dna_DT_C2p DT_C2'
+4 4 DT C3' bmrbhist_dna_DT_C3p DT_C3'
+4 5 DT C4 bmrbhist_dna_DT_C4 DT_C4
+4 6 DT C4' bmrbhist_dna_DT_C4p DT_C4'
+4 7 DT C5 bmrbhist_dna_DT_C5 DT_C5
+4 8 DT C5' bmrbhist_dna_DT_C5p DT_C5'
+4 9 DT C6 bmrbhist_dna_DT_C6 DT_C6
+4 10 DT C7 bmrbhist_dna_DT_C7 DT_C7
+4 11 DT H1' bmrbhist_dna_DT_H1p DT_H1'
+4 12 DT H2' bmrbhist_dna_DT_H2p DT_H2'
+4 13 DT H2'' bmrbhist_dna_DT_H2pp DT_H2''
+4 14 DT H3 bmrbhist_dna_DT_H3 DT_H3
+4 15 DT H3' bmrbhist_dna_DT_H3p DT_H3'
+4 16 DT H4' bmrbhist_dna_DT_H4p DT_H4'
+4 17 DT H5' bmrbhist_dna_DT_H5p DT_H5'
+4 18 DT H5'' bmrbhist_dna_DT_H5pp DT_H5''
+4 19 DT H6 bmrbhist_dna_DT_H6 DT_H6
+4 20 DT H71 bmrbhist_dna_DT_H71 DT_H71
+4 21 DT H72 bmrbhist_dna_DT_H72 DT_H72
+4 22 DT H73 bmrbhist_dna_DT_H73 DT_H73
+4 23 DT H7 bmrbhist_dna_DT_H7 DT_H7
+4 24 DT N1 bmrbhist_dna_DT_N1 DT_N1
+4 25 DT N3 bmrbhist_dna_DT_N3 DT_N3
+# 4 26 DT P bmrbhist_dna_DT_P DT_P

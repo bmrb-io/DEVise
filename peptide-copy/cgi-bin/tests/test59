@@ -1,0 +1,146 @@
+#! /bin/csh -f
+
+# 4310 has two entities, and coupling constants for one of the entities
+# (need to test something besides chemical shifts with multiple entities).
+
+set result = 0
+
+rm -r -f */4310*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 4310 -force -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out1
+
+echo -n "Processing mmCIF: "
+./s2d -nomail -bmrbid 4310 -pdbid 1A29 -coord_index 1 -do_pdb 2 -force \
+  -check_pct
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/4310ac1.dat \
+	data_dir/4310am1.dat \
+	data_dir/4310am2.dat \
+	data_dir/4310amac1.dat \
+	data_dir/4310amac2.dat \
+	data_dir/4310as1.dat \
+	data_dir/4310as2.dat \
+	data_dir/4310c1.dat \
+	data_dir/4310c2.dat \
+	data_dir/4310d1.dat \
+	data_dir/4310d2.dat \
+	data_dir/4310g1.dat \
+	data_dir/4310hc1.dat \
+	data_dir/4310hc2.dat \
+	data_dir/4310hn1.dat \
+	data_dir/4310hn2.dat \
+	data_dir/4310md.dat \
+	data_dir/4310p1.dat \
+	data_dir/4310p2.dat \
+	data_dir/4310rc1.dat \
+	data_dir/4310rc2.dat \
+	data_dir/4310rl.dat \
+	html_dir/4310/4310ac1.html \
+	html_dir/4310/4310am1.html \
+	html_dir/4310/4310am2.html \
+	html_dir/4310/4310as1.html \
+	html_dir/4310/4310as2.html \
+	html_dir/4310/4310c1.html \
+	html_dir/4310/4310c2.html \
+	html_dir/4310/4310d1.html \
+	html_dir/4310/4310d2.html \
+	html_dir/4310/4310g1.html \
+	html_dir/4310/4310hc1.html \
+	html_dir/4310/4310hn1.html \
+	html_dir/4310/4310p1.html \
+	html_dir/4310/4310p2.html \
+	html_dir/4310/4310y.html \
+	session_dir/4310/4310ac1.ds \
+	session_dir/4310/4310acdd \
+	session_dir/4310/4310am1.ds \
+	session_dir/4310/4310am2.ds \
+	session_dir/4310/4310as1.ds \
+	session_dir/4310/4310as2.ds \
+	session_dir/4310/4310c1.ds \
+	session_dir/4310/4310c2.ds \
+	session_dir/4310/4310d1.ds \
+	session_dir/4310/4310d2.ds \
+	session_dir/4310/4310g1.ds \
+	session_dir/4310/4310hc1.ds \
+	session_dir/4310/4310hn1.ds \
+	session_dir/4310/4310p1.ds \
+	session_dir/4310/4310p2.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+set file = "data_dir/4310g1.dat"
+set line = '^7.240 2.0 3 GLN H 3 GLN HA 3JHNHA 1$'
+source tests/check4line
+set line = '^8.576 2.0 148 LYS H 148 LYS HA 3JHNHA 1$'
+source tests/check4line 
+
+set file = "data_dir/4310ac1.dat"
+set line = '^1 1_3_N 1 3 GLN N N 20.125 13.902 29.049 backbone$'
+source tests/check4line
+set line = '^1087 0_._CA 0 . CA CA CA 23.511 -12.581 18.32 backbone$'
+source tests/check4line
+set line = '^1088 0_._CA 0 . CA CA CA 31.624 -7.849 25.118 backbone$'
+source tests/check4line
+set line = '^1089 0_._CA 0 . CA CA CA 15.321 10.508 -2.053 backbone$'
+source tests/check4line
+set line = '^1146 0_._F3 0 . TFP F3 F 15.201 1.583 13.478 side_chains$'
+source tests/check4line
+
+set file = "data_dir/4310amac1.dat"
+set line = '^1 1 ALA H H -0.6 0.225 0 0 -0.15 0 backbone AMU -1$'
+source tests/check4line
+set line = '^1 148 LYS O O 14.6 -30.575 0 0 -0.15 0 backbone AMU -1$'
+source tests/check4line
+
+set file = "data_dir/4310amac2.dat"
+set line = '^3 1 LYS H H -0.6 0.225 0 0 -0.15 0 backbone AM1 1$'
+source tests/check4line
+set line = '^3 21 TRP O O 0.6 -4.175 0 0 -0.15 0 backbone AMU -1$'
+source tests/check4line
+
+set file = "data_dir/4310as1.dat"
+set line = '^41.2 CB C 2 ASP 1$'
+source tests/check4line
+set line = '^4.13 HA H 148 LYS 1$'
+source tests/check4line
+
+set file = "data_dir/4310as2.dat"
+set line = '^9.08 H H 1 LYS 3$'
+source tests/check4line
+set line = '^6.99 HH2 H 21 TRP 3$'
+source tests/check4line
+
+set file = "data_dir/4310rl.dat"
+set line = '^1	1	ALA	A	2$'
+source tests/check4line
+set line = '^4	21	TRP	W	2$'
+source tests/check4line
+
+
+echo -n "Test59 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

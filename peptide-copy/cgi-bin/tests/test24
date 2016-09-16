@@ -1,0 +1,89 @@
+#! /bin/csh -f
+
+# This tests the protein checking for NMR-STAR 3.0 files.
+
+set result = 0
+
+rm -r -f */6502*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -file test_data/bmr6502.str.nmrstr -name 6502 -force \
+  -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+#TEMP -- this should either produce Pistachio data or figure out that the figures of merit are all "."
+set files = ( data_dir/6502as1.dat \
+	data_dir/6502as2.dat \
+	data_dir/6502c1.dat \
+	data_dir/6502c2.dat \
+	data_dir/6502d1.dat \
+	data_dir/6502d2.dat \
+	data_dir/6502hc1.dat \
+	data_dir/6502hc2.dat \
+	data_dir/6502hn1.dat \
+	data_dir/6502hn2.dat \
+	data_dir/6502md.dat \
+	data_dir/6502p1.dat \
+	data_dir/6502p2.dat \
+	data_dir/6502rc1.dat \
+	data_dir/6502rc2.dat \
+	data_dir/6502rl.dat \
+	html_dir/6502/6502as1.html \
+	html_dir/6502/6502as2.html \
+	html_dir/6502/6502c1.html \
+	html_dir/6502/6502c2.html \
+	html_dir/6502/6502d1.html \
+	html_dir/6502/6502d2.html \
+	html_dir/6502/6502hc1.html \
+	html_dir/6502/6502hc2.html \
+	html_dir/6502/6502hn1.html \
+	html_dir/6502/6502hn2.html \
+	html_dir/6502/6502p1.html \
+	html_dir/6502/6502p2.html \
+	html_dir/6502/6502y.html \
+	session_dir/6502/6502acdd \
+	session_dir/6502/6502as1.ds \
+	session_dir/6502/6502as2.ds \
+	session_dir/6502/6502c1.ds \
+	session_dir/6502/6502c2.ds \
+	session_dir/6502/6502d1.ds \
+	session_dir/6502/6502d2.ds \
+	session_dir/6502/6502hc1.ds \
+	session_dir/6502/6502hc2.ds \
+	session_dir/6502/6502hn1.ds \
+	session_dir/6502/6502hn2.ds \
+	session_dir/6502/6502p1.ds \
+	session_dir/6502/6502p2.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/6502rl.dat"
+set line = '^1	1	GLY	G	2$'
+source tests/check4line
+set line = '^1	100	LYS	K	2$'
+source tests/check4line
+set line = '^2	1	GLY	G	2$'
+source tests/check4line
+set line = '^2	83	PRO	P	2$'
+source tests/check4line
+
+
+echo -n "Test24 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

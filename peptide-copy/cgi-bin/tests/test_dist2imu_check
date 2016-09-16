@@ -1,0 +1,71 @@
+echo "Checking output files"
+
+set files = ( data_dir/uvd/16270ac2.dat \
+	data_dir/uvd/16270am1.dat \
+	data_dir/uvd/16270amac1.dat \
+	data_dir/uvd/16270as1.dat \
+	data_dir/uvd/16270c1.dat \
+	data_dir/uvd/16270d1.dat \
+	data_dir/uvd/16270distr2.dat \
+	data_dir/uvd/16270distrc2.dat \
+	data_dir/uvd/16270distr-md2.dat \
+	data_dir/uvd/16270hc1.dat \
+	data_dir/uvd/16270hn1.dat \
+	data_dir/uvd/16270md.dat \
+	data_dir/uvd/16270p1.dat \
+	data_dir/uvd/16270rc1.dat \
+	data_dir/uvd/16270rc2.dat \
+	data_dir/uvd/16270rl.dat \
+	html_dir/uvd/16270/16270ac2.html \
+	html_dir/uvd/16270/16270am1.html \
+	html_dir/uvd/16270/16270as1.html \
+	html_dir/uvd/16270/16270c1.html \
+	html_dir/uvd/16270/16270d1.html \
+	html_dir/uvd/16270/16270distr2.html \
+	html_dir/uvd/16270/16270hc1.html \
+	html_dir/uvd/16270/16270hn1.html \
+	html_dir/uvd/16270/16270p1.html \
+	html_dir/uvd/16270/16270y.html \
+	session_dir/.uvd/16270/16270ac2.ds \
+	session_dir/.uvd/16270/16270acdd \
+	session_dir/.uvd/16270/16270am1.ds \
+	session_dir/.uvd/16270/16270as1.ds \
+	session_dir/.uvd/16270/16270c1.ds \
+	session_dir/.uvd/16270/16270d1.ds \
+	session_dir/.uvd/16270/16270distr2.ds \
+	session_dir/.uvd/16270/16270hc1.ds \
+	session_dir/.uvd/16270/16270hn1.ds \
+	session_dir/.uvd/16270/16270p1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/uvd/16270distr2.dat"
+set line = '^1	73	THR	1_73	1	74	ASN	1_74	2.334	2.646	1_73_H	H	1_74_H	H	unknown	Sequential	2.445	0	Non-violated	Non-ambiguous'
+source tests/check4line
+set line = '^1	102	ASP	1_102	1	102	ASP	1_102	2.444	2.960	1_102_H	H	1_102_HB2	HB2	unknown	Intra-residue	2.781	0	Non-violated	Non-ambiguous'
+source tests/check4line
+set line = '^1	97	MET	1_97	1	98	THR	1_98	3.432	3.512	1_97_HB2	HB2	1_98_H	H	unknown	Sequential	3.476	0.012	Violated	Non-ambiguous'
+source tests/check4line
+set line = '^1	107	ASP	1_107	1	110	VAL	1_110	2.582	2.971	1_107_O	O	1_110_N	N	unknown	Medium-range	2.805	0	Non-violated	Non-ambiguous'
+source tests/check4line
+
+set file = "data_dir/uvd/16270distrc2.dat"
+set line = '^1 109 1_109 13 1 12 0 0 0 13 1 12 0 0 0 0 0 0 0 0 0 5 0 5 0 0 0 5 0 5 8 1 7 0 0 0 8 1 7 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
+source tests/check4line
+set line = '^1 108 1_108 18 7 11 0 0 0 18 7 11 2 2 0 0 0 0 2 2 0 8 1 7 0 0 0 8 1 7 8 4 4 0 0 0 8 4 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
+source tests/check4line
+set line = '^1 110 1_110 26 8 18 0 0 0 26 8 18 1 1 0 0 0 0 1 1 0 6 3 3 0 0 0 6 3 3 11 2 9 0 0 0 11 2 9 8 2 6 0 0 0 8 2 6 0 0 0 0 0 0 0 0 0'
+source tests/check4line
+
+set file = "data_dir/uvd/16270distr-md2.dat"
+set line = '^EA 1	1	All	All	All	\$All_viol-all_ambig-all	0	0	0	Restraints per residue (All \[1\])'
+source tests/check4line
+set line = '^EA 1	1	All	All	Intra-residue	\$Intra-res_viol-all_ambig-all	0	0	1	Restraints per residue (Intra-residue \[1\])'
+source tests/check4line
+set line = '^EA 1	1	Non-violated	All	Intermolecular	\$Inter-mol_viol-no_ambig-all	2	0	5	Restraints per residue (Intermolecular non-violated \[1\])'
+source tests/check4line

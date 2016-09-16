@@ -1,0 +1,53 @@
+#! /bin/csh -f
+
+# Test not failing on an entry that has two entities but no
+# chemical shifts.  Also test correctly assigning residue lists for
+# atomic coordinate visualizations in an entry that has two entities
+# (second test is not yet implemented).
+
+set result = 0
+
+ln -s test_data/bmr5153.str .
+
+rm -r -f */5153*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 5153 -local -do_pdb 1 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out1
+
+echo -n "Processing mmCIF: "
+./s2d -nomail -pdbid 1UEA -bmrbid 5153 -do_pdb 2 -coord_index 1 -force \
+  -check_res_list -check_pct
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out2
+
+echo -n "Processing mmCIF: "
+./s2d -nomail -pdbid 2JOT -bmrbid 5153 -do_pdb 2 -coord_index 4 -force \
+  -check_res_list -check_pct
+if ($status != 0) then
+  echo "Third invocation of s2d failed!"
+  set result = 1
+endif
+
+
+rm bmr5153.str
+
+
+source tests/test27_check
+
+
+echo -n "Test27 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

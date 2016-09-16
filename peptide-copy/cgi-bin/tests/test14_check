@@ -1,0 +1,79 @@
+echo "Checking output files"
+
+set files = ( data_dir/4867ac1.dat \
+	data_dir/4867ac2.dat \
+	data_dir/4867am1.dat \
+	data_dir/4867amac1.dat \
+	data_dir/4867as1.dat \
+	data_dir/4867as2.dat \
+	data_dir/4867c1.dat \
+	data_dir/4867d1.dat \
+	data_dir/4867d2.dat \
+	data_dir/4867hc1.dat \
+	data_dir/4867hn1.dat \
+	data_dir/4867md.dat \
+	data_dir/4867p1.dat \
+	data_dir/4867rc1.dat \
+	data_dir/4867rc2.dat \
+	data_dir/4867rl.dat \
+	html_dir/4867/4867ac1.html \
+	html_dir/4867/4867ac2.html \
+	html_dir/4867/4867am1.html \
+	html_dir/4867/4867as1.html \
+	html_dir/4867/4867as2.html \
+	html_dir/4867/4867c1.html \
+	html_dir/4867/4867d1.html \
+	html_dir/4867/4867d2.html \
+	html_dir/4867/4867hc1.html \
+	html_dir/4867/4867hn1.html \
+	html_dir/4867/4867p1.html \
+	html_dir/4867/4867y.html \
+	session_dir/4867/4867ac1.ds \
+	session_dir/4867/4867ac2.ds \
+	session_dir/4867/4867acdd \
+	session_dir/4867/4867am1.ds \
+	session_dir/4867/4867as1.ds \
+	session_dir/4867/4867as2.ds \
+	session_dir/4867/4867c1.ds \
+	session_dir/4867/4867d1.ds \
+	session_dir/4867/4867d2.ds \
+	session_dir/4867/4867hc1.ds \
+	session_dir/4867/4867hn1.ds \
+	session_dir/4867/4867p1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/4867ac1.dat"
+set line = "^1 1_1_O5' 1 1 G O5' O 118.098 -36.722 1.395 side_chains"
+source tests/check4line
+set line = '^3444 2_175_HA3 2 175 GLY HA3 H 123.371 1.993 19.454 backbone$'
+source tests/check4line
+
+set file = "data_dir/4867as1.dat"
+set line = '^8.09 H H 5 VAL 2$'
+source tests/check4line
+set line = '^114.9 N N 175 GLY 2$'
+source tests/check4line
+
+set file = "data_dir/4867d1.dat"
+set line = '^0.1 0.0 -3.4 -1.8 5 VAL 2$'
+source tests/check4line
+set line = '^-0.26 0.0 -1.0 0.0 175 GLY 2$'
+source tests/check4line
+
+set file = "data_dir/4867hn1.dat"
+set line = '^8.5 124.7 H N 6 GLU 2 4867 E$'
+source tests/check4line
+set line = '^7.85 114.9 H N 175 GLY 2 4867 G$'
+source tests/check4line
+
+set file = "data_dir/4867hc1.dat"
+set line = '^0.84 18.4 HG23 CG2 5 VAL 2 4867 V$'
+source tests/check4line
+set line = '^3.6 44.0 HA3 CA 175 GLY 2 4867 G$'
+source tests/check4line

@@ -1,0 +1,40 @@
+#! /bin/csh -f
+
+# A new torsion angle test -- 4310 has 2 entity assemblies -- figured
+# I should have a torsion angle test including that.
+
+# TEMP: the restraints grid file for 1CKK has *two* save frames of
+# torsion angles.  I need to figure out how to deal with them.
+
+set result = 0
+
+rm -r -f */4310*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 4310 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out1
+
+echo -n "Processing mmCIF and torsion angle restraints: "
+./s2d -nomail -bmrbid 4310 -pdbid 1CKK -coord_index 5 -force \
+  -do_tar 3 -check_res_list -check_pct
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+source tests/test_tar3_check
+
+
+echo -n "Test_tar3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

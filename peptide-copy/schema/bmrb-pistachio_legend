@@ -1,0 +1,17 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:28:37
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# Schema for Pistachio legends.
+
+# $Id$
+
+type bmrb-pistachio_legend ascii
+comment #
+whitespace '	'
+
+attr color_str string 4
+attr explanation string 12

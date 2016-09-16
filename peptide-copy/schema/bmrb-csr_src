@@ -1,0 +1,9 @@
+# Schema for reading chemical shift reference source.
+
+# $Id$
+
+type bmrb-csr_src ascii
+comment #
+whitespace '	'
+
+attr Source string 90

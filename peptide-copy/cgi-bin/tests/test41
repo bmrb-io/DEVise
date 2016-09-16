@@ -1,0 +1,116 @@
+#! /bin/csh -f
+
+# This is to test NMR-STAR 3.1 processing.
+
+set result = 0
+
+rm -r -f */4267*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -file test_data/bmr4267_3.str -name 4267 -do_pdb 2 \
+  -do_csr 1 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/4267ac1.dat \
+	data_dir/4267ac2.dat \
+	data_dir/4267am1.dat \
+	data_dir/4267amac1.dat \
+	data_dir/4267as1.dat \
+	data_dir/4267c1.dat \
+	data_dir/4267d1.dat \
+	data_dir/4267g1.dat \
+	data_dir/4267hc1.dat \
+	data_dir/4267hn1.dat \
+	data_dir/4267md.dat \
+	data_dir/4267n1.dat \
+	data_dir/4267n2.dat \
+	data_dir/4267n3.dat \
+	data_dir/4267n4.dat \
+	data_dir/4267n5.dat \
+	data_dir/4267n6.dat \
+	data_dir/4267n7.dat \
+	data_dir/4267n8.dat \
+	data_dir/4267n9.dat \
+	data_dir/4267p1.dat \
+	data_dir/4267rc1.dat \
+	data_dir/4267rl.dat \
+	data_dir/4267t11.dat \
+	data_dir/4267t12.dat \
+	data_dir/4267t13.dat \
+	data_dir/4267t21.dat \
+	data_dir/4267t22.dat \
+	data_dir/4267t23.dat \
+	html_dir/4267/4267ac1.html \
+	html_dir/4267/4267ac2.html \
+	html_dir/4267/4267am1.html \
+	html_dir/4267/4267as1.html \
+	html_dir/4267/4267c1.html \
+	html_dir/4267/4267d1.html \
+	html_dir/4267/4267g1.html \
+	html_dir/4267/4267hc1.html \
+	html_dir/4267/4267hn1.html \
+	html_dir/4267/4267n1.html \
+	html_dir/4267/4267n2.html \
+	html_dir/4267/4267n3.html \
+	html_dir/4267/4267n4.html \
+	html_dir/4267/4267n5.html \
+	html_dir/4267/4267n6.html \
+	html_dir/4267/4267n7.html \
+	html_dir/4267/4267n8.html \
+	html_dir/4267/4267n9.html \
+	html_dir/4267/4267p1.html \
+	html_dir/4267/4267t11.html \
+	html_dir/4267/4267t12.html \
+	html_dir/4267/4267t13.html \
+	html_dir/4267/4267t21.html \
+	html_dir/4267/4267t22.html \
+	html_dir/4267/4267t23.html \
+	html_dir/4267/4267y.html \
+	session_dir/4267/4267ac1.ds \
+	session_dir/4267/4267ac2.ds \
+	session_dir/4267/4267acdd \
+	session_dir/4267/4267am1.ds \
+	session_dir/4267/4267as1.ds \
+	session_dir/4267/4267c1.ds \
+	session_dir/4267/4267d1.ds \
+	session_dir/4267/4267g1.ds \
+	session_dir/4267/4267hc1.ds \
+	session_dir/4267/4267hn1.ds \
+	session_dir/4267/4267n1.ds \
+	session_dir/4267/4267n2.ds \
+	session_dir/4267/4267n3.ds \
+	session_dir/4267/4267n4.ds \
+	session_dir/4267/4267n5.ds \
+	session_dir/4267/4267n6.ds \
+	session_dir/4267/4267n7.ds \
+	session_dir/4267/4267n8.ds \
+	session_dir/4267/4267n9.ds \
+	session_dir/4267/4267p1.ds \
+	session_dir/4267/4267t11.ds \
+	session_dir/4267/4267t12.ds \
+	session_dir/4267/4267t13.ds \
+	session_dir/4267/4267t21.ds \
+	session_dir/4267/4267t22.ds \
+	session_dir/4267/4267t23.ds )
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test41 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

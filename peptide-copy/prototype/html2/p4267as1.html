@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+  <title>BMRB Data Viewer for 4267</title>
+  <link href="visualization.css" rel="stylesheet" type="text/css" media="all">
+</head>
+
+<body>
+
+<div id="header">
+  <center> <h2>
+  Chemical shift distributions by amino acid/nucleotide (entity assembly 1)
+  </h2> </center>
+  <h3>
+  Frame details:   Many methylene and valine/luecine methyl groups have been stereospecifically assigned.
+  those not stereo-assigned are given ambiguity code 2 even where HB2,HB3 etc.
+  are stated as having different shifts.  Glycine HA pairs are steroassigned (exception G178).
+  </h3>
+</div>
+
+<br>
+<div id="content">
+  <p><a target= "js_videos" href="../js_videos.html">DEVise/JavaScreen
+    tutorial videos</a></p>
+  <p><a target = "_blank" href="../../collab.html">JavaScreen collaboration</a></p>
+  <p><a href="http://www.cs.wisc.edu/~devise">DEVise home page</a></p>
+  <h3>
+  <p><a href="4267y.html">Back to all visualizations for this entry</a></p>
+  </h3>
+</div>
+
+<br>
+<div id="content">
+  <center>
+  <applet code=JavaScreen.jsa.class archive=../../../devise_js.jar width=400 height=30>
+    <param name="applet" value="JavaScreen.jsa">
+    <param name="debug" value="0">
+    <param name="session" value="bmrb/dynamic_sessions/4267/4267as1.ds">
+    <param name="cmdport" value="6666">
+    <param name="cgiurl" value="/cgi-bin/js.cgi">
+    <param name="rubberbandlimit" value="4x4">
+    <!-- old bgcolor     <param name="bgcolor" value="64+96+0"> -->
+    <param name="bgcolor" value="0+0+0">
+    <param name="screensize" value="800x600">
+    <param name="hidebmrbsess" value="1">
+    <hr>
+    <p>Your browser does not support Java, or Java is not enabled.  Sorry!</p>
+    <p>If you are using IE 8, you may need to restart your browser to
+    enable add-ons.</p>
+    <hr>
+  </applet>
+  </center>
+  <h3>
+  <p><a target= "nmr_vis_help" href="../help_as.html">Help about this
+    visualization</a></p>
+  </h3>
+  <p>
+  <b>Switching visualizations:</b> to switch between visualizations
+  for this entry, select Session->Open/Switch in the JavaScreen.  This
+  will show a dialog listing the visualizations that are currently
+  available for this entry.  Note that some visualizations (such as
+  coordinates and restraints) require additional processing on the
+  server, so you may have to go back to the "all visualizations" page
+  for this entry to access them.  Also, if you switch visualizations
+  inside the JavaScreen, the "help on this visualization" link will
+  no longer correspond to the visualization you are viewing.
+  </p>
+</div>
+
+<br>
+<div id="content">
+  <p>Comments or questions?  Contact
+    <a href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a>
+  </p>
+  <p>Problems with the visualization software?  Contact <a
+    href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
+  </p>
+</div>
+
+  <!-- code to track usage -->
+  <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+    try {
+      var pageTracker = _gat._getTracker("UA-10448758-1");
+      pageTracker._trackPageview();
+    } catch(err) {}
+  </script>
+</body>
+</html>

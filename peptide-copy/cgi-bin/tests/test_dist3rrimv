@@ -1,0 +1,36 @@
+#! /bin/csh -f
+
+# Test restraints using remediated restraint data.  2oqs has data for two
+# entity assemblies.
+
+set result = 0
+
+rm -r -f */15209*
+
+echo -n "Processing NMR-STAR: "
+./make_view number=15209\&force=1
+if ($status != 0) then
+  echo "First invocation of make_view failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out1
+
+echo -n "Processing mmCIF and distance restraints: "
+./make_view number=15209\&pdbid=2oqs\&coord_index=1\&do_rrdist=3\&force=1
+if ($status != 0) then
+  echo "Second invocation of make_view failed!"
+  set result = 1
+endif
+
+
+source tests/test_dist3rr_check
+
+
+echo -n "Test_dist3rrimv result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

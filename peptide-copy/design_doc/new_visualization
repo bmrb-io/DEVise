@@ -1,0 +1,152 @@
+	Adding a New Visualization to Peptide-CGI
+	$Id$
+
+* OVERVIEW
+
+This document outlines the procedure for creating a new visualization
+in Peptide-CGI.  Note that some new visualizations or visualization
+changes have required changes to the JavaScreen client, or even to
+DEVise itself.  The procedures for changing the JavaScreen and DEVise
+are covered in a separate document.
+
+
+* PROCEDURE
+
+1) Planning
+
+First of all, Eldon (or maybe someone else at BMRB or a user) proposes
+a new visualization.  Generally there is some discussion to clarify
+exactly what is wanted, and how this can be accomplished given the
+capabilities of DEVise and the JavaScreen.
+
+After the desired visualization is clarified, Kent, Eldon, and maybe
+others, write a specification and time estimate for the proposed new
+visualization.  At this point, any required changes to DEVise and the
+JavaScreen should be planned, as well.
+
+Once a time estimate has been made, Eldon will prioritize the new
+visualization relative to other projects.  The rest of this document
+assumes that the go-ahead has been given to implement the new visualization.
+
+2) Create and evaluate prototype
+
+Before we can create a prototype visualization, we need some data to
+visualize.  There are two ways we can go about this: either write
+Peptide-CGI code to extract the data from BMRB entries, or else create
+some dummy data manually.  It's usually preferable to write the
+extraction code at this point, since we'll have to do that eventually
+anyhow.  But in some cases we have used dummy data.
+
+If we write new Peptide-CGI code, we can at least start adding new
+test(s) at this point -- every new feature should have at least one
+corresponding test.  In some cases, we may be able to just extend an
+existing test to cover the new visualization.
+
+Once we have some data, we can create a prototype visualization in
+DEVise.  To create a new visualization, we need to run the "stand-alone"
+or X Windows-based DEVise, not the JavaScreen, since the JavaScreen
+doesn't have session-editing capability.  Note that the session files
+are text files, and sometimes it's preferable to do some of the editing
+with a text editor rather than with the DEVise GUI (in the case of
+simple, repeated changes, such as changing title fonts, for example).
+When creating a new visualization, you will probably have to create
+at least one new DEVise schema file.  Peptide-CGI-related schema files
+should go into the schema directory within peptide_cgi.  It's probably
+easier to create a schema file with a text editor than with the relevant
+DEVise GUI.
+
+To run DEVise with the Peptide-CGI schemas, sessions, and data, make
+the dev_test target at the top level, and go into the dev_test directory
+and run devise.pep.  Session templates are named *.base in the
+session_templates directory.
+
+Full instructions for creating visualizations in DEVise are outside the
+scope of this document.  You can find some information on this in
+the DEVise Quick Introduction web page
+(http://pages.cs.wisc.edu/~devise/devise/quick_intro/index.html).
+
+Once a prototype visualization is created in DEVise, it can be made
+available via the JavaScreen.  If Peptide-CGI has been modified
+enough to actually generate the visualization (doing things in a
+somewhat different order than this document suggests), you can simply
+do a release of Peptide-CGI to the development installation (see
+Makefile.config.uw_cs_test).  Otherwise, copy the session template
+file to /p/devise/demo/session.js/bmrb/test, the schema file(s) to
+/p/devise/demo/schema/schema/physical, and the data file(s)
+to/p/devise/demo/dat/bmrb/test (you will probably have to edit the
+session template file to have the correct paths to the other files).
+Then create an html file in /var/home/www/public/html/devise/bmrb_test
+on teal pointing to the appropriate session file.
+
+After the prototype visualization has been made available on the web,
+get feedback from Eldon and others, and revise the visualization as
+necessary.
+
+
+3) Final incorporation
+
+Once the prototype visualization has been approved, it can be fully
+incorporated into Peptide-CGI.
+
+First of all, if dummy data was used for the prototype, write code
+in Peptide-CGI that extracts the real data from BMRB entries.  Follow
+the existing data types, such as chemical shifts.  If the data
+generated for the chemical shift reference visualizations needs to
+be changed, you need to make changes to the ChemShift program.
+
+Then make sure that the prototype session file works as a session
+template.  If "real" data was used for the prototype, this shouldn't
+require any changes.
+
+Make sure to set color and black/white print mode colors in the session
+template!
+
+Then, code must be written to translate the relevant session template
+file into the actual session files for each visualization.  An html
+file must be generated that "contains" the visualization, and links
+must be added to the summary html page.  Again, follow the examples of
+existing data types.
+
+At this point, the test(s) for the new visualization can be finalized
+(or existing tests can be extended to test the new visualization).
+If new tests are created, they must be added to the test_all script.
+
+We must also create a help page for the new visualization (linked from
+the "visualization-specific" html pages generated by Peptide-CGI for the
+new visualization.
+
+At this point, the new version of Peptide-CGI can be installed on the
+QA setup, and Eldon asked for final approval.
+
+Once the visualization is approved, it must be added to the pre-release
+test procedure.  Then a new version of Peptide-CGI can be released.
+
+
+* COMMON PROBLEMS
+modifying existing sessions -- sometimes hard to know about links, etc
+works in devise, not JS -- permissions, links, etc.
+
+Often, a new visualization is started by modifying an existing
+visualization.  One of the most common problems in this case (or in
+simply modifying an existing visualization) is just understanding
+the existing visualization, especially how the links work.  It is
+often helpful to refer to the session file in a text editor while
+running DEVise on a session.  Also, showing the view names (View menu
+-> Toggle View Names) can help in understanding the links.  When
+dealing with child views, it is often useful to temporarily change
+the view background colors, so that the child view has a different
+color than its parent (if this is not already the case).
+
+One major limitation of the JavaScreen at the present time is that
+it only allows one level of child views (DEVise itself allows any
+number of levels).  This is something that should be fixed, but is
+not yet fixed at the present time.  Be sure to keep this limitation
+in mind when creating visualizations in DEVise; this is probably the
+most significant limitation of the JavaScreen, in terms of
+visualizations working in DEVise but not the JavaScreen.
+
+Other than the "multiple layers of child views" problem, if a
+visualization works in DEVise but not the JavaScreen, the problem
+usually has to do with file paths or permissions.  Remember that
+the JSPoP and DEVised run as the devise user, so any data files,
+etc., need to be readable by the devise user.

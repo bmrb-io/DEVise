@@ -1,0 +1,21 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:56:00
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# $Id$
+
+type DeltaShift ascii
+comment #
+whitespace ' '
+
+attr HA_DeltaShift float
+attr C_DeltaShift float
+attr CA_DeltaShift float
+attr CB_DeltaShift float
+
+attr Residue_seq_code int
+attr Residue_label string 4
+attr Entity_assembly_ID int

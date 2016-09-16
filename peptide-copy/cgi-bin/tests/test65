@@ -1,0 +1,69 @@
+#! /bin/csh -f
+
+# 5167 has DNA only.
+
+set result = 0
+
+rm -r -f */5167*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -bmrbid 5167 -do_pdb 2 -force -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/5167ac1.dat \
+	data_dir/5167as1.dat \
+	data_dir/5167d1.dat \
+	data_dir/5167md.dat \
+	#TEMP? data_dir/5167pstmp \
+	data_dir/5167rc1.dat \
+	data_dir/5167rl.dat \
+	html_dir/5167/5167ac1.html \
+	html_dir/5167/5167as1.html \
+	html_dir/5167/5167d1.html \
+	html_dir/5167/5167y.html \
+	session_dir/5167/5167ac1.ds \
+	session_dir/5167/5167acdd \
+	session_dir/5167/5167as1.ds \
+	session_dir/5167/5167d1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+set file = "data_dir/5167as1.dat"
+set line = "^6.01 H1' H 1 DC 1"
+source tests/check4line
+set line = "^4.106 H5' H 27 DG 1"
+source tests/check4line 
+
+set file = "data_dir/5167d1.dat"
+set line = '^0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.1 0.0 0.164 0.219 0.0 0.0 0.0 -0.046 0.019 0.361 -0.163 0.387 -0.207 -0.217 0.321 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1 DC 1$'
+source tests/check4line
+set line = '^0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.418 0.267 0.0 -0.187 -0.323 0.0 0.0 0.0 -0.304 -0.094 0.0 0.0 0.0 0.036 0.036 0.0 0.0 0.0 0.0 0.0 0.0 0.0 -0.085 0.0 0.0 0.0 0.0 0.0 0.0 0.0 27 DG 1$'
+source tests/check4line 
+
+set file = "data_dir/5167ac1.dat"
+set line = "^1 1_1_O5' 1 1 DC O5' O 5.736 -23.194 16.011 side_chains"
+source tests/check4line
+set line = '^859 1_27_H22 1 27 DG H22 H -3.196 -21.462 11.991 all_hydrogens$'
+source tests/check4line 
+
+
+echo -n "Test65 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

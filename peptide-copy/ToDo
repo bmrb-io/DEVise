@@ -1,0 +1,1019 @@
+			Peptide-CGI To-Do List
+			$Revision$
+
+Num Date        Status  Pri     Description
+--- --------    ------  ---     -----------------------------------------------
+001 08/05/02	DONE	1	Get atomic coords from PDB.
+				(Done by wenger, 08/05/02.)
+
+002 08/05/02	DONE	1	Automatically generate full 4096-type
+				visualization with atomic coordinates.
+
+003 08/05/02	POST	1	Properly check for out-of-dateness relative
+				to PDB files and related BMRB files.
+
+004 08/05/02	DONE	1	Deal with NMR-STAR version 3.0 files.
+
+005 08/05/02	OPEN	4	If some source files have changed, and
+				others haven't, reprocess only the changed
+				ones (for example, if the PDB file has changed
+				but the BMRB file has not).
+
+006 08/05/02	OPEN	4	Put some kind of timeout on getting PDB
+				files.
+
+007 08/05/02	DONE	1	Try again without PDB file if PDB file
+				causes out-of-memory error.  (Can test with
+				4001.)
+				(Done by wenger, 08/06/02.)
+
+008 08/05/02	DONE	4	Put a limit on the maximum number of atoms
+				in a structure (at least until DEVise/JS
+				can handle large structures better).  (Can
+				test with 4081.)
+				(Done by wenger, 08/05/02.)
+
+009 08/06/02	OPEN	3	Check PDB mirror sites for beta stuff, set up
+				peptide-cgi to try them if they have it and
+				main site fails. (el/rkw)
+
+010 08/06/02	OPEN	3	Use starlib feature to only parse part of the
+				star file (especially for PDB files). (rkw)
+
+011 08/06/02	DONE	1	Make sure we're only getting the first model
+				from a PDB entry. (elu/rkw)
+				(Done by rkw, 08/07/02.)
+
+012 08/06/02	DONE	1	Make sure we're getting the PDB IDs from
+				the right place in the BMRB file. (elu/rkw)
+				(Done by rkw, 08/08/02.)
+
+013 08/06/02	DONE	1	Show PDB ID on summary page. (elu/rkw)
+				(Done by rkw, 08/07/02.)
+
+014 08/08/02	DONE	1	Show structures from more than one PDB ID
+				if the BMRB entry references more than one.
+				(rkw)
+				Note: this may require that processing
+				continue asynchronously after the CGI script
+				returns.
+				(Done by rkw, 11/4/02.)
+
+015 08/12/02	OPEN	4	Remove port specification from html files.
+				(rkw)
+
+016 08/13/02	OPEN	4	For 4038 and 4096, display PDB structure(s)
+				in addition to structure from BMRB file. (rkw)
+
+017 10/15/02	DONE	4	Make peptide-cgi run from a jar file. (rkw)
+				(Done by wenger, ?/?/?.)
+
+018 11/1/02	DONE	1	Make peptide-cgi used cached data from PDB.
+				(rkw)
+				(Done by rkw, 11/7/02.)
+
+019 11/7/02	OPEN	3	Put generation date and peptide-cgi version
+				into the specific html files instead of the
+				atomic coordinate session files. (rkw)
+
+020 11/7/02	DONE	3	Replace "/" with generic separator character
+				in all file paths (so this could work on
+				Windows). (rkw)
+				(Done by wenger, 1/22/04.)
+
+021 4/9/03	DONE	1	Visualization server prototype. (wenger)
+
+022 4/9/03	DONE	1	Make sure protein checks still work in
+				"normal" mode after vis server mods. (wenger)
+				(Done by wenger, 1/22/04.)
+
+023 4/9/03	OPEN	2	Cleanup visualization server code (see
+				TEMP comments in code). (wenger)
+
+024 4/9/03	DONE	2	Make a separate directory or directories
+				(from the data dir and session dir) that hold
+				all templates, chemshift.txt, etc. (wenger)
+				(Done by wenger, 5/14/03.)
+
+025 4/9/03	DONE	2	Split out data files from html files
+				(put them in separate directories). (wenger)
+				(Done by wenger, 5/14/03.)
+
+026 4/9/03	DONE	2	Make visualization server mode work correctly
+				when we try to put output files in
+				subdirectories. (wenger)
+				(Done by wenger, ?/?/03.)
+
+027 4/9/03	OPEN	4	Output a separate session list file for
+				the visualization server stuff. (wenger)
+
+028 4/9/03	DONE	2	Production version of restraint/constraint
+				code. (wenger)
+
+029 4/9/03	OPEN	2	Fix systemName and frameName in visualization
+				server mode. (wenger)
+
+030 4/9/03	DONE	2	Productionize visualization server code.
+				(wenger)
+				(Done by wenger, ?/?/03.)
+
+031 4/9/03	DONE	3	Put everything into a single jar file instead
+				of distributing separate class files. (wenger)
+				(Done by wenger, 4/22/03.)
+
+032 5/4/02	OPEN	5	Add a place to email DEVise on every web page
+				related to the JS.  (BMRB advisory board)
+				(There's already a BMRB mailto.)
+
+033 7/4/03	DONE	1	Get uncompression of PDB mmCIF files working
+				on Windows (for vis server). (zsolt)
+				(Done by wenger ?/?/03.)
+
+034 5/15/03	DONE	1	Replace "mkdir" with "mkdir -p" as appropriate
+				in install script. (dmaziuk)
+				(Done by wenger, 1/22/04.)
+
+035 7/4/03	OPEN	2	Get animation symbols loaded into the jar file
+				(for visualization server). (wenger)
+
+036 9/12/03	OPEN	2	Re-run s2d on the BMRB entry if necessary when
+				called to process a related PDB entry. (wenger)
+
+037 11/10/03	OPEN	2	Check sequence in PDB file, compare against
+				sequence from BMRB file (if we don't do this
+				already). (elu/wenger)
+
+038 11/10/03	DONE	1	Chem shift ref integration. (elu/wenger)
+				(Done by wenger, 12/10/03.)
+
+039 11/10/03	DONE	1	Make sure output of Dan's code has been
+				tested by Gabriel. (elu/wenger)
+				(Done by wenger ?/?/?.)
+
+040 11/10/03	DONE?	1	Resolve problems with DC hanging for some
+				chem shift ref combos. (wenger)
+
+041 11/10/03	OPEN	3	Set up a set_modes.bat like my_uncompress.bat
+				(wenger)
+
+042 11/11/03	NLR	2	Jafar should report errors to the user.
+				(wenger)
+
+043 1/22/04	DONE	1	Add Eldon's chem shift reference visualization.
+				(elu/wenger)
+				(Done by wenger ?/?/?.)
+
+044 6/3/04	OPEN	4	Set things up so that the chem shift reference
+				calculation doesn't have to have its data
+				in the main data directory or a subdirectory
+				of it. (wenger)
+
+045 6/3/04	OPEN	4	Set things up so that s2d actually calls
+				chemShift via RPC or something, as opposed
+				to the file business we have now. (wenger)
+
+046 6/7/04	DONE	1	In Jafar, use only PDB IDs with >=97%
+				identity; still require 100% in NMR Browser.
+				(I think this is for both structures and
+				chem shift reference).  (elu/wenger)
+				(Done by wenger, 10/20/04.)
+
+047 6/9/04	OPEN	2	Incorporate more data from NMR-STAR files
+				(such as hydrogen exchange rates, hydrogen
+				exchange protection factor and S2 parameters).
+				(bmrb/wenger)
+
+048 6/9/04	DONE	2	Visualization of data from nucleic acids.
+				(bmrb/wenger)
+
+049 3/22/05	OPEN	2	Calculate Pistachio percentages based on
+				all C, H, N atoms in a given residue, not
+				just the ones we have chem shifts for.
+				(hamid/wenger)
+
+050 10/20/04	DONE	3	Make a test case with a file that has more
+				than one polymer (e.g., 4264). (wenger)
+
+051 12/7/04	OPEN	3	Find *and document* an entry that can be
+				used to test the "no real CB" features.
+				(wenger)
+
+052 12/27/04	OPEN	4	Put -nomail flag in CSR-only links generated
+				by do_csr 1. (wenger)
+
+053 12/30/04	OPEN	4	Add a warning to the summary page about not
+				all CSR stuff working. (wenger)
+
+054 1/19/05	OPEN	3	Test scripts should save output, etc., if
+				they fail. (wenger)
+
+055 1/19/05	OPEN	4	Put a pretty short timeout on contacting PDB
+				to check cache -- if the site is down, we
+				should re-use the cached files, maybe with a
+				warning. (miron/wenger)
+
+056 3/11/05	DONE	4	Constrain X selection cursor to be with
+				the destination view in all 3D visualizations.
+				(wenger)
+				(Done by wenger, 3/22/05.)
+
+057 4/24/07	DONE	1	Simplify UVD/vis_serv error messages (just
+				say something like "file cannot be parsed) --
+				at least until the error messages are more
+				understandable. (elu/wenger)
+				(Done by wenger, 5/9/07.)
+
+058 10/3/07	DONE	4	Have Osaka config set up to get PDB files
+				from pdbj. (wenger)
+
+059 10/8/07	DONE	2	Figure out NMR-STAR 3.1 problems -- files
+				are broken or Peptide-CGI code is wrong?
+				(See test1_3, test27_3, test49.) (wenger)
+
+060 10/9/07	OPEN	3	Improve error messages from chemical shift
+				reference calcuations. (schulte/wenger)
+
+061 12/5/07	OPEN	3	Use PDB files that are mirrored at BMRB
+				(see Dimitri's email of 2007-11-20). (wenger)
+
+062 12/6/07	OPEN	2	PDB now uses HA2/HA3 instead of HA1/HA2 for
+				GLY; see if this requires Peptide-CGI (and
+				ChemShift) changes. (wenger/dimitri)
+
+063 12/14/07	OPEN	3	Incorporate error messages from ChemShift,
+				molmol, and NMRPipe into s2d.out. (wenger)
+
+064 12/19/07	OPEN	3	Make a test for item 063. (wenger)
+
+065 2/11/08	DONE	1	After releasing the v5.9.0 JS client, remove
+				help links from Peptide-CGI-generated pages.
+				(wenger)
+
+066 2/22/08	OPEN	2	Update visualization help images to match
+				new JavaScreen. (wenger)
+
+067 2/22/08	DONE	5	Change colors of bars in DNA and RNA histogram
+				visualizations (so they aren't the same as
+				in the protein visualization). (wenger)
+				(Eldon says to not do this.)
+
+068 3/5/08	DONE	1	Change all references to drilling down from
+				shift-click to the appropriate toolbar usage.
+				(elu/wenger)
+				(Fixed by wenger, 3/5/08.)
+
+069 3/5/08	OPEN	3	Add residue and atom names to drill-down data
+				in the histogram visualizations. (elu/wenger)
+
+070 4/24/08	OPEN	2	Add T1rho to visualizations. (elu/wenger)
+
+071 4/26/08	OPEN	2	s2d.out, uvd.out, etc., should have an
+				indication of overall success or failure.
+				(wenger)
+
+072 6/12/08	DONE	3	Add NMR-STAR file version to detailed
+				info in visualizations. (wenger)
+				(Done by wenger, 3/10/10)
+
+073 6/12/08	FIXED	2	Add a check for all
+				_Atom_chem_shift.Assign_fig_of_merit values
+				being null, don't actually generate the
+				visualization if that's the case. (elu/wenger)
+				(Fixed by wenger, 6/17/08.)
+
+074 7/1/08	OPEN	3	Figure out a way to distinguish S2 data
+				sets in entries that have many of them.
+				(elu/wenger)
+
+075 6/23/08	DONE	2	(At least for uvd) have summary page and error
+				page have a link back to a copy of uvd.out,
+				and maybe the warning and error files.
+				(wenger)
+				(Done by wenger, 9/5/11.)
+
+076 9/19/08	DONE	3	Put "no Java" warnings into html pages (see
+				Scribble.html). (wenger)
+
+077 9/24/08	OPEN	3	Version info in CSR sessions should include
+				ChemShift version. (wenger)
+
+078 10/8/08	OPEN	3	"Standard" chemical shift value for CB in
+				CYS should be changed according to whether
+				the residue is in a disulfide bond (~41ppm)
+				or reduced (~28ppm). (elu/wenger)
+
+079 10/8/08	DONE	1	Put a comment in the visualization help
+				about the "standard" chemical shift value
+				for CB in CYS being based on it being in
+				a disulfide bond. (elu/wenger)
+				(Done by wenger, ?)
+
+080 10/14/08	OPEN	2	Add a new visualization that allows the user
+				to select any combination of amino acid/atom
+				(as in histograms) and visualizes chem shift
+				delta vs. residue num for that combination
+				for a single entry. (elu/wenger)
+
+081 10/14/08	OPEN	2	Add a link to the visualization summary
+				page that shows all AVS suspcious/anomalous
+				atoms.  (elu/wenger)
+
+082 10/14/08	OPEN	2	Highlight AVS suspicious/anomalous atoms
+				in the visualization for todo 080.  (elu/
+				wenger)
+
+083 8/11/08	OPEN	3	Split S2DMain into several smaller classes
+				to make it easier to understand. (wenger)
+
+084 11/17/08	OPEN	3	Change entity assembly ID integers to
+				names in summary page and individual
+				visualization pages. (elu/wenger)
+
+085 7/30/08	OPEN	3	Remove duplicate instances of $Residue_seq_code
+				from some mappings in the atom_coord_jmol.base
+				session template (to avoid sending more GData
+				than we really need to). (wenger)
+
+086 11/19/08	OPEN	3	Add a test with entry 5084 (has multiple
+				proteins, with different PDBs for each one).
+				(wenger)
+
+087 11/19/08	OPEN	3	Make sure I'm correctly testing for model 1
+				of coordinates in mmCIF files. (wenger)
+
+088 12/17/08	DONE	3	Add the residue amino acid code (one-letter
+				or three-letter?) to the data for the delta
+				shift, etc., visualizations (so it shows up
+				when drilling down). (wenger)
+				(Done by wenger, 2/25/09.)
+
+089 3/10/09	OPEN	4	Use PDB IDs for coordinates if the BMRB
+				sequence is any subset of the PDB sequence
+				(instead of the sequence lengths having
+				to match exactly). (See 15603/2K1G.) (wenger)
+
+090 4/15/09	OPEN	4	Summary HTML page should have protein/DNA/
+				RNA/etc for the entity assemblies. (wenger)
+
+091 4/25/09	DONE	4	Add Peptide-CGI version history link to
+				summary pages. (wenger)
+				(Done by wenger, 12/10/09.)
+
+092 5/7/09	DONE	3	Add a button or link on the summary page
+				that forces reprocessing of the entry.
+				(wenger)
+				(Done by wenger, 5/11/09.)
+
+093 5/19/09	DONE	3	Derive Atom_type values in chemical shift
+				save frames (and others?) if only the
+				Atom_ID values exist.  (See test_data/
+				swordfish_20090519_82287.str.) (wenger/elu)
+				(Done by wenger, 7/20/09.)
+
+094 5/20/09	OPEN	3	Add log messages that more clearly indicate
+				why processing of certain save frames was
+				skipped (maybe have some standard language,
+				like "Save frame (xxx) skipped: xxx".
+				(wenger)
+
+095 6/17/09	OPEN	2	Add robots.txt files to appropriate html
+				directories. (wenger)
+
+096 6/17/09	DONE	3	Remove unused views and links in 3D
+				sessions (probably left over from pre-Jmol,
+				pre-selection tree versions). (wenger)
+				(Done by wenger, 6/18/09.)
+
+097 6/25/09	OPEN	3	Add link to original entry to summary
+				html page and specific html pages. (elu/
+				wenger)
+
+098 8/28/09	DONE	1	Add a PDB (really mmCIF) file command-line
+				argument. (dmaziuk/wenger)
+				(Done by wenger, 12/10/09.)
+
+099 9/15/09	DONE	2	Include the google analytics script in
+				visualization summary pages. (elu/wenger)
+				(Done by wenger, 9/17/09.)
+
+100 11/24/09	OPEN	3	For entries for which no CSI visualizations are generated
+				(e.g., 6311) add a note to the summary page saying why.
+				(elu/wenger)
+
+101 11/17/09	DONE	2	Enable torsion angle restraint visualizations
+				for PDB entries that have no assocated
+				BMRB entry. (elu/wenger)
+
+102 12/5/09	DONE?	1	Deal correctly with torsion angle files that
+				have more than one save frame of torsion
+				angle restraints (see 4310/1CKK)
+
+103 12/8/09	DONE	1	Add links to JavaScreen videos to the
+				summary pages (and maybe the individual
+				visualization pages). (elu/wenger)
+				(Done by wenger, 12/10/09.)
+
+104 12/8/09	DUP	1	Add a PDB file argument. (dmaziuk/wenger)
+				(Done by wenger, 12/10/09.)
+
+105 1/5/10	ACTIVE	1	Get distance restraint visualizations
+				working. (elu/wenger)
+
+106 1/5/10	DONE	2	Produce "PDB-only" interface to generate
+				restraint visualizations. (elu/wenger)
+
+107 1/5/10	DONE	1	Get distance restraints working with both
+				the remediated restraint files (from
+				http://www.bmrb.wisc.edu/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/all/nmr-star...)
+				and the data from the restraint grid.
+				(elu/wenger)
+
+108 1/5/10	DONE	1	Get the torsion angle restraints working
+				with the remediated restraint files in
+				addition to the files from the restraint
+				grid it already uses. (elu/wenger)
+				(Done by wenger, 2/11/10.)
+
+109 1/6/10	DONE	2	Change html pages to use the non-embedded
+				JavaScreen (JSA) so we can allow resizing.
+				(elu/wenger)
+
+110 1/19/10	OPEN	1	"PDB-only" processing should pull in data
+				from related BMRB entry(s), if possible
+				(elu/wenger)
+
+111 1/22/10	ACTIVE	3	Add make_view and make_uvd tests to test_all
+				(wenger)
+
+112 1/22/10	OPEN	3	Change tests to not create "non-standard"
+				output for BMRB entries (so running the
+				tests in the "real" CGI directory doesn't
+				goof things up. (wenger)  (Hmm -- how will
+				that work with some of the pre-release
+				tests that rely on the "non-standard" output?
+				Maybe allow a test name to be passed
+				to make_view??
+
+113 1/22/10	DONE	4	Change PDB ID of "none" to "internal" (or
+				something else) for 4096 summary page.
+				(wenger)
+				(Done by wenger, 11/24/10.)
+
+114 2/2/10	DONE	1	Add note about violoations being determined
+				by CING. (elu/wenger)
+				(Done by wenger, 2/4/10.)
+
+115 2/2/10	OPEN	3	Be able to deal with multiple chem shift
+				values for a single atom (for the same
+				entity assembly ID, etc.).  (Take highest
+				value for figure of merit; not sure what to
+				do about actual chem shift values.) (elu/
+				wenger)
+
+116 2/2/10	NLR	5	Get SPARTA working cross-version ("main"
+				entry file is 2.1 & SPARTA file is 3.x or
+				vice-versa). (dmaziuk/wenger)
+				(Working around this with multiple NMR-STAR
+				file paths -- see #126).
+
+117 2/2/10	DONE	2	Get SPARTA working for multiple entity
+				assembly IDs (needs example). (dmaziuk/elu/
+				wenger)
+				(Done by wenger, 2/19/10.)
+
+118 2/2/10	DONE	2	Get SPARTA working properly for entries
+				with multiple sets of chemical shifts (e.g.,
+				4001). (dmaziuk/elu/wenger)
+				(Done by wenger, 2/19/10.)
+
+119 2/2/10	DONE	2	Visualization server should provide the user
+				more info if processing fails (maybe echo
+				the uvd.out or the error file). (elu/wenger)
+				(See also 075.)
+
+120 2/2/10	OPEN	4	Visualization server should give the user
+				an option (via a button?) to reprocess with
+				higher verbosity if processing fails.
+				(wenger)
+
+121 2/2/10	DONE	1	Add note about violoations being determined
+				by CING. (elu/wenger)
+				(Done by wenger, 2/4/10.)
+				(Duplicate of 114.)
+
+122 2/5/10	DONE	1	Combine PDB IDs that are the same except
+				for case. (elu/wenger)
+				(Done by wenger, 2/5/10.)
+				(This was originally 115; changed in
+				merge.)
+
+123 2/18/10	OPEN	2	Deal with separate chemical shift lists
+				in the same save frame (distinguished by
+				_Atom_chem_shift.Assigned_chem_shift_list_ID
+				value.  (Maybe make a modified version
+				of bmr11030_3.str to test).  (wenger/elu)
+
+124 2/18/10	OPEN	2	S2DUtils.selectMatches() actually returns
+				a one element array with an element of ""
+				if there are no matches.  I don't think
+				this is so good, because it's kind of
+				ambiguous -- maybe it should either return
+				null or throw an exception if there are
+				no matches (but either case requires lots
+				of changes to other parts of the code).
+				(wenger)  (Hmm -- maybe make a new subclass
+				of S2DException to throw in this case.)
+
+125 2/23/10	DONE	1	Add -pdb_file, -lacs_file, and -sparta_file
+				support to the make_uvd script.
+				(dmaziuk/wenger)
+				(Done by wenger, 3/9/10.)
+
+126 3/2/10	DONE	1	Add the ability to specify multiple paths
+				in STAR_URL (for 3.1 and 2.1 paths, so we
+				can do SPARTA processing with 3.1 files).
+				(dmaziuk/wenger)
+				(Done by wenger, 3/11/10.)
+
+127 3/15/10	OPEN	2	Add accepting X for a residue in the
+				one-letter residue list, and something
+				corresponding (XXX?) in the three-letter
+				list. (dmaziuk/wenger)
+
+128 3/16/10	OPEN	2	Add a note to the summary html page if no
+				SPARTA visualizations are available. (wenger)
+
+126 4/7/10	OPEN	2	Add selection by type of distance restraint
+				(NOE, hydrogen bond, etc.) to distance
+				restraint visualizations. (elu/wenger)
+
+127 4/8/10	DONE	1	Default to wireframe in Jmol for restraint
+				visualizations. (elu/wenger)
+				(Done by wenger in JavaScreen 5.13.0.)
+
+128 4/8/10	DONE	1	Change 'protons' to 'side chain protons'
+				in 3D selection tree. (elu/wenger)
+				(Done by wenger in JavaScreen 5.13.0.)
+
+129 4/8/10	OPEN	1	Add a note that amid and alpha protons are
+				included in 'backbone'. (elu/wenger)
+
+130 4/8/10	OPEN	3	Add capability to step thru models in 3D
+				visualizations (neuhaus/elu/wenger)
+
+131 4/8/10	OPEN	3	Add a command to our Jmol menu to turn on
+				semi-transparent ribbons for the whole
+				molecule (but still show atoms). (neuhaus/
+				elu/wenger)
+
+132 4/20/10	DONE	1	Add links back to the summary page from
+				each individual visualization page. (wenger)
+				(Done by wenger, 6/1/10.)
+
+133 4/22/10	DONE	2	Make the distance restraint visualizations
+				work for PDB-only data (like the torsion
+				angle restraints). (wenger)
+				(Done by wenger, ?/?/10.)
+
+134 4/23/10	OPEN	2	Update structure selection window image and
+				Jmol menu images in help pages to match
+				the current JS client version. (wenger)
+
+135 4/23/10	OPEN	3	For restraints with pseudoatoms, draw
+				the restraint to the pseudoatom location
+				instead of drawing a line to each possible
+				"real" atom. (elu/wenger)
+
+136 5/18/10	DONE	1	Be able to easily switch to related
+				visualizations within the JavaScreen.
+				(elu/wenger)
+				(Done by wenger, ?/?/10.)
+
+137 6/10/10	DONE	1	Make session switching work for the
+				visualization server (requires DEVise
+				changes). (elu/wenger)
+				(Done by wenger, 8/10/10)
+
+138 6/29/10	OPEN	4	Treat "?" as 0.0 (in some cases, anyhow)
+				(like we do now with "."). (wenger)
+
+139 7/2/10	DONE	2	Avoid sending error emails if torsion angle
+				or distance restraint save frames are not
+				found in remediated restraints file.
+				(wenger)
+				(Done by wenger, 1/6/12)
+
+140 7/9/10	OPEN	3	Have visualization help accessed via the
+				JS rather than via a link in the html page,
+				so it can be updated when you change
+				sessions in the JS (probably something in
+				the session file would have to specify the
+				help page, with a "base" from the document
+				root or something).  (This would obviously
+				also take JS changes.) (wenger)
+
+141 7/27/10	DONE	1	Add JavaScreen command port to the Peptide-
+				CGI configuration, so I can easily set up
+				an installation that uses the test JSPoP
+				at CS. (wenger)
+				(Done by wenger, 7/29/10, on
+				fix_3d_cursor_br)
+
+142 7/27/10	OPEN	1	Set up BMRB examples for the JavaScreen
+				examples page that are not affected by
+				"normal" Peptide-CGI processing.  (Note
+				that I'll need separate schema files.)
+				It should be reasonably easy to update the
+				examples as Peptide-CGI changes -- maybe
+				give a special name when processing.
+				(wenger)
+
+143 7/29/10	OPEN	4	Add a prefix to all generated files for
+				the "test" setup, so it and the "normal"
+				setup can co-exist peacefully on teal.
+				(wenger)
+
+144 8/3/10	OPEN	1	Heteronuclear NOEs in 3.1 files need to be
+				split out by _Heteronucl_NOE.Atom_ID_1 and
+				_Heteronucl_NOE.Atom_ID_2 values (each
+				_Heteronucl_NOE.Atom_ID_1/
+				_Heteronucl_NOE.Atom_ID_2 pair, order not
+				significant, should be a separate
+				visualization).  Note: in 2.1, different
+				pairs are in separate save frames.
+				(elu/wenger)  (Note: 4267 has some NOEs that
+				are N/H, and some that hare NE1/HE1, but
+				the 3.1 file I have has them all in separate
+				save frames.  I guess I could combine them
+				for testing.)
+
+145 8/6/10	DUP	3	Change "none" to "internal" (or something
+				else) for 4096 coordinates visualization.
+				(wenger)
+
+146 8/16/10	DONE	1	Be able to select distance restraints based
+				on the magnitude of the violation.
+				(elu/wenger)
+				(Done by wenger, 11/22/10.)
+
+147 8/17/10	OPEN	2	Check that BMRB residue numbers and PDB/
+				coordinate residue numbers are matched
+				property (do we have to use *author* number
+				for the link?).  (wenger)
+
+148 9/1/10	OPEN	4	Make use of the _Entity_assembly.PDB_chain_ID
+				in NMR-STAR 3.1 files to make sure we
+				coordinate entity assembly IDs correctly
+				with coordindate data. (wenger)
+
+149 9/1/10	DONE?	2	Provide a better interface for entries with
+				multiple sets of chemical shift values (e.g.,
+				different sample conditions), especially
+				in the 3D visualizations. (elu/wenger)
+				(At least partially done by wenger, 10/29/10)
+
+150 10/15/10	DONE	1	Add logging of how long each invocation of
+				Peptide-CGI takes, and whether it used the
+				cache. (miron/wenger)
+				(Done by wenger, 12/7/10)
+
+151 11/1/10	OPEN	1	Check whether 'whitespace' should be changed					to 'separator' in schema files to prevent
+				quotes issue. (wenger)
+
+152 11/23/10	OPEN	4	Change distance restraint colors to avoid
+				conflict with Jmol beta strands (see 10 Nov
+				2010 email from Gabriel Cornilescu).
+				(gabrielc/wenger)
+
+153 12/10/10	OPEN	4	Add chemical shift values to the coordinate
+				data so the user can see chemical shifts
+				if they drill down on an atom. (wenger)
+
+154 12/17/10	DONE	1	Add restraint color legend to distance
+				restraint visualizations. (wenger/elu)
+				(Done by wenger, 9/12/11)
+
+155 1/10/11	DONE	1	As part of the install process, touch
+				tmp/s2d.log and set the permissions to
+				666. (wenger)
+				(Done by wenger, 9/13/11)
+
+156 2/1/11	DONE	2	Add a legend to the LACS visualizations
+				noting the difference between red and
+				yellow data points. (wenger)
+				(Done by wenger, 9/12/11)
+
+157 6/23/11	OPEN	3	In two-entry visualizations, add a connection
+				between the dots representing the same two
+				atoms in the two entries (if the entries
+				correspond closely enough). (hongyang/wenger)
+
+158 6/23/11	OPEN	3	In two-entry visualizations, add some kind
+				of selection on the differences between
+				the same two atoms in the different entries
+				(see also #157). (hongyang/wenger)
+
+159 8/9/11	OPEN	4	Make use of Java enums. (wenger)
+
+160 10/17/11	OPEN	1	Update help for S2 predicted vs. experimental
+				to include info about movies. (wenger)
+
+161 10/20/11	DONE	2	Get secondoary structure for S2 predicted vs.
+				experimental visualization from DSSP, not
+				chem shift ref (see
+				http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/dssp/).
+				(elu/wenger)
+				(Done by wenger, 10/31/11)
+
+162 3/7/12	DONE	3	Change summary page menus so that the
+				visualization page is brought up as soon
+				as the user makes a selection in the menu,
+				and get rid of the 'Visualize in DEVise'
+				button. (elu/wenger)
+				(Done by wenger, ?.)
+
+163 10/23/12	OPEN	1	Change header div to match the new version
+				in Dimitri's page. (wenger)
+
+164 10/23/12	~DONE	4	Rationalize the way the html files are in
+				CVS (match the way they're installed so
+				links, etc., are simpler to set up).  (E.g.,
+				have html2/devise/peptide-cgi in CVS, etc.)
+				(wenger)
+				(Mostly done by wenger, 10/24/12.)
+
+165 10/25/12	DUP	3	Add the wwPDB logo to Peptide-CGI pages.
+
+166 10/26/12	OPEN	2	Create a getting started guide (for the
+				whole visualization system, not just the
+				JavaScreen).  Probably HTML-based, with
+				lots of screen shots.  Should cover various
+				ways of getting to entries (histograms,
+				search, etc.) (wenger)
+
+167 10/26/12	~DONE	2	Validate all pages (including samples of
+				automatically-generated ones) (probably
+				use http://validator.w3.org). (wenger)
+				(Mostly done by wenger, 2/3/14.)
+
+168 11/13/12	OPEN	3	Change tables to divs in the visualization
+				section of the home page. (wenger)
+
+169 11/13/12	OPEN	2	Clean up the html (e.g., remove deprecated
+				<center> tags). (name is also deprecated)
+				(broman/wenger)
+
+170 11/13/12	DUP	2	Validate the Peptide-CGI html. (wenger)
+				(Duplicate of 167.)
+
+171 11/13/12	DONE?	2	Add BMRB/wwPDB header to all pages. (wenger)
+				(Done by wenger, 11/16/12.)
+
+172 11/13/12	OPEN	4	Individual pages for the example
+				visualizations that explain how they work.
+				(miron/wenger)
+
+173 11/13/12	OPEN	4	Better thumbnails (especially 1H-15N, etc.).
+				(eldon/wenger)
+
+174 11/14/12	OPEN	3	Make images on selection pages link to
+				actual example visualizations. (wenger)
+
+175 11/14/12	OPEN	2	Use a template for visualization summary
+				pages. (wenger)
+
+176 11/14/12	~DONE	1	Individual visualization pages should have
+				links to selection pages and a form to
+				enter an accession number (elu/wenger)
+				(Mostly done by wenger, 11/15/12.)
+
+177 11/15/12	DONE	3	Get down to only one copy of the BMRB
+				logo in CVS. (wenger)
+				(Done by wenger, 11/19/12.)
+
+178 11/19/12	OPEN	4	Have the install script work from the dist
+				directory -- that way everything would be
+				consistent. (wenger)
+
+179 11/21/12	OPEN	3	Put new BMRB/wwPDB header in
+				dynamics_movie_demo.html. (wenger)
+
+180 12/4/12	DONE	2	Get remediated restraints  files from the
+				"divided" section (needs a way for config
+				to specify the two middle chars of the ID).
+				(dmaziuk/wenger)
+				(Done by wenger, 12/4/12.)
+
+181 12/10/12	DONE	3	Merge the Jmol and non-Jmol visualization
+				page templates. (wenger)
+				(Done by wenger, 3/14/13)
+
+182 12/11/12	DONE	1	Turn off chem shift reference visualizations.
+				(elu/wenger)
+				(Done by wenger, 12/12/12.)
+
+183 12/11/12	DONE	1	Remove chem shift reference visualizations
+				from example page. (elu/wenger)
+				(Done by wenger, 12/12/12.)
+
+184 12/11/12	DONE	3	Remove chem shift reference-related stuff
+				from automated tests. (wenger)
+				(Done by wenger, 12/12/12.)
+
+185 12/11/12	OPEN	2	Update Peptide-CGI for LACS changes.
+				(dmaziuk/wenger)
+				(See bmr4998_LACS.str)
+
+186 12/11/12	OPEN	3	Remove chem shift reference-related stuff
+				from generate_examples. (wenger)
+
+187 12/17/12	OPEN	4	Make the "You don't have Java enabled"
+				warning a lot more prominent (maybe red?).
+				(wenger)
+
+188 1/10/13	OPEN	2	Clean up the temporary histogram changes
+				(that get drill-down links to work) as
+				soon as the permanent fix is in place.
+				(wenger)
+				(All html files in html2/devise; changes
+				to links in histograms/index.html and
+				vis_examples/vis_examples_all.tmpl.)
+
+189 1/29/13	OPEN	3	Incorporate visualizations.html (from
+				the BMRB home page) into Peptide-CGI.
+				(wenger/dmaziuk)
+
+190 3/6/13	DONE	2	Somehow make it more obvious that you
+				need to make a selection in one of the
+				menus on the visualization summary page
+				to actually see a visualization. (wenger)
+				(Done by wenger, 3/14/13)
+
+191 10/2/13	DONE	1	Add a view with the sequence (single letters)
+				plus X axis to the H/N and H/C simulated
+				spectra visualizations; cursor in the new
+				view should allow selection of a residue
+				(or residues?) which would be highlighted
+				in the main view.  (How would that
+				highlighting work w/ the existing
+				highlighting?) (gabriel/elu/wenger)
+				(What about two-entry visualizations?)
+				(151030:  This is done for single-entry
+				visualizations (s2d_todo191_br_1) but not
+				for two-entry visualizations.)
+
+192 10/8/13	DONE	1	Maybe move the chem shifts section to
+				the top left of visualization summary
+				pages. (gabriel/elu/wenger)
+				(Done by wenger, 10/9/13)
+
+193 10/8/13	NLR	1	Make a 'minimum required information for
+				the vis server' test.  Probably grab the
+				tablegen example linked from the vis
+				server page.  (wenger)
+				(See test_min_2_1 and test_min_3_0;
+				tablegen.str needs mods by Dimitri's
+				interface to work.)
+
+194 10/9/13	DONE	1	Disable thumbnail expansion in html
+				pages. (elu/wenger)
+				(Done by wenger, 10/9/13)
+
+195 10/9/13	DONE	1	Make text boxes on visualization summary
+				page all the same height(?). (elu/wenger)
+				(Done by wenger, 10/11/13)
+
+196 10/17/13	DONE	1	Get Java applet signed (Java security warning
+				says unsigned apps will be blocked in the
+				future). (wenger)
+				(See design_doc/todo196)
+				(Done by wenger, 12/16/13)
+
+197 10/17/13	OPEN	2	Have help pages for the histogram
+				visualizations. (wenger)
+
+198 12/5/13	DONE	2	Replace "applet" with "object" in html
+				pages using the JavaScreen. (wenger)
+				(Done by wenger, 1/3/14)
+
+199 1/24/14	DONE	1	Improve error message for invalid accession
+				number. (elu/wenger)
+				(Done by wenger, 1/29/14)
+
+200 1/24/14	OPEN	4	Put all exceptions into a stack and then
+				print them in reverse order at the end.
+				(So top-level message is printed first.)
+				(wenger)
+
+201 3/27/14	DONE	1	Add info about secondary structures being
+				calculated to DSSP to the experimental vs.
+				calculated order param visualizations.
+				(elu/wenger)
+				(Done by wenger, 140328)
+
+202 3/27/14	OPEN	2	Peptide-CGI changes to match JavaScreen
+				to-do 12.004 (better port number config).
+				(wenger)
+
+203 4/11/14	OPEN	3	Deal with atom assignments like this:
+				{25.HA 26.HA} in NMRView peak lists
+				(see bmr16943_3.str.with-peaklist).
+				(wenger)
+
+204 5/8/14	OPEN	3	Clean up how we use exceptions (for example,
+				maybe add an S2DFatalError that shouldn't
+				be caught). (wenger)
+
+205 5/8/14	DONE	1	Change dynamics visualizations to use
+				pre-generated movies with single selected
+				residues (example URL:
+				http://144.92.217.22/download.php?key=1D2B_devise_1)
+				(last 1 is selected residue).
+				(wenger)
+				(Done by wenger, ?/?/14)
+
+206 5/8/14	DONE	1	Generate a fatal error in peak list processing
+				if a single save frame has multiple sets
+				of peaks. (wenger)
+				(Done by wenger, 5/8/14)
+
+207 6/9/14	DONE	1	In peak list processing, create _Spectral_dim
+				loop if possible if it doesn't exist.
+				(elu/wenger)
+				(Done by wenger, 7/29/14)
+
+208 6/25/14	OPEN	2	Add info about dynamics movies to
+				help_s2p.html (or maybe a special version
+				for the movie visualizations?). (wenger)
+
+209 7/8/14	OPEN	1	Add message about Java not working on
+				Mac Snow Leopard. (wedell/wenger)
+
+210 11/4/14	DONE	1	Process peak lists that don't have height/
+				volume (see 15063/test_peak22). (elu/wenger)
+				(Done by wenger, 11/23/14)
+
+211 11/24/14	DONE	2	Re-order data so that the most important
+				data shows up first in drill-down (e.g.,
+				chem shifts for simulated HSQC spectra).
+				(gabrielc/wenger)
+				(Done by wenger, 3/4/15)
+
+212 12/1/14	DONE	2	Set up test installation at CS to use
+				a different set of schema files than
+				the regular installation uses. (wenger)
+				(Also see DEVise/JS to-do 13.011.)
+				(Done by wenger, 12/30/14)
+
+213 12/4/14	OPEN	3	In two-entry simulated spectrum
+				visualizations, be able to drag on spectrum
+				relative to the other to manually align
+				them.  (Also see DEVise/JS to-do 09.035.)
+				(wlee44/wenger)
+
+214 12/12/14	OPEN	3	Change HvsN, HvsC visualizations to use
+				non-prototype schemas (probably after
+				implementing 212). (wenger)
+
+215 12/15/14	OPEN	3	Add checks to tests to make sure the entry
+				ID from the session templates doesn't exist
+				in the output sessions. (wenger)
+
+216 12/17/14	OPEN	2	Add residue sequence view to two-entry
+				visualizations (also see 191). (wenger)
+
+217 4/14/15	OPEN	4	Change visualization backgrounds to white
+				for a more modern look. (wenger)
+
+218 4/30/15	OPEN	2	Peptide-CGI should get port #, CGI script
+				path, etc., for the html files it generates
+				from a template installed as part of the
+				DEVise/JavaScreen installation. (wenger)
+
+219 5/13/15	OPEN	1	Have the Peptide-CGI install link all
+				of the JavaScreen client-side files into
+				a known location within the Peptide-CGI
+				directory tree (the JavaScreen client
+				install location would have to be part of
+				the Peptide-CGI config). (wenger)
+
+220 1/29/16	OPEN	4	Change directory setup so that visualization
+				server ID is only in the link string once.
+				(hongyang/wenger)
+
+* Status:
+OPEN = item has not yet been addressed
+ACTIVE = item is being addressed
+DONE = item has been fully addressed
+WORK = workaround for item in place
+DUP = duplicate of another item
+NLR = no longer relevant
+POST = postponed
+
+* Priority:
+? = not yet prioritized
+1 = must be done soon
+2 = must be done
+3 = should be done
+4 = maybe should be done
+5 = should not be done

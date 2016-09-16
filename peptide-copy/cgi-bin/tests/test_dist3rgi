@@ -1,0 +1,37 @@
+#! /bin/csh -f
+
+# Test restraints using restraint grid data.  2oqs has data for two
+# entity assemblies.
+
+set result = 0
+
+rm -r -f */15209*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 15209 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out1
+
+echo -n "Processing mmCIF and distance restraints: "
+./s2d -nomail -bmrbid 15209 -pdbid 2oqs -coord_index 1 -force \
+  -do_dist 3 -check_res_list -check_pct
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+source tests/test_dist3rg_check
+
+
+echo -n "Test_dist3rgi result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

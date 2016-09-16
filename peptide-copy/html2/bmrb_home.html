@@ -1,0 +1,494 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en_us"><head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta http-equiv="refresh" content="84400">
+    <title>BMRB - Biological Magnetic Resonance Bank</title>
+    <link rel="stylesheet" type="text/css" href="bmrb_home_files/newmain.css" title="stylesheet">
+<!--    <link type="text/css" href="/stylesheets/jquery-ui/smoothness/jquery-ui-1.8.23.custom.css" rel="stylesheet"> -->
+    <script type="text/javascript" src="bmrb_home_files/jquery.js"></script>
+<!--    <script type="text/javascript" src="/includes/jquery-ui.js"></script> -->
+    <script type="text/javascript" src="bmrb_home_files/random_molecule.js"></script>
+    <script type="text/javascript" src="bmrb_home_files/expanding_menu.js"></script>
+    <script type="text/javascript">
+/*
+        $( function() {
+	    $( ".rndbox" ).draggable({ disabled: false });
+	});
+*/
+        function resize_boxes() {
+
+            if( $( "#devise" ).height() > $( "#datalist" ).height() )
+                $( "#datalist" ).height( $( "#devise" ).height() );
+            else
+                $( "#devise" ).height( $( "#datalist" ).height() );
+
+            if( $( "#searchbox" ).width() > $( "#devise" ).width() )
+                $( "#devise" ).width( $( "#searchbox" ).width() );
+            else
+                $( "#searchbox" ).width( $( "#devise" ).width() );
+
+            if( $( "#serverlist" ).width() > $( "#datalist" ).width() )
+                $( "#datalist" ).width( $( "#serverlist" ).width() );
+            else
+                $( "#serverlist" ).width( $( "#datalist" ).width() );
+
+            if( $( "#searchbox" ).height() > $( "#serverlist" ).height() )
+                $( "#serverlist" ).height( $( "#searchbox" ).height() );
+            else
+                $( "#searchbox" ).height( $( "#serverlist" ).height() );
+
+            $( "#events" ).width( $( "#searchbox" ).outerWidth() + $( "#serverlist" ).outerWidth() 
+                - ( $( "#serverlist" ).outerWidth( true ) - $( "#serverlist" ).outerWidth() ) );
+
+            $( "#collab" ).width( $( "#searchbox" ).outerWidth() + $( "#serverlist" ).outerWidth() 
+                - ( $( "#serverlist" ).outerWidth( true ) - $( "#serverlist" ).outerWidth() ) );
+        }
+
+        $( window ).load( function() {
+            resize_boxes();
+        } );
+        $( window ).resize( function() {
+            resize_boxes();
+        } );
+    </script>
+
+</head>
+
+<body>
+    <div id="wrapper">
+    <!-- requires stylesheets/newmain.css -->
+<table class="header" cellpadding="10px" cellspacing="0">
+    <tbody><tr>
+        <td style="text-align: left;">
+            <a href="http://manatee.bmrb.wisc.edu/"><img src="bmrb_home_files/logo.png" style="margin-left: 2em;" alt="BMRB" title="BMRB homepage" height="60" width="56"></a>
+        </td>
+        <td class="center">
+          <h2 style="font-style: italic; margin-bottom: 0;">Biological Magnetic Resonance Data Bank</h2><br>
+          <span style="font-style: italic;">A Repository for Data from NMR Spectroscopy on Proteins,
+          Peptides, Nucleic Acids, and other Biomolecules</span>
+        </td>
+
+        <td class="right">
+            <a href="http://www.wwpdb.org/" target="_blank" class="right" style="padding-right: 2em;">
+                <img src="bmrb_home_files/wwpdb.png" alt="WWPDB" title="World Wide Protein Data Bank" height="60" width="183">
+            </a>
+        </td>
+    </tr>
+</tbody></table>
+
+
+    <table class="content" cellpadding="0" cellspacing="0">
+        <tbody><tr>
+            <td id="leftcol" rowspan="55"><a href="http://manatee.bmrb.wisc.edu/featuredSys/calmodulin/"><img src="bmrb_home_files/trans_bg_272w.png" alt="calmodulin" title="featured molecule" style="margin-bottom: 1em;" border="0" height="167" width="191"></a>
+
+            <!--
+ -- navigation menu
+ -- requires stylesheets/newmain.css and includes/expanding_menu.js
+ -->
+
+<div id="googlesearch">
+    <form method="get" action="http://www.google.com/u/BMRB">
+        <fieldset style="border: 0;"> <!-- <legend></legend> -->
+            <input name="q" size="20" maxlength="255" type="text">
+            <input name="domains" value="www.bmrb.wisc.edu" type="hidden">
+            <input name="sitesearch" value="www.bmrb.wisc.edu" type="hidden">
+            <br>
+            <input name="sa" value="Google search" type="submit">
+        </fieldset>
+    </form>
+</div>
+
+<div class="sidemenu"><span class="expandingHeader NotSelected" title="BMRB">
+    Home</span>
+<ul style="display: none;" class="expandingBody submenu"> <!-- style="display: none;"> -->
+    <li><a href="http://manatee.bmrb.wisc.edu/" title="BMRB homepage">Main page</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/bmrb/news/" title="BMRB news">News</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/bmrb/news/funding2014.html" title="BMRB funding crisis">Funding Cuts and<br>US Biological Database<br>Infrastructure</a></li>
+    <li><a href="https://lists.bmrb.wisc.edu/" title="BMRB list server">Mailing list</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/bmrb/about/" title="about BMRB">About BMRB</a></li>
+</ul>
+</div>
+
+<div class="sidemenu"><span class="expandingHeader NotSelected" title="Search BMRB">
+    Search</span>
+<ul style="display: none;" class="expandingBody submenu"> <!-- style="display: none;"> -- this way it'll still be accessible with javascript disabled -->
+    <li><a href="http://manatee.bmrb.wisc.edu/search/" title="BMRB search page">Search Archive</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/search/query_grid/initial_grid.html">Query Grid Interface</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/cgi-bin/nmrbrowse.cgi">NMR Browser</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/data_access/fasta.html">FASTA search</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/data_library/newlist.html">New Entries</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/data_library/onhold.html">Entries on Hold</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/data_library/timedomain/">NMR Time-domain Data</a></li>
+    <li><a href="http://restraintsgrid.bmrb.wisc.edu/">NMR Restraints from PDB MR Files</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/search/rela_database.html">Relational Tables</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/data_library/Diseases/">Entries relating to human diseases</a></li>
+</ul>
+</div>
+
+<div class="sidemenu"><span class="expandingHeader NotSelected" title="data validation tools">
+    Validation Tools</span>
+<ul style="display: none;" class="expandingBody submenu"> <!-- style="display: none;"> -->
+    <li><a href="http://manatee.bmrb.wisc.edu/validate/" title="validation tools">Validation Tools</a></li>
+    <li><a href="http://deposit.bmrb.wisc.edu/cgi-bin/bmrb-adit/standalone-shift-coord" target="_blank">Chemical Shift vs Coordinate nomenclature check</a></li>
+    <li><a href="http://psvs-1_3.nesg.org/" target="_blank">Protein Structure Validation Suite (PSVS)</a></li>
+    <li><a href="https://nmr.cmbi.ru.nl/icing/iCing.html#file" target="_blank">iCing Validation Package</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/vis_serv/">Visualization server</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/software/lacs/">LACS report generator</a></li>
+    <li><a href="http://checkshift.services.came.sbg.ac.at/" target="_blank">CheckShift</a></li>
+</ul>
+</div>
+
+<div class="sidemenu"><span class="expandingHeader NotSelected" title="data deposition tools">
+    Deposit Data</span>
+<ul style="display: none;" class="expandingBody submenu"> <!-- style="display: none;"> -->
+    <li><a href="http://manatee.bmrb.wisc.edu/deposit/" title="data deposition systems">Deposit Data</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/bmrb/about/data_accepted.html">Data Accepted</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/adit-nmr/" title="ADIT-NMR data deposition system">ADIT-NMR</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/deposit/adit_overview/">Overview of ADIT-NMR</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/smsdep/">SMSDep</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/smsdep/docs/SMSDep-about.html">Overview of SMSDep</a></li>
+    <li><a href="http://deposit.bmrb.wisc.edu/cgi-bin/bmrb-adit/standalone-shift-coord">Chemical Shift vs Coordinate nomenclature check</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/software/starch/">STARch</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/tools/index.html#Formatting">NMR-STAR Template Generators</a></li>
+</ul>
+</div>
+
+<div class="sidemenu"><span class="notExpandingHeader">
+    <a href="http://manatee.bmrb.wisc.edu/ref_info/" title="BMRB Database statistics">NMR Statistics</a></span>
+</div>
+
+<div class="sidemenu"><span class="expandingHeader NotSelected" title="tools for NMR spectroscopists">
+    Spectroscopists' Corner</span>
+<ul style="display: none;" class="expandingBody submenu"> <!-- style="display: none;"> -->
+    <li><a href="http://manatee.bmrb.wisc.edu/tools/" title="tools for NMR spectroscopists">Spectroscopists' Corner</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/published/">Published studies utilizing the BMRB database</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/tools/#StandardRepres">Defined Standards</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/tools/#ExperimentalStandards">Experimentally Determined Standards</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/tools/#Experiments">NMR Experiments</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/tools/#Software">NMR Software</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/software/wishart/">Wishart Research Group webservers</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/www/software.html">Academic and commercial software</a></li>
+</ul>
+</div>
+
+<div class="sidemenu"><span class="expandingHeader NotSelected" title="inforamtion for programmers">
+    Programmers' Corner</span>
+<ul style="display: none;" class="expandingBody submenu"> <!-- style="display: none;"> -->
+    <li><a href="http://manatee.bmrb.wisc.edu/tools/prog_corner.html" title="tools for programmers">Programmers' Corner</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/deposit/#pulsesub" title="submission procedure for adding pulse programs and macros to BMRB">
+        Submitting pulse programs</a></li>
+    <li><a href="http://code.google.com/p/pystarlib/" title="a Python interface to NMR-STAR and mmCIF file" target="_blank">
+        Pystarlib</a></li>
+    <li><a href="https://octopus.bmrb.wisc.edu/svn/starlib2/" title="C++ STAR/CIF parser library similar to DOM">
+        Starlib</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/ftp/pub/bmrb/software/bmrb/starlibj_with_source.jar" title="Java STAR/CIF parser library similar to DOM">
+        Starlibj.jar</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/ftp/pub/bmrb/software/bmrb/starlibj_doc.tar" title="Java STAR/CIF parser library similar to DOM, API documentation">
+        Starlibj documentation</a></li>
+    <li><a href="https://octopus.bmrb.wisc.edu/svn/sans/" title="callback-based STAR/CIF parsers similar to SAX">
+        SANS parsers</a></li>
+</ul>
+</div>
+
+<div class="sidemenu"><span class="expandingHeader NotSelected" title="BMRB metabolomics database">
+    Metabolomics</span>
+<ul style="display: none;" class="expandingBody submenu"> <!-- style="display: none;"> -->
+    <li><a href="http://manatee.bmrb.wisc.edu/metabolomics/" title="BMRB metabolomics database">Metabolomics Home</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/metabolomics/metabolomics_standards.html">Standard Compounds</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/metabolomics/query_metab.php">NMR Peaks Query</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/metabolomics/mol_mass.php">Molecular Mass Calculator</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/metabolomics/mass_query.php">Find Formula/Molecule by Mass</a></li>
+    <li><a href="http://www.bmrb.wisc.edu/metabolomics/heuristic_mass_query.php">Heuristically Determined Formula by Mass</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/metabolomics/external_metab_links.html">Metabolomics Websites</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/ftp/pub/bmrb/metabolomics/standards_tar">Bulk Archives</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/metabolomics/ftp_upload.html">Data Upload</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/metabolomics/data_policy.html">Data policy</a></li>
+</ul>
+</div>
+
+<div class="sidemenu"><span class="expandingHeader NotSelected" title="educational outreach">
+    Educational Outreach</span>
+<ul style="display: none;" class="expandingBody submenu"> <!--  style="display: none;"> -->
+    <li><a href="http://manatee.bmrb.wisc.edu/education/" title="educational outreach">Educational Outreach</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/featuredSys/featured_sys_arch.html">Molecular Highlights</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/education/mac_mol_nmr/mac_mol_nmr_intro.html">Macromolecular NMR</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/solid_state/">Solid State NMR</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/education/nmr_acronym.php">NMR Acronyms</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/servlet_data/molgrap/">Molecular Images</a></li>
+</ul>
+</div>
+
+<div class="sidemenu"><span class="expandingHeader NotSelected" title="NMR-STAR dictionary development site">
+    NMR Data Formats</span>
+<ul style="display: none;" class="expandingBody submenu"> <!-- style="display: none;"> -->
+    <li><a href="http://manatee.bmrb.wisc.edu/formats.html" title="NMR-STAR dictionary and other formats">NMR Data Formats</a></li>
+    <li><a href="http://www.iupac.org/reports/1997/6912harris/" target="_blank">IUPAC 1997</a></li>
+    <li><a href="http://www.iupac.org/reports/1998/7001markley/" target="_blank">IUPAC 1998</a></li>
+    <li><a href="http://www.iupac.org/publications/pac/2001/7311/7311x1795.html" target="_blank">IUPAC 2001</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/iupac_2008.pdf">IUPAC 2008</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/dictionary/">NMR-STAR 3.1 Dictionary Documentation</a></li>
+    <li><a href="http://manatee.bmrb.wisc.edu/dictionary/htmldocs/nmr_star/dictionary_files/complete_form_v21.txt">NMR-STAR 2.1 Complete Annotated Schema</a>
+    </li><li><a href="http://mmcif.pdb.org/">PDB eXchange Dictionary</a>
+    </li><li><a href="http://manatee.bmrb.wisc.edu/dictionary/htmldocs/nmr_star/dictionary_files/star_references2.html">Publications Describing the STAR Format</a>
+    </li><li><a href="http://www.ccpn.ac.uk/ccpn/data-model">CCPN Data Model</a></li>
+    <li><a href="http://www.wwpdb.org/docs.html">PDB File Format</a></li>
+</ul>
+</div>
+
+<div class="sidemenu"><span class="expandingHeader NotSelected" title="NMR links">
+    Links to External Sites</span>
+<ul style="display: none;" class="expandingBody submenu"> <!-- style="display: none;"> -->
+    <li><a href="http://manatee.bmrb.wisc.edu/www/" title="links to external sites">Useful NMR Links</a></li>
+    <li><a href="http://nmrwiki.org/" title="NMR Wiki">NMR Wiki</a></li>
+    <li><a href="http://www.wenmr.eu/" title="WeNMR">WeNMR</a></li>
+</ul>
+</div>
+
+<div class="sidemenu"><span class="notExpandingHeader">
+    <a href="http://manatee.bmrb.wisc.edu/bmrb/" title="site map">Site Map</a></span>
+</div>
+
+<div class="sidemenu"><span class="notExpandingHeader">
+    <a href="http://manatee.bmrb.wisc.edu/ftp/pub/bmrb" title="FTP directory">FTP Access</a></span>
+</div>
+
+<div class="sidemenu"><span class="expandingHeader NotSelected" title="Mirrors">
+    BMRB Mirrors</span>
+<ul style="display: none;" class="expandingBody submenu"> <!-- style="display: none;"> -->
+    <li><a href="http://www.bmrb.wisc.edu/" title="University of Wisconsin - Madison (main site)">Madison USA</a></li>
+    <li><a href="http://bmrb.protein.osaka-u.ac.jp/" title="Protein Research Institute, Osaka University">Osaka Japan</a></li>
+    <li><a href="http://bmrb.cerm.unifi.it/" title="Magnetic Resonance Center of the University of Florence (CERM)">Florence Italy</a></li> 
+</ul>
+</div>
+
+            </td>
+        </tr>
+        <tr>
+        <td style="vertical-align: top; padding-left: 1em; width: 100%;">
+            <div id="devise" class="box_grey_rndcnr" style="float: left; clear: both; width: 660px;">
+            <table style="padding: 0pt 1em 1em;" cellpadding="10" cellspacing="2">
+                <tbody><tr><td colspan="2"><h2>NMR Data Visualizations (<a href="devise/vis_examples/vis_examples_all.html">see more</a>)</h2></td>
+                <td><a href="vis_serv/"><img src="devise/vis_examples/figures/your_data.png" alt="Visualize your data here" title="Visualize your data here"></a></td>
+		</tr>
+                <tr>
+                <td>
+		    <a href="devise/histograms/index.html"><img src="devise/vis_examples/figures/1protein_thumb.png" alt="Database-wide chemical shift histograms" title="Database-wide chemical shift histograms"></a>
+                </td>
+                <td>
+		    <a href="devise/vis_examples/dynamics_movie_demo.html"><img src="devise/vis_examples/figures/dyn_movie_thumb_title.png" alt="Dynamics movie demos" title="Dynamics movie demos"></a>
+                </td>
+                <td>
+		    <a href="devise/peptide-cgi/html/7114x/7114xhn1.html"><img src="devise/vis_examples/figures/nh_thumb.png" alt="Simulated 1H-15N backbone HSQC spectrum" title="Simulated 1H-15N backbone HSQC spectrum"></a>
+                </td>
+                </tr>
+            </tbody></table>
+
+            <p>
+	      Visualization options: 
+	      <a class="frontpage" href="devise/peptide-cgi/bmrb_select.html">Single-entry</a>,
+	      <a class="frontpage" href="devise/peptide-cgi/bmrb_select2.html">Two-entry</a>,
+	      <a class="frontpage" href="devise/peptide-cgi/restraint_select.html">Restraints by PDB ID</a>,
+	      <a class="frontpage" href="devise/histograms/index.html">Chem shift histograms</a>,
+	      <a class="frontpage" href="vis_serv">Visualization server</a>
+	    </p>
+	    <p>
+	      <a class="frontpage" href="devise/peptide-cgi/html/js_videos.html">Visualization tutorial videos</a>
+	    </p>
+            </div>
+
+            <div class="box_grey_rndcnr" id="datalist" style="float: left; height: 370px; width: 346px;">
+            <ul>
+                <li style="font-weight: bold; list-style-type: none; padding: 0 1em 1em 1em;">BMRB data listed by</li>
+                <li class="grid_list"><a href="http://manatee.bmrb.wisc.edu/search/query_grid/initial_grid.html">Macromolecular types</a></li>
+                <li><a href="http://manatee.bmrb.wisc.edu/search/query_grid/NMR_param_grid.html">NMR spectral parameters</a></li>
+                <li><a href="http://manatee.bmrb.wisc.edu/search/query_grid/kinetic_grid.html">Kinetics</a></li>
+                <li><a href="http://manatee.bmrb.wisc.edu/search/query_grid/thermo_grid.html">Thermodynamics</a></li>
+                <li><a href="http://manatee.bmrb.wisc.edu/servlets/MRGridServlet">Restraints</a></li>
+                <li><a href="http://manatee.bmrb.wisc.edu/data_library/sms/">Small molecule structures</a></li>
+                <li><a href="http://manatee.bmrb.wisc.edu/data_library/timedomain/">Time-domain sets</a></li>
+                <li><a href="http://manatee.bmrb.wisc.edu/data_library/solidstate/">Solid-state NMR</a></li>
+                <li><a href="http://manatee.bmrb.wisc.edu/data_library/unfolded_proteins/">Unfolded proteins</a></li>
+                <li><a href="http://manatee.bmrb.wisc.edu/data_library/binding_data/">Binding Data</a></li>
+                <li><a href="http://manatee.bmrb.wisc.edu/data_library/Diseases/">Diseases</a></li>
+                <li><a href="http://manatee.bmrb.wisc.edu/data_library/merged_bmrb_pdb.html">NMR data combined with coordinates and restratins</a></li>
+            </ul>
+            </div>
+
+            <div class="box_grey_rndcnr" id="searchbox" style="float: left; clear: left; width: 660px;">
+            <!-- search form -->
+  
+<p>
+
+
+</p><form method="get" action="/search/find.php" target="result">
+    <h2>Search BMRB</h2>
+    <fieldset style="border: 0;"><legend style="font-weight: bold;"></legend>
+    <table border="0" cellpadding="2" cellspacing="2">
+    <tbody><tr><td colspan="3" style="border-bottom: 1px solid rgb(203, 203, 203); padding-bottom: 1em;">If you have a query you would like to run on the BMRB database, please e-mail
+    <a href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a></td></tr>
+    <tr>
+        <th class="cell right" style="border-bottom: 1px solid rgb(203, 203, 203);">Field</th>
+        <th class="cell centered" style="border-bottom: 1px solid rgb(203, 203, 203);">Value to search for</th>
+        <th class="cell left" style="border-bottom: 1px solid rgb(203, 203, 203);">Include in the output</th>
+    </tr>
+    <tr>
+        <td class="cell right"><label for="entryid">
+        <a href="http://manatee.bmrb.wisc.edu/dictionary/tagdetail.php?tag=_Entry.ID">BMRB ID</a></label></td>
+        <td class="cell right"><input id="entryid" name="bmrbid" style="width: 100%;" title="SQL wildcards '%' and '_' can be used here" type="text"></td>
+        <td class="cell"><input name="show_bmrbid" checked="checked" type="checkbox"></td>
+    </tr>
+    <tr>
+        <td class="cell right"><label for="dbid">
+        <select name="dbname">
+        <option value="BMRB">BMRB</option>
+<option value="DBJ">DBJ</option>
+<option value="EMBL">EMBL</option>
+<option value="GB">GB</option>
+<option value="GenBank">GenBank</option>
+<option value="NCBI">NCBI</option>
+<option value="PDB" selected="selected">PDB</option>
+<option value="PIR">PIR</option>
+<option value="PRF">PRF</option>
+<option value="REF">REF</option>
+<option value="SP">SP</option>
+<option value="SWISS-PROT">SWISS-PROT</option>
+<option value="SWS">SWS</option>
+<option value="tpd">tpd</option>
+<option value="TPD">TPD</option>
+<option value="TPE">TPE</option>
+<option value="TPG">TPG</option>
+<option value="tpg|DAA01129.1|">tpg|DAA01129.1|</option>
+<option value="tRNAdb">tRNAdb</option>
+<option value="UniProt">UniProt</option>
+<option value="UniProtKB/Swiss-Prot">UniProtKB/Swiss-Prot</option>
+<option value="UNP">UNP</option>
+<option value=""></option>
+
+
+        </select></label>
+        <a href="http://manatee.bmrb.wisc.edu/dictionary/tagdetail.php?tag=_Entity_db_link.Database_code">ID</a></td>
+        <td class="cell right"><input id="dbid" name="pdbid" style="width: 100%;" title="SQL wildcards '%' and '_' can be used here" type="text"></td>
+        <td class="cell"><input name="show_pdbid" type="checkbox"></td>
+    </tr>
+    <tr>
+        <td class="cell right"><label for="title">
+        <a href="http://manatee.bmrb.wisc.edu/dictionary/tagdetail.php?tag=_Entry.Title">Title</a></label></td>
+        <td class="cell right"><input id="title" name="title" style="width: 100%;" title="SQL wildcards '%' and '_' can be used here" type="text"></td>
+        <td class="cell"><input name="show_title" type="checkbox"></td>
+    </tr>
+    <tr>
+        <td class="cell right"><label for="molname">
+        <a href="http://manatee.bmrb.wisc.edu/dictionary/tagdetail.php?tag=_Assembly.Name">Molecule name</a></label></td>
+        <td class="cell right"><input id="molname" name="molecule" style="width: 100%;" title="SQL wildcards '%' and '_' can be used here" type="text"></td>
+        <td class="cell"><input name="show_molecule" type="checkbox"></td>
+    </tr>
+    <tr><td class="cell" colspan="3">Output
+        <input name="output" value="html" checked="checked" type="radio">HTML
+        <input name="output" value="csv" type="radio">CSV
+    </td></tr>
+    <tr><td class="cell" colspan="3"><input value="Search" type="submit">
+    <input value="Clear" type="reset"></td></tr>
+    </tbody></table>
+    </fieldset>
+</form>
+
+            </div>
+
+            <div class="box_grey_rndcnr" id="serverlist" style="float: left; height: 323px; width: 346px;">
+            <ul>
+                <li style="font-weight: bold; list-style-type: none; padding: 0 1em 1em 1em;">Servers hosted at BMRB</li>
+                <li><a class="server_list" href="http://condor.bmrb.wisc.edu/bbee/rosetta/" target="empty">
+                    CS-Rosetta structure calculation</a></li>
+                <li><a class="server_list" href="http://condor.bmrb.wisc.edu/bmrbrun/rosetta/list.php">
+                    CS-Rosetta structures for BMRB entries</a></li>
+                <li><a class="server_list" href="http://www.bmrb.wisc.edu/vis_serv">
+                    Data visualization server</a></li>
+                <li><a class="server_list" href="http://manatee.bmrb.wisc.edu/software/starch/">
+                    STARch file conversion</a></li>
+                <li><a class="server_list" href="http://manatee.bmrb.wisc.edu/software/ambi/">
+                    Ambiguity code assignment</a></li>
+                <li><a class="server_list" href="http://deposit.bmrb.wisc.edu/cgi-bin/bmrb-adit/standalone-shift-coord/">
+                    Chemical Shifts vs Coordinates nomenclature check</a></li>
+            </ul>
+            </div>
+
+            <div id="events" style="float: left; clear: both; width: 1049px;">
+            <ul>
+                <li style="font-weight: bold; list-style-type: none; padding: 0 1em 1em 1em;">NMR societies and events:</li>
+                <li style="list-style-type: none;"><a href="http://www.ismar.org/">ISMAR - International Society of Magnetic Resonance</a></li>
+                <li style="list-style-type: none;"><a href="http://icmrbs2014.org/">ICMRBS - 
+                    International Conference on Magnetic Resonancein Biological Systems</a></li>
+                <li style="list-style-type: none;"><a href="http://www.enc-conference.org/">ENC - 
+                    Experimental Nuclear Magnetic Resonance Conference</a></li>
+                <li style="list-style-type: none;"><a href="http://www.euromar2013.org/">EUROMAR 2013</a></li>
+<!--                <li style="list-style-type: none;"><A class="frontpage" HREF="http://www.iubmb-febs-2012.org/IUBMBFEBS2012/">22nd IUBMB - 
+                    37th FEBS Congress</A></li> -->
+            </ul>
+            </div>
+
+            <div class="box_grey_rndcnr" id="collab" style="float: left; clear: both; margin-bottom: 0pt; width: 1049px;">
+            <ul>
+                <li style="font-weight: bold; list-style-type: none; padding: 0 1em 1em 1em;">BMRB collaborates with:</li>
+                <li style="list-style-type: none; display: inline; margin: 1em;">
+                    <a href="http://www.rcsb.org/pdb/" target="_blank"><img src="bmrb_home_files/rcsb.png" alt="PDB" title="Protein Data Bank" border="0" height="70"></a></li>
+                <li style="list-style-type: none; display: inline; margin: 1em;">
+                    <a href="http://www.ebi.ac.uk/pdbe/" target="_blank"><img src="bmrb_home_files/pdbe.png" alt="PDBe" title="Protein Data Bank, Europe" border="0" height="66"></a></li>
+                <li style="list-style-type: none; display: inline; margin: 1em;">
+                    <a href="http://www.pdbj.org/" target="_blank"><img src="bmrb_home_files/pdbj.png" alt="PDBJ" title="Protein Data Bank, Japan" border="0" height="70"></a></li>
+                <li style="list-style-type: none; display: inline; margin: 1em;">
+                    <a href="http://www.ccpn.ac.uk/" target="_blank"><img src="bmrb_home_files/ccpn.png" alt="CCPN" title="Collaborative Computing Project for NMR" border="0" height="74"></a></li>
+                <li style="list-style-type: none; display: inline; margin: 1em;">
+                    <a href="http://www.cs.wisc.edu/condor/" target="_blank"><img src="bmrb_home_files/condor.png" alt="CHTC" title="Condor High Throughput Computing Project" border="0" height="71"></a></li>
+                <li style="list-style-type: none; display: inline; margin: 1em;">
+                    <a href="http://www.nmrfam.wisc.edu/" target="_blank"><img src="bmrb_home_files/nmrfam.png" alt="NMRFAM" title="National Magnetic Resonance Facility at Madison" border="0" height="77"></a></li>
+            </ul>
+            </div>
+        </td>
+        </tr>
+    </tbody></table>
+    <!-- requires stylesheets/newmain.css -->
+<div id="footer">
+    <div style="float: left; margin-right: 1em;">
+    <p style="margin: 0 0 0 1em;">
+    Contact <a href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a> if you have any questions about this site
+    </p><p style="margin: 0 0 0 1em;">
+    Copyright © The Board of Regents of the University of Wisconsin System.
+    </p><p style="margin: 0 0 1em 1em;">
+    
+        
+    
+
+    Last Modified: Wednesday, 10-Oct-2012 15:30:55 CDT
+
+<!--
+    <br>
+    <a href="http://validator.w3.org/check?uri=referer">
+    <img src="http://www.w3.org/Icons/valid-html401-blue" alt="Valid HTML 4.01 Transitional" height="31" width="88" style="border: 0;"></a>
+-->
+    </p></div>
+    <div style="display: inline;">
+        <div class="right" style="margin-bottom: 0.5em; padding-right: 0.5em; padding-bottom: 0.5em;">
+            Funded by:
+            <a href="http://www.nlm.nih.gov/" target="_blank" class="right" style="padding-right: 1em;">
+            <img src="bmrb_home_files/nlm.png" alt="NLM" title="National Library of Medicine" height="60" width="60">
+            </a>
+        </div>
+    </div>
+<!-- Google anaytics code to track usage -->
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script src="bmrb_home_files/ga_002.js" type="text/javascript"></script><script src="bmrb_home_files/ga.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-10448758-1");
+            pageTracker._trackPageview();
+        } catch(err) {}
+    </script>
+</div>
+
+</div>
+
+
+
+</body></html>

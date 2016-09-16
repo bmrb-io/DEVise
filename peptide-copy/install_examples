@@ -1,0 +1,61 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2014
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  Install the peptide-cgi setup.  Note: some of the installation is
+#  specific to a certain machine; this script is configured to do
+#  the installation on either teal (cs) or tuna (bmrb).  Changes
+#  may be needed to do the installation on other machines.
+
+#  Note: CS install must be done on teal; BMRB on tuna.
+
+#  To use the installed software, go to:
+#  http://bmrb.wisc.edu/devise/peptide-cgi/bmrb_select.html
+#    or
+#  http://teal.cs.wisc.edu/bmrb/bmrb_select.html.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+#-----------------------------------------------------------
+# Check and get the arguments.
+
+if ($#argv != 1) then
+  echo "Usage: install_examples <cgi_home>"
+  exit 1;
+endif
+
+set cgihome = $1
+
+
+#-----------------------------------------------------------
+# Generate visualization examples.
+
+echo ""
+echo ""
+echo -n "Generate visualization examples in $cgihome? [y] "
+set answer = $<
+if ($answer == n || $answer == N) then
+  echo Aborted.
+  exit 1
+endif
+echo ""
+
+echo "Generating visualization examples"
+cd $cgihome
+./generate_examples

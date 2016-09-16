@@ -1,0 +1,42 @@
+#! /bin/csh -f
+
+# Tests chem shift reference processing (needs stuff on leech at BMRB
+# to work right, unless -noleech argument is given -- then it does
+# a "dummy" chemShift calculation).
+
+set result = 0
+
+set noleech = 0
+
+if ($#argv > 0) then
+  if (xx$1 == xx-noleech) then
+    set noleech = 1
+  endif
+endif
+
+rm -r -f */4317*
+
+if ($noleech) then
+  tests/test15_noleech
+  if ($status) then
+    set result = 1
+  endif
+else
+  tests/test15_main
+  if ($status) then
+    set result = 1
+  endif
+endif
+
+
+source tests/test15_check
+
+
+echo -n "Test15 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

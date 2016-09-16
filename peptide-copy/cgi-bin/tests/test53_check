@@ -1,0 +1,36 @@
+echo "Checking output files"
+
+set files = ( data_dir/uvd/test53_outam1.dat \
+	data_dir/uvd/test53_outamac1.dat \
+	data_dir/uvd/test53_outas1.dat \
+	data_dir/uvd/test53_outc1.dat \
+	data_dir/uvd/test53_outd1.dat \
+	data_dir/uvd/test53_outhc1.dat \
+	data_dir/uvd/test53_outhn1.dat \
+	data_dir/uvd/test53_outmd.dat \
+	data_dir/uvd/test53_outp1.dat \
+	data_dir/uvd/test53_outrc1.dat \
+	data_dir/uvd/test53_outrl.dat \
+	html_dir/uvd/test53_out/test53_outam1.html \
+	html_dir/uvd/test53_out/test53_outas1.html \
+	html_dir/uvd/test53_out/test53_outc1.html \
+	html_dir/uvd/test53_out/test53_outd1.html \
+	html_dir/uvd/test53_out/test53_outhc1.html \
+	html_dir/uvd/test53_out/test53_outhn1.html \
+	html_dir/uvd/test53_out/test53_outp1.html \
+	html_dir/uvd/test53_out/test53_outy.html \
+	session_dir/.uvd/test53_out/test53_outacdd \
+	session_dir/.uvd/test53_out/test53_outam1.ds \
+	session_dir/.uvd/test53_out/test53_outas1.ds \
+	session_dir/.uvd/test53_out/test53_outc1.ds \
+	session_dir/.uvd/test53_out/test53_outd1.ds \
+	session_dir/.uvd/test53_out/test53_outhc1.ds \
+	session_dir/.uvd/test53_out/test53_outhn1.ds \
+	session_dir/.uvd/test53_out/test53_outp1.ds )
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end

@@ -1,0 +1,15 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jun 18 1999 13:53:05
+# DEVise version: 1.6.3
+# DEVise date: Jun 11 1999
+# DEVise endHeader
+
+# $Id$
+
+type bmrb-sec_struct ascii
+comment #
+#TEMPTEMP -- make sure separator is okay
+separator '	'
+attr Residue_seq_code int
+attr Sec_structure string 20

@@ -1,0 +1,24 @@
+The format for the filenames are XY.dat,
+where X is the accession number, and Y is one of the following letters:
+	c	csi
+	d	deltashift
+	f	hydrogen exchange protection factor
+	g	coupling constants
+	n	NOE
+	o	t1
+	p	percentage of atoms assigned
+	r	hydrogen exchange rate
+	s	s2
+	t	t2
+	u	t2_600
+
+The summary page is Xy.html
+More html files:
+	c	csi
+	d	deltashift
+	p	percentage of atoms assigned
+
+	g	coupling
+	h	h exchange
+	o	order
+	r	relax	

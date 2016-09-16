@@ -1,0 +1,40 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:56:00
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# $Id$
+
+type bmrb-TorsionAngle ascii
+comment #
+whitespace ' '
+
+attr Entity_assembly_ID int
+
+# Note: this is a float because some torsion angle restraints involve two
+# residues, and we make a non-integral residue number to reflect that
+# and avoid having two restraints show up at the same residue number.
+#TEMPTEMP -- should this stay a float?
+attr Residue_seq_code float
+attr Residue_label string 5
+
+attr Torsion_angle_lower_bound float
+attr Torsion_angle_upper_bound float
+
+# The atom IDs are what link this data to the coordinate data.  The
+# atom names are mainly for drill-down.
+attr atom1Id string 15
+attr atom1Name string 5
+attr atom2Id string 15
+attr atom2Name string 5
+attr atom3Id string 15
+attr atom3Name string 5
+attr atom4Id string 15
+attr atom4Name string 5
+
+attr angleType string 6
+
+attr averageValue float
+attr maxViolation float

@@ -1,0 +1,80 @@
+echo "Checking output files"
+
+set files = (data_dir/4096ac1.dat data_dir/4096as1.dat data_dir/4096c1.dat \
+	data_dir/4096d1.dat data_dir/4096g1.dat data_dir/4096hn1.dat \
+	data_dir/4096md.dat data_dir/4096n1.dat data_dir/4096p1.dat \
+	data_dir/4096rc1.dat data_dir/4096rl.dat data_dir/4096t11.dat \
+	data_dir/4096t21.dat data_dir/4096t22.dat html_dir/4096/4096ac1.html \
+	html_dir/4096/4096as1.html html_dir/4096/4096c1.html html_dir/4096/4096d1.html \
+	html_dir/4096/4096g1.html html_dir/4096/4096hn1.html html_dir/4096/4096n1.html \
+	html_dir/4096/4096p1.html html_dir/4096/4096t11.html html_dir/4096/4096t21.html \
+	html_dir/4096/4096t22.html html_dir/4096/4096y.html \
+	session_dir/4096/4096ac1.ds \
+	session_dir/4096/4096acdd session_dir/4096/4096as1.ds session_dir/4096/4096c1.ds \
+	session_dir/4096/4096d1.ds session_dir/4096/4096g1.ds session_dir/4096/4096hn1.ds \
+	session_dir/4096/4096n1.ds session_dir/4096/4096p1.ds session_dir/4096/4096t11.ds \
+	session_dir/4096/4096t21.ds session_dir/4096/4096t22.ds \
+	data_dir/4096am1.dat \
+	html_dir/4096/4096am1.html \
+	session_dir/4096/4096am1.ds \
+	data_dir/4096hc1.dat \
+	html_dir/4096/4096hc1.html \
+	session_dir/4096/4096hc1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/4096ac1.dat"
+set line = '^1 1_1_N 1 1 GLY N N 11.949 7.838 11.241 backbone$'
+source tests/check4line
+set line = '^2102 1_147_O2 1 147 SER O2 O -11.593 18.226 3.842 side_chains$'
+source tests/check4line
+set line = '^2177 3_._O 3 . . O O -7.051 -0.232 -1.921 backbone$'
+source tests/check4line
+
+set file = "data_dir/4096as1.dat"
+set line = '^43.08 CA C 1 GLY 1$'
+source tests/check4line
+set line = '^120.79 N N 147 SER 1$'
+source tests/check4line
+
+set file = "data_dir/4096c1.dat"
+set line = '^-1 0 -1 0 0 1 GLY 1$'
+source tests/check4line
+set line = '^-1 1 1 1 -1 147 SER 1$'
+source tests/check4line
+
+set file = "data_dir/4096p1.dat"
+set line = '^66.666664 50.0 0.0 1 GLY 1$'
+source tests/check4line
+set line = '^75.0 83.333336 100.0 39 HIS 1$'
+source tests/check4line
+set line = '^80.0 100.0 100.0 147 SER 1$'
+source tests/check4line
+
+set file = "data_dir/4096rl.dat"
+set line = '^1	1	GLY	G	2$'
+source tests/check4line
+set line = '^1	147	SER	S	2$'
+source tests/check4line
+set line = '^2	1	HEME$'
+# 2.1 doesn't have residues for entity 2
+#TEMP? source tests/check4line
+set line = '^3	1	CO$'
+# 2.1 doesn't have residues for entity 3
+#TEMP? source tests/check4line
+
+set file = "session_dir/4096/4096ac1.ds"
+set line = '^DEVise dteInsertCatalogEntry . {"4096ac1" UNIXFILE 4096ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
+source tests/check4line
+set line = '^DEVise dteInsertCatalogEntry . {"4096d1" UNIXFILE 4096d1.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb-DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
+source tests/check4line
+set line = '^DEVise dteInsertCatalogEntry . {"4096as1" UNIXFILE 4096as1.dat AllShift $DEVISE_SCHEMA/physical/bmrb-AllShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
+source tests/check4line
+set line = '^DEVise dteInsertCatalogEntry . {"4096p1" UNIXFILE 4096p1.dat ChemShiftPercentage $DEVISE_SCHEMA/physical/bmrb-Percent "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
+source tests/check4line
+

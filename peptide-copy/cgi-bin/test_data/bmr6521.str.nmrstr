@@ -1,0 +1,1353 @@
+data_6521
+
+
+save_entry_interview
+    _Entry_interview.Sf_category                    entry_interview 
+    _Entry_interview.Sf_framecode                   entry_interview 
+    _Entry_interview.Entry_ID                       6521 
+    _Entry_interview.ID                             1 
+    _Entry_interview.Assembly_type                 "Protein multimer" 
+    _Entry_interview.Ligands                        no 
+    _Entry_interview.Non_standard_residues          no 
+    _Entry_interview.Structural_genomics            no 
+    _Entry_interview.Assigned_chem_shifts           yes 
+    _Entry_interview.Spectral_peak_lists            no 
+    _Entry_interview.Coupling_constants             no 
+    _Entry_interview.Residual_dipolar_couplings     no 
+    _Entry_interview.Homonucl_NOEs                  no 
+    _Entry_interview.Heteronucl_NOEs                no 
+    _Entry_interview.Heteronucl_T1_relaxation       no 
+    _Entry_interview.Heteronucl_T2_relaxation       no 
+    _Entry_interview.Heteronucl_T1rho_relaxation    no 
+    _Entry_interview.Order_parameters               no 
+    _Entry_interview.Dipole_dipole_relaxation       no 
+    _Entry_interview.Cross_correlation              no 
+    _Entry_interview.H_exchange_rate                no 
+    _Entry_interview.H_exchange_protection_factors  no 
+    _Entry_interview.PKa_value_data_set             no 
+    _Entry_interview.D_H_fractionation_factors      no 
+    _Entry_interview.Theoretical_chem_shifts        no 
+    _Entry_interview.Spectral_density_values        no 
+    _Entry_interview.Timedomain_data                no 
+    _Entry_interview.New_kind_of_data               no 
+save_
+
+
+save_deposited_data_files
+    _Deposited_data_files.Sf_category   deposited_data_files 
+    _Deposited_data_files.Sf_framecode  deposited_data_files 
+    _Deposited_data_files.Entry_ID      6521 
+    _Deposited_data_files.ID            1 
+
+    loop_
+        _Upload_data.Data_file_ID 
+        _Upload_data.Data_file_name 
+        _Upload_data.Data_file_Sf_category 
+        _Upload_data.Data_file_syntax 
+        _Upload_data.Entry_ID 
+        _Upload_data.Deposited_data_files_ID 
+
+         1  p53tetwt_pH4_STAR.txt  "Assigned chemical shifts"  "NMR-STAR 2.1"   6521  1 
+         2  p53tetwt_pH6_STAR.txt  "Assigned chemical shifts"  "NMR-STAR 2.1"   6521  1 
+    stop_
+
+save_
+
+
+save_study_list
+    _Study_list.Sf_category   study_list 
+    _Study_list.Sf_framecode  study_list 
+    _Study_list.Entry_ID      6521 
+    _Study_list.ID            1 
+
+    loop_
+        _Study.ID 
+        _Study.Name 
+        _Study.Type 
+        _Study.Details 
+        _Study.Entry_ID 
+        _Study.Study_list_ID 
+
+                     1 "Characterization of an amyloid fibril intermediate"  "Structure analysis"  
+;
+Data from the entries were used to assign residues for H/D exchange and stability studies at pH 4.0.
+;
+  6521  1 
+         p53tetwt_pH6  "Characterization of an amyloid fibril intermediate"  "Structure analysis"  "Data from the entries were used to assign residues at pH 6.0."   6521  1 
+    stop_
+
+
+    loop_
+        _Study_keyword.Study_ID 
+        _Study_keyword.Keyword 
+        _Study_keyword.Entry_ID 
+        _Study_keyword.Study_list_ID 
+
+         1  p53tet                                                6521  1 
+         1 "p53 tetramerization domain"                           6521  1 
+         1 "Tumor suppressor protein p53 - human"                 6521  1 
+         1 "Tetramerization domain of p53 (residues 310 - 360)"   6521  1 
+         1 "Nuclear Magnetic Resonance"                           6521  1 
+         1 "Hydrogen exchange studies"                            6521  1 
+         1 "Amyloid fibrils"                                      6521  1 
+         1  Intermediate                                          6521  1 
+         1  p53tet-wt                                             6521  1 
+    stop_
+
+save_
+
+#######################
+#  Entry information  #
+#######################
+
+save_entry_information
+    _Entry.Sf_category            entry_information 
+    _Entry.Sf_framecode           entry_information 
+    _Entry.ID                     6521 
+    _Entry.Title                 
+;
+Characterization of an amyloid fibril intermediate
+;
+
+    _Entry.Version_type           new 
+    _Entry.Submission_date        2005-02-22 
+    _Entry.Accession_date         2005-02-23 
+    _Entry.Last_release_date      ? 
+    _Entry.Original_release_date  ? 
+    _Entry.Origination            author 
+    # _Entry.NMR_STAR_version       production.3.0.2.2 
+    _Entry.NMR_STAR_version       3.0
+    _Entry.Experimental_method    NMR 
+    _Entry.Details               
+;
+Backbone residue assignments were used for H/D exchange, pKa and stability studies of p53tet-wt.
+;
+
+    _Entry.Release_request        Immediately 
+
+    loop_
+        _Entry_author.Ordinal 
+        _Entry_author.Family_name 
+        _Entry_author.Given_name 
+        _Entry_author.First_initial 
+        _Entry_author.Middle_initials 
+        _Entry_author.Family_title 
+        _Entry_author.Entry_ID 
+
+         1  Galea      Charles    ?   A.   ?   6521 
+         2  Bowman     Prentice   ?   ?    ?   6521 
+         3  Kriwacki   Richard    ?   W.   ?   6521 
+    stop_
+
+
+    loop_
+        _Entry_src.Organization 
+        _Entry_src.Entry_ID 
+
+         SJCRH   6521 
+    stop_
+
+
+    loop_
+        _Data_set.Type 
+        _Data_set.Count 
+        _Data_set.Entry_ID 
+
+         assigned_chemical_shifts   2  6521 
+    stop_
+
+
+    loop_
+        _Datum.Type 
+        _Datum.Count 
+        _Datum.Entry_ID 
+
+        "1H chemical shifts"     98  6521 
+        "15N chemical shifts"    98  6521 
+        "13C chemical shifts"   104  6521 
+    stop_
+
+
+    loop_
+        _Release.Number 
+        _Release.Date 
+        _Release.Submission_date 
+        _Release.Type 
+        _Release.Author 
+        _Release.Detail 
+        _Release.Entry_ID 
+
+         ?   ?   ?   ?   ?   ?   6521 
+    stop_
+
+
+    loop_
+        _Related_entries.BMRB_accession_code 
+        _Related_entries.Relationship 
+        _Related_entries.Entry_ID 
+
+         4048 "Data were collected at a different pH for this molecular system."   6521 
+         6522 "Mutant p53 tetramerization domain (p53tet-R337H)"                   6521 
+    stop_
+
+
+    loop_
+        _Contact_person.ID 
+        _Contact_person.Family_name 
+        _Contact_person.Given_name 
+        _Contact_person.Middle_initials 
+        _Contact_person.Family_title 
+        _Contact_person.Department_and_institution 
+        _Contact_person.Mailing_address 
+        _Contact_person.Phone_number 
+        _Contact_person.Email_address 
+        _Contact_person.FAX_number 
+        _Contact_person.Entry_ID 
+
+         1  Kriwacki   Richard   W.   ?  
+;
+Department of Structural Biology, St. Jude children's Research Hospital
+;
+ 
+;
+St. Jude children's Research Hospital 
+Department of Structural Biology 
+332 N. Lauderdale 
+TN 38105 
+USA
+;
+ "(901) 495 3290"   richard.kriwacki@stjude.org  "(901) 495 3032"   6521 
+    stop_
+
+save_
+
+###############
+#  Citations  #
+###############
+
+save_citation_1
+    _Citation.Sf_category           citations 
+    _Citation.Sf_framecode          citation_1 
+    _Citation.Entry_ID              6521 
+    _Citation.ID                    1 
+    _Citation.Class                "entry citation" 
+    _Citation.Title                "Characterization of an amyloid fibril intermediate" 
+    _Citation.Status               "in preparation" 
+    _Citation.Type                  journal 
+    _Citation.Journal_abbreviation "Proc. Natl. Acad. Sci. U. S. A." 
+    _Citation.Journal_volume        ? 
+    _Citation.Journal_issue         ? 
+    _Citation.Page_first            ? 
+    _Citation.Page_last             ? 
+    _Citation.Year                  ? 
+
+    loop_
+        _Citation_author.Ordinal 
+        _Citation_author.Family_name 
+        _Citation_author.Given_name 
+        _Citation_author.First_initial 
+        _Citation_author.Middle_initials 
+        _Citation_author.Family_title 
+        _Citation_author.Entry_ID 
+        _Citation_author.Citation_ID 
+
+         1  Galea      Charles    ?   A.   ?   6521  1 
+         2  Bowman     Prentice   ?   ?    ?   6521  1 
+         3  Kriwacki   Richard    ?   W.   ?   6521  1 
+    stop_
+
+
+    loop_
+        _Citation_keyword.Keyword 
+        _Citation_keyword.Entry_ID 
+        _Citation_keyword.Citation_ID 
+
+        "p53 tetramerization domain"    6521  1 
+        "tumor suppressor protein"      6521  1 
+        "H/D exchange"                  6521  1 
+        "Amyloid fibril intermediate"   6521  1 
+         pKa                            6521  1 
+        "Nuclear Magnetic Resonance"    6521  1 
+    stop_
+
+save_
+
+#############################################
+#  Molecular system (assembly) description  #
+#############################################
+
+save_assembly
+    _Assembly.Sf_category                      assembly 
+    _Assembly.Sf_framecode                     assembly 
+    _Assembly.Entry_ID                         6521 
+    _Assembly.ID                               1 
+    _Assembly.Name                            "p53 tetramer" 
+    _Assembly.Details                          Homotetramer 
+    _Assembly.Number_of_components             4 
+    _Assembly.Organic_ligands                  0 
+    _Assembly.Metal_ions                       0 
+    _Assembly.Ambiguous_conformational_states  no 
+    _Assembly.Ambiguous_chem_comp_sites        no 
+    _Assembly.Molecules_in_chemical_exchange   no 
+    _Assembly.Paramagnetic                     no 
+    _Assembly.Thiol_state                     "not present" 
+    _Assembly.Molecular_mass                   25060 
+
+    loop_
+        _Assembly_type.Type 
+        _Assembly_type.Entry_ID 
+        _Assembly_type.Assembly_ID 
+
+         protein   6521  1 
+    stop_
+
+
+    loop_
+        _Entity_assembly.ID 
+        _Entity_assembly.Entity_ID 
+        _Entity_assembly.Entity_assembly_name 
+        _Entity_assembly.Entity_label 
+        _Entity_assembly.Magnetic_equivalence_group_code 
+        _Entity_assembly.Role 
+        _Entity_assembly.Experimental_data_reported 
+        _Entity_assembly.Physical_state 
+        _Entity_assembly.Conformational_isomer 
+        _Entity_assembly.Chemical_exchange_state 
+        _Entity_assembly.Details 
+        _Entity_assembly.Entry_ID 
+        _Entity_assembly.Assembly_ID 
+
+         1  1 "subunit A"  $p53_tetramerization_domain_polypeptide   1 "oligomerization domain"   yes   native   no   no   ?   6521  1 
+         2  1 "subunit B"  $p53_tetramerization_domain_polypeptide   1 "oligomerization domain"   yes   native   no   no   ?   6521  1 
+         3  1 "subunit C"  $p53_tetramerization_domain_polypeptide   1 "oligomerization domain"   yes   native   no   no   ?   6521  1 
+         4  1 "subunit D"  $p53_tetramerization_domain_polypeptide   1 "oligomerization domain"   yes   native   no   no   ?   6521  1 
+    stop_
+
+
+    loop_
+        _Assembly_db_link.Author_supplied 
+        _Assembly_db_link.Database_code 
+        _Assembly_db_link.Accession_code 
+        _Assembly_db_link.Entry_mol_code 
+        _Assembly_db_link.Entry_mol_name 
+        _Assembly_db_link.Entry_experimental_method 
+        _Assembly_db_link.Entry_structure_resolution 
+        _Assembly_db_link.Entry_relation_type 
+        _Assembly_db_link.Entry_details 
+        _Assembly_db_link.Entry_ID 
+        _Assembly_db_link.Assembly_ID 
+
+         yes   PDB   1AIE   ?   ?  "X-ray crystallography"    1.5 "Crystal structure of p53 tetramerization domain"        ?                            6521  1 
+         yes   PDB   1C26   ?   ?  "X-ray crystallography"    1.7 "Crystal structure of p53 tetramerization domain"        ?                            6521  1 
+         yes   PDB   1PES   ?   ?   NMR                      ?    "NMR solution structure of p53 tetramerization domain"   ?                            6521  1 
+         yes   PDB   1PET   ?   ?   NMR                      ?    "NMR solution structure of p53 tetramerization domain"   ?                            6521  1 
+         yes   PDB   1HS5   ?   ?   NMR                      ?    "Mutant p53 tetramerization domain designed dimer"       ?                            6521  1 
+         yes   PDB   1AIU   ?   ?   NMR                      ?    "Mutant p53 tetramerization domain dimer"               "Mutants: M40K, F41I, L44Y"   6521  1 
+         yes   PDB   1OLG   ?   ?   NMR                      ?    "NMR solution structure of p53 tetramerization domain"   ?                            6521  1 
+    stop_
+
+
+    loop_
+        _Assembly_keyword.Keyword 
+        _Assembly_keyword.Entry_ID 
+        _Assembly_keyword.Assembly_ID 
+
+        "p53 tetramerization domain"   6521  1 
+    stop_
+
+
+    loop_
+        _Assembly_bio_function.Biological_function 
+        _Assembly_bio_function.Entry_ID 
+        _Assembly_bio_function.Assembly_ID 
+
+        "Transcription factor"     6521  1 
+        "Oligomerization domain"   6521  1 
+    stop_
+
+save_
+
+####################################
+#  Biological polymers and ligands #
+####################################
+
+save_p53_tetramerization_domain_polypeptide
+    _Entity.Sf_category                      entity 
+    _Entity.Sf_framecode                     p53_tetramerization_domain_polypeptide 
+    _Entity.Entry_ID                         6521 
+    _Entity.ID                               1 
+    _Entity.Name                             p53tet 
+    _Entity.Type                             polymer 
+    _Entity.Polymer_type                     polypeptide(L) 
+    _Entity.Polymer_seq_one_letter_code_can  ? 
+    _Entity.Polymer_seq_one_letter_code     
+;
+GSHMNNTSSSPQPKKKPLDGEYFT
+LQIRGRERFEMFRELNEALELKDA
+QAGKEPG
+;
+
+    _Entity.Polymer_author_seq_details      
+;
+Residues 10 to 60 correspond to the residues 310 to 360 of the p53 tetramerization domain.
+;
+
+    _Entity.Ambiguous_conformational_states  no 
+    _Entity.Ambiguous_chem_comp_sites        no 
+    _Entity.Nstd_monomer                     no 
+    _Entity.Nstd_chirality                   no 
+    _Entity.Nstd_linkage                     no 
+    _Entity.Number_of_monomers               55 
+    _Entity.Formula_weight                   6265 
+    _Entity.Paramagnetic                     no 
+    _Entity.Thiol_state                     "not present" 
+
+    loop_
+        _Entity_poly_seq.Num 
+        _Entity_poly_seq.Comp_index_ID 
+        _Entity_poly_seq.Mon_ID 
+        _Entity_poly_seq.Chem_comp_label 
+        _Entity_poly_seq.Entry_ID 
+        _Entity_poly_seq.Entity_ID 
+
+          1   1  GLY   .   .   1 
+          2   2  SER   .   .   1 
+          3   3  HIS   .   .   1 
+          4   4  MET   .   .   1 
+          5   5  ASN   .   .   1 
+          6   6  ASN   .   .   1 
+          7   7  THR   .   .   1 
+          8   8  SER   .   .   1 
+          9   9  SER   .   .   1 
+         10  10  SER   .   .   1 
+         11  11  PRO   .   .   1 
+         12  12  GLN   .   .   1 
+         13  13  PRO   .   .   1 
+         14  14  LYS   .   .   1 
+         15  15  LYS   .   .   1 
+         16  16  LYS   .   .   1 
+         17  17  PRO   .   .   1 
+         18  18  LEU   .   .   1 
+         19  19  ASP   .   .   1 
+         20  20  GLY   .   .   1 
+         21  21  GLU   .   .   1 
+         22  22  TYR   .   .   1 
+         23  23  PHE   .   .   1 
+         24  24  THR   .   .   1 
+         25  25  LEU   .   .   1 
+         26  26  GLN   .   .   1 
+         27  27  ILE   .   .   1 
+         28  28  ARG   .   .   1 
+         29  29  GLY   .   .   1 
+         30  30  ARG   .   .   1 
+         31  31  GLU   .   .   1 
+         32  32  ARG   .   .   1 
+         33  33  PHE   .   .   1 
+         34  34  GLU   .   .   1 
+         35  35  MET   .   .   1 
+         36  36  PHE   .   .   1 
+         37  37  ARG   .   .   1 
+         38  38  GLU   .   .   1 
+         39  39  LEU   .   .   1 
+         40  40  ASN   .   .   1 
+         41  41  GLU   .   .   1 
+         42  42  ALA   .   .   1 
+         43  43  LEU   .   .   1 
+         44  44  GLU   .   .   1 
+         45  45  LEU   .   .   1 
+         46  46  LYS   .   .   1 
+         47  47  ASP   .   .   1 
+         48  48  ALA   .   .   1 
+         49  49  GLN   .   .   1 
+         50  50  ALA   .   .   1 
+         51  51  GLY   .   .   1 
+         52  52  LYS   .   .   1 
+         53  53  GLU   .   .   1 
+         54  54  PRO   .   .   1 
+         55  55  GLY   .   .   1 
+    stop_
+
+
+    loop_
+        _Entity_comp_index.ID 
+        _Entity_comp_index.Author_seq_code 
+        _Entity_comp_index.Comp_ID 
+        _Entity_comp_index.Chem_comp_label 
+        _Entity_comp_index.Entry_ID 
+        _Entity_comp_index.Entity_ID 
+
+          1   6  GLY   .   .   1 
+          2   7  SER   .   .   1 
+          3   8  HIS   .   .   1 
+          4   9  MET   .   .   1 
+          5  10  ASN   .   .   1 
+          6  11  ASN   .   .   1 
+          7  12  THR   .   .   1 
+          8  13  SER   .   .   1 
+          9  14  SER   .   .   1 
+         10  15  SER   .   .   1 
+         11  16  PRO   .   .   1 
+         12  17  GLN   .   .   1 
+         13  18  PRO   .   .   1 
+         14  19  LYS   .   .   1 
+         15  20  LYS   .   .   1 
+         16  21  LYS   .   .   1 
+         17  22  PRO   .   .   1 
+         18  23  LEU   .   .   1 
+         19  24  ASP   .   .   1 
+         20  25  GLY   .   .   1 
+         21  26  GLU   .   .   1 
+         22  27  TYR   .   .   1 
+         23  28  PHE   .   .   1 
+         24  29  THR   .   .   1 
+         25  30  LEU   .   .   1 
+         26  31  GLN   .   .   1 
+         27  32  ILE   .   .   1 
+         28  33  ARG   .   .   1 
+         29  34  GLY   .   .   1 
+         30  35  ARG   .   .   1 
+         31  36  GLU   .   .   1 
+         32  37  ARG   .   .   1 
+         33  38  PHE   .   .   1 
+         34  39  GLU   .   .   1 
+         35  40  MET   .   .   1 
+         36  41  PHE   .   .   1 
+         37  42  ARG   .   .   1 
+         38  43  GLU   .   .   1 
+         39  44  LEU   .   .   1 
+         40  45  ASN   .   .   1 
+         41  46  GLU   .   .   1 
+         42  47  ALA   .   .   1 
+         43  48  LEU   .   .   1 
+         44  49  GLU   .   .   1 
+         45  50  LEU   .   .   1 
+         46  51  LYS   .   .   1 
+         47  52  ASP   .   .   1 
+         48  53  ALA   .   .   1 
+         49  54  GLN   .   .   1 
+         50  55  ALA   .   .   1 
+         51  56  GLY   .   .   1 
+         52  57  LYS   .   .   1 
+         53  58  GLU   .   .   1 
+         54  59  PRO   .   .   1 
+         55  60  GLY   .   .   1 
+    stop_
+
+save_
+
+####################
+#  Natural source  #
+####################
+
+save_natural_source
+    _Entity_natural_src_list.Sf_category   natural_source 
+    _Entity_natural_src_list.Sf_framecode  natural_source 
+    _Entity_natural_src_list.Entry_ID      6521 
+    _Entity_natural_src_list.ID            1 
+
+    loop_
+        _Entity_natural_src.ID 
+        _Entity_natural_src.Entity_ID 
+        _Entity_natural_src.Entity_label 
+        _Entity_natural_src.Entity_fragment_ID 
+        _Entity_natural_src.Nonexistent 
+        _Entity_natural_src.Common 
+        _Entity_natural_src.Organism_name_common 
+        _Entity_natural_src.Organism_acronym 
+        _Entity_natural_src.NCBI_taxonomy_ID 
+        _Entity_natural_src.Superkingdom 
+        _Entity_natural_src.Kingdom 
+        _Entity_natural_src.Genus 
+        _Entity_natural_src.Species 
+        _Entity_natural_src.Strain 
+        _Entity_natural_src.Entry_ID 
+        _Entity_natural_src.Entity_natural_src_list_ID 
+
+         1  1 $p53_tetramerization_domain_polypeptide   ?   no   no   human   ?   9606  Eukaryota   Metazoa   Homo   sapiens   ?   6521  1 
+    stop_
+
+save_
+
+#########################
+#  Experimental source  #
+#########################
+
+save_experimental_source
+    _Entity_experimental_src_list.Sf_category   experimental_source 
+    _Entity_experimental_src_list.Sf_framecode  experimental_source 
+    _Entity_experimental_src_list.Entry_ID      6521 
+    _Entity_experimental_src_list.ID            1 
+
+    loop_
+        _Entity_experimental_src.ID 
+        _Entity_experimental_src.Entity_ID 
+        _Entity_experimental_src.Entity_label 
+        _Entity_experimental_src.Production_method 
+        _Entity_experimental_src.Host_organism_name_common 
+        _Entity_experimental_src.Genus 
+        _Entity_experimental_src.Species 
+        _Entity_experimental_src.Strain 
+        _Entity_experimental_src.Variant 
+        _Entity_experimental_src.Vector_type 
+        _Entity_experimental_src.Vector_name 
+        _Entity_experimental_src.Vendor_name 
+        _Entity_experimental_src.Entry_ID 
+        _Entity_experimental_src.Entity_experimental_src_list_ID 
+
+         1  1 $p53_tetramerization_domain_polypeptide  "recombinant technology"  "E. coli"   Escherichia   coli   BL21   DE3   plasmid   pET28a   Novagen   6521  1 
+    stop_
+
+save_
+
+#####################################
+#  Sample contents and methodology  #
+#####################################
+########################
+#  Sample description  #
+########################
+
+save_sample_3
+    _Sample.Sf_category   sample 
+    _Sample.Sf_framecode  sample_3 
+    _Sample.Entry_ID      6521 
+    _Sample.ID            1 
+    _Sample.Type          solution 
+
+    loop_
+        _Sample_component.ID 
+        _Sample_component.Mol_common_name 
+        _Sample_component.Assembly_ID 
+        _Sample_component.Assembly_label 
+        _Sample_component.Entity_ID 
+        _Sample_component.Entity_label 
+        _Sample_component.Concentration_val 
+        _Sample_component.Concentration_val_err 
+        _Sample_component.Concentration_val_units 
+        _Sample_component.Concentration_min_val 
+        _Sample_component.Concentration_max_val 
+        _Sample_component.Isotopic_labeling 
+        _Sample_component.Entry_ID 
+        _Sample_component.Sample_ID 
+
+         1  p53tet    ?   ?   1 $p53_tetramerization_domain_polypeptide    4.0   ?   mM   ?   ?   [U-15N]   6521  1 
+         2  Na2HPO4   ?   ?   1  ?                                        10     ?   mM   ?   ?   ?         6521  1 
+         3  NaCl      ?   ?   1  ?                                        50     ?   mM   ?   ?   ?         6521  1 
+         4  NaN3      ?   ?   1  ?                                         0.02  ?   %    ?   ?   ?         6521  1 
+    stop_
+
+save_
+
+
+save_sample_1
+    _Sample.Sf_category   sample 
+    _Sample.Sf_framecode  sample_1 
+    _Sample.Entry_ID      6521 
+    _Sample.ID            2 
+    _Sample.Type          solution 
+
+    loop_
+        _Sample_component.ID 
+        _Sample_component.Mol_common_name 
+        _Sample_component.Assembly_ID 
+        _Sample_component.Assembly_label 
+        _Sample_component.Entity_ID 
+        _Sample_component.Entity_label 
+        _Sample_component.Concentration_val 
+        _Sample_component.Concentration_val_err 
+        _Sample_component.Concentration_val_units 
+        _Sample_component.Concentration_min_val 
+        _Sample_component.Concentration_max_val 
+        _Sample_component.Isotopic_labeling 
+        _Sample_component.Entry_ID 
+        _Sample_component.Sample_ID 
+
+         1  p53tet    ?   ?   1 $p53_tetramerization_domain_polypeptide    4.0   ?   mM   ?   ?   [U-15N]   6521  2 
+         2  Na2HPO4   ?   ?   1  ?                                        10     ?   mM   ?   ?   ?         6521  2 
+         3  NaCl      ?   ?   1  ?                                        50     ?   mM   ?   ?   ?         6521  2 
+         4  NaN3      ?   ?   1  ?                                         0.02  ?   %    ?   ?   ?         6521  2 
+    stop_
+
+save_
+
+
+save_sample_2
+    _Sample.Sf_category   sample 
+    _Sample.Sf_framecode  sample_2 
+    _Sample.Entry_ID      6521 
+    _Sample.ID            3 
+    _Sample.Type          solution 
+
+    loop_
+        _Sample_component.ID 
+        _Sample_component.Mol_common_name 
+        _Sample_component.Assembly_ID 
+        _Sample_component.Assembly_label 
+        _Sample_component.Entity_ID 
+        _Sample_component.Entity_label 
+        _Sample_component.Concentration_val 
+        _Sample_component.Concentration_val_err 
+        _Sample_component.Concentration_val_units 
+        _Sample_component.Concentration_min_val 
+        _Sample_component.Concentration_max_val 
+        _Sample_component.Isotopic_labeling 
+        _Sample_component.Entry_ID 
+        _Sample_component.Sample_ID 
+
+         1  p53tet    ?   ?   1 $p53_tetramerization_domain_polypeptide    4.0   ?   mM   ?   ?  "[U-13C; U-15N]"   6521  3 
+         2  Na2HPO4   ?   ?   1  ?                                        10     ?   mM   ?   ?   ?                 6521  3 
+         3  NaCl      ?   ?   1  ?                                        50     ?   mM   ?   ?   ?                 6521  3 
+         4  NaN3      ?   ?   1  ?                                         0.02  ?   %    ?   ?   ?                 6521  3 
+    stop_
+
+save_
+
+
+save_sample_4
+    _Sample.Sf_category   sample 
+    _Sample.Sf_framecode  sample_4 
+    _Sample.Entry_ID      6521 
+    _Sample.ID            4 
+    _Sample.Type          solution 
+
+    loop_
+        _Sample_component.ID 
+        _Sample_component.Mol_common_name 
+        _Sample_component.Assembly_ID 
+        _Sample_component.Assembly_label 
+        _Sample_component.Entity_ID 
+        _Sample_component.Entity_label 
+        _Sample_component.Concentration_val 
+        _Sample_component.Concentration_val_err 
+        _Sample_component.Concentration_val_units 
+        _Sample_component.Concentration_min_val 
+        _Sample_component.Concentration_max_val 
+        _Sample_component.Isotopic_labeling 
+        _Sample_component.Entry_ID 
+        _Sample_component.Sample_ID 
+
+         1  p53tet    ?   ?   1 $p53_tetramerization_domain_polypeptide    4.0   ?   mM   ?   ?  "[U-13C; U-15N]"   6521  4 
+         2  Na2HPO4   ?   ?   1  ?                                        10     ?   mM   ?   ?   ?                 6521  4 
+         3  NaCl      ?   ?   1  ?                                        50     ?   mM   ?   ?   ?                 6521  4 
+         4  NaN3      ?   ?   1  ?                                         0.02  ?   %    ?   ?   ?                 6521  4 
+    stop_
+
+save_
+
+#######################
+#  Sample conditions  #
+#######################
+
+save_conditions_1
+    _Sample_condition_list.Sf_category   sample_conditions 
+    _Sample_condition_list.Sf_framecode  conditions_1 
+    _Sample_condition_list.Entry_ID      6521 
+    _Sample_condition_list.ID            1 
+
+    loop_
+        _Sample_condition_variable.Type 
+        _Sample_condition_variable.Val 
+        _Sample_condition_variable.Val_err 
+        _Sample_condition_variable.Val_units 
+        _Sample_condition_variable.Entry_ID 
+        _Sample_condition_variable.Sample_condition_list_ID 
+
+         pH              6.0  0.05  pH   6521  1 
+         temperature   293.0  0.1   K    6521  1 
+    stop_
+
+save_
+
+
+save_conditions_2
+    _Sample_condition_list.Sf_category   sample_conditions 
+    _Sample_condition_list.Sf_framecode  conditions_2 
+    _Sample_condition_list.Entry_ID      6521 
+    _Sample_condition_list.ID            2 
+
+    loop_
+        _Sample_condition_variable.Type 
+        _Sample_condition_variable.Val 
+        _Sample_condition_variable.Val_err 
+        _Sample_condition_variable.Val_units 
+        _Sample_condition_variable.Entry_ID 
+        _Sample_condition_variable.Sample_condition_list_ID 
+
+         pH              4.0  0.05  pH   6521  2 
+         temperature   293.0  0.1   K    6521  2 
+    stop_
+
+save_
+
+####################
+#  NMR parameters  #
+####################
+##############################
+#  Assigned chemical shifts  #
+##############################
+################################
+#  Chemical shift referencing  #
+################################
+
+save_chemical_shift_referencing
+    _Chem_shift_reference.Sf_category        chem_shift_reference 
+    _Chem_shift_reference.Sf_framecode       chemical_shift_referencing 
+    _Chem_shift_reference.Entry_ID           6521 
+    _Chem_shift_reference.ID                 1 
+    _Chem_shift_reference.IUPAC_default_1H   no 
+    _Chem_shift_reference.IUPAC_default_13C  no 
+    _Chem_shift_reference.IUPAC_default_15N  no 
+    _Chem_shift_reference.IUPAC_default_31P  no 
+
+    loop_
+        _Chem_shift_ref.Mol_common_name 
+        _Chem_shift_ref.Atom_type 
+        _Chem_shift_ref.Atom_isotope 
+        _Chem_shift_ref.Atom_group 
+        _Chem_shift_ref.Chem_shift_units 
+        _Chem_shift_ref.Chem_shift_val 
+        _Chem_shift_ref.Ref_method 
+        _Chem_shift_ref.Ref_type 
+        _Chem_shift_ref.Indirect_shift_ratio 
+        _Chem_shift_ref.Entry_ID 
+        _Chem_shift_ref.Chem_shift_reference_ID 
+
+         TSP   H   1 "methyl protons"   ppm   0.00  indirect   external   ?   6521  1 
+    stop_
+
+save_
+
+###################################
+#  Assigned chemical shift lists  #
+###################################
+###################################################################
+#       Chemical Shift Ambiguity Index Value Definitions          #
+#                                                                 #
+#   Index Value            Definition                             #
+#                                                                 #
+#      1             Unique (geminal atoms and geminal methyl     #
+#                         groups with identical chemical shifts   #
+#                         are assumed to be assigned to           #
+#                         stereospecific atoms)                   #
+#      2             Ambiguity of geminal atoms or geminal methyl #
+#                         proton groups                           #
+#      3             Aromatic atoms on opposite sides of          #
+#                         symmetrical rings (e.g. Tyr HE1 and HE2 #
+#                         protons)                                #
+#      4             Intraresidue ambiguities (e.g. Lys HG and    #
+#                         HD protons or Trp HZ2 and HZ3 protons)  #
+#      5             Interresidue ambiguities (Lys 12 vs. Lys 27) #
+#      9             Ambiguous, specific ambiguity not defined    #
+#                                                                 #
+###################################################################
+
+save_chem_shift_list_1
+    _Assigned_chem_shift_list.Sf_category                  assigned_chemical_shifts 
+    _Assigned_chem_shift_list.Sf_framecode                 chem_shift_list_1 
+    _Assigned_chem_shift_list.Entry_ID                     6521 
+    _Assigned_chem_shift_list.ID                           1 
+    _Assigned_chem_shift_list.Details                     "Assigned chemical shift values for wild type p53tet at pH 4.0." 
+    _Assigned_chem_shift_list.Sample_condition_list_ID     2 
+    _Assigned_chem_shift_list.Sample_condition_list_label $conditions_1 
+    _Assigned_chem_shift_list.Chem_shift_reference_ID      1 
+    _Assigned_chem_shift_list.Chem_shift_reference_label  $chemical_shift_referencing 
+
+    loop_
+        _Chem_shift_software_apps.Software_ID 
+        _Chem_shift_software_apps.Software_label 
+        _Chem_shift_software_apps.Method_ID 
+        _Chem_shift_software_apps.Method_label 
+        _Chem_shift_software_apps.Entry_ID 
+        _Chem_shift_software_apps.Assigned_chem_shift_list_ID 
+
+         1 $software_1   ?   ?   6521  1 
+    stop_
+
+
+    loop_
+        _Chem_shift_experiment.NMR_spec_expt_ID 
+        _Chem_shift_experiment.NMR_spec_expt_label 
+        _Chem_shift_experiment.Sample_ID 
+        _Chem_shift_experiment.Sample_label 
+        _Chem_shift_experiment.Sample_state 
+        _Chem_shift_experiment.Entry_ID 
+        _Chem_shift_experiment.Assigned_chem_shift_list_ID 
+
+         1 $1H15N_HSQC    2 $sample_1   isotropic   6521  1 
+         2 $HNCA          3 $sample_2   isotropic   6521  1 
+         3 $HN(CO)CA      3 $sample_2   isotropic   6521  1 
+         4 $HNCACB        3 $sample_2   isotropic   6521  1 
+         5 $CBCA(CO)NH    3 $sample_2   isotropic   6521  1 
+         6 $1H15N_NOESY   2 $sample_1   isotropic   6521  1 
+    stop_
+
+
+    loop_
+        _Atom_chem_shift.ID 
+        _Atom_chem_shift.Entity_assembly_ID 
+        _Atom_chem_shift.Entity_ID 
+        _Atom_chem_shift.Comp_index_ID 
+        _Atom_chem_shift.Seq_ID 
+        _Atom_chem_shift.Comp_ID 
+        _Atom_chem_shift.Atom_ID 
+        _Atom_chem_shift.Atom_type 
+        _Atom_chem_shift.Atom_isotope 
+        _Atom_chem_shift.Author_seq_code 
+        _Atom_chem_shift.Author_comp_code 
+        _Atom_chem_shift.Author_atom_code 
+        _Atom_chem_shift.Chem_shift_val 
+        _Atom_chem_shift.Chem_shift_val_err 
+        _Atom_chem_shift.Chem_shift_assign_fig_of_merit 
+        _Atom_chem_shift.Chem_shift_ambiguity_code 
+        _Atom_chem_shift.Chem_shift_occupancy_ID 
+        _Atom_chem_shift.Derivation_ID 
+        _Atom_chem_shift.Entry_atom_ID 
+        _Atom_chem_shift.Entry_ID 
+        _Atom_chem_shift.Assigned_chem_shift_list_ID 
+
+           1  1  1   3   3  HIS   H    H    1   8  HIS   H      8.502    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           2  1  1   3   3  HIS   N    N   15   8  HIS   N    122.268    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           3  1  1   4   4  MET   H    H    1   9  MET   H      8.255    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           4  1  1   4   4  MET   CA   C   13   9  MET   CA    55.34815  .   .   .   .   .   .   NEED_ACC_NUM   1 
+           5  1  1   4   4  MET   N    N   15   9  MET   N    122.938    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           6  1  1   5   5  ASN   H    H    1  10  ASN   H      8.412    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           7  1  1   5   5  ASN   N    N   15  10  ASN   N    121.342    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           8  1  1   6   6  ASN   H    H    1  11  ASN   H      8.322    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           9  1  1   6   6  ASN   CA   C   13  11  ASN   CA    53.32227  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          10  1  1   6   6  ASN   N    N   15  11  ASN   N    120.806    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          11  1  1   7   7  THR   H    H    1  12  THR   H      8.05     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          12  1  1   7   7  THR   CA   C   13  12  THR   CA    61.51926  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          13  1  1   7   7  THR   N    N   15  12  THR   N    115.352    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          14  1  1   8   8  SER   H    H    1  13  SER   H      8.211    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          15  1  1   8   8  SER   CA   C   13  13  SER   CA    58.15683  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          16  1  1   8   8  SER   N    N   15  13  SER   N    119.157    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          17  1  1   9   9  SER   H    H    1  14  SER   H      8.181    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          18  1  1   9   9  SER   CA   C   13  14  SER   CA    58.15683  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          19  1  1   9   9  SER   N    N   15  14  SER   N    118.938    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          20  1  1  10  10  SER   H    H    1  15  SER   H      8.113    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          21  1  1  10  10  SER   CA   C   13  15  SER   CA    56.39097  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          22  1  1  10  10  SER   N    N   15  15  SER   N    120.121    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          23  1  1  11  11  PRO   CA   C   13  16  PRO   CA    63.03533  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          24  1  1  12  12  GLN   H    H    1  17  GLN   H      7.936    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          25  1  1  12  12  GLN   N    N   15  17  GLN   N    120.426    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          26  1  1  14  14  LYS   H    H    1  19  LYS   H      8.268    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          27  1  1  14  14  LYS   CA   C   13  19  LYS   CA    56.30585  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          28  1  1  14  14  LYS   N    N   15  19  LYS   N    123.222    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          29  1  1  15  15  LYS   H    H    1  20  LYS   H      8.074    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          30  1  1  15  15  LYS   CA   C   13  20  LYS   CA    56.24077  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          31  1  1  15  15  LYS   N    N   15  20  LYS   N    124.207    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          32  1  1  16  16  LYS   H    H    1  21  LYS   H      7.956    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          33  1  1  16  16  LYS   CA   C   13  21  LYS   CA    54.23303  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          34  1  1  16  16  LYS   N    N   15  21  LYS   N    123.097    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          35  1  1  17  17  PRO   CA   C   13  22  PRO   CA    63.08745  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          36  1  1  18  18  LEU   H    H    1  23  LEU   H      8.218    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          37  1  1  18  18  LEU   CA   C   13  23  LEU   CA    55.11242  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          38  1  1  18  18  LEU   N    N   15  23  LEU   N    123.28     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          39  1  1  19  19  ASP   H    H    1  24  ASP   H      8.127    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          40  1  1  19  19  ASP   CA   C   13  24  ASP   CA    54.14381  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          41  1  1  19  19  ASP   N    N   15  24  ASP   N    122.646    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          42  1  1  20  20  GLY   H    H    1  25  GLY   H      8.091    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          43  1  1  20  20  GLY   CA   C   13  25  GLY   CA    44.89923  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          44  1  1  20  20  GLY   N    N   15  25  GLY   N    110.296    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          45  1  1  21  21  GLU   H    H    1  26  GLU   H      7.837    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          46  1  1  21  21  GLU   CA   C   13  26  GLU   CA    56.00053  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          47  1  1  21  21  GLU   N    N   15  26  GLU   N    121.99     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          48  1  1  22  22  TYR   H    H    1  27  TYR   H      7.827    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          49  1  1  22  22  TYR   CA   C   13  27  TYR   CA    57.3091   .   .   .   .   .   .   NEED_ACC_NUM   1 
+          50  1  1  22  22  TYR   N    N   15  27  TYR   N    121.256    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          51  1  1  23  23  PHE   H    H    1  28  PHE   H      9.15     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          52  1  1  23  23  PHE   CA   C   13  28  PHE   CA    56.54295  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          53  1  1  23  23  PHE   N    N   15  28  PHE   N    122.392    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          54  1  1  24  24  THR   H    H    1  29  THR   H      8.25     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          55  1  1  24  24  THR   CA   C   13  29  THR   CA    61.41326  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          56  1  1  24  24  THR   N    N   15  29  THR   N    115.644    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          57  1  1  25  25  LEU   H    H    1  30  LEU   H      8.791    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          58  1  1  25  25  LEU   CA   C   13  30  LEU   CA    53.30207  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          59  1  1  25  25  LEU   N    N   15  30  LEU   N    128.02     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          60  1  1  26  26  GLN   H    H    1  31  GLN   H      8.497    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          61  1  1  26  26  GLN   CA   C   13  31  GLN   CA    54.91596  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          62  1  1  26  26  GLN   N    N   15  31  GLN   N    126.421    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          63  1  1  27  27  ILE   H    H    1  32  ILE   H      9.24     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          64  1  1  27  27  ILE   CA   C   13  32  ILE   CA    59.33935  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          65  1  1  27  27  ILE   N    N   15  32  ILE   N    127.865    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          66  1  1  28  28  ARG   H    H    1  33  ARG   H      9.649    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          67  1  1  28  28  ARG   CA   C   13  33  ARG   CA    56.08375  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          68  1  1  28  28  ARG   N    N   15  33  ARG   N    131.598    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          69  1  1  29  29  GLY   H    H    1  34  GLY   H      8.55     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          70  1  1  29  29  GLY   CA   C   13  34  GLY   CA    44.89077  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          71  1  1  29  29  GLY   N    N   15  34  GLY   N    116.299    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          72  1  1  30  30  ARG   H    H    1  35  ARG   H      8.776    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          73  1  1  30  30  ARG   CA   C   13  35  ARG   CA    58.89011  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          74  1  1  30  30  ARG   N    N   15  35  ARG   N    127.594    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          75  1  1  31  31  GLU   H    H    1  36  GLU   H      8.688    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          76  1  1  31  31  GLU   CA   C   13  36  GLU   CA    60.3909   .   .   .   .   .   .   NEED_ACC_NUM   1 
+          77  1  1  31  31  GLU   N    N   15  36  GLU   N    119.714    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          78  1  1  32  32  ARG   H    H    1  37  ARG   H      7.827    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          79  1  1  32  32  ARG   CA   C   13  37  ARG   CA    56.20694  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          80  1  1  32  32  ARG   N    N   15  37  ARG   N    124.094    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          81  1  1  33  33  PHE   H    H    1  38  PHE   H      8.255    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          82  1  1  33  33  PHE   CA   C   13  38  PHE   CA    61.97559  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          83  1  1  33  33  PHE   N    N   15  38  PHE   N    121.67     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          84  1  1  34  34  GLU   H    H    1  39  GLU   H      8.396    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          85  1  1  34  34  GLU   CA   C   13  39  GLU   CA    58.98247  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          86  1  1  34  34  GLU   N    N   15  39  GLU   N    119.473    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          87  1  1  35  35  MET   H    H    1  40  MET   H      7.425    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          88  1  1  35  35  MET   CA   C   13  40  MET   CA    58.9635   .   .   .   .   .   .   NEED_ACC_NUM   1 
+          89  1  1  35  35  MET   N    N   15  40  MET   N    121.919    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          90  1  1  36  36  PHE   H    H    1  41  PHE   H      7.86     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          91  1  1  36  36  PHE   CA   C   13  41  PHE   CA    60.76184  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          92  1  1  36  36  PHE   N    N   15  41  PHE   N    119.043    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          93  1  1  37  37  ARG   H    H    1  42  ARG   H      9.09     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          94  1  1  37  37  ARG   CA   C   13  42  ARG   CA    59.8272   .   .   .   .   .   .   NEED_ACC_NUM   1 
+          95  1  1  37  37  ARG   N    N   15  42  ARG   N    122.386    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          96  1  1  38  38  GLU   H    H    1  43  GLU   H      7.75     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          97  1  1  38  38  GLU   CA   C   13  43  GLU   CA    59.45067  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          98  1  1  38  38  GLU   N    N   15  43  GLU   N    121.564    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          99  1  1  39  39  LEU   H    H    1  44  LEU   H      7.658    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         100  1  1  39  39  LEU   CA   C   13  44  LEU   CA    57.95821  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         101  1  1  39  39  LEU   N    N   15  44  LEU   N    119.646    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         102  1  1  40  40  ASN   H    H    1  45  ASN   H      8.649    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         103  1  1  40  40  ASN   CA   C   13  45  ASN   CA    57.1855   .   .   .   .   .   .   NEED_ACC_NUM   1 
+         104  1  1  40  40  ASN   N    N   15  45  ASN   N    118.448    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         105  1  1  41  41  GLU   H    H    1  46  GLU   H      8.658    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         106  1  1  41  41  GLU   CA   C   13  46  GLU   CA    59.27851  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         107  1  1  41  41  GLU   N    N   15  46  GLU   N    119.701    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         108  1  1  42  42  ALA   H    H    1  47  ALA   H      7.959    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         109  1  1  42  42  ALA   CA   C   13  47  ALA   CA    55.25634  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         110  1  1  42  42  ALA   N    N   15  47  ALA   N    123.333    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         111  1  1  43  43  LEU   H    H    1  48  LEU   H      8.238    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         112  1  1  43  43  LEU   CA   C   13  48  LEU   CA    57.908    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         113  1  1  43  43  LEU   N    N   15  48  LEU   N    121.453    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         114  1  1  44  44  GLU   H    H    1  49  GLU   H      8.255    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         115  1  1  44  44  GLU   CA   C   13  49  GLU   CA    59.73648  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         116  1  1  44  44  GLU   N    N   15  49  GLU   N    120.053    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         117  1  1  45  45  LEU   H    H    1  50  LEU   H      8.041    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         118  1  1  45  45  LEU   CA   C   13  50  LEU   CA    57.76803  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         119  1  1  45  45  LEU   N    N   15  50  LEU   N    125.08     .   .   .   .   .   .   NEED_ACC_NUM   1 
+         120  1  1  46  46  LYS   H    H    1  51  LYS   H      7.739    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         121  1  1  46  46  LYS   CA   C   13  51  LYS   CA    59.46336  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         122  1  1  46  46  LYS   N    N   15  51  LYS   N    122.909    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         123  1  1  47  47  ASP   H    H    1  52  ASP   H      8.109    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         124  1  1  47  47  ASP   CA   C   13  52  ASP   CA    56.73121  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         125  1  1  47  47  ASP   N    N   15  52  ASP   N    121.535    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         126  1  1  48  48  ALA   H    H    1  53  ALA   H      7.539    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         127  1  1  48  48  ALA   CA   C   13  53  ALA   CA    53.8565   .   .   .   .   .   .   NEED_ACC_NUM   1 
+         128  1  1  48  48  ALA   N    N   15  53  ALA   N    122.322    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         129  1  1  49  49  GLN   H    H    1  54  GLN   H      7.729    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         130  1  1  49  49  GLN   CA   C   13  54  GLN   CA    56.5585   .   .   .   .   .   .   NEED_ACC_NUM   1 
+         131  1  1  49  49  GLN   N    N   15  54  GLN   N    118.236    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         132  1  1  50  50  ALA   H    H    1  55  ALA   H      7.693    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         133  1  1  50  50  ALA   CA   C   13  55  ALA   CA    53.1205   .   .   .   .   .   .   NEED_ACC_NUM   1 
+         134  1  1  50  50  ALA   N    N   15  55  ALA   N    123.961    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         135  1  1  51  51  GLY   H    H    1  56  GLY   H      8.06     .   .   .   .   .   .   NEED_ACC_NUM   1 
+         136  1  1  51  51  GLY   CA   C   13  56  GLY   CA    45.36198  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         137  1  1  51  51  GLY   N    N   15  56  GLY   N    108.609    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         138  1  1  52  52  LYS   H    H    1  57  LYS   H      7.786    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         139  1  1  52  52  LYS   CA   C   13  57  LYS   CA    55.81595  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         140  1  1  52  52  LYS   N    N   15  57  LYS   N    121.835    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         141  1  1  53  53  GLU   H    H    1  58  GLU   H      8.283    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         142  1  1  53  53  GLU   CA   C   13  58  GLU   CA    54.3202   .   .   .   .   .   .   NEED_ACC_NUM   1 
+         143  1  1  53  53  GLU   N    N   15  58  GLU   N    126.176    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         144  1  1  54  54  PRO   CA   C   13  59  PRO   CA    63.18758  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         145  1  1  55  55  GLY   H    H    1  60  GLY   H      7.879    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         146  1  1  55  55  GLY   CA   C   13  60  GLY   CA    46.29756  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         147  1  1  55  55  GLY   N    N   15  60  GLY   N    116.629    .   .   .   .   .   .   NEED_ACC_NUM   1 
+    stop_
+
+save_
+
+
+save_chem_shift_list_2
+    _Assigned_chem_shift_list.Sf_category                  assigned_chemical_shifts 
+    _Assigned_chem_shift_list.Sf_framecode                 chem_shift_list_2 
+    _Assigned_chem_shift_list.Entry_ID                     6521 
+    _Assigned_chem_shift_list.ID                           2 
+    _Assigned_chem_shift_list.Details                     "Assigned chemical shift values for wild type p53tet at pH 4.0." 
+    _Assigned_chem_shift_list.Sample_condition_list_ID     2 
+    _Assigned_chem_shift_list.Sample_condition_list_label $conditions_2 
+    _Assigned_chem_shift_list.Chem_shift_reference_ID      1 
+    _Assigned_chem_shift_list.Chem_shift_reference_label  $chemical_shift_referencing 
+
+    loop_
+        _Chem_shift_software_apps.Software_ID 
+        _Chem_shift_software_apps.Software_label 
+        _Chem_shift_software_apps.Method_ID 
+        _Chem_shift_software_apps.Method_label 
+        _Chem_shift_software_apps.Entry_ID 
+        _Chem_shift_software_apps.Assigned_chem_shift_list_ID 
+
+         1 $software_1   ?  $method_1   6521  2 
+    stop_
+
+
+    loop_
+        _Chem_shift_experiment.NMR_spec_expt_ID 
+        _Chem_shift_experiment.NMR_spec_expt_label 
+        _Chem_shift_experiment.Sample_ID 
+        _Chem_shift_experiment.Sample_label 
+        _Chem_shift_experiment.Sample_state 
+        _Chem_shift_experiment.Entry_ID 
+        _Chem_shift_experiment.Assigned_chem_shift_list_ID 
+
+         1 $1H15N_HSQC    2 $sample_1   isotropic   6521  2 
+         2 $HNCA          3 $sample_2   isotropic   6521  2 
+         3 $HN(CO)CA      3 $sample_2   isotropic   6521  2 
+         4 $HNCACB        3 $sample_2   isotropic   6521  2 
+         5 $CBCA(CO)NH    3 $sample_2   isotropic   6521  2 
+         6 $1H15N_NOESY   2 $sample_1   isotropic   6521  2 
+    stop_
+
+
+    loop_
+        _Atom_chem_shift.ID 
+        _Atom_chem_shift.Entity_assembly_ID 
+        _Atom_chem_shift.Entity_ID 
+        _Atom_chem_shift.Comp_index_ID 
+        _Atom_chem_shift.Seq_ID 
+        _Atom_chem_shift.Comp_ID 
+        _Atom_chem_shift.Atom_ID 
+        _Atom_chem_shift.Atom_type 
+        _Atom_chem_shift.Atom_isotope 
+        _Atom_chem_shift.Author_seq_code 
+        _Atom_chem_shift.Author_comp_code 
+        _Atom_chem_shift.Author_atom_code 
+        _Atom_chem_shift.Chem_shift_val 
+        _Atom_chem_shift.Chem_shift_val_err 
+        _Atom_chem_shift.Chem_shift_assign_fig_of_merit 
+        _Atom_chem_shift.Chem_shift_ambiguity_code 
+        _Atom_chem_shift.Chem_shift_occupancy_ID 
+        _Atom_chem_shift.Derivation_ID 
+        _Atom_chem_shift.Entry_atom_ID 
+        _Atom_chem_shift.Entry_ID 
+        _Atom_chem_shift.Assigned_chem_shift_list_ID 
+
+           1  1  1   1   1  GLY   CA   C   13   6  GLY   CA    43.32384  .   .   .   .   .   .   NEED_ACC_NUM   1 
+           2  1  1   2   2  SER   H    H    1   7  SER   H      8.478    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           3  1  1   2   2  SER   CA   C   13   7  SER   CA    58.25784  .   .   .   .   .   .   NEED_ACC_NUM   1 
+           4  1  1   2   2  SER   N    N   15   7  SER   N    116.745    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           5  1  1   3   3  HIS   H    H    1   8  HIS   H      8.543    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           6  1  1   3   3  HIS   CA   C   13   8  HIS   CA    55.3554   .   .   .   .   .   .   NEED_ACC_NUM   1 
+           7  1  1   3   3  HIS   N    N   15   8  HIS   N    121.776    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           8  1  1   4   4  MET   H    H    1   9  MET   H      8.281    .   .   .   .   .   .   NEED_ACC_NUM   1 
+           9  1  1   4   4  MET   CA   C   13   9  MET   CA    55.45662  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          10  1  1   4   4  MET   N    N   15   9  MET   N    123.082    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          11  1  1   5   5  ASN   H    H    1  10  ASN   H      8.399    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          12  1  1   5   5  ASN   CA   C   13  10  ASN   CA    53.22237  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          13  1  1   5   5  ASN   N    N   15  10  ASN   N    121.499    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          14  1  1   6   6  ASN   CA   C   13  11  ASN   CA    53.22237  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          15  1  1   7   7  THR   H    H    1  12  THR   H      8.036    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          16  1  1   7   7  THR   CA   C   13  12  THR   CA    61.98397  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          17  1  1   7   7  THR   N    N   15  12  THR   N    115.425    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          18  1  1   8   8  SER   H    H    1  13  SER   H      8.198    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          19  1  1   8   8  SER   CA   C   13  13  SER   CA    58.52877  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          20  1  1   8   8  SER   N    N   15  13  SER   N    119.233    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          21  1  1   9   9  SER   H    H    1  14  SER   H      8.165    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          22  1  1   9   9  SER   CA   C   13  14  SER   CA    58.25538  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          23  1  1   9   9  SER   N    N   15  14  SER   N    118.984    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          24  1  1  10  10  SER   H    H    1  15  SER   H      8.109    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          25  1  1  10  10  SER   CA   C   13  15  SER   CA    55.64543  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          26  1  1  10  10  SER   N    N   15  15  SER   N    120.168    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          27  1  1  11  11  PRO   CA   C   13  16  PRO   CA    63.47912  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          28  1  1  12  12  GLN   H    H    1  17  GLN   H      7.921    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          29  1  1  12  12  GLN   CA   C   13  17  GLN   CA    52.91788  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          30  1  1  12  12  GLN   N    N   15  17  GLN   N    120.482    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          31  1  1  13  13  PRO   CA   C   13  18  PRO   CA    62.92472  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          32  1  1  14  14  LYS   H    H    1  19  LYS   H      8.255    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          33  1  1  14  14  LYS   CA   C   13  19  LYS   CA    56.20256  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          34  1  1  14  14  LYS   N    N   15  19  LYS   N    123.247    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          35  1  1  15  15  LYS   H    H    1  20  LYS   H      8.152    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          36  1  1  15  15  LYS   CA   C   13  20  LYS   CA    56.20201  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          37  1  1  15  15  LYS   N    N   15  20  LYS   N    124.356    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          38  1  1  16  16  LYS   H    H    1  21  LYS   H      8.04     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          39  1  1  16  16  LYS   CA   C   13  21  LYS   CA    54.14919  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          40  1  1  16  16  LYS   N    N   15  21  LYS   N    124.178    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          41  1  1  17  17  PRO   CA   C   13  22  PRO   CA    63.10479  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          42  1  1  18  18  LEU   H    H    1  23  LEU   H      8.192    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          43  1  1  18  18  LEU   CA   C   13  23  LEU   CA    55.26946  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          44  1  1  18  18  LEU   N    N   15  23  LEU   N    123.417    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          45  1  1  19  19  ASP   H    H    1  24  ASP   H      8.154    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          46  1  1  19  19  ASP   CA   C   13  24  ASP   CA    54.15028  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          47  1  1  19  19  ASP   N    N   15  24  ASP   N    122.164    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          48  1  1  20  20  GLY   H    H    1  25  GLY   H      8.085    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          49  1  1  20  20  GLY   CA   C   13  25  GLY   CA    45.18705  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          50  1  1  20  20  GLY   N    N   15  25  GLY   N    110.402    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          51  1  1  21  21  GLU   H    H    1  26  GLU   H      7.761    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          52  1  1  21  21  GLU   CA   C   13  26  GLU   CA    55.91281  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          53  1  1  21  21  GLU   N    N   15  26  GLU   N    121.335    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          54  1  1  22  22  TYR   H    H    1  27  TYR   H      7.763    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          55  1  1  22  22  TYR   CA   C   13  27  TYR   CA    57.32719  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          56  1  1  22  22  TYR   N    N   15  27  TYR   N    120.81     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          57  1  1  23  23  PHE   H    H    1  28  PHE   H      9.082    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          58  1  1  23  23  PHE   CA   C   13  28  PHE   CA    56.5758   .   .   .   .   .   .   NEED_ACC_NUM   1 
+          59  1  1  23  23  PHE   N    N   15  28  PHE   N    122.392    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          60  1  1  24  24  THR   H    H    1  29  THR   H      8.25     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          61  1  1  24  24  THR   CA   C   13  29  THR   CA    61.23967  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          62  1  1  24  24  THR   N    N   15  29  THR   N    115.81     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          63  1  1  25  25  LEU   H    H    1  30  LEU   H      8.739    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          64  1  1  25  25  LEU   CA   C   13  30  LEU   CA    53.39943  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          65  1  1  25  25  LEU   N    N   15  30  LEU   N    127.789    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          66  1  1  26  26  GLN   H    H    1  31  GLN   H      8.464    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          67  1  1  26  26  GLN   CA   C   13  31  GLN   CA    55.26618  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          68  1  1  26  26  GLN   N    N   15  31  GLN   N    126.414    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          69  1  1  27  27  ILE   H    H    1  32  ILE   H      9.232    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          70  1  1  27  27  ILE   CA   C   13  32  ILE   CA    59.56227  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          71  1  1  27  27  ILE   N    N   15  32  ILE   N    127.889    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          72  1  1  28  28  ARG   H    H    1  33  ARG   H      9.461    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          73  1  1  28  28  ARG   CA   C   13  33  ARG   CA    55.45772  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          74  1  1  28  28  ARG   N    N   15  33  ARG   N    131.219    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          75  1  1  29  29  GLY   H    H    1  34  GLY   H      8.529    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          76  1  1  29  29  GLY   CA   C   13  34  GLY   CA    44.62064  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          77  1  1  29  29  GLY   N    N   15  34  GLY   N    116.132    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          78  1  1  30  30  ARG   H    H    1  35  ARG   H      8.684    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          79  1  1  30  30  ARG   CA   C   13  35  ARG   CA    59.56227  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          80  1  1  30  30  ARG   N    N   15  35  ARG   N    127.599    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          81  1  1  31  31  GLU   H    H    1  36  GLU   H      8.597    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          82  1  1  31  31  GLU   CA   C   13  36  GLU   CA    59.75053  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          83  1  1  31  31  GLU   N    N   15  36  GLU   N    120.077    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          84  1  1  32  32  ARG   H    H    1  37  ARG   H      8.241    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          85  1  1  32  32  ARG   CA   C   13  37  ARG   CA    59.553    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          86  1  1  32  32  ARG   N    N   15  37  ARG   N    121.207    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          87  1  1  33  33  PHE   H    H    1  38  PHE   H      8.241    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          88  1  1  33  33  PHE   CA   C   13  38  PHE   CA    61.63393  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          89  1  1  33  33  PHE   N    N   15  38  PHE   N    121.207    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          90  1  1  34  34  GLU   H    H    1  39  GLU   H      8.316    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          91  1  1  34  34  GLU   CA   C   13  39  GLU   CA    58.81743  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          92  1  1  34  34  GLU   N    N   15  39  GLU   N    119.391    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          93  1  1  35  35  MET   H    H    1  40  MET   H      7.465    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          94  1  1  35  35  MET   CA   C   13  40  MET   CA    58.4431   .   .   .   .   .   .   NEED_ACC_NUM   1 
+          95  1  1  35  35  MET   N    N   15  40  MET   N    121.63     .   .   .   .   .   .   NEED_ACC_NUM   1 
+          96  1  1  36  36  PHE   H    H    1  41  PHE   H      7.898    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          97  1  1  36  36  PHE   CA   C   13  41  PHE   CA    61.61128  .   .   .   .   .   .   NEED_ACC_NUM   1 
+          98  1  1  36  36  PHE   N    N   15  41  PHE   N    118.973    .   .   .   .   .   .   NEED_ACC_NUM   1 
+          99  1  1  37  37  ARG   H    H    1  42  ARG   H      9.015    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         100  1  1  37  37  ARG   CA   C   13  42  ARG   CA    59.74916  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         101  1  1  37  37  ARG   N    N   15  42  ARG   N    122.421    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         102  1  1  38  38  GLU   H    H    1  43  GLU   H      7.826    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         103  1  1  38  38  GLU   CA   C   13  43  GLU   CA    59.31126  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         104  1  1  38  38  GLU   N    N   15  43  GLU   N    124.138    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         105  1  1  39  39  LEU   H    H    1  44  LEU   H      7.71     .   .   .   .   .   .   NEED_ACC_NUM   1 
+         106  1  1  39  39  LEU   CA   C   13  44  LEU   CA    58.25593  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         107  1  1  39  39  LEU   N    N   15  44  LEU   N    120.139    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         108  1  1  40  40  ASN   H    H    1  45  ASN   H      8.648    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         109  1  1  40  40  ASN   CA   C   13  45  ASN   CA    57.50727  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         110  1  1  40  40  ASN   N    N   15  45  ASN   N    118.782    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         111  1  1  41  41  GLU   H    H    1  46  GLU   H      8.619    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         112  1  1  41  41  GLU   CA   C   13  46  GLU   CA    59.00023  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         113  1  1  41  41  GLU   N    N   15  46  GLU   N    118.911    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         114  1  1  42  42  ALA   H    H    1  47  ALA   H      7.821    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         115  1  1  42  42  ALA   CA   C   13  47  ALA   CA    55.45717  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         116  1  1  42  42  ALA   N    N   15  47  ALA   N    123.244    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         117  1  1  43  43  LEU   H    H    1  48  LEU   H      8.374    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         118  1  1  43  43  LEU   CA   C   13  48  LEU   CA    58.55933  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         119  1  1  43  43  LEU   N    N   15  48  LEU   N    122.261    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         120  1  1  44  44  GLU   H    H    1  49  GLU   H      7.97     .   .   .   .   .   .   NEED_ACC_NUM   1 
+         121  1  1  44  44  GLU   CA   C   13  49  GLU   CA    58.62126  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         122  1  1  44  44  GLU   N    N   15  49  GLU   N    124.354    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         123  1  1  45  45  LEU   H    H    1  50  LEU   H      7.925    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         124  1  1  45  45  LEU   CA   C   13  50  LEU   CA    57.87887  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         125  1  1  45  45  LEU   N    N   15  50  LEU   N    124.591    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         126  1  1  46  46  LYS   H    H    1  51  LYS   H      7.669    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         127  1  1  46  46  LYS   CA   C   13  51  LYS   CA    59.37594  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         128  1  1  46  46  LYS   N    N   15  51  LYS   N    122.423    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         129  1  1  47  47  ASP   H    H    1  52  ASP   H      8.019    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         130  1  1  47  47  ASP   CA   C   13  52  ASP   CA    56.94304  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         131  1  1  47  47  ASP   N    N   15  52  ASP   N    121.25     .   .   .   .   .   .   NEED_ACC_NUM   1 
+         132  1  1  48  48  ALA   H    H    1  53  ALA   H      7.55     .   .   .   .   .   .   NEED_ACC_NUM   1 
+         133  1  1  48  48  ALA   CA   C   13  53  ALA   CA    53.96693  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         134  1  1  48  48  ALA   N    N   15  53  ALA   N    122.597    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         135  1  1  49  49  GLN   H    H    1  54  GLN   H      7.747    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         136  1  1  49  49  GLN   CA   C   13  54  GLN   CA    56.76515  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         137  1  1  49  49  GLN   N    N   15  54  GLN   N    118.492    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         138  1  1  50  50  ALA   H    H    1  55  ALA   H      7.711    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         139  1  1  50  50  ALA   CA   C   13  55  ALA   CA    53.21745  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         140  1  1  50  50  ALA   N    N   15  55  ALA   N    123.831    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         141  1  1  51  51  GLY   H    H    1  56  GLY   H      8.008    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         142  1  1  51  51  GLY   CA   C   13  56  GLY   CA    45.56602  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         143  1  1  51  51  GLY   N    N   15  56  GLY   N    108.585    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         144  1  1  52  52  LYS   H    H    1  57  LYS   H      7.77     .   .   .   .   .   .   NEED_ACC_NUM   1 
+         145  1  1  52  52  LYS   CA   C   13  57  LYS   CA    56.01921  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         146  1  1  52  52  LYS   N    N   15  57  LYS   N    121.798    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         147  1  1  53  53  GLU   H    H    1  58  GLU   H      8.256    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         148  1  1  53  53  GLU   CA   C   13  58  GLU   CA    54.33881  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         149  1  1  53  53  GLU   N    N   15  58  GLU   N    126.149    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         150  1  1  54  54  PRO   CA   C   13  59  PRO   CA    63.48021  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         151  1  1  55  55  GLY   H    H    1  60  GLY   H      7.918    .   .   .   .   .   .   NEED_ACC_NUM   1 
+         152  1  1  55  55  GLY   CA   C   13  60  GLY   CA    45.94007  .   .   .   .   .   .   NEED_ACC_NUM   1 
+         153  1  1  55  55  GLY   N    N   15  60  GLY   N    115.481    .   .   .   .   .   .   NEED_ACC_NUM   1 
+    stop_
+
+save_
+
+#############################
+#  NMR applied experiments  #
+#############################
+
+save_NMR_experiment_list
+    _NMR_spec_expt_list.Sf_category   NMR_spectrometer_expt_list 
+    _NMR_spec_expt_list.Sf_framecode  NMR_experiment_list 
+    _NMR_spec_expt_list.Entry_ID      6521 
+    _NMR_spec_expt_list.ID            1 
+
+    loop_
+        _NMR_spec_expt_list_item.Name 
+        _NMR_spec_expt_list_item.Timedomain_data_flag 
+        _NMR_spec_expt_list_item.Entry_ID 
+        _NMR_spec_expt_list_item.NMR_spec_expt_list_ID 
+
+         1H15N_HSQC    no   6521  1 
+         HNCA          no   6521  1 
+         HN(CO)CA      no   6521  1 
+         HNCACB        no   6521  1 
+         CBCA(CO)NH    no   6521  1 
+         1H15N_NOESY   no   6521  1 
+    stop_
+
+save_
+
+#########################
+#  Experimental detail  #
+#########################
+##################################
+#  NMR Spectrometer definitions  #
+##################################
+
+save_600MHz_spectrometer
+    _NMR_spectrometer.Sf_category     NMR_spectrometer 
+    _NMR_spectrometer.Sf_framecode    600MHz_spectrometer 
+    _NMR_spectrometer.Entry_ID        6521 
+    _NMR_spectrometer.ID              1 
+    _NMR_spectrometer.Manufacturer    Varian 
+    _NMR_spectrometer.Model           INOVA 
+    _NMR_spectrometer.Field_strength  600 
+save_
+
+############################
+#  Computer software used  #
+############################
+
+save_software_1
+    _Software.Sf_category   software 
+    _Software.Sf_framecode  software_1 
+    _Software.Entry_ID      6521 
+    _Software.ID            1 
+    _Software.Name          Felix 
+
+    loop_
+        _Vendor.Name 
+        _Vendor.Address 
+        _Vendor.Electronic_address 
+        _Vendor.Entry_ID 
+        _Vendor.Software_ID 
+
+         Accelrys  
+;
+Accelrys, Inc. 
+10188 Telesis Court, Suite 100 
+San Diego, CA 92121 
+USA 
+Phone: +1 858 799 5000 
+Fax: +1 858 799 5100
+;
+  http://www.accelrys.com/   6521  1 
+    stop_
+
+save_

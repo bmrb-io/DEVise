@@ -1,0 +1,90 @@
+echo "Checking output files"
+
+
+set files = ( 11017_peaks.str )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "11017_peaks.str"
+set line = 'save_15N_noesy_spectral_peak_list'
+source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = '3   H    1   HN   1   15009   .   .   11017   1'
+source tests/check4line
+
+set line = '1 . . 11017 1'
+source tests/check4line
+set line = '652 . . 11017 1'
+source tests/check4line
+
+set line = '1 1383418.0 . height 11017 1'
+source tests/check4line
+set line = '652 1.3484791E7 . height 11017 1'
+source tests/check4line
+
+set line = '1 1 121.583 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 1'
+source tests/check4line
+set line = '652 1 112.874 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 1'
+source tests/check4line
+set line = '652 2 6.817 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 1'
+source tests/check4line
+set line = '652 3 7.525 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 1'
+source tests/check4line
+
+set line = 'save_c13_noesy_aliph_spectra_peak_list'
+source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = "3   H    1   'HC aliph'    1   12001   .   .   11017   2"
+source tests/check4line
+
+set line = '1 . . 11017 2'
+source tests/check4line
+set line = '1124 . . 11017 2'
+source tests/check4line
+
+set line = '1 201309.0 . height 11017 2'
+source tests/check4line
+set line = '1124 147038.0 . height 11017 2'
+source tests/check4line
+
+set line = '1 1 38.846 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 2'
+source tests/check4line
+set line = '1124 1 32.507 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 2'
+source tests/check4line
+set line = '1124 2 1.578 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 2'
+source tests/check4line
+set line = '1124 3 4.193 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 2'
+source tests/check4line
+
+set line = 'save_c13_noesy_arom_spectra_peak_list'
+source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = "1   C   13   'HC arom'    1    5652   .   .   11017   3"
+source tests/check4line
+
+set line = '1 . . 11017 3'
+source tests/check4line
+set line = '54 . . 11017 3'
+source tests/check4line
+
+set line = '1 134871.0 . height 11017 3'
+source tests/check4line
+set line = '54 94413.0 . height 11017 3'
+source tests/check4line
+
+set line = '1 1 124.265 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 3'
+source tests/check4line
+set line = '54 1 120.781 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 3'
+source tests/check4line
+set line = '54 2 0.844 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 3'
+source tests/check4line
+set line = '54 3 6.45 ? ? ? ? ? ? ? ? ? ? ? ? ? 11017 3'
+source tests/check4line

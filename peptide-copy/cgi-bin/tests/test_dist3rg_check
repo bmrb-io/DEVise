@@ -1,0 +1,87 @@
+echo "Checking output files"
+
+set files = ( data_dir/15209ac1.dat \
+	data_dir/15209am1.dat \
+	data_dir/15209am2.dat \
+	data_dir/15209amac1.dat \
+	data_dir/15209amac2.dat \
+	data_dir/15209as1.dat \
+	data_dir/15209as2.dat \
+	data_dir/15209c1.dat \
+	data_dir/15209c2.dat \
+	data_dir/15209d1.dat \
+	data_dir/15209d2.dat \
+	data_dir/15209distr1.dat \
+	data_dir/15209distrc1.dat \
+	data_dir/15209distr-md1.dat \
+	data_dir/15209hc1.dat \
+	data_dir/15209hc2.dat \
+	data_dir/15209hn1.dat \
+	data_dir/15209hn2.dat \
+	data_dir/15209md.dat \
+	data_dir/15209p1.dat \
+	data_dir/15209p2.dat \
+	data_dir/15209rc1.dat \
+	data_dir/15209rc2.dat \
+	data_dir/15209rl.dat \
+	html_dir/15209/15209ac1.html \
+	html_dir/15209/15209am1.html \
+	html_dir/15209/15209am2.html \
+	html_dir/15209/15209as1.html \
+	html_dir/15209/15209as2.html \
+	html_dir/15209/15209c1.html \
+	html_dir/15209/15209c2.html \
+	html_dir/15209/15209d1.html \
+	html_dir/15209/15209d2.html \
+	html_dir/15209/15209distr1.html \
+	html_dir/15209/15209hc1.html \
+	html_dir/15209/15209hn1.html \
+	html_dir/15209/15209p1.html \
+	html_dir/15209/15209p2.html \
+	html_dir/15209/15209y.html \
+	session_dir/15209/15209ac1.ds \
+	session_dir/15209/15209acdd \
+	session_dir/15209/15209am1.ds \
+	session_dir/15209/15209am2.ds \
+	session_dir/15209/15209as1.ds \
+	session_dir/15209/15209as2.ds \
+	session_dir/15209/15209c1.ds \
+	session_dir/15209/15209c2.ds \
+	session_dir/15209/15209d1.ds \
+	session_dir/15209/15209d2.ds \
+	session_dir/15209/15209distr1.ds \
+	session_dir/15209/15209hc1.ds \
+	session_dir/15209/15209hn1.ds \
+	session_dir/15209/15209p1.ds \
+	session_dir/15209/15209p2.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/15209distr1.dat"
+set line = '^1	23	GLN	1_23	2	1	ARG	2_1	3.256	6.032	1_23_H	H	2_1_HG2	HG2	unknown	Intermolecular	4.837	0.032	Violated	Non-ambiguous'
+source tests/check4line
+set line = '^1	23	GLN	1_23	2	1	ARG	2_1	3.256	6.032	1_23_H	H	2_1_HG3	HG3	unknown	Intermolecular	4.837	0.032	Violated	Non-ambiguous'
+source tests/check4line
+set line = '^1	71	VAL	1_71	1	75	LYS	1_75	2.643	2.997	1_71_O	O	1_75_N	N	unknown	Medium-range	2.800	0	Non-violated	Non-ambiguous'
+source tests/check4line
+
+set file = "data_dir/15209distrc1.dat"
+set line = '^2 6 2_6 36 16 20 0 0 0 36 16 20 7 1 6 0 0 0 7 1 6 2 1 1 0 0 0 2 1 1 2 1 1 0 0 0 2 1 1 0 0 0 0 0 0 0 0 0 25 13 12 0 0 0 25 13 12'
+source tests/check4line
+set line = '^2 5 2_5 15 6 9 0 0 0 15 6 9 2 0 2 0 0 0 2 0 2 2 1 1 0 0 0 2 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 11 5 6 0 0 0 11 5 6'
+source tests/check4line
+set line = '^1 60 1_60 20 5 15 0 0 0 20 5 15 7 1 6 0 0 0 7 1 6 2 0 2 0 0 0 2 0 2 8 3 5 0 0 0 8 3 5 3 1 2 0 0 0 3 1 2 0 0 0 0 0 0 0 0 0'
+source tests/check4line
+
+set file = "data_dir/15209distr-md1.dat"
+set line = '^EA 1	1	All by violation	All	All by ambiguity	All	All by distance	All	\$All_viol-all_ambig-all	0	0	0	Restraints per residue (All \[1\])'
+source tests/check4line
+set line = '^EA 1	1	All by violation	All	All by ambiguity	All	Intra-residue	Intra-residue	\$Intra-res_viol-all_ambig-all	0	0	1	Restraints per residue (Intra-residue \[1\])'
+source tests/check4line
+set line = '^EA 2	2	Non-violated	Non-violated	All by ambiguity	All	Intermolecular	Intermolecular	\$Inter-mol_viol-no_ambig-all	2	0	5	Restraints per residue (Intermolecular non-violated \[2\])'
+source tests/check4line

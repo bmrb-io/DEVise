@@ -1,0 +1,59 @@
+echo "Checking output files"
+
+#TEMP -- 3.1 file doesn't have a PDB reference
+set files = ( \
+	#TEMP data_dir/15437ac1.dat \
+	data_dir/15437am1.dat \
+	data_dir/15437amac1.dat \
+	data_dir/15437as1.dat \
+	data_dir/15437c1.dat \
+	data_dir/15437d1.dat \
+	data_dir/15437hc1.dat \
+	data_dir/15437hn1.dat \
+	data_dir/15437md.dat \
+	data_dir/15437n1.dat \
+	data_dir/15437n2.dat \
+	data_dir/15437p1.dat \
+	data_dir/15437rc1.dat \
+	data_dir/15437rl.dat \
+	data_dir/15437t11.dat \
+	data_dir/15437t12.dat \
+	data_dir/15437t21.dat \
+	data_dir/15437t22.dat \
+	#TEMP html_dir/15437/15437ac1.html \
+	html_dir/15437/15437am1.html \
+	html_dir/15437/15437as1.html \
+	html_dir/15437/15437c1.html \
+	html_dir/15437/15437d1.html \
+	html_dir/15437/15437hc1.html \
+	html_dir/15437/15437hn1.html \
+	html_dir/15437/15437n1.html \
+	html_dir/15437/15437n2.html \
+	html_dir/15437/15437p1.html \
+	html_dir/15437/15437t11.html \
+	html_dir/15437/15437t12.html \
+	html_dir/15437/15437t21.html \
+	html_dir/15437/15437t22.html \
+	html_dir/15437/15437y.html \
+	#TEMP session_dir/15437/15437ac1.ds \
+	session_dir/15437/15437acdd \
+	session_dir/15437/15437am1.ds \
+	session_dir/15437/15437as1.ds \
+	session_dir/15437/15437c1.ds \
+	session_dir/15437/15437d1.ds \
+	session_dir/15437/15437hc1.ds \
+	session_dir/15437/15437hn1.ds \
+	session_dir/15437/15437n1.ds \
+	session_dir/15437/15437n2.ds \
+	session_dir/15437/15437p1.ds \
+	session_dir/15437/15437t11.ds \
+	session_dir/15437/15437t12.ds \
+	session_dir/15437/15437t21.ds \
+	session_dir/15437/15437t22.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end

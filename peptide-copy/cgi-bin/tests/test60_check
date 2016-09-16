@@ -1,0 +1,226 @@
+echo "Checking output files"
+
+set files = ( data_dir/4267_2entam1.dat \
+	data_dir/4267_2entam2.dat \
+	data_dir/4267_2entamac1.dat \
+	data_dir/4267_2entamac2.dat \
+	data_dir/4267_2entas1.dat \
+	data_dir/4267_2entas2.dat \
+	data_dir/4267_2entc1.dat \
+	data_dir/4267_2entc2.dat \
+	data_dir/4267_2entd1.dat \
+	data_dir/4267_2entd2.dat \
+	data_dir/4267_2entg1.dat \
+	data_dir/4267_2entg2.dat \
+	data_dir/4267_2enthc1.dat \
+	data_dir/4267_2enthc2.dat \
+	data_dir/4267_2enthn1.dat \
+	data_dir/4267_2enthn2.dat \
+	data_dir/4267_2entmd.dat \
+	data_dir/4267_2entn10.dat \
+	data_dir/4267_2entn1.dat \
+	data_dir/4267_2entn2.dat \
+	data_dir/4267_2entn3.dat \
+	data_dir/4267_2entn4.dat \
+	data_dir/4267_2entn5.dat \
+	data_dir/4267_2entn6.dat \
+	data_dir/4267_2entn7.dat \
+	data_dir/4267_2entn8.dat \
+	data_dir/4267_2entn9.dat \
+	data_dir/4267_2ento1.dat \
+	data_dir/4267_2ento2.dat \
+	data_dir/4267_2entp1.dat \
+	data_dir/4267_2entp2.dat \
+	data_dir/4267_2entrc1.dat \
+	data_dir/4267_2entrc2.dat \
+	data_dir/4267_2entrl.dat \
+	data_dir/4267_2entt11.dat \
+	data_dir/4267_2entt12.dat \
+	data_dir/4267_2entt13.dat \
+	data_dir/4267_2entt14.dat \
+	data_dir/4267_2entt21.dat \
+	data_dir/4267_2entt22.dat \
+	data_dir/4267_2entt23.dat \
+	data_dir/4267_2entt24.dat \
+	html_dir/4267_2ent/4267_2entam1.html \
+	html_dir/4267_2ent/4267_2entam2.html \
+	html_dir/4267_2ent/4267_2entas1.html \
+	html_dir/4267_2ent/4267_2entas2.html \
+	html_dir/4267_2ent/4267_2entc1.html \
+	html_dir/4267_2ent/4267_2entc2.html \
+	html_dir/4267_2ent/4267_2entd1.html \
+	html_dir/4267_2ent/4267_2entd2.html \
+	html_dir/4267_2ent/4267_2entg1.html \
+	html_dir/4267_2ent/4267_2entg2.html \
+	html_dir/4267_2ent/4267_2enthc1.html \
+	html_dir/4267_2ent/4267_2enthc2.html \
+	html_dir/4267_2ent/4267_2enthn1.html \
+	html_dir/4267_2ent/4267_2enthn2.html \
+	html_dir/4267_2ent/4267_2entn10.html \
+	html_dir/4267_2ent/4267_2entn1.html \
+	html_dir/4267_2ent/4267_2entn2.html \
+	html_dir/4267_2ent/4267_2entn3.html \
+	html_dir/4267_2ent/4267_2entn4.html \
+	html_dir/4267_2ent/4267_2entn5.html \
+	html_dir/4267_2ent/4267_2entn6.html \
+	html_dir/4267_2ent/4267_2entn7.html \
+	html_dir/4267_2ent/4267_2entn8.html \
+	html_dir/4267_2ent/4267_2entn9.html \
+	html_dir/4267_2ent/4267_2ento1.html \
+	html_dir/4267_2ent/4267_2ento2.html \
+	html_dir/4267_2ent/4267_2entp1.html \
+	html_dir/4267_2ent/4267_2entp2.html \
+	html_dir/4267_2ent/4267_2entt11.html \
+	html_dir/4267_2ent/4267_2entt12.html \
+	html_dir/4267_2ent/4267_2entt13.html \
+	html_dir/4267_2ent/4267_2entt14.html \
+	html_dir/4267_2ent/4267_2entt21.html \
+	html_dir/4267_2ent/4267_2entt22.html \
+	html_dir/4267_2ent/4267_2entt23.html \
+	html_dir/4267_2ent/4267_2entt24.html \
+	html_dir/4267_2ent/4267_2enty.html \
+	session_dir/4267_2ent/4267_2entacdd \
+	session_dir/4267_2ent/4267_2entam1.ds \
+	session_dir/4267_2ent/4267_2entam2.ds \
+	session_dir/4267_2ent/4267_2entas1.ds \
+	session_dir/4267_2ent/4267_2entas2.ds \
+	session_dir/4267_2ent/4267_2entc1.ds \
+	session_dir/4267_2ent/4267_2entc2.ds \
+	session_dir/4267_2ent/4267_2entd1.ds \
+	session_dir/4267_2ent/4267_2entd2.ds \
+	session_dir/4267_2ent/4267_2entg1.ds \
+	session_dir/4267_2ent/4267_2entg2.ds \
+	session_dir/4267_2ent/4267_2enthc1.ds \
+	session_dir/4267_2ent/4267_2enthc2.ds \
+	session_dir/4267_2ent/4267_2enthn1.ds \
+	session_dir/4267_2ent/4267_2enthn2.ds \
+	session_dir/4267_2ent/4267_2entn10.ds \
+	session_dir/4267_2ent/4267_2entn1.ds \
+	session_dir/4267_2ent/4267_2entn2.ds \
+	session_dir/4267_2ent/4267_2entn3.ds \
+	session_dir/4267_2ent/4267_2entn4.ds \
+	session_dir/4267_2ent/4267_2entn5.ds \
+	session_dir/4267_2ent/4267_2entn6.ds \
+	session_dir/4267_2ent/4267_2entn7.ds \
+	session_dir/4267_2ent/4267_2entn8.ds \
+	session_dir/4267_2ent/4267_2entn9.ds \
+	session_dir/4267_2ent/4267_2ento1.ds \
+	session_dir/4267_2ent/4267_2ento2.ds \
+	session_dir/4267_2ent/4267_2entp1.ds \
+	session_dir/4267_2ent/4267_2entp2.ds \
+	session_dir/4267_2ent/4267_2entt11.ds \
+	session_dir/4267_2ent/4267_2entt12.ds \
+	session_dir/4267_2ent/4267_2entt13.ds \
+	session_dir/4267_2ent/4267_2entt14.ds \
+	session_dir/4267_2ent/4267_2entt21.ds \
+	session_dir/4267_2ent/4267_2entt22.ds \
+	session_dir/4267_2ent/4267_2entt23.ds \
+	session_dir/4267_2ent/4267_2entt24.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/4267_2entam2.dat"
+set line = '^0.6 0.2 0.0 0.0 0.0 0.0 3 ASP 2$'
+source tests/check4line
+set line = '^0.6666667 0.33333334 0.0 0.0 0.0 0.0 179 GLY 2$'
+source tests/check4line
+
+set file = "data_dir/4267_2entamac2.dat"
+set line = '^2 1 ALA H H -0.6 0.225 0 0 -0.15 0 backbone AMU -1$'
+source tests/check4line
+set line = '^2 179 GLY O O 1.4 -37.175 0 0 -0.15 0 backbone AMU -1$'
+source tests/check4line
+
+set file = "data_dir/4267_2entas2.dat"
+set line = '^7.47 H H 3 ASP 2$'
+source tests/check4line
+set line = '^113.37 N N 179 GLY 2$'
+source tests/check4line
+
+set file = "data_dir/4267_2entd1.dat"
+set line = '^0.04 1.81 -0.49 -0.57 2 GLN 1$'
+source tests/check4line
+set line = '^-0.215 3.48 1.06 0.0 179 GLY 1$'
+source tests/check4line
+
+set file = "data_dir/4267_2entd2.dat"
+set line = '^-0.12 -0.79 0.12 0.39 3 ASP 2$'
+source tests/check4line
+set line = '^-0.215 3.48 1.06 0.0 179 GLY 2$'
+source tests/check4line
+
+set file = "data_dir/4267_2entg2.dat"
+set line = '^5.2 0 9 ILE H 9 ILE HA 3JHNHA 2$'
+source tests/check4line
+set line = '^8.9 0 178 ASP H 178 ASP HA 3JHNHA 2$'
+source tests/check4line
+
+set file = "data_dir/4267_2enthn2.dat"
+set line = '^7.47 122.81 H N 3 ASP 2 4267_2ent D$'
+source tests/check4line
+set line = '^8.46 126.66 HE1 NE1 32 TRP 2 4267_2ent W$'
+source tests/check4line
+set line = '^7.66 113.37 H N 179 GLY 2 4267_2ent G$'
+source tests/check4line
+
+set file = "data_dir/4267_2entn4.dat"
+set line = '^-0.364 0.050 3 ASP 2$'
+source tests/check4line
+set line = '^0.343 0.050 179 GLY 2$'
+source tests/check4line
+
+set file = "data_dir/4267_2ento2.dat"
+set line = '^0.216 0.117 N 3 ASP 2$'
+source tests/check4line
+set line = '^0.245 0.127 NE 155 ARG 2$'
+source tests/check4line
+
+set file = "data_dir/4267_2entp2.dat"
+set line = '^100.0 75.0 100.0 3 ASP 2$'
+source tests/check4line
+set line = '^100.0 100.0 100.0 179 GLY 2$'
+source tests/check4line
+
+set file = "data_dir/4267_2entrc2.dat"
+set line = '^ALA 7$'
+source tests/check4line
+set line = '^VAL 13$'
+source tests/check4line
+
+set file = "data_dir/4267_2entrl.dat"
+set line = '^1	1	MET	M	2$'
+source tests/check4line
+set line = '^2	179	GLY	G	2$'
+source tests/check4line
+
+set file = "data_dir/4267_2entt13.dat"
+set line = '^0.681 0.020 N 3 ASP 2$'
+source tests/check4line
+set line = '^1.634 0.087 NE 155 ARG 2$'
+source tests/check4line
+
+set file = "data_dir/4267_2entt22.dat"
+set line = '^0.3939 0.0077 N 3 ASP 2$'
+source tests/check4line
+set line = '^0.4832 0.0347 NE 155 ARG 2$'
+source tests/check4line
+
+set file = "data_dir/4267_2entt23.dat"
+set line = '^0.2162 0.0085 N 3 ASP 1$'
+source tests/check4line
+set line = '^0.1898 0.0292 NE 155 ARG 1$'
+source tests/check4line
+
+set file = "data_dir/4267_2entp1.dat"
+#TEMP -- doesn't work for 2.1
+#set line = '^1 8 LEU 100.0 100.0 100.0$'
+#source tests/check4line
+#TEMP -- doesn't work for 2.1
+#set line = '^1 11 ALA 100.0 66.666664 100.0$'
+#source tests/check4line
+

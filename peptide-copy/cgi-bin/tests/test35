@@ -1,0 +1,74 @@
+#! /bin/csh -f
+
+# Generate a Pistachio visualization that won't get overwritten by
+# "normal" processing.
+
+set result = 0
+
+# Whether to generate the "normal" coordinate visualization.
+set doCoords = 0
+
+if ($#argv > 0) then
+  if (xx$1 == xx-coords) then
+    set doCoords = 1
+  endif
+endif
+
+rm -r -f */pistachio_example1*
+
+# Process the sample Pistachio data.
+echo -n "Processing NMR-STAR for Pistachio data: "
+./s2d -nomail -file test_data/bmr6318_pistachio.str.nmrstr \
+  -name pistachio_example1 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = (data_dir/pistachio_example1as1.dat \
+	data_dir/pistachio_example1d1.dat \
+	data_dir/pistachio_example1hc1.dat \
+	data_dir/pistachio_example1hn1.dat \
+	data_dir/pistachio_example1md.dat \
+	data_dir/pistachio_example1p1.dat \
+	data_dir/pistachio_example1ps1.dat \
+	data_dir/pistachio_example1psac1.dat \
+	data_dir/pistachio_example1rc1.dat \
+	data_dir/pistachio_example1rl.dat \
+	html_dir/pistachio_example1/pistachio_example1as1.html \
+	html_dir/pistachio_example1/pistachio_example1d1.html \
+	html_dir/pistachio_example1/pistachio_example1hc1.html \
+	html_dir/pistachio_example1/pistachio_example1hn1.html \
+	html_dir/pistachio_example1/pistachio_example1p1.html \
+	html_dir/pistachio_example1/pistachio_example1ps1.html \
+	html_dir/pistachio_example1/pistachio_example1y.html \
+	session_dir/pistachio_example1/pistachio_example1acdd \
+	session_dir/pistachio_example1/pistachio_example1as1.ds \
+	session_dir/pistachio_example1/pistachio_example1d1.ds \
+	session_dir/pistachio_example1/pistachio_example1hc1.ds \
+	session_dir/pistachio_example1/pistachio_example1hn1.ds \
+	session_dir/pistachio_example1/pistachio_example1p1.ds \
+	session_dir/pistachio_example1/pistachio_example1ps1.ds \
+	data_dir/pistachio_example1am1.dat \
+	html_dir/pistachio_example1/pistachio_example1am1.html \
+	session_dir/pistachio_example1/pistachio_example1am1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test35 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

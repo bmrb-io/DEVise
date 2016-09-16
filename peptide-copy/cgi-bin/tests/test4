@@ -1,0 +1,27 @@
+#! /bin/csh -f
+
+# Tests BMRB 4096 (a special case because it has coordinates).
+
+set result = 0
+
+rm -r -f */4096*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 4096 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+source tests/test4_check
+
+
+echo -n "Test4 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

@@ -1,0 +1,35 @@
+#! /bin/csh -f
+
+# Test a multiple-entity entry that has data other than chemical
+# shifts.  Input file is a hand-modified version of 4267.
+
+set result = 0
+
+rm -r -f */4267_2ent*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -name 4267_2ent -file test_data/bmr4267_2ent_3.str -force \
+  -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+source tests/test60_check
+
+# Sample info differs between 2.1 and 3.1 files.
+set file = "data_dir/4267_2entmd.dat"
+set line = '^EA 1 (polypeptide(L))	1	HA delta chem shift \[1\]	  Many methylene and valine/luecine methyl groups have been stereospecifically assigned.   those ...	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL Human Neutrophil Gelatinase-Associated L...	pH: 6.0; temperature: 298 K	4267_2entd1	\$HA_DeltaShift$'
+source tests/check4line
+set line = '^EA 2 (polypeptide(L))	2	S2 Order Parameters \[2\]	  Order parameters are generalised, where applicable (i.e. S2=S2f\*S2s),   derived from model-free...	-	pH: 6.0; temperature: 298 K	4267_2ento2	\$S2order_value$'
+source tests/check4line
+
+
+echo -n "Test60_3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

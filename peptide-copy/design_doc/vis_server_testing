@@ -1,0 +1,111 @@
+			Testing the Visualization Server
+	$Id$
+
+* OVERVIEW
+
+This document details "routine" (manual) testing that should be done
+to make sure the visualization server is working properly at BMRB and
+the mirror sites.  This testing should be done at least once a week.
+
+
+* URLS
+
+(Note that the visualization server can be accessed through the
+"Spectroscopists' Corner" link on the web site.)
+
+  http://www.bmrb.wisc.edu/vis_serv/ (Madison)
+  http://bmrb.protein.osaka-u.ac.jp/vis_serv/ (Osaka)
+  http://bmrb.postgenomicnmr.net/vis_serv/ (Florence)
+
+
+* TESTING THE VISUALIZATION SERVER
+
+* First, search for entry 4267 and save a copy of the actual NMR-STAR file
+(bmr4267.str).
+
+For each of the visualization server URLs listed above, perform the
+following procedure:
+
+* Click the "create session" button.
+
+* Enter your email in the "E-mail session ID to" box.
+
+* Click the "Browse" button and upload a copy of bmr4267.str (entry 4267)
+that you've previously saved.
+
+* Click the "Upload" button.
+
+* Make sure you get the email with the session ID.
+
+* Make sure the visualization summary page has all of the following
+visualizations:
+    * 3D structure: 1NGL, 1DFV
+    * Chemical shift data for entity assembly 1:
+        * Chemical shift delta
+        * Chemical shift index
+        * Percent assigned atoms
+        * Chem shift distributions by AA/nucleotide
+        * Simulated 1H-15N backbone HSQC spectrum
+        * Simulated 1H-13C HSQC spectrum
+        * Assigned chemical shift ambiguity code data
+    * Chemical Shift Referencing Visualizations; three each for 1NGL and
+    1DFV (note that these visualizations will not be generated at the
+    Florence mirror):
+        * Difference histograms
+        * Differences by residue
+        * Observed vs. calculated chemical shift values
+    * Linear Analysis of Chemical Shifts (note that these visualizations
+    will not be generated at the Osaka and Florence mirrors):
+        * CA vs. CA-CB
+        * CB vs. CA-CB
+        * HA vs. CA-CB
+        * CO vs. CA-CB
+    * Coupling constants
+    * T1/T2 relaxation:
+        * T1, 500 MHz
+        * T1, 600 MHz
+        * T1, 750 MHz
+        * T2, 500 MHz
+        * T2, 600 MHz
+        * T2, 750 MHz
+    * Heteronuclear NOE:
+        * 750 MHz NE1 HE1 (2 values) (1)
+        * 750 MHz NE HE (2 values) (1)
+        * 750 MHz N H (146 values) (1)
+        * 600 MHz NE1 HE1 (2 values) (1)
+        * 600 MHz NE HE (3 values) (1)
+        * 600 MHz N H (146 values) (1)
+        * 600 MHz NE1 HE1 (2 values) (1)
+        * 600 MHz NE HE (2 values) (1)
+        * 500 MHz N H (138 values) (1)
+    * S2 Order Parameters
+
+* Follow at least the following links, and perform the listed tests:
+    * 3D structure for 1NGL:
+	* Select "HA delta chem shift [1]" as the data set.
+	* Expand the data view to show all residues.
+	* Expand the cursor in the data view to fill the view, and verify
+	that all atoms are highlighted in the 3D view.
+	* Select just the first residue in the "Atom Selection" tree.
+	* Drill down on the sulfur atom in that residue, and make sure that
+	the Residue_seq_code is 1, Residue_label is MET, Atom_name is SD,
+	and Atom_type is S.
+	* Click the "Reset" button under the "Atom Selection" tree, and
+	verify that all atoms are again highlighted.
+    * Chem shift distributions by AA/nucleotide:
+	* Select each of the three atom types, and verify that bars show
+	up for all three.
+	* Test drilling down on one of the bars.
+    * Observed vs. calculated chemical shift values for 1DFV:
+	* Verify that you see values for helix, sheet, and other (magenta,
+	blue, and yellow).
+	* Select a different atom.
+	* Reduce the secondary structure selection and make sure that data
+	points are removed accordingly.
+    * Linear Analysis of Chemical Shifts, CO vs. CA-CB:
+    	* Zoom in on one of the red ovals.
+	* Drill down on it, and make sure that "Designator" is 0.
+
+* Make sure the session ID works for restarting by closing the browser
+tab with the visualization summary page, going back to the visualization
+server starting page, and entering the session ID.

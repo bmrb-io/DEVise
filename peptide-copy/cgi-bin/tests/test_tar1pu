@@ -1,0 +1,31 @@
+#! /bin/csh -f
+
+# Test PDB-only torsion angle processing, using the URL of the torson
+# restraint file.
+
+set result = 0
+
+rm -r -f */tar_1brv*
+
+set url = 'http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet#63db_username=wattos1#38format=dihedral+angle#38mrblock_id=189055#38pdb_id=1brv#38request_type=block#38subtype=violation#38type=check'
+
+echo -n "Processing mmCIF and torsion angle restraints: "
+./s2d -nomail -name tar_1brv -pdbid 1brv -coord_index 1 -force \
+  -tar_url $url -do_tar 3 -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+source tests/test_tar1p_check
+
+
+echo -n "Test_tar1pu result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

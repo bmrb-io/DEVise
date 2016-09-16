@@ -1,0 +1,120 @@
+#! /bin/csh -f
+
+# Test predicted vs. experimental S2 visualization.
+
+set result = 0
+
+set dummycsr = 0
+
+if ($#argv > 0) then
+  if (xx$1 == xx-dummycsr) then
+    set dummycsr = 1
+  endif
+endif
+
+rm -r -f */15451*
+
+if ($dummycsr) then
+  tests/dummy_csr_server -exit -time_limit 60 &
+  sleep 2
+endif
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 15451 -force -s2p_url file:test_data/
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out1
+
+echo -n "Processing predicted vs. experimental S2: "
+./s2d -nomail -pdbid 2JUO -bmrbid 15451 -force -check_res_list -check_pct \
+  -s2p_url file:test_data/ -do_s2p 2 -coord_index 1 -s2_frame_index 1
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/15451ac1.dat \
+	data_dir/15451am1.dat \
+	data_dir/15451amac1.dat \
+	data_dir/15451as1.dat \
+	data_dir/15451c1.dat \
+	data_dir/15451d1.dat \
+	data_dir/15451g1.dat \
+	data_dir/15451hc1.dat \
+	data_dir/15451hn1.dat \
+	data_dir/15451md.dat \
+	data_dir/15451n1.dat \
+	data_dir/15451o1.dat \
+	data_dir/15451p1.dat \
+	data_dir/15451rc1.dat \
+	data_dir/15451rl.dat \
+	data_dir/15451s2p1-1.dat \
+	data_dir/15451t11.dat \
+	data_dir/15451t21.dat \
+	data_dir/15451ss1-1.dat \
+	html_dir/15451/15451ac1.html \
+	html_dir/15451/15451am1.html \
+	html_dir/15451/15451as1.html \
+	html_dir/15451/15451c1.html \
+	html_dir/15451/15451d1.html \
+	html_dir/15451/15451g1.html \
+	html_dir/15451/15451hc1.html \
+	html_dir/15451/15451hn1.html \
+	html_dir/15451/15451n1.html \
+	html_dir/15451/15451o1.html \
+	html_dir/15451/15451p1.html \
+	html_dir/15451/15451s2p1-1.html \
+	html_dir/15451/15451t11.html \
+	html_dir/15451/15451t21.html \
+	html_dir/15451/15451y.html \
+	session_dir/15451/15451ac1.ds \
+	session_dir/15451/15451acdd \
+	session_dir/15451/15451am1.ds \
+	session_dir/15451/15451as1.ds \
+	session_dir/15451/15451c1.ds \
+	session_dir/15451/15451d1.ds \
+	session_dir/15451/15451g1.ds \
+	session_dir/15451/15451hc1.ds \
+	session_dir/15451/15451hn1.ds \
+	session_dir/15451/15451n1.ds \
+	session_dir/15451/15451o1.ds \
+	session_dir/15451/15451p1.ds \
+	session_dir/15451/15451s2p1-1.ds \
+	session_dir/15451/15451t11.ds \
+	session_dir/15451/15451t21.ds )
+
+foreach file ($files)
+   if (! -f $file) then
+      echo "  Output file $file is missing"
+      set result = 1
+   endif
+end
+
+
+set file = "data_dir/15451s2p1-1.dat"
+set line = '^0.6369 0.7729938 2 1$'
+source tests/check4line
+set line = '^0.8928 0.8589621 45 1$'
+source tests/check4line
+set line = '^1.0 0.22167045 89 1$'
+source tests/check4line
+
+set file = "html_dir/15451/15451y.html"
+set line = '<option value="http://.*/make_view?pdbid=2JUO&amp;number=15451&amp;do_s2p=2&amp;coord_index=1&amp;frame_index=1&amp;size_str=">2JUO</option>'
+source tests/check4line
+
+
+echo -n "Test_s2p2 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
+

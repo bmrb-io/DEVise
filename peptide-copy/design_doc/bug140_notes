@@ -1,0 +1,38 @@
+				Notes on Bug 140
+				2013-04-11
+
+There are several issues going on with this:
+
+1) The sequences in the BMRB file don't exactly match those in the PDB
+file.  Most of the sequences match, but there are enough differences that
+the matching algortithm doesn't consider them a match.
+
+2) There are two entities, and both of them are heterogeneous monomers
+(see the _Entity_poly_seq.Hetero tag).  That adds another level of
+confusion to the matching and the display of the data.
+
+3) Even if we can't match the BMRB and PDB sequences, we want to display
+the structure (but highlighting won't work).  At this point, I'm not sure
+where the non-matching data gets filtered out (I suspect maybe in the JS
+client).
+
+In the PDB (mmCIF) file, chains A and B are both entity 1, and chains
+C and D are both entity 2.  (I'm wondering whether we only want to display
+one chain for each entity -- I suspect things may get too confusing
+otherwise.)  (Hmm -- which ones do the chemical shift data go with?)
+
+You can find at least some entries with the _Entity_poly_seq.Hetero
+tag by searching for non-standard monomers in the entity/entity tab of
+the beta search interface (although 17960 doesn't show up for some
+reason!).  There are a pretty large number of entries that show up
+(athough it seems like most of them don't have multiple entity assemblies,
+so the problem doesn't show up).
+
+One thing I was wondering about is this:  in the "Atom Display" and "Atom
+Selection" panels in the "Structure Selection" dialog, should I primarily
+designate things by the PDB chain ID instead of the entity assembly ID?
+I think I'd have to do that if we're going to display all of the coordinate
+data, even if the sequence in the PDB data doesn't match the sequence in
+the BMRB data.  This would mean that I'd have to add the PDB chain ID
+to the coordinate data, and I'd also have to pass something to the client
+that showed how the chain IDs and entity assembly IDs match.

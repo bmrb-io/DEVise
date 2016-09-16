@@ -1,0 +1,28 @@
+#! /bin/csh -f
+
+# Tests BMRB 19329 -- caused an error during Hongyang's processing.
+
+set result = 0
+
+rm -r -f */19329*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -name 19329 -file test_data/bmr19329_3.str -force -check_res_list -check_pct -peakonly
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/test_peak14.out
+
+
+source tests/test_peak14_check
+
+
+echo -n "Test_peak14 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

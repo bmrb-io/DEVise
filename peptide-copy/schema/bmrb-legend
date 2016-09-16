@@ -1,0 +1,21 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:28:37
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# Schema for legends.
+
+# $Id$
+
+type bmrb-legend ascii
+comment #
+whitespace '	'
+
+attr x int
+attr y int
+attr color_norm int
+attr color_c_print int
+attr text string 10
+attr comment string 120

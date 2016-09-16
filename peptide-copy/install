@@ -1,0 +1,444 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2000-2012
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  Install the peptide-cgi setup.  Note: some of the installation is
+#  specific to a certain machine; this script is configured to do
+#  the installation on either teal (cs) or tuna (bmrb).  Changes
+#  may be needed to do the installation on other machines.
+
+#  Note: CS install must be done on teal; BMRB on tuna.
+
+#  To use the installed software, go to:
+#  http://bmrb.wisc.edu/devise/peptide-cgi/bmrb_select.html
+#    or
+#  http://teal.cs.wisc.edu/bmrb/bmrb_select.html.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+#-----------------------------------------------------------
+# Check and get the arguments.
+
+if ($#argv < 8 || $#argv > 10) then
+  echo "Usage: install [-vur] <dev_demo_home> <www_home> <pep_home> <cgi_home>"
+  echo "  <pep_session_home> <pep_data_home> <pep_html_home> <jar_home>"
+  echo "  [install_machine]"
+  exit 1;
+endif
+
+set is_vur = 0
+if ($1 == -vur) then
+  set is_vur = 1
+  shift
+endif
+
+set demohome = $1
+set wwwhome = $2
+set pephome = $3
+set cgihome = $4
+set sessionhome = $5
+set datahome = $6
+set htmlhome = $7
+set jarhome = $8
+
+#-----------------------------------------------------------
+# Perform various checks before we actually do anything.
+
+# Make sure we've already done a 'make setup'.
+if (! -e cgi-bin/s2d.props) then
+  echo "You must do 'make setup' before doing 'make install'"
+  exit 1
+endif
+
+if ($#argv == 9) then
+  # Check whether we're on the appropriate machine.
+
+  if (`hostname` != $9) then
+    echo ""
+    echo "Installation is normally done on $9."
+    echo -n "Are you sure you want to continue? [n] "
+
+    set answer = $<
+    if ($answer != y && $answer != Y) then
+      echo Aborted.
+      exit 1
+    endif
+    echo ""
+  endif
+endif
+
+
+# Check that the Java code is compiled.
+
+set file = "src/s2d.jar"
+if (! -f $file) then
+  echo "Please compile the Java code before installing."
+  exit 1
+endif
+
+
+# Make sure other necessary files have been generated.
+
+if (! -f html2/devise/peptide-cgi/bmrb_select.html || ! -f html2/devise/peptide-cgi/bmrb_select2.html || ! -f html2/devise/peptide-cgi/restraint_select.html || ! -f cgi-bin/s2d.props || ! -d cgi-bin/bin) then
+  echo "You must do 'make setup' before doing 'make install'."
+  exit 1
+endif
+
+
+# Make sure the demo home and www home directories already exist.
+
+if (! -d $demohome) then
+  echo "$demohome directory doesn't exist; aborting."
+  exit 1
+endif
+if (! $is_vur) then
+  if (! -d $wwwhome) then
+    echo "$wwwhome directory doesn't exist; aborting."
+    exit 1
+  endif
+endif
+
+
+#-----------------------------------------------------------
+# Make sure the user really wants to do this.
+
+echo ""
+echo ""
+if ($is_vur) then
+  echo You are about to install the peptide-cgi setup for
+  echo viewing unreleased entries.  This will install files
+  echo in $demohome and $pephome.
+else
+  echo You are about to install the peptide-cgi setup.  This
+  echo will install files in $demohome, $wwwhome,
+  echo and $pephome.
+endif
+echo ""
+echo -n "Are you absolutely sure you want to do this? [n] "
+
+set answer = $<
+if ($answer != y && $answer != Y) then
+  echo Aborted.
+  exit 1
+endif
+
+#-----------------------------------------------------------
+# Okay, here we actually start doing the installation.
+
+# Create and set up the dynamic sessions directory.
+
+echo "Creating the dynamic sessions directory ($sessionhome)"
+set targetdir = $sessionhome
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+
+if (! $is_vur) then
+  set targetdir = $sessionhome/vis_server
+  if (! -e $targetdir) then
+    mkdir -p $targetdir
+  endif
+  chmod a+rwx $targetdir
+else
+  set targetdir = $sessionhome/.unreleased
+  if (! -e $targetdir) then
+    mkdir -p $targetdir
+  endif
+  chmod a+rwx $targetdir
+endif
+
+set targetdir = $demohome/session.js/bmrb
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+cp -p dynamic_sessions/*.str $targetdir
+chmod a+r $targetdir/*.str
+
+
+# Create and set up the data directory.
+
+set targetdir = $demohome/dat/bmrb
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+cp -p data/[a-z]* $targetdir
+chmod a+r $targetdir/[a-z]*
+
+echo "Creating the data directory ($datahome)"
+set targetdir = $datahome
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+
+if (! $is_vur) then
+  set targetdir = $datahome/vis_server
+  if (! -e $targetdir) then
+    mkdir -p $targetdir
+  endif
+  chmod a+rwx $targetdir
+endif
+
+
+# Create and set up the html directory.
+
+echo "Creating the html directory ($htmlhome)"
+set targetdir = $htmlhome
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+
+cp -p html/[a-z]* $targetdir
+if (! -e $targetdir/help_rrdistr.html) then
+  ln -s $targetdir/help_distr.html $targetdir/help_rrdistr.html
+endif
+if (! -e $targetdir/help_rrtar.html) then
+  ln -s $targetdir/help_tar.html $targetdir/help_rrtar.html
+endif
+chmod a+r $targetdir/*.html
+chmod a+r $targetdir/*.jpg
+chmod a+r $targetdir/*.gif
+chmod a+r $targetdir/*.png
+chmod a+r $targetdir/*.txt
+#find $targetdir -name \* -type f -exec chmod a+r {} \;
+
+cp -p pep-version-history $targetdir/pep-version-history.txt
+
+
+# Create and set up the directory containing the "front-end" html file.
+
+if ($pephome != null) then
+  echo "Creating the "front-end" directory ($pephome)"
+  set targetdir = $pephome
+  if (! -e $targetdir) then
+    mkdir -p $targetdir
+  endif
+  chmod a+rx $targetdir
+  if ($is_vur) then
+    cp -p view_entry vur_config $targetdir
+    chmod a+r $targetdir/view_entry $targetdir/vur_config
+  else
+    mkdir -p $targetdir/../figures
+    cp -p html2/devise/figures/*.png $targetdir/../figures
+    chmod a+r $targetdir/../figures
+    chmod a+r $targetdir/../figures/*
+
+    cp -p html2/devise/peptide-cgi/bmrb_select.html $targetdir
+    chmod a+r $targetdir/bmrb_select.html
+
+    cp -p html2/devise/peptide-cgi/bmrb_select2.html $targetdir
+    chmod a+r $targetdir/bmrb_select2.html
+
+    cp -p html2/devise/peptide-cgi/restraint_select.html $targetdir
+    chmod a+r $targetdir/restraint_select.html
+
+    ln -s $htmlhome/visualization.css $targetdir/..
+
+    mkdir $targetdir/figures
+    cp -p html2/devise/peptide-cgi/figures/*.* $targetdir/figures
+    chmod a+r $targetdir/figures
+    chmod a+r $targetdir/figures/*
+  endif
+endif
+
+
+# Create the link that we use to have the browser find the summary page.
+
+if (! $is_vur) then
+  echo "Creating html link ($pephome/html)"
+  set targetdir = $pephome/html
+  if (-e $targetdir) then
+    # Need to change any previous installation.
+    rm $targetdir
+  endif
+  if (-e $targetdir || -l $targetdir) then
+    rm $targetdir
+  endif
+  ln -s $htmlhome $targetdir
+endif
+
+
+# Create and set up the CGI directory.
+
+echo "Creating CGI directory ($cgihome)"
+set targetdir = $cgihome
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rx $targetdir
+
+set executables = (make_view get_version get_version_cgi s2d vsc set_modes \
+	test_all vur view_unreleased uvd make_uvd delete_sessions \
+	generate_movies generate_examples)
+foreach exec ($executables)
+  cp -p cgi-bin/$exec $targetdir
+  chmod a+rx $targetdir/$exec
+end
+
+set files = (s2d.props error_email s2d.jar vur_config)
+
+foreach file ($files)
+  cp -p cgi-bin/$file $targetdir
+  chmod a+r $targetdir/$file
+end
+
+set dirs = (chem_info html_templates session_templates)
+foreach dir ($dirs)
+  cp -p -r $dir $targetdir
+  chmod a+rx $targetdir/$dir
+  chmod a+r $targetdir/$dir/*
+end
+
+cd cgi-bin
+set dirs = (test_data tests)
+foreach dir ($dirs)
+  cp -p -r $dir $targetdir
+  chmod a+rx $targetdir/$dir
+  chmod a+r $targetdir/$dir/*
+end
+chmod a+rx $targetdir/tests/*
+cd ..
+
+if (! -e $targetdir/tmp) then
+  mkdir -p $targetdir/tmp
+endif
+chmod a+rwx $targetdir/tmp
+
+touch $targetdir/tmp/s2d.log
+chmod 666 $targetdir/tmp/s2d.log
+
+cd cgi-bin
+# Line below only works with GNU tar.
+# tar cv bin | tar xv --directory=$targetdir
+
+tar cvf bin.tar bin
+set curdir = `pwd`
+cd $targetdir
+tar xvf $curdir/bin.tar
+
+find . -name CVS -exec \rm -rf {} \;
+
+cd $curdir
+rm bin.tar
+
+cd ..
+chmod a+rx $targetdir/bin
+chmod a+rx $targetdir/bin/java
+
+
+# For Jafar, the jar file actually needs to reside in a different
+# directory.  I'm also leaving it in the "cgi" directory so that
+# tests can be run there.
+
+if ($jarhome != "null") then
+  echo "Linking jar file into $jarhome (for Jafar)"
+
+  set targetdir = $jarhome
+  if (! -e $targetdir) then
+    mkdir -p $targetdir
+  endif
+  chmod a+rx $targetdir
+
+  if (-e $targetdir/s2d.jar || -l $targetdir/s2d.jar) then
+    rm $targetdir/s2d.jar
+  endif
+
+  ln -s $cgihome/s2d.jar $targetdir
+endif
+
+
+# Link data directory to CGI directory.
+
+echo "Linking data directory to CGI directory"
+set targetdir = $cgihome/data_dir
+if (-e $targetdir || -l $targetdir) then
+  rm $targetdir
+endif
+ln -s $datahome $targetdir
+
+
+# Link session directory to CGI directory.
+
+echo "Linking session directory to CGI directory"
+set targetdir = $cgihome/session_dir
+if (! -e $targetdir || -l $targetdir) then
+  rm $targetdir
+endif
+ln -s $sessionhome $targetdir
+
+# Link html directory to CGI directory.
+
+echo "Linking html directory to CGI directory"
+if ($is_vur) then
+  set targetdir = $cgihome/html_unreleased
+else
+  set targetdir = $cgihome/html_dir
+endif
+if (-e $targetdir || -l $targetdir) then
+  rm $targetdir
+endif
+ln -s $htmlhome $targetdir
+
+
+# Link data directory to the DEVise demo area.
+
+echo "Linking data directory to DEVise demo area"
+set targetdir = $demohome/dat/bmrb/dynamic_data
+if (-e $targetdir || -l $targetdir) then
+  rm $targetdir
+endif
+ln -s $datahome $targetdir
+
+
+# Link session directory to the DEVise demo area.  (Not if Jafar!
+# jarhome is non-null for Jafar.)
+
+if ($jarhome == "null") then
+  echo "Linking session directory to DEVise demo area"
+  set targetdir = $demohome/session.js/bmrb/dynamic_sessions
+  if (-e $targetdir || -l $targetdir) then
+    rm $targetdir
+  endif
+  ln -s $sessionhome $targetdir
+endif
+
+
+# Copy the schemas to the demo area.
+
+echo "Copying schemas to the DEVise demo area"
+set targetdir = $demohome/schema/schema/physical
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rx $targetdir
+cp -p schema/bmrb-* $targetdir
+
+
+# Install the visualization examples stuff.
+echo "Copying the visualization examples"
+set targetdir = $pephome/..
+cp -p -r html2/devise/vis_examples $targetdir
+chmod -R a+r $targetdir/vis_examples
+if (-e $targetdir/vis_examples/CVS) then
+  rm -r $targetdir/vis_examples/CVS
+endif

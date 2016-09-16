@@ -1,0 +1,307 @@
+#! /bin/csh -f
+
+# Test multi-entry processing.
+
+set result = 0
+
+rm -r -f */4001*
+rm -r -f */4099*
+
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 4001 -force
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out.1
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 4099 -force
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out.2
+
+echo -n "Processing NMR-STAR multi-entry: "
+./s2d -nomail -bmrbid 4001 -xbmrbid 4099
+if ($status != 0) then
+  echo "Third invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/4001am1.dat \
+	data_dir/4001am2.dat \
+	data_dir/4001am3.dat \
+	data_dir/4001am4.dat \
+	data_dir/4001am5.dat \
+	data_dir/4001am6.dat \
+	data_dir/4001am7.dat \
+	data_dir/4001amac1.dat \
+	data_dir/4001amac2.dat \
+	data_dir/4001amac3.dat \
+	data_dir/4001amac4.dat \
+	data_dir/4001amac5.dat \
+	data_dir/4001amac6.dat \
+	data_dir/4001amac7.dat \
+	data_dir/4001as1.dat \
+	data_dir/4001as2.dat \
+	data_dir/4001as3.dat \
+	data_dir/4001as4.dat \
+	data_dir/4001as5.dat \
+	data_dir/4001as6.dat \
+	data_dir/4001as7.dat \
+	data_dir/4001c1.dat \
+	data_dir/4001d1.dat \
+	data_dir/4001d2.dat \
+	data_dir/4001d3.dat \
+	data_dir/4001d4.dat \
+	data_dir/4001d5.dat \
+	data_dir/4001d6.dat \
+	data_dir/4001d7.dat \
+	data_dir/4001hc1.dat \
+	data_dir/4001hc2.dat \
+	data_dir/4001hc3.dat \
+	data_dir/4001hc4.dat \
+	data_dir/4001hc5.dat \
+	data_dir/4001hc6.dat \
+	data_dir/4001hc7.dat \
+	data_dir/4001hn1.dat \
+	data_dir/4001hn2.dat \
+	data_dir/4001hn3.dat \
+	data_dir/4001hn4.dat \
+	data_dir/4001hn5.dat \
+	data_dir/4001hn6.dat \
+	data_dir/4001hn7.dat \
+	data_dir/4001md.dat \
+	data_dir/4001p1.dat \
+	data_dir/4001p2.dat \
+	data_dir/4001p3.dat \
+	data_dir/4001p4.dat \
+	data_dir/4001p5.dat \
+	data_dir/4001p6.dat \
+	data_dir/4001p7.dat \
+	data_dir/4001rc1.dat \
+	data_dir/4001rc2.dat \
+	data_dir/4001rc3.dat \
+	data_dir/4001rc4.dat \
+	data_dir/4001rc5.dat \
+	data_dir/4001rc6.dat \
+	data_dir/4001rc7.dat \
+	data_dir/4001rl.dat \
+	html_dir/4001/4001am1.html \
+	html_dir/4001/4001am2.html \
+	html_dir/4001/4001am3.html \
+	html_dir/4001/4001am4.html \
+	html_dir/4001/4001am5.html \
+	html_dir/4001/4001am6.html \
+	html_dir/4001/4001am7.html \
+	html_dir/4001/4001as1.html \
+	html_dir/4001/4001as2.html \
+	html_dir/4001/4001as3.html \
+	html_dir/4001/4001as4.html \
+	html_dir/4001/4001as5.html \
+	html_dir/4001/4001as6.html \
+	html_dir/4001/4001as7.html \
+	html_dir/4001/4001c1.html \
+	html_dir/4001/4001d1.html \
+	html_dir/4001/4001d2.html \
+	html_dir/4001/4001d3.html \
+	html_dir/4001/4001d4.html \
+	html_dir/4001/4001d5.html \
+	html_dir/4001/4001d6.html \
+	html_dir/4001/4001d7.html \
+	html_dir/4001/4001hc1.html \
+	html_dir/4001/4001hc2.html \
+	html_dir/4001/4001hc3.html \
+	html_dir/4001/4001hc4.html \
+	html_dir/4001/4001hc5.html \
+	html_dir/4001/4001hc6.html \
+	html_dir/4001/4001hc7.html \
+	html_dir/4001/4001hn1.html \
+	html_dir/4001/4001hn2.html \
+	html_dir/4001/4001hn3.html \
+	html_dir/4001/4001hn4.html \
+	html_dir/4001/4001hn5.html \
+	html_dir/4001/4001hn6.html \
+	html_dir/4001/4001hn7.html \
+	html_dir/4001/4001p1.html \
+	html_dir/4001/4001p2.html \
+	html_dir/4001/4001p3.html \
+	html_dir/4001/4001p4.html \
+	html_dir/4001/4001p5.html \
+	html_dir/4001/4001p6.html \
+	html_dir/4001/4001p7.html \
+	html_dir/4001/4001y.html \
+	html_dir/4001/4001+4099hc1+1.html \
+	html_dir/4001/4001+4099hc1+2.html \
+	html_dir/4001/4001+4099hc2+1.html \
+	html_dir/4001/4001+4099hc2+2.html \
+	html_dir/4001/4001+4099hc3+1.html \
+	html_dir/4001/4001+4099hc3+2.html \
+	html_dir/4001/4001+4099hc4+1.html \
+	html_dir/4001/4001+4099hc4+2.html \
+	html_dir/4001/4001+4099hc5+1.html \
+	html_dir/4001/4001+4099hc5+2.html \
+	html_dir/4001/4001+4099hc6+1.html \
+	html_dir/4001/4001+4099hc6+2.html \
+	html_dir/4001/4001+4099hc7+1.html \
+	html_dir/4001/4001+4099hc7+2.html \
+	html_dir/4001/4001+4099hn1+1.html \
+	html_dir/4001/4001+4099hn1+2.html \
+	html_dir/4001/4001+4099hn2+1.html \
+	html_dir/4001/4001+4099hn2+2.html \
+	html_dir/4001/4001+4099hn3+1.html \
+	html_dir/4001/4001+4099hn3+2.html \
+	html_dir/4001/4001+4099hn4+1.html \
+	html_dir/4001/4001+4099hn4+2.html \
+	html_dir/4001/4001+4099hn5+1.html \
+	html_dir/4001/4001+4099hn5+2.html \
+	html_dir/4001/4001+4099hn6+1.html \
+	html_dir/4001/4001+4099hn6+2.html \
+	html_dir/4001/4001+4099hn7+1.html \
+	html_dir/4001/4001+4099hn7+2.html \
+	html_dir/4001/4001+4099y.html \
+	session_dir/4001/4001acdd \
+	session_dir/4001/4001am1.ds \
+	session_dir/4001/4001am2.ds \
+	session_dir/4001/4001am3.ds \
+	session_dir/4001/4001am4.ds \
+	session_dir/4001/4001am5.ds \
+	session_dir/4001/4001am6.ds \
+	session_dir/4001/4001am7.ds \
+	session_dir/4001/4001as1.ds \
+	session_dir/4001/4001as2.ds \
+	session_dir/4001/4001as3.ds \
+	session_dir/4001/4001as4.ds \
+	session_dir/4001/4001as5.ds \
+	session_dir/4001/4001as6.ds \
+	session_dir/4001/4001as7.ds \
+	session_dir/4001/4001c1.ds \
+	session_dir/4001/4001d1.ds \
+	session_dir/4001/4001d2.ds \
+	session_dir/4001/4001d3.ds \
+	session_dir/4001/4001d4.ds \
+	session_dir/4001/4001d5.ds \
+	session_dir/4001/4001d6.ds \
+	session_dir/4001/4001d7.ds \
+	session_dir/4001/4001hc1.ds \
+	session_dir/4001/4001hc2.ds \
+	session_dir/4001/4001hc3.ds \
+	session_dir/4001/4001hc4.ds \
+	session_dir/4001/4001hc5.ds \
+	session_dir/4001/4001hc6.ds \
+	session_dir/4001/4001hc7.ds \
+	session_dir/4001/4001hn1.ds \
+	session_dir/4001/4001hn2.ds \
+	session_dir/4001/4001hn3.ds \
+	session_dir/4001/4001hn4.ds \
+	session_dir/4001/4001hn5.ds \
+	session_dir/4001/4001hn6.ds \
+	session_dir/4001/4001hn7.ds \
+	session_dir/4001/4001p1.ds \
+	session_dir/4001/4001p2.ds \
+	session_dir/4001/4001p3.ds \
+	session_dir/4001/4001p4.ds \
+	session_dir/4001/4001p5.ds \
+	session_dir/4001/4001p6.ds \
+	session_dir/4001/4001p7.ds \
+	session_dir/4001/4001+4099hc1+1.ds \
+	session_dir/4001/4001+4099hc1+2.ds \
+	session_dir/4001/4001+4099hc2+1.ds \
+	session_dir/4001/4001+4099hc2+2.ds \
+	session_dir/4001/4001+4099hc3+1.ds \
+	session_dir/4001/4001+4099hc3+2.ds \
+	session_dir/4001/4001+4099hc4+1.ds \
+	session_dir/4001/4001+4099hc4+2.ds \
+	session_dir/4001/4001+4099hc5+1.ds \
+	session_dir/4001/4001+4099hc5+2.ds \
+	session_dir/4001/4001+4099hc6+1.ds \
+	session_dir/4001/4001+4099hc6+2.ds \
+	session_dir/4001/4001+4099hc7+1.ds \
+	session_dir/4001/4001+4099hc7+2.ds \
+	session_dir/4001/4001+4099hn1+1.ds \
+	session_dir/4001/4001+4099hn1+2.ds \
+	session_dir/4001/4001+4099hn2+1.ds \
+	session_dir/4001/4001+4099hn2+2.ds \
+	session_dir/4001/4001+4099hn3+1.ds \
+	session_dir/4001/4001+4099hn3+2.ds \
+	session_dir/4001/4001+4099hn4+1.ds \
+	session_dir/4001/4001+4099hn4+2.ds \
+	session_dir/4001/4001+4099hn5+1.ds \
+	session_dir/4001/4001+4099hn5+2.ds \
+	session_dir/4001/4001+4099hn6+1.ds \
+	session_dir/4001/4001+4099hn6+2.ds \
+	session_dir/4001/4001+4099hn7+1.ds \
+	session_dir/4001/4001+4099hn7+2.ds \
+	data_dir/4099am1.dat \
+	data_dir/4099am2.dat \
+	data_dir/4099amac1.dat \
+	data_dir/4099amac2.dat \
+	data_dir/4099as1.dat \
+	data_dir/4099as2.dat \
+	data_dir/4099c1.dat \
+	data_dir/4099c2.dat \
+	data_dir/4099d1.dat \
+	data_dir/4099d2.dat \
+	data_dir/4099hc1.dat \
+	data_dir/4099hc2.dat \
+	data_dir/4099hn1.dat \
+	data_dir/4099hn2.dat \
+	data_dir/4099md.dat \
+	data_dir/4099p1.dat \
+	data_dir/4099p2.dat \
+	data_dir/4099rc1.dat \
+	data_dir/4099rc2.dat \
+	data_dir/4099rl.dat \
+	html_dir/4099/4099am1.html \
+	html_dir/4099/4099am2.html \
+	html_dir/4099/4099as1.html \
+	html_dir/4099/4099as2.html \
+	html_dir/4099/4099c1.html \
+	html_dir/4099/4099c2.html \
+	html_dir/4099/4099d1.html \
+	html_dir/4099/4099d2.html \
+	html_dir/4099/4099hc1.html \
+	html_dir/4099/4099hc2.html \
+	html_dir/4099/4099hn1.html \
+	html_dir/4099/4099hn2.html \
+	html_dir/4099/4099p1.html \
+	html_dir/4099/4099p2.html \
+	html_dir/4099/4099y.html \
+	session_dir/4099/4099acdd \
+	session_dir/4099/4099am1.ds \
+	session_dir/4099/4099am2.ds \
+	session_dir/4099/4099as1.ds \
+	session_dir/4099/4099as2.ds \
+	session_dir/4099/4099c1.ds \
+	session_dir/4099/4099c2.ds \
+	session_dir/4099/4099d1.ds \
+	session_dir/4099/4099d2.ds \
+	session_dir/4099/4099hc1.ds \
+	session_dir/4099/4099hc2.ds \
+	session_dir/4099/4099hn1.ds \
+	session_dir/4099/4099hn2.ds \
+	session_dir/4099/4099p1.ds \
+	session_dir/4099/4099p2.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test_mult2 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

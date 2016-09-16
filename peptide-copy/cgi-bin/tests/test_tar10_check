@@ -1,0 +1,45 @@
+echo "Checking output files"
+
+set files = ( data_dir/4416ac1.dat \
+	data_dir/4416as1.dat \
+	data_dir/4416as2.dat \
+	data_dir/4416d1.dat \
+	data_dir/4416d2.dat \
+	data_dir/4416md.dat \
+	data_dir/4416rc1.dat \
+	data_dir/4416rc2.dat \
+	data_dir/4416rl.dat \
+	data_dir/4416rrac1.dat \
+	data_dir/4416rrtar1.dat \
+	data_dir/4416rrtar-md1.dat \
+	html_dir/4416/4416ac1.html \
+	html_dir/4416/4416as1.html \
+	html_dir/4416/4416as2.html \
+	html_dir/4416/4416d1.html \
+	html_dir/4416/4416d2.html \
+	html_dir/4416/4416rrtar1.html \
+	html_dir/4416/4416y.html \
+	session_dir/4416/4416ac1.ds \
+	session_dir/4416/4416acdd \
+	session_dir/4416/4416as1.ds \
+	session_dir/4416/4416as2.ds \
+	session_dir/4416/4416d1.ds \
+	session_dir/4416/4416d2.ds \
+	session_dir/4416/4416rrtar1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/4416rrtar1.dat"
+set line = "^1 1 DG -179.0 -150.0 1_1_C4' C4' 1_1_C3' C3' 1_1_O3' O3' 1_2_P P other 0.0 0.0"
+source tests/check4line
+set line = "^1 11 DA -179.0 -150.0 1_11_C4' C4' 1_11_C3' C3' 1_11_O3' O3' 1_12_P P other 0.0 0.0"
+source tests/check4line
+set line = "^2 1 DC -179.0 -150.0 2_1_C4' C4' 2_1_C3' C3' 2_1_O3' O3' 2_2_P P other 0.0 0.0"
+source tests/check4line
+set line = "^2 11 DG -179.0 -150.0 2_11_C4' C4' 2_11_C3' C3' 2_11_O3' O3' 2_12_P P other 0.0 0.0"
+source tests/check4line

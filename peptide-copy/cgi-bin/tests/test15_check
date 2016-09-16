@@ -1,0 +1,95 @@
+echo "Checking output files"
+
+set files = ( data_dir/4317as1.dat \
+	data_dir/4317c1.dat \
+	data_dir/4317csr1_1.dat \
+	data_dir/4317csr1_2.dat \
+	data_dir/4317csr1_3.dat \
+	data_dir/4317csr1_4.dat \
+	data_dir/4317csr1_5.dat \
+	data_dir/4317csr1src.dat \
+	data_dir/4317d1.dat \
+	data_dir/4317hc1.dat \
+	data_dir/4317hn1.dat \
+	data_dir/4317md.dat \
+	data_dir/4317p1.dat \
+	data_dir/4317rc1.dat \
+	data_dir/4317rl.dat \
+	html_dir/4317/4317as1.html \
+	html_dir/4317/4317c1.html \
+	html_dir/4317/4317csr11.html \
+	html_dir/4317/4317csr21.html \
+	html_dir/4317/4317csr31.html \
+	html_dir/4317/4317d1.html \
+	html_dir/4317/4317hc1.html \
+	html_dir/4317/4317hn1.html \
+	html_dir/4317/4317p1.html \
+	html_dir/4317/4317y.html \
+	session_dir/4317/4317acdd \
+	session_dir/4317/4317as1.ds \
+	session_dir/4317/4317c1.ds \
+	session_dir/4317/4317csr11.ds \
+	session_dir/4317/4317csr21.ds \
+	session_dir/4317/4317csr31.ds \
+	session_dir/4317/4317d1.ds \
+	session_dir/4317/4317hc1.ds \
+	session_dir/4317/4317hn1.ds \
+	session_dir/4317/4317p1.ds \
+	data_dir/4317am1.dat \
+	html_dir/4317/4317am1.html \
+	session_dir/4317/4317am1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/4317d1.dat"
+set line = '^1 1 MET -0.4 -1.2 -2.1 -0.1$'
+source tests/check4line
+set line = '^1 73 SER -0.18 0.0 1.6 2.0$'
+source tests/check4line
+
+set file = "data_dir/4317hn1.dat"
+set line = '^4317 1 2 ASP 8.96 125.7 H N $'
+source tests/check4line
+set line = '^4317 1 16 TRP 10.52 128.6 HE1 NE1$'
+source tests/check4line
+set line = '^4317 1 72 GLU 7.74 119.3 H N $'
+source tests/check4line
+set line = '^4317 1 73 SER 7.9 122.6 H N $'
+source tests/check4line
+
+if ($noleech) then
+  set file = "data_dir/4317csr1_1.dat"
+  set line = '^  4      N       HA      4.77    4.407     4.74      0.363   0.307      helix$'
+  source tests/check4line
+  set line = '^ 66      E        N     119.0   122.11    124.4      -3.11   3.413      helix$'
+  source tests/check4line
+
+  set file = "data_dir/4317csr1_2.dat"
+  set line = '^   HA        -0.033      -0.033$'
+  source tests/check4line
+  set line = '^   N         0.8592      0.0500$'
+  source tests/check4line
+
+  set file = "data_dir/4317csr1_3.dat"
+  set line = '^    helix         C         179.0444            178.416     1.076$'
+  source tests/check4line
+  set line = '^    sheet         N         n/a                             n/a$'
+  source tests/check4line
+
+  set file = "data_dir/4317csr1_4.dat"
+  set line = '^HA	helix/sheet	-0.0330	0.1175859	Values outside the indicated tolerance may require correction$'
+  source tests/check4line
+  set line = '^N	helix/sheet	0.85924	1.2762621	Values outside the indicated tolerance may require correction$'
+  source tests/check4line
+
+  set file = "data_dir/4317csr1_5.dat"
+  set line = '^HA	-0.033017543859649126	Chemical shift differences for HA, for helix and sheet secondary structures$'
+  source tests/check4line
+  set line = '^N	0.859240740740741	Chemical shift differences for N, for helix and sheet secondary structures$'
+  source tests/check4line
+endif

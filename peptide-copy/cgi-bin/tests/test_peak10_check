@@ -1,0 +1,42 @@
+echo "Checking output files"
+
+set files = ( 15025_peaks.str )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "15025_peaks.str"
+set line = 'save_spectral_peak_list'
+source tests/check4line
+set line = '_Spectral_dim.ID'
+source tests/check4line
+set line = '2   C   13   C   .   .   .   .   15025   1'
+source tests/check4line
+set line = '1   $SPARKY    .   .   15025   1'
+source tests/check4line
+
+set line = '1 . . 15025 1'
+source tests/check4line
+set line = '781 . . 15025 1'
+source tests/check4line
+
+set line = '1 3580000.0 . volume 15025 1'
+source tests/check4line
+set line = '781 7980000.0 . volume 15025 1'
+source tests/check4line
+
+set line = '1 1 7.136 ? ? ? ? ? ? ? ? ? ? ? ? ? 15025 1'
+source tests/check4line
+set line = '781 2 7.777 ? ? ? ? ? ? ? ? ? ? ? ? ? 15025 1'
+source tests/check4line
+
+set line = '3 1 ? ? ? ? 7.942 ? ? ? ? ? ? ? ? 91 ? . . . 1 ? ? 15025 1'
+source tests/check4line
+set line = '781 1 ? ? ? ? 4.244 ? ? ? ? ? ? ? ? 77 ? . . . 1 ? ? 15025 1'
+source tests/check4line
+set line = '781 2 ? ? ? ? 7.777 ? ? ? ? ? ? ? ? 82 ? . . . 1 ? ? 15025 1'
+source tests/check4line

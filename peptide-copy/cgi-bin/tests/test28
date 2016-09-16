@@ -1,0 +1,248 @@
+#! /bin/csh -f
+
+# Another test for an entry that previously failed.
+
+set result = 0
+
+rm -r -f */4970*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 4970 -do_pdb 1 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+echo "Checking output files"
+
+set files = (data_dir/4970md.dat \
+	data_dir/4970n1.dat \
+	data_dir/4970n2.dat \
+	data_dir/4970n3.dat \
+	data_dir/4970n4.dat \
+	data_dir/4970n5.dat \
+	data_dir/4970t11.dat \
+	data_dir/4970t12.dat \
+	data_dir/4970t13.dat \
+	data_dir/4970t14.dat \
+	data_dir/4970t15.dat \
+	data_dir/4970t210.dat \
+	data_dir/4970t211.dat \
+	data_dir/4970t212.dat \
+	data_dir/4970t213.dat \
+	data_dir/4970t214.dat \
+	data_dir/4970t215.dat \
+	data_dir/4970t216.dat \
+	data_dir/4970t217.dat \
+	data_dir/4970t218.dat \
+	data_dir/4970t219.dat \
+	data_dir/4970t21.dat \
+	data_dir/4970t220.dat \
+	data_dir/4970t221.dat \
+	data_dir/4970t222.dat \
+	data_dir/4970t223.dat \
+	data_dir/4970t224.dat \
+	data_dir/4970t225.dat \
+	data_dir/4970t226.dat \
+	data_dir/4970t227.dat \
+	data_dir/4970t228.dat \
+	data_dir/4970t229.dat \
+	data_dir/4970t22.dat \
+	data_dir/4970t230.dat \
+	data_dir/4970t231.dat \
+	data_dir/4970t232.dat \
+	data_dir/4970t233.dat \
+	data_dir/4970t234.dat \
+	data_dir/4970t235.dat \
+	data_dir/4970t236.dat \
+	data_dir/4970t237.dat \
+	data_dir/4970t238.dat \
+	data_dir/4970t239.dat \
+	data_dir/4970t23.dat \
+	data_dir/4970t24.dat \
+	data_dir/4970t25.dat \
+	data_dir/4970t26.dat \
+	data_dir/4970t27.dat \
+	data_dir/4970t28.dat \
+	data_dir/4970t29.dat \
+	html_dir/4970/4970n1.html \
+	html_dir/4970/4970n2.html \
+	html_dir/4970/4970n3.html \
+	html_dir/4970/4970n4.html \
+	html_dir/4970/4970n5.html \
+	html_dir/4970/4970t11.html \
+	html_dir/4970/4970t12.html \
+	html_dir/4970/4970t13.html \
+	html_dir/4970/4970t14.html \
+	html_dir/4970/4970t15.html \
+	html_dir/4970/4970t210.html \
+	html_dir/4970/4970t211.html \
+	html_dir/4970/4970t212.html \
+	html_dir/4970/4970t213.html \
+	html_dir/4970/4970t214.html \
+	html_dir/4970/4970t215.html \
+	html_dir/4970/4970t216.html \
+	html_dir/4970/4970t217.html \
+	html_dir/4970/4970t218.html \
+	html_dir/4970/4970t219.html \
+	html_dir/4970/4970t21.html \
+	html_dir/4970/4970t220.html \
+	html_dir/4970/4970t221.html \
+	html_dir/4970/4970t222.html \
+	html_dir/4970/4970t223.html \
+	html_dir/4970/4970t224.html \
+	html_dir/4970/4970t225.html \
+	html_dir/4970/4970t226.html \
+	html_dir/4970/4970t227.html \
+	html_dir/4970/4970t228.html \
+	html_dir/4970/4970t229.html \
+	html_dir/4970/4970t22.html \
+	html_dir/4970/4970t230.html \
+	html_dir/4970/4970t231.html \
+	html_dir/4970/4970t232.html \
+	html_dir/4970/4970t233.html \
+	html_dir/4970/4970t234.html \
+	html_dir/4970/4970t235.html \
+	html_dir/4970/4970t236.html \
+	html_dir/4970/4970t237.html \
+	html_dir/4970/4970t238.html \
+	html_dir/4970/4970t239.html \
+	html_dir/4970/4970t23.html \
+	html_dir/4970/4970t24.html \
+	html_dir/4970/4970t25.html \
+	html_dir/4970/4970t26.html \
+	html_dir/4970/4970t27.html \
+	html_dir/4970/4970t28.html \
+	html_dir/4970/4970t29.html \
+	html_dir/4970/4970y.html \
+	session_dir/4970/4970acdd \
+	session_dir/4970/4970n1.ds \
+	session_dir/4970/4970n2.ds \
+	session_dir/4970/4970n3.ds \
+	session_dir/4970/4970n4.ds \
+	session_dir/4970/4970n5.ds \
+	session_dir/4970/4970t11.ds \
+	session_dir/4970/4970t12.ds \
+	session_dir/4970/4970t13.ds \
+	session_dir/4970/4970t14.ds \
+	session_dir/4970/4970t15.ds \
+	session_dir/4970/4970t210.ds \
+	session_dir/4970/4970t211.ds \
+	session_dir/4970/4970t212.ds \
+	session_dir/4970/4970t213.ds \
+	session_dir/4970/4970t214.ds \
+	session_dir/4970/4970t215.ds \
+	session_dir/4970/4970t216.ds \
+	session_dir/4970/4970t217.ds \
+	session_dir/4970/4970t218.ds \
+	session_dir/4970/4970t219.ds \
+	session_dir/4970/4970t21.ds \
+	session_dir/4970/4970t220.ds \
+	session_dir/4970/4970t221.ds \
+	session_dir/4970/4970t222.ds \
+	session_dir/4970/4970t223.ds \
+	session_dir/4970/4970t224.ds \
+	session_dir/4970/4970t225.ds \
+	session_dir/4970/4970t226.ds \
+	session_dir/4970/4970t227.ds \
+	session_dir/4970/4970t228.ds \
+	session_dir/4970/4970t229.ds \
+	session_dir/4970/4970t22.ds \
+	session_dir/4970/4970t230.ds \
+	session_dir/4970/4970t231.ds \
+	session_dir/4970/4970t232.ds \
+	session_dir/4970/4970t233.ds \
+	session_dir/4970/4970t234.ds \
+	session_dir/4970/4970t235.ds \
+	session_dir/4970/4970t236.ds \
+	session_dir/4970/4970t237.ds \
+	session_dir/4970/4970t238.ds \
+	session_dir/4970/4970t239.ds \
+	session_dir/4970/4970t23.ds \
+	session_dir/4970/4970t24.ds \
+	session_dir/4970/4970t25.ds \
+	session_dir/4970/4970t26.ds \
+	session_dir/4970/4970t27.ds \
+	session_dir/4970/4970t28.ds \
+	session_dir/4970/4970t29.ds \
+	data_dir/4970o10.dat \
+	data_dir/4970o11.dat \
+	data_dir/4970o12.dat \
+	data_dir/4970o13.dat \
+	data_dir/4970o14.dat \
+	data_dir/4970o15.dat \
+	data_dir/4970o16.dat \
+	data_dir/4970o17.dat \
+	data_dir/4970o18.dat \
+	data_dir/4970o1.dat \
+	data_dir/4970o2.dat \
+	data_dir/4970o3.dat \
+	data_dir/4970o4.dat \
+	data_dir/4970o5.dat \
+	data_dir/4970o6.dat \
+	data_dir/4970o7.dat \
+	data_dir/4970o8.dat \
+	data_dir/4970o9.dat \
+	data_dir/4970rl.dat \
+	html_dir/4970/4970o10.html \
+	html_dir/4970/4970o11.html \
+	html_dir/4970/4970o12.html \
+	html_dir/4970/4970o13.html \
+	html_dir/4970/4970o14.html \
+	html_dir/4970/4970o15.html \
+	html_dir/4970/4970o16.html \
+	html_dir/4970/4970o17.html \
+	html_dir/4970/4970o18.html \
+	html_dir/4970/4970o1.html \
+	html_dir/4970/4970o2.html \
+	html_dir/4970/4970o3.html \
+	html_dir/4970/4970o4.html \
+	html_dir/4970/4970o5.html \
+	html_dir/4970/4970o6.html \
+	html_dir/4970/4970o7.html \
+	html_dir/4970/4970o8.html \
+	html_dir/4970/4970o9.html \
+	session_dir/4970/4970o10.ds \
+	session_dir/4970/4970o11.ds \
+	session_dir/4970/4970o12.ds \
+	session_dir/4970/4970o13.ds \
+	session_dir/4970/4970o14.ds \
+	session_dir/4970/4970o15.ds \
+	session_dir/4970/4970o16.ds \
+	session_dir/4970/4970o17.ds \
+	session_dir/4970/4970o18.ds \
+	session_dir/4970/4970o1.ds \
+	session_dir/4970/4970o2.ds \
+	session_dir/4970/4970o3.ds \
+	session_dir/4970/4970o4.ds \
+	session_dir/4970/4970o5.ds \
+	session_dir/4970/4970o6.ds \
+	session_dir/4970/4970o7.ds \
+	session_dir/4970/4970o8.ds \
+	session_dir/4970/4970o9.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/4970rl.dat"
+set line = '^1	1	ALA	A	2$'
+source tests/check4line
+set line = '^1	148	LYS	K	2$'
+source tests/check4line
+set line = '^2	1	GLY	G	2$'
+source tests/check4line
+set line = '^2	21	SER	S	2$'
+source tests/check4line
+
+echo -n "Test28 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

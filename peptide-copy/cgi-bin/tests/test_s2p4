@@ -1,0 +1,121 @@
+#! /bin/csh -f
+
+# Test predicted vs. experimental S2 visualization.
+
+set result = 0
+
+set dummycsr = 0
+
+if ($#argv > 0) then
+  if (xx$1 == xx-dummycsr) then
+    set dummycsr = 1
+  endif
+endif
+
+rm -r -f */15562*
+
+if ($dummycsr) then
+  tests/dummy_csr_server -exit -time_limit 60 &
+  sleep 2
+endif
+
+echo -n "Processing NMR-STAR and predicted vs. experimental S2: "
+./s2d -nomail -bmrbid 15562 -force -check_res_list -check_pct \
+  -s2p_url file:test_data/ -do_s2p 2
+
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+echo "Checking output files"
+
+set files = ( data_dir/15562ac1.dat \
+	data_dir/15562am1.dat \
+	data_dir/15562amac1.dat \
+	data_dir/15562as1.dat \
+	data_dir/15562c1.dat \
+	data_dir/15562d1.dat \
+	data_dir/15562g1.dat \
+	data_dir/15562hc1.dat \
+	data_dir/15562hn1.dat \
+	data_dir/15562md.dat \
+	data_dir/15562n1.dat \
+	data_dir/15562n2.dat \
+	data_dir/15562o1.dat \
+	data_dir/15562p1.dat \
+	data_dir/15562rc1.dat \
+	data_dir/15562rl.dat \
+	data_dir/15562s2p1-1.dat \
+	data_dir/15562t11.dat \
+	data_dir/15562t12.dat \
+	data_dir/15562t21.dat \
+	data_dir/15562t22.dat \
+	data_dir/15562ss1-1.dat \
+	html_dir/15562/15562ac1.html \
+	html_dir/15562/15562am1.html \
+	html_dir/15562/15562as1.html \
+	html_dir/15562/15562c1.html \
+	html_dir/15562/15562d1.html \
+	html_dir/15562/15562g1.html \
+	html_dir/15562/15562hc1.html \
+	html_dir/15562/15562hn1.html \
+	html_dir/15562/15562n1.html \
+	html_dir/15562/15562n2.html \
+	html_dir/15562/15562o1.html \
+	html_dir/15562/15562p1.html \
+	html_dir/15562/15562s2p1-1.html \
+	html_dir/15562/15562t11.html \
+	html_dir/15562/15562t12.html \
+	html_dir/15562/15562t21.html \
+	html_dir/15562/15562t22.html \
+	html_dir/15562/15562y.html \
+	session_dir/15562/15562ac1.ds \
+	session_dir/15562/15562acdd \
+	session_dir/15562/15562am1.ds \
+	session_dir/15562/15562as1.ds \
+	session_dir/15562/15562c1.ds \
+	session_dir/15562/15562d1.ds \
+	session_dir/15562/15562g1.ds \
+	session_dir/15562/15562hc1.ds \
+	session_dir/15562/15562hn1.ds \
+	session_dir/15562/15562n1.ds \
+	session_dir/15562/15562n2.ds \
+	session_dir/15562/15562o1.ds \
+	session_dir/15562/15562p1.ds \
+	session_dir/15562/15562s2p1-1.ds \
+	session_dir/15562/15562t11.ds \
+	session_dir/15562/15562t12.ds \
+	session_dir/15562/15562t21.ds \
+	session_dir/15562/15562t22.ds )
+
+foreach file ($files)
+   if (! -f $file) then
+      echo "  Output file $file is missing"
+      set result = 1
+   endif
+end
+
+
+set file = "data_dir/15562s2p1-1.dat"
+set line = '^1.0 0.4188274 2 1$'
+source tests/check4line
+set line = '^0.901 0.8593513 68 1$'
+source tests/check4line
+set line = '^1.0 0.45856732 116 1$'
+source tests/check4line
+
+set file = "html_dir/15562/15562y.html"
+set line = '<option value="15562/15562s2p1-1.html">2JXN</option>'
+source tests/check4line
+
+
+echo -n "Test_s2p4 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
+

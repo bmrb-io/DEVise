@@ -1,0 +1,111 @@
+#! /bin/csh -f
+
+# This tests putting the correct sample conditions, etc., into the
+# meta-data for the 3D visualizations.  6838 has particularly complicated
+# sample information.
+
+set result = 0
+
+rm -r -f */6838*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 6838 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+echo "Checking output files"
+
+set files = ( data_dir/6838am1.dat \
+	data_dir/6838amac1.dat \
+	data_dir/6838as1.dat \
+	data_dir/6838d1.dat \
+	data_dir/6838hc1.dat \
+	data_dir/6838hn1.dat \
+	data_dir/6838md.dat \
+	data_dir/6838n1.dat \
+	data_dir/6838n2.dat \
+	data_dir/6838n3.dat \
+	data_dir/6838o1.dat \
+	data_dir/6838p1.dat \
+	data_dir/6838rc1.dat \
+	data_dir/6838rl.dat \
+	data_dir/6838sd1.dat \
+	data_dir/6838sd1_models.dat \
+	data_dir/6838t11.dat \
+	data_dir/6838t12.dat \
+	data_dir/6838t13.dat \
+	data_dir/6838t21.dat \
+	data_dir/6838t22.dat \
+	data_dir/6838t23.dat \
+	html_dir/6838/6838am1.html \
+	html_dir/6838/6838as1.html \
+	html_dir/6838/6838d1.html \
+	html_dir/6838/6838hn1.html \
+	html_dir/6838/6838n1.html \
+	html_dir/6838/6838n2.html \
+	html_dir/6838/6838n3.html \
+	html_dir/6838/6838o1.html \
+	html_dir/6838/6838p1.html \
+	html_dir/6838/6838sd1.html \
+	html_dir/6838/6838t11.html \
+	html_dir/6838/6838t12.html \
+	html_dir/6838/6838t13.html \
+	html_dir/6838/6838t21.html \
+	html_dir/6838/6838t22.html \
+	html_dir/6838/6838t23.html \
+	html_dir/6838/6838y.html \
+	session_dir/6838/6838acdd \
+	session_dir/6838/6838am1.ds \
+	session_dir/6838/6838as1.ds \
+	session_dir/6838/6838d1.ds \
+	session_dir/6838/6838hn1.ds \
+	session_dir/6838/6838n1.ds \
+	session_dir/6838/6838n2.ds \
+	session_dir/6838/6838n3.ds \
+	session_dir/6838/6838o1.ds \
+	session_dir/6838/6838p1.ds \
+	session_dir/6838/6838sd1.ds \
+	session_dir/6838/6838t11.ds \
+	session_dir/6838/6838t12.ds \
+	session_dir/6838/6838t13.ds \
+	session_dir/6838/6838t21.ds \
+	session_dir/6838/6838t22.ds \
+	session_dir/6838/6838t23.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+# Check for correct meta-data.
+set file = "data_dir/6838md.dat"
+
+set line = '^EA 1 (polypeptide(L))	1	C delta chem shift \[1\]	.	PSE-4 0.6 mM (U-98% 13C, U-96% 15N)    DSS 0.1 mM              Imidazole 3 mM              Sodium...	ionic strength: 0 mM; pH: 6.65 pH; temperature: 303.15 K	6838d1	\$C_DeltaShift$'
+source tests/check4line
+
+set line = '^EA 1 (polypeptide(L))	1	Het NOE (500) N H \[1\]	.	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	ionic strength: 0 mM; pH: 6.65 pH; temperature: 304.65 K	6838n1	\$NOE_value$'
+source tests/check4line
+
+set line = '^EA 1 (polypeptide(L))	1	T1 Relaxation (500) \[1\]	.	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	ionic strength: 0 mM; pH: 6.65 pH; temperature: 304.65 K	6838t11	\$relax_value$'
+source tests/check4line
+
+set line = '^EA 1 (polypeptide(L))	1	T2 Relaxation (500) \[1\]	.	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	ionic strength: 0 mM; pH: 6.65 pH; temperature: 304.65 K	6838t21	\$relax_value$'
+source tests/check4line
+
+set line = '^EA 1 (polypeptide(L))	1	S2 Order Parameters \[1\]	The Rex values and errors provided are scaled for a 600 MHz field.  That is, they originate from ...	PSE-4 0.5 mM (U-96% 15N)  Imidazole 3 mM  Sodium azide 0.1%  D2O 10%  H2O 90%  pH 6.65 ; PSE-4: 0...	ionic strength: 0 mM; pH: 6.65 pH; temperature: 304.65 K	6838o1	\$S2order_value$'
+source tests/check4line
+
+
+
+echo -n "test_sc1 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

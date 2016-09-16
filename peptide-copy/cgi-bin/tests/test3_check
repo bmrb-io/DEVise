@@ -1,0 +1,45 @@
+echo "Checking output files"
+
+set files = (data_dir/4081ac1.dat data_dir/4081as1.dat data_dir/4081c1.dat \
+	data_dir/4081d1.dat data_dir/4081hn1.dat data_dir/4081md.dat \
+	data_dir/4081p1.dat data_dir/4081rc1.dat data_dir/4081rl.dat \
+	html_dir/4081/4081ac1.html html_dir/4081/4081as1.html html_dir/4081/4081c1.html \
+	html_dir/4081/4081d1.html html_dir/4081/4081hn1.html html_dir/4081/4081p1.html \
+	html_dir/4081/4081y.html \
+	session_dir/4081/4081ac1.ds session_dir/4081/4081acdd \
+	session_dir/4081/4081as1.ds session_dir/4081/4081c1.ds session_dir/4081/4081d1.ds \
+	session_dir/4081/4081hn1.ds session_dir/4081/4081p1.ds \
+	data_dir/4081am1.dat \
+	html_dir/4081/4081am1.html \
+	session_dir/4081/4081am1.ds \
+	data_dir/4081lacsc1.dat \
+	data_dir/4081lacsc2.dat \
+	data_dir/4081lacsc3.dat \
+	data_dir/4081lacsc4.dat \
+	data_dir/4081lacsl1.dat \
+	data_dir/4081lacsl2.dat \
+	data_dir/4081lacsl3.dat \
+	data_dir/4081lacsl4.dat \
+	data_dir/4081lacsp1.dat \
+	data_dir/4081lacsp2.dat \
+	data_dir/4081lacsp3.dat \
+	data_dir/4081lacsp4.dat \
+	html_dir/4081/4081lacs1.html \
+	html_dir/4081/4081lacs2.html \
+	html_dir/4081/4081lacs3.html \
+	html_dir/4081/4081lacs4.html \
+	session_dir/4081/4081lacs1.ds \
+	session_dir/4081/4081lacs2.ds \
+	session_dir/4081/4081lacs3.ds \
+	session_dir/4081/4081lacs4.ds \
+	data_dir/4081hc1.dat \
+	html_dir/4081/4081hc1.html \
+	session_dir/4081/4081hc1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+

@@ -1,0 +1,80 @@
+			Notes on Rich's Peptide CGI Code
+			$Id$
+
+FILES
+
+* AssgDataManager.java: reads assignment file, generates numbers for
+percentage assignments of residues.
+
+* GetBackbone.java: has main() function to enable other stuff to be
+run.  May not need to be used.
+
+* LineTokens.java: used for delta shift info -- reads a chem shift file.
+
+* LocalStar2Devise.java: converts a local star file to a DEVise table.
+
+* ShiftDataManager.java: manages chem shift info.
+
+* Summarize.java: test code.
+
+* WebStar2Devise.java: converts a star file to a DEVise table, accessing
+the star file via a URL.  Note: most of the code here is the same as
+LocalStar2Devise.java, but LocalStar2Devise.java may be more up-to-date.
+
+* add_vars.pl: takes a file with variable values and a file with bonds,
+and outputs a file with bonds and variable values.  (All files are
+DEVise table files.)
+
+* build_bonds.pl: takes an amino acid connection file and a file listing
+the atoms of a peptide and their locations in 3-space, and outputs a
+file explicitly listing all bonds and their locations in 3-space.
+Note that there are actually two records in the output table for
+each bond, so that each half-bond can be colored according to the
+type of atom involved.
+
+* data_key.txt: a list of fields in some of the DEVise table files.
+
+* cgi-bin/combine: combines separate files generated from a star file
+into a single output file.  (Right now Rich's code generates separate
+intermediate files for the various parts of the star file.)  This code
+has special provision for cases where some of the intermediate files
+have missing lines.
+
+* cgi-bin/make_view: top-level CGI script -- calls WebStar2Devise,
+modifies session file (changes name of data stream), generates html
+code.
+
+* dynamic_sessions/*.base: session templates to be modified by
+make_view.
+
+* html/assignments.txt: chemical info used by scripts.
+
+* html/chemshift.txt: chemical info used by scripts.
+
+* html/data_defs.txt: explanation of file name conventions.
+
+* html/help_*.html: reference information from Eldon.
+
+* html/helpmaster.js: JavaScript to pop up a temporary window when the
+mouse is move over appropriate areas.
+
+* html/label.dat: dummy data for views that are created only to show an
+axis.
+
+
+TESTING/RUNNING
+TEMPTEMP
+- Put CGI in place???
+- Change make_view according to directory.
+
+
+INSTALLATION
+on biron:
+
+* /var/home/www/cgi-bin/bmrb
+
+* /p/devise/demo/dat/bmrb/BMRB (link to /local.biron/pdc/BMRB): contains
+html files and session files.
+
+* /u/p/d/pdc/public/pub_research/: Java class files.  NO!! where the
+hell are the class files?

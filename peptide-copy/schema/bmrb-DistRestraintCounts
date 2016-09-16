@@ -1,0 +1,76 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:56:00
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# $Id$
+
+type bmrb-DistRestraintCounts ascii
+comment #
+whitespace ' '
+
+attr Entity_assembly_ID int
+attr Residue_seq_code int
+attr EA_res string 10
+
+attr All_viol-all_ambig-all int
+attr All_viol-yes_ambig-all int
+attr All_viol-no_ambig-all int
+attr All_viol-all_ambig-yes int
+attr All_viol-yes_ambig-yes int
+attr All_viol-no_ambig-yes int
+attr All_viol-all_ambig-no int
+attr All_viol-yes_ambig-no int
+attr All_viol-no_ambig-no int
+
+attr Intra-res_viol-all_ambig-all int
+attr Intra-res_viol-yes_ambig-all int
+attr Intra-res_viol-no_ambig-all int
+attr Intra-res_viol-all_ambig-yes int
+attr Intra-res_viol-yes_ambig-yes int
+attr Intra-res_viol-no_ambig-yes int
+attr Intra-res_viol-all_ambig-no int
+attr Intra-res_viol-yes_ambig-no int
+attr Intra-res_viol-no_ambig-no int
+
+attr Sequential_viol-all_ambig-all int
+attr Sequential_viol-yes_ambig-all int
+attr Sequential_viol-no_ambig-all int
+attr Sequential_viol-all_ambig-yes int
+attr Sequential_viol-yes_ambig-yes int
+attr Sequential_viol-no_ambig-yes int
+attr Sequential_viol-all_ambig-no int
+attr Sequential_viol-yes_ambig-no int
+attr Sequential_viol-no_ambig-no int
+
+attr Medium_viol-all_ambig-all int
+attr Medium_viol-yes_ambig-all int
+attr Medium_viol-no_ambig-all int
+attr Medium_viol-all_ambig-yes int
+attr Medium_viol-yes_ambig-yes int
+attr Medium_viol-no_ambig-yes int
+attr Medium_viol-all_ambig-no int
+attr Medium_viol-yes_ambig-no int
+attr Medium_viol-no_ambig-no int
+
+attr Long_viol-all_ambig-all int
+attr Long_viol-yes_ambig-all int
+attr Long_viol-no_ambig-all int
+attr Long_viol-all_ambig-yes int
+attr Long_viol-yes_ambig-yes int
+attr Long_viol-no_ambig-yes int
+attr Long_viol-all_ambig-no int
+attr Long_viol-yes_ambig-no int
+attr Long_viol-no_ambig-no int
+
+attr Inter-mol_viol-all_ambig-all int
+attr Inter-mol_viol-yes_ambig-all int
+attr Inter-mol_viol-no_ambig-all int
+attr Inter-mol_viol-all_ambig-yes int
+attr Inter-mol_viol-yes_ambig-yes int
+attr Inter-mol_viol-no_ambig-yes int
+attr Inter-mol_viol-all_ambig-no int
+attr Inter-mol_viol-yes_ambig-no int
+attr Inter-mol_viol-no_ambig-no int

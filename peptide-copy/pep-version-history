@@ -1,0 +1,1162 @@
+			Peptide-CGI Version History
+
+Peptide-CGI 12.4.7
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.8 or higher.)
+(Not yet released.)
+
+
+Peptide-CGI 12.4.6
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.8 or higher.)
+(Released 2015-05-11.)
+
+* Modified Peptide-CGI to work with JavaScreen 5.14.8, which has
+the capability to use mod_perl in the web server.
+
+* Spectral dimension information in Cyana/Xeasy peak list text is
+now processed.
+
+* If a peak list save frame contains a _Spectral_dim loop an spectral
+dimension data in the peak list text, an error is generated if the
+two data sets disagree (unless the -allow_sd_mismatch flag is set).
+
+
+Peptide-CGI 12.4.5
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
+(Released 2015-03-05.)
+
+* Data has been re-ordered so that the most important/relevant data
+(e.g., chemical shift values) shows up first in the drill-down
+dialog (to-do 211).
+
+* Test setup at CS now uses separate session, data, and schema files
+from the regular setup (to-do 212).
+
+
+Peptide-CGI 12.4.4
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
+(Released 2014-12-18.)
+
+* Added residue sequence view to single-entry H vs N and H vs C simulated
+spectrum visualizations.  (To-do 191.)
+
+* Fixed bug 153 (test_s2p5 fails on pacu).
+
+* In peak list processing, we now write a _Spectral_dim loop if it is
+missing but can be derived from the peak list text.  (To-do 207.)
+
+* Fixed the s2predict link on the "S2 Predicted vs. Experimental Values"
+help page.
+
+* Fixed peak list processing for Sparky peak lists with no peak height
+or volume.  (To-do 210.)
+
+
+Peptide-CGI 12.4.3
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
+(Released 2014-06-26.)
+
+* Updated configuration to use new dynamics movie script that matches
+video type to browser.
+
+* Added dynamics movie demos thumbnail and link to home page; generating
+the demo dynamics visualizations is now part of the normal installation
+process.
+
+* Fixed an html error in multi-entry summary pages (bug 152).
+
+* Fixed bug 154 (multi-entry visualizations with 4081 as the second
+entry don't work right).
+
+* Fixed bug 155 (test_all deletes some dynamics movie visualizations).
+
+
+Peptide-CGI 12.4.2
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.4 or higher.)
+(Released 2014-05-27.)
+
+* Multiple sets of peaks in a single save frame now cause an explicit
+fatal error (to-do 206).
+
+* Added support for new dynamics movie URLs.
+
+* Updated JavaScreen port numbers to match JS changes for new server
+at CS.
+
+
+Peptide-CGI 12.4.1
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.3 or higher.)
+(Released 2014-04-21.)
+
+* Made some improvements to the dynamics movies setup.
+
+* Added configuration for new condor-websrv-7.cs.wisc.edu machine.
+
+* Added install targets for example visualizations and dynamics movies;
+example visualizations are automatically generated as part of the normal
+install. 
+
+* Added information about DSSP to the "S2 Predicted vs. Experimental
+Values" visualization help page.
+
+* Added support for NMRView peak lists.
+
+
+Peptide-CGI 12.4.0
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.3 or higher.)
+(Released for peak list extraction only.)
+
+* Added support for peak list processing (Sparky and XEASY).
+
+* Made all Peptide-CGI output files world-writeable, so things will
+work better with different users running the program.
+
+* Changed "applet" to "object" in all html files that include the
+JavaScreen applet (matches current HTML standard).
+
+* Added notes to html pages about entering accession numbers only for
+released entries; also improved error messages for bad accession numbers
+and made some general improvements to the error messages.
+
+* Fixed some html errors in Peptide-CGI pages.
+
+
+Peptide-CGI 12.3.4
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.3 or higher.)
+(Released 2013-12-18.)
+
+* Made changes to match the JavaScreen's change to a single, signed,
+jar file.
+
+
+Peptide-CGI 12.3.3
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2013-10-17.)
+
+* Moved the "chemical shift data" section to the first position in
+visualization summary pages (to-do 192); also changed visualization
+entry selection page.
+
+* Disabled thumbnail expansion in the html pages (to-do 194).
+
+* Fixed the link to the visualization server in the visualization
+examples page.
+
+* Added "select from menus..." message to summary html page.
+
+* Improved the appearance of the summary html page (to-do 195),
+and also the visualization selection pages and the histogram
+index page.
+
+* Implemented to-do 181 (merge the Jmol and non-Jmol visualization
+page templates).
+
+* Changed the default BMRB accession number in the web forms to
+15381; when you visualize a specific entry, that entry's accession
+number becomes the default in the forms associated with that entry.
+
+* Fixed some tests that failed because of minor changes to entries.
+
+
+Peptide-CGI 12.3.2
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2013-02-14.)
+
+* Changed histogram image on home page to link to histogram selection
+page, instead of the single-protein examples; the "main" examples page
+now links to the "regular" histogram pages because of problems in the
+example sessions.
+
+* Fixed drill-down icon thumbnail in histogram visualization pages.
+
+
+Peptide-CGI 12.3.1
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2013-01-16.)
+
+* Cleaned up "temporary" fix for histogram drill-down links (moved the
+histogram html files up one directory so that the relative links work).
+
+* Minor fixes to some tests so that they work on all machines.
+
+
+Peptide-CGI 12.3.0
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2012-12-13.)
+
+* Disabled back calculated chemical shift referencing visualizations,
+because these are now considered obsolete.
+
+* Added visualization examples page and a script to generate the
+corresponding actual visualizations.
+
+* Added the "BMRB/wwPDB" header to a bunch of the Peptide-CGI pages
+(both static and dynamic).
+
+* Made some improvements to the layout of the visualization summary pages.
+
+* Added a copy of the BMRB home page, with the new "NMR data
+visualizations" section.
+
+* Improved links between various visualization pages.
+
+* Removed "JavaScreen collaboration" and "DEVise home page" links
+from the visualization pages.
+
+* Validated and (mostly) corrected the html pages that are part of
+Peptide-CGI.
+
+* Reorganized the HTML directories (slightly in how they're installed,
+significantly in the sources); fixed broken link from histogram pages
+to JavaScreen collaboration page.
+
+* We now get mmCIF and remediated restraints files from the "divided"
+rather than "all" directories.
+
+* Accession numbers, etc., in html forms now have example values
+prefilled.
+
+
+Peptide-CGI 12.2.2
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2012-03-29.)
+
+* In the visualization summary pages, selecting a visualization in
+a menu now immediately goes to that visualization, without having to
+click a separate button.
+
+* Changed the "note: processing may take several minutes" messages to
+red to make them more visible.
+
+
+Peptide-CGI 12.2.1
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2012-03-19.)
+
+* Converted visualization summary pages from tables to menus so the
+page layout is more compact.
+
+* Fixed a problem with getting the system name in NMR-STAR 3.1 files
+(see bug 133).
+
+
+Peptide-CGI 12.2.0
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
+(Released 2012-02-09.)
+
+* Changed all visualization-related pages to the new color scheme and
+layout.
+
+* Peptide-CGI now automatically re-does "basic" processing if necessary
+when doing processing of coordinates, restraints, etc.
+
+* S2d no longer sends error emails in a number of cases that are
+instances of faulty inputs rather than actual software errors (see
+to-do 139).
+
+* Added the -do_dyn_movie argument and bmrb_mirror.do_dyn_movie_default
+property to control whether the molecular dynamics movies are enabled.
+
+* Added the -s2p_name and -dyn_movie_demo arguments and generate_movies
+script to allow generation of visualizations for demo dynamics movies.
+
+* Added demo molecular dynamics page.
+
+
+Peptide-CGI 12.1.5
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.0 or higher.)
+
+* In the S2 predicted vs. experimental visualizations the secondary
+structures are now obtained from DSSP output files instead of from the
+chemical shift reference back calculations.
+
+* Temporarily disabled dynamics movie menus in S2 predicted vs. 
+experimental visualization.
+
+* Improvments to S2 predicted vs. experimental visualizations: made the 
+dynamics movie button view very thin (almost invisible) and reduced
+the gaps between other views.
+
+* Cleaned up the single-entry selection page and added example images
+(matching the two-entry page).
+
+* Added histogram index page with thumbnails of the histograms.
+
+* Added DOCTYPE to all html pages and templates.
+
+
+Peptide-CGI 12.1.4
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.0 or higher.)
+
+* Added buttons to display dynamics movies to the S2 predicted vs.
+experimental visualization.
+
+* Fixed some problems with the installation of the multi-entry selection
+page images.
+
+* Made further improvements to the two-entry selection page.
+
+
+Peptide-CGI 12.1.3
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Fixed tutorial video links for the visualization server.
+
+
+Peptide-CGI 12.1.2
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* The visualization server now displays error messages and warnings
+in the case of a failure.
+
+* Fixed color print mode info view font color in LACS visualizations
+(bug 129).
+
+* Added a legend to the LACS visualizations (to-do 156).
+
+* Added a restraint color legend to the distance violation visualizations
+(to-do 154).
+
+* The tmp/s2d.log file is created with permissions of 666 during the
+installation process (to-do 155).
+
+
+Peptide-CGI 12.1.1.1
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Fixed the links from the summary visualization pages to the tutorial
+video page.
+
+
+Peptide-CGI 12.1.1
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* In the 1H-15N and 1H-13C simulated spectrum visualizations, the user can
+now move the highlight cursor to a blank space to not highlight any
+amino acid (bug 122).
+
+* In the distance restraint visualizations selection views, "All" to
+"All by violation", "All by ambiguity", etc., to make the selections
+clearer (bug 123).
+
+* Improved colors in 1H-15N and 1H-13C simulated spectrum visualizations
+(bug 124).
+
+* Fixed print mode colors for a number of the visualizations.
+
+* Fixed the links from the specific visualization pages to the tutorial
+video page.
+
+
+Peptide-CGI 12.1.0
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Added predicted vs. experimental S2 order parameter visualization.
+
+* Minor cleanups of session templates.
+
+* Changed the legends for the simulated 1H-15N and simulated 1H-13C
+spectra to client-side rendering of the fonts, for better appearance.
+
+
+Peptide-CGI 12.0.0
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Added the first multi-entry visualizations: simulated 1H-15N backbone
+HSQC spectrum and simulated 1H-13C HSQC spectrum.
+
+
+Peptide-CGI 11.8.9
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Added logging of all Peptide-CGI runs, including elapsed time and
+whether the cache was used.
+
+
+Peptide-CGI 11.8.8
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Added the ability to select distance restraints by the magnitude of
+the violation.
+
+* Fixed bug 118 (Data Scroll View not working correctly in restraint
+visualizations).
+
+* Changed the coordinates link for entry 4096 from "none" to "internal"
+to be clearer (to-do 113).
+
+
+Peptide-CGI 11.8.7
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Improved the behavior of the data scroll view and its cursor in
+the distance and torsion angle restraint visualizations.
+
+* Added save frame details, sample, and sample conditions to the
+drill-down info available in the data select view of atomic coordinate
+visualizations.
+
+* Added some more debug output for non-polymers.
+
+
+Peptide-CGI 11.8.6
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Fixed a problem that prevented Peptide-CGI from correctly processing
+entry 6939 (dealing with "?" for residue count).
+
+* Peptide-CGI version is now printed as part of standard output.
+
+* Improved the behavior of the data scroll view and its cursor in
+atomic coordinate, ambiguity code, and Pistachio visualizations.
+
+
+Peptide-CGI 11.8.5
+------------------
+(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Changed Peptide-CGI-generated HTML pages to work with the new
+re-sizable JavaScreen.
+
+* Changed Peptide-CGI to correctly deal with new residue labels for
+DNA (DA, DC, etc., instead of A, C, etc.).
+
+* Fixed bug 108 (Peptide-CGI version history link doesn't work).
+
+* Fixed bug 110 ("." shows up for PDB IDs in some cases).
+
+* Fixed bug 111 (an error in dealing with some unusual torsion angles).
+
+
+Peptide-CGI 11.8.4
+------------------
+(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.2 or higher.)
+
+* Fixed a bug in version 11.8.3 that prevented visualization help
+from being displayed.
+
+* Fixed a bug that caused entries with a _Mol_type of monomeric_polymer
+(rather than polymer) (for example, 4092) to be incorrectly processed.
+
+* Fixed a bug that prevented the visualization help pages from being shown
+for remediated restraint distance and torsion angle restraint
+visualizations (bug 107).
+
+* Added more diagnostic output, such as details of sequence mismatches.
+
+
+Peptide-CGI 11.8.3
+------------------
+(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.2 or higher.)
+
+* Fixed histogram web pages to get rid of JavaScreen "junk".
+
+* Applet size reduced to match latest changes to the JavaScreen client.
+
+
+Peptide-CGI 11.8.2
+------------------
+(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.1 or higher.)
+
+* Made it possible to switch between related visualizations within
+a single instance of the JavaScreen.
+
+* Links for remediated restraint visualizations are no longer created
+if the remediated restraints file doesn't exist (fixed bug 098).
+
+* All individual visualization pages now have links back to the
+summary visualization page for the entry.
+
+* All visualization summary pages for released BMRB entries now have
+links to the "main" page for the entry.
+
+* Added Google Analytics scripts to histogram pages (fixed bug 097).
+
+* Changed error emails for all sites to go to devise-sup@cs.wisc.edu.
+
+* Made a minor fix to view alignments in the percent assigned
+visualization.
+
+
+Peptide-CGI 11.8.1
+------------------
+(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.0 or higher.)
+
+* Fixed a bug in the restraint processing that sometimes did not
+correctly generate some restraint visualization options in the
+summary html files.
+
+* Fixed a bug in the selection of distance restraints (bug 096).
+
+
+Peptide-CGI 11.8.0
+------------------
+(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.0 or higher.)
+
+* Added visualizations of distance restraints from the restraint
+grid and remediated restraint files.
+
+
+Peptide-CGI 11.7.4
+------------------
+(Needs DEVise 1.10.1 or higher, JavaScreen client 5.10.0 or higher.)
+
+* Added the capability of having multiple paths to NMR-STAR files,
+so we can process either 3.1 or 2.1 files.
+
+* Added -pdb_file, -lacs_file, and -sparta_file support to the
+make_uvd script.
+
+* Updated SPARTA filename template to work with the current web site
+setup.
+
+* Added NMR-STAR file version to summary html page and detailed
+visualization version info.
+
+
+Peptide-CGI 11.7.3
+------------------
+(Needs DEVise 1.10.1 or higher, JavaScreen client 5.10.0 or higher.)
+
+* Added torsion angle restraint visualizations from remediated restraint
+files.
+
+* SPARTA visualizations now work with multiple entity assembly IDs and
+multiple chemical shift lists per entity assembly.
+
+* PDB IDs differing only by case are now considered the same.
+
+* More SPARTA file format updates.
+
+* Fixed bug 090 (problems with DEVise cursor behavior in torsion angle
+visualizations with multiple entity assemblies).
+
+* Fixed bug 091 (torsion angle meta-data not sorted by entity assembly ID).
+
+* Fixed bug 092 (torsion angle meta-data doesn't have entity assembly IDs
+in titles).
+
+* Fixed bug 093 (problem with incorrect entity assembly IDs in data
+titles for 3D visualizations).
+
+* Added a note about torsion angle restraint violations being calculated
+by CING to the visualizations summary page and the visualization page.
+
+
+Peptide-CGI 11.7.2
+------------------
+(Needs DEVise 1.9.1 or higher, JavaScreen client 5.10.0 or higher.)
+
+* Added the capability to generate torsion angle restraint visualizations
+with only a PDB ID.
+
+
+Peptide-CGI 11.7.1
+------------------
+(Needs DEVise 1.9.1 or higher, JavaScreen client 5.10.0 or higher.)
+
+* Added the -pdb_file command-line argument for use by the visualization
+server.
+
+* Added links to the DEVise/JavaScreen tutorial videos to the html
+pages generated by Peptide-CGI.
+
+* Improved the torsion angle help page by adding links to the various
+sections.
+
+* Added Peptide-CGI version history links to the summary html pages.
+
+* Updated configuration files for new paths, etc.; Osaka mirror now
+gets mmCIF files from PDBj.
+
+* Improved the installation scripts (existing links are now updated
+if they should change).
+
+* Fixed up some tests that were failing at Osaka and Florence because
+they don't have the LACS files.
+
+* More updates to SPARTA data file format.
+
+
+Peptide-CGI 11.7.0
+------------------
+(Needs DEVise 1.9.1 or higher, JavaScreen client 5.10.0 or higher.)
+
+* Added new visualization of torsion angle restraints.
+
+
+Peptide-CGI 11.6.3
+------------------
+(Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.4 or higher.)
+
+* Fixed the 1H-13C visualizations for data containing only single
+atoms for the methyl groups.
+
+* Peptide-CGI can now process the new format for v3 SPARTA files.
+
+
+Peptide-CGI 11.6.2
+------------------
+(Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.4 or higher.)
+
+* All Peptide-CGI-generated HTML pages now contain a Google Analytics
+script to track usage.
+
+* Fixed colors for print modes in some of the visualizations.
+
+* Improved behavior of the DEVise cursor in the data select view
+for coordinate, ambiguity code, and assignment figure of merit
+visualizations.
+
+
+Peptide-CGI 11.6.1
+------------------
+(Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.4 or higher.)
+
+* Added visualization of SPARTA-calculated deltashifts.
+
+* Atom type values are now derived from atom name values if the atom
+types are not available.
+
+* Make_view now rejects all illegal (non-numerical) BMRB accession
+numbers without passing them along to s2d.
+
+* Improved how drill-down works in the chemical shift referencing
+differences by residue and observed vs. calculated chemical shift
+values visualizations and the LACS visualizations.  (This fix
+only works with DEVise 1.9.1x3 or higher.)
+
+* Added "Force reprocessing" button to summary pages (mainly for
+testing).
+
+* Removed obsolete views, links, etc., from Jmol coordinate
+visualization session template.
+
+
+Peptide-CGI 11.6.0
+------------------
+(Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.4 or higher.)
+
+* Added visualization of simulated 1H-13C HSQC spectrum.
+
+
+Peptide-CGI 11.5.0
+------------------
+(Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.4 or higher.)
+
+* Added visualization of chemical shift deltas for nucleic acids.
+
+* Added residue labels to data for delta shifts, CSI, coupling constants,
+chemical shifts by amino acid, ambiguity codes, and Pistachio so it
+shows up in drill down results.
+
+* Fixed a problem with non-polymer entities causing processing to
+fail (see bug 065).
+
+* Fixed a problem with the 5531/1LUU combination causing a null pointer
+error (see bug 078).
+
+* Fixed an error that caused Peptide-CGI to not correctly get entry
+titles.
+
+
+Peptide-CGI 11.4.0
+------------------
+(Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.3 or higher.)
+
+* Fixed a number of problems visualizing entries with multiple
+entities (especially highlighting in 3D visualizations not working).
+(See bugs 037, 038.)
+
+* Fixed bugs 070 and 075 (problems with percent assignment values
+sometimes being greater than 100% for NMR-STAR 3.1 files).
+
+
+Peptide-CGI 11.3.3
+------------------
+(Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.2 or higher.)
+
+* Fixed bug 068 (missing highlights in data view of 3D visualization).
+
+* Fixed bug 069 (problem with entries that don't have any ambiguity
+codes).
+
+* Fixed bug 067 (bad last line of H vs N data).
+
+* Fixed disabled action settings in a number of visualizations views
+(to prevent users from getting the visualizations into an unusable state).
+
+* Dealt with to-do 076 ("no Java" warnings in html pages).
+
+
+Peptide-CGI 11.3.2
+------------------
+(Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.2 or higher.)
+
+* Fixed bug 061 (data selection text too small in 3D visualizations for
+entries with many data sources).
+
+* Fixed up help for coordinate visualizations -- images match latest
+session version; changed all images from GIFs to PNGs; clarified
+the text a little.
+
+
+Peptide-CGI 11.3.1
+------------------
+(Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.1 or higher.)
+
+* Added S2 order parameter visualization.
+
+* Changed order of data sets in the summary page.
+
+* Added "no data available" sections to the summary page so users
+don't get confused by "missing" data.
+
+* Added mailto link to the summary page.
+
+* We no longer generate figure of merit or ambiguity code visualizations
+if the values are all null.
+
+* Reversed the order of data sets in the data selection view of
+3D visualizations (more closely matches the summary page).
+
+* Added the option to explicitly call the garbage collector a number
+of times during processing.
+
+* Updated configuration file for new Florence server.
+
+
+Peptide-CGI 11.3.0
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* New visualization summary page that's much more compact.
+
+
+Peptide-CGI 11.2.6
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Changed histogram web pages to match previous changes to individual
+visualization templates -- centered applet, increased size of mailto
+links.
+
+* Fixed errors in the DNA histogram links.
+
+* Fixed reference for LACS in visualization help page.
+
+* Added config file for new Osaka server.
+
+
+Peptide-CGI 11.2.5.1
+--------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Now building starlibj from source so I can compile it with a Java
+1.3 target.
+
+
+Peptide-CGI 11.2.5
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Updated to a new version of starlibj that fixes a parsing bug, added
+a corresponding test.
+
+* Made some changes to the html templates -- centered applet, increased
+size of mailto links.
+
+* Added frame details to individual visualization pages; spelled out
+Linear Analysis of Chemical Shifts.
+
+
+Peptide-CGI 11.2.4
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Removed all shift-click references from html pages, and replaced
+them with references to the toolbar drill-down mode.
+
+* Removed keyboard shortcut links from all web pages and templates (no
+longer needed because of new JavaScreen help).
+
+
+
+Peptide-CGI 11.2.3
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Greatly improved the view help in all visualizations.
+
+
+Peptide-CGI 11.2.2
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Fixed a bug (DEVise bug 956/Peptide-CGI bug 059) that caused the cursor
+in the data view to not always be updated correctly on changes to the
+cursor in the data scroll view.  (The cursor in the data view is now
+constrained to always be entirely within the data view.)
+
+* Improved ChemShiftRef error messages; ChemShift calculation failing
+is no longer considered an error at the top level of the program.
+
+* Some cache checking output is now printed at a lower verbosity setting.
+
+
+Peptide-CGI 11.2.1
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Added DNA histograms.
+
+
+Peptide-CGI 11.2.0
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Added RNA histograms.
+
+* Updated histogram html files to have colors and fonts matching the rest
+of the BMRB web site.
+
+* Disabled actions in some views in the histogram visualizations for which
+actions could cause problems.
+
+* Made histogram bars narrower to avoid overlaps.
+
+* Moved the histogram html pages, sessions, and schemas into Peptide-CGI.
+
+* Replaced all test NMR-STAR 3.1 files with the latest versions,
+changed test_all accordingly (because this fixes earlier problems).
+
+* Improved some other tests.
+
+* We now print all input parameters at verbosity level 1 instead of 2.
+
+* Added more 3.1 vs. 2.1 tests.
+
+
+Peptide-CGI 11.1.5
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Peptide-CGI-generated html files now use the standard BMRB stylesheet;
+also specified matching background and font colors for use at CS where
+the stylesheet is not available.
+
+* Peptide-CGI now looks for Comp_index_ID tags instead of Seq_ID tags
+in NMR-STAR v3.1 files.
+
+* More flexibility in getting chem shift entity ID values: we look for
+_Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
+not found and change "?" to "1" in the values.
+
+* We now allow single-letter residue codes in chemical shift loops,
+etc.
+
+* Removed automatic setting of CSR level and LACS level in uvd 
+(visualization server) mode, so we don't get non-working CSR
+links at Florence.
+
+* Added more tests to make sure that NMR-STAR v3.1 files are processed
+correctly.
+
+* Got rid of "marlin" system name in BMRB configuration -- CGI script
+will now redirect to www.bmrb.wisc.edu.
+
+* Added bmrb_mirror.verbosity and bmrb_mirror.debug_level settings to
+the props file so S2DMain doesn't complain about not finding them, and
+it's obvious what to change if you want to turn them on.
+
+* Added more debug output, better control of what is printed.
+
+* Install script won't run if you haven't done 'make setup' first.
+
+
+Peptide-CGI 11.1.4
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Removed java memory specifications from scripts which seems to make
+Peptide-CGI work properly on marlin.
+
+* Fixed an error in the florence configuration file.
+
+* Added -verb command-line flag and verbosity property, and debug_level
+property.
+
+
+Peptide-CGI 11.1.3
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* All generated html files now reference Jmol.jar (this seems to be
+required by some recent JVMs).
+
+
+Peptide-CGI 11.1.2
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Added LACS capability to visualization server support.
+
+* Incorporated a new version of starlibj.
+
+* Simplified visualization server error messages.
+
+* Regular installation now also does visualization server installation.
+
+* Got rid of blank title in visualization server summary page.
+
+* Fixed help file links in visualization server pages.
+
+* Removed angle brackets from diagnostic output to avoid problems in html.
+
+* Fixed a bug in the make_uvd script that prevented errors in the
+"upload and visualize data" processing from getting correctly sent
+back to the web browser.
+
+* Fixed "upload and visualize data" configuration for BMRB and mirrors.
+
+* Various other configuration fixes.
+
+* Added more tests for the "upload and visualize data" feature.
+
+
+Peptide-CGI 11.1.1
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Added support for the "upload and visualize data" setup.
+
+
+Peptide-CGI 11.1.0
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Modified Peptide-CGI so that ChemShift can use various S2D classes
+to correctly parse NMR-STAR files.
+
+* Updated Peptide-CGI to work with NMR-STAR 3.1 files and added
+corresponding tests.
+
+* Improved various tests.
+
+* Added testing and release documents.
+
+
+Peptide-CGI 11.0.2
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Fixed a bug in the chem shift reference 1 visualization that caused
+the average and tolerance bars to be drawn at the wrong location.
+
+* Increased JVM memory to 512m because that's what it took to get 6011/
+1RJJ coordinate vis processing to work at BMRB (marlin); added test37,
+which tests 6011.
+
+* Added testing document, and reminders to distribution script.
+
+
+Peptide-CGI 11.0.1
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Updated coordinate visualization help to match new version with
+Jmol and selection trees.
+
+* Added a second summary HTML page that has direct links to all of
+the large-size visualizations.
+
+* Peptide-CGI version history is now included in the distribution
+tarball.
+
+* The distribution tarball now untars into a directory whose name
+includes the version.
+
+
+Peptide-CGI 11.0.0
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* 3D structures are rendered with Jmol, which gives much more advanced
+rendering and more options.
+
+* The atoms and residues to be displayed in the 3D view are selected with
+a tree GUI in a separate window, rather than by cursors in the DEVise
+visualization itself.
+
+* There is also a tree GUI that can override the DEVise cursor selection
+of which residues are highlighted in the 3D view.
+
+* Visualization info in ambiguity code, Pistachio, and LACS sessions
+now rendered on the client side.
+
+* Got rid of kludges in chemical shift reference sessions required
+for pre-1.7.19 DEVise versions. 
+
+* Fixed problems with some html page titles being based on the BMRB
+ID rather than the name, etc.  Fixed test36 to work with new LACS
+file names.
+
+* Disabled appropriate actions in various views that should have already
+had this done.
+
+
+
+Peptide-CGI 10.9.2
+------------------
+(Needs DEVise/JavaScreen 1.7.18 or higher.)
+
+* Peptide-CGI now gets mmCIF files from the production PDB http site
+as opposed to the beta ftp site.
+
+* Added the dev_test makefile target to enable easy running of DEVise on
+the sessions generated by Peptide-CGI for testing (needs the proper
+DEVise startup script as well).
+
+* Removed the "go back" option from the help pages, since we
+open them in a new browser window.
+
+* Added Florence config file.
+
+* Changed LACS filename template because Dave changed .out to .str
+in the names.  (This change was manually patched onto 10.9.1 at
+Madison and Osaka.)
+
+* Improvements to debug and error messages.
+
+
+Peptide-CGI 10.9.1
+------------------
+(Needs DEVise/JavaScreen 1.7.18 or higher.)
+
+* Fixed some bugs in the chemical shift index calculations:
+    - We now use the individual CSI values in the consensus CSI
+      formula, instead of just rounding the deltashift values.
+    - We now take ambiguity codes into account when handling the
+      special case for GLY.
+    - Corrected "standard" chem shift value for CB in CYS (we had
+      been using CYS (red) value and we should be using the CYS (ox)
+      value).
+
+* A bunch of changes to the Pistachio visualization:
+    - Improved color selection.
+    - Adjusted font sizes and window sizes slightly in the Pistachio
+      visualization.
+    - Added titles to more views to clarify things;
+    - Changed JS background color so inter-view borders show up
+      (also for ambiguity visualization);
+    - H -> "backbone proton" in data select view;
+    - Changed color select view and color legend view;
+    - Unknown -> unassigned in color legend;
+    - Moved unassigned to right in color legend;
+    - Y axis label in data view.
+
+* Updated config for marlin and Osaka to have LACS setup.
+
+
+Peptide-CGI 10.9.0
+------------------
+(Needs DEVise/JavaScreen 1.7.18 or higher.)
+
+* Support for LACS visualizations.
+
+* The user now has the choice of viewing the visualizations at a size
+of 800x600 pixels (now the default) or 1024x768 pixels.
+
+
+Peptide-CGI 10.8.3
+------------------
+(Needs DEVise/JavaScreen 1.7.18 or higher.)
+
+* Fixed a couple of bugs in the atomic coordinate, ambiguity code, and
+figure of merit visualizations:  in one, moving the data value
+cursor sometimes incorrectly changed the Y axis range in that view;
+in the other, home on the data value views worked incorrectly.
+
+* Added config files for Osaka and Florence.
+
+* Configuration to get things to work on the 64-bit machine at BMRB
+(including increasing the maximum Java memory).
+
+* Added more tests, fixed a problem with one of the existing tests.
+
+* Better error messages if we retry because of running out of
+memory.
+
+
+Peptide-CGI 10.8.2
+------------------
+(Apparently not released.)
+
+
+Peptide-CGI 10.8.1
+------------------
+(Needs DEVise/JavaScreen 1.7.18 or higher.)
+
+* Ambiguity code and figure of merit visualizations now use 2D main
+views (this speeds up the JavaScreen).
+
+* Changed "Pistachio" to "assignment figure of merit" in
+visualizations, etc.
+
+* Added atom type legend to coordinate visualization.
+
+* Added figure of merit visualization help; updated the help for the
+atomic coordinate and ambiguity code visualizations to match recent
+changes; added stuff about the info view to some other visualization
+help pages.
+
+* Updated NMR-STAR version test for latest 3.0 version string format.
+
+* Updates to how we get PDB IDs from NMR-STAR 3.0 files.
+
+* Added the capability of viewing unreleased entries (for annotators).
+
+
+Peptide-CGI 10.8.0
+------------------
+(Needs DEVise/JavaScreen 1.7.18 or higher.)
+
+* Major improvements to NMR-STAR 3.0 support -- chemical shifts for
+multiple entities are now handled correctly.
+
+* Changed Pistachio percentage calculation to be relative to the number
+of atoms that actually exist in each amino acid, not just the number
+we have figures of merit for.
+
+* The Pistachio visualization now comes up with "Color by figure of
+merit" selected (instead of "Color by atom type").
+
+* Added -dev_version flag that gives the minimum required DEVise
+version for the current version of Peptide-CGI.

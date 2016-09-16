@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+  <title>DEVise JavaScreen: select PDB ID for restraint visualizations</title>
+  <link href="visualization.css" rel="stylesheet" type="text/css" media="all">
+</head>
+
+<body>
+
+<div id="header">
+ 
+     <table width="100%" align="CENTER" border="0" cellpadding="0">
+
+<tbody><tr>
+    <td class="titlesearch" height="40">
+       <a href="http://sunfish.bmrb.wisc.edu/"><img src="images/logo.gif" alt="BMRB Logo" border="0"></a>
+    </td>
+
+    <td class="titlesearch" width="80%" align="left">
+       <h2><i>Biological Magnetic Resonance Data Bank</i></h2><br>
+       <i>A Repository for Data from NMR Spectroscopy on
+	   Proteins, Peptides, Nucleic Acids, and other Biomolecules </i>
+    </td>
+</tr>
+</tbody></table>
+
+</div>
+
+    <center>
+      <h2>Restraint visualizations</h2>
+    </center> 
+
+
+<div id="content">
+<form method="get" name="get_by_pdb" action="http://devise.cs.wisc.edu/cgi-bin/bmrb_test/make_view">
+  <label for="restraint_id">Enter a PDB ID (e.g., 1brv) to generate restraint visualizations:</label>
+  <p>
+  <input type="text" name="restraint_id" size="4">
+  <input type="submit" value="View data">
+  </p>
+</form>
+</div>
+
+<br>
+<div id="content">
+
+<table width="100%" cellpadding="5">
+<tr>
+<td width="50%">
+<table id="vis">
+  <tr>
+    <td align="left" rowspan="2" width="120">
+      <a class="thumbnail" href="#thumb"><img src="images/distance_restraint_thumb.png"><span><img src="images/distance_restraint.png"></span></a>
+    </td>
+    <th align="left">
+      Distance restraint example
+    </th>
+  </tr>
+    <td align="center">
+      <a href="html/help_distr.html">Help about this visualization</a>
+    </td>
+  <tr>
+  </tr>
+</table>
+</td>
+
+<td width="50%">
+<table id="vis">
+  <tr>
+    <td align="left" rowspan="2" width="120">
+      <a class="thumbnail" href="#thumb"><img src="images/torsion_angle_thumb.png"><span><img src="images/torsion_angle.png"></span></a>
+    </td>
+    <th align="left">
+      Torsion angle restraint example
+    </th>
+  </tr>
+    <td align="center">
+      <a href="html/help_tar.html">Help about this visualization</a>
+    </td>
+  </tr>
+</table>
+</td>
+</tr>
+</table>
+
+</div>
+
+<br>
+<div id="content">
+  <p>Comments or questions?  Contact
+    <a href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a>
+  </p>
+  <p>Problems with the visualization software?  Contact <a
+    href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
+  </p>
+</div>
+
+</body>
+</html>

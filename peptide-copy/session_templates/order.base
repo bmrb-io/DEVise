@@ -1,0 +1,306 @@
+# DEVise startHeader
+# file type: session
+# file date: Jun 25 2008 12:59:04
+# DEVise version: 1.9.0
+# DEVise date: Jul 13 2006
+# DEVise endHeader
+
+# Session description
+DEVise setSessionDesc {S2 order parameters
+$Id$}
+
+# Load color palette
+DEVise color SessionPalette {#000000000000 black
+#000000008b00 DarkBlue
+#00000000cd00 MediumBlue
+#00000000ff00 blue
+#000064000000 DarkGreen
+#00008b000000 green4
+#0000bf00ff00 DeepSkyBlue1
+#0000ff000000 green
+#0000ff00ff00 cyan
+#190019007000 MidnightBlue
+#1e009000ff00 DodgerBlue
+#1f001f001f00 gray12
+#22008b002200 ForestGreen
+#400040004000 gray25
+#610061006100 gray38
+#7f007f007f00 gray50
+#8b0000000000 DarkRed
+#8b0045001300 SaddleBrown
+#99003200cc00 DarkOrchid
+#a100a100a100 gray63
+#b20022002200 firebrick
+#b4005200cd00 MediumOrchid3
+#bf00bf00bf00 gray75
+#c000ff003e00 OliveDrab
+#e000e000e000 gray88
+#ee00ad000e00 Goldenrod2
+#ee00e800aa00 PaleGoldenrod
+#f000e6008c00 khaki
+#f500de00b300 wheat
+#fa00fa00d200 LightGoldenrodYellow
+#fd00f500e600 OldLace
+#ff0000000000 red
+#ff000000ff00 magenta
+#ff007f000000 DarkOrange1
+#ff00a5000000 orange
+#ff00d7000000 gold
+#ff00ff000000 yellow
+#ffffffffffff white
+}
+
+# Set color mode (modulus or truncation)
+DEVise setColorMode 0
+
+# Per-session data source definitions
+DEVise dteInsertCatalogEntry . {"4689o1" UNIXFILE 4689o1.dat s2 $DEVISE_SCHEMA/physical/bmrb-s2 "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb-AxisLabel $DEVISE_SCHEMA/physical/bmrb-AxisLabel "" 100 50 "$DEVISE_DAT/bmrb" ""}
+
+# Create views
+
+# View {View 1} uses mapping {.4689o1#S2order_value_vs_Residue_seq_code}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {SortedX} {View 1} 2.450000 191.550000 0.000000 1.026000 37 0 0 37 0 37
+DEVise setLabel {View 1} 1 16 {dummy title}
+DEVise setViewStatistics {View 1} 00000000
+DEVise setViewDimensions {View 1} 2
+DEVise setViewSolid3D {View 1} 2
+DEVise setViewXYZoom {View 1} 1
+DEVise setViewDisplayDataValues {View 1} 0
+DEVise setFont {View 1} {title} 2 14 0 0
+DEVise setFont {View 1} {x axis} 2 10 0 0
+DEVise setFont {View 1} {y axis} 2 10 0 0
+DEVise viewSetHome {View 1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 1} 1 1 1 1 0.5 0 0 0 100 100
+DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
+DEVise setViewGDS {View 1} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 1} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 1} 0.103 0.989 10
+DEVise setCountMapping {View 1} 0 {} {} 0
+DEVise viewSetIsHighlight {View 1} 0
+DEVise setXAxisDateFormat {View 1} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 1} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 1} {%.0f}
+DEVise setYAxisFloatFormat {View 1} {%.4g}
+DEVise setViewAutoFilter {View 1} {1}
+DEVise setDupElim {View 1} {0}
+DEVise setNiceAxes {View 1} 0 0
+DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise setViewHelp {View 1} {S2 order parameters (with error bars) by residue.}
+DEVise setShowMouseLocation {View 1} {1}
+DEVise setLinkMultFact {View 1} {X} 1
+DEVise setLinkMultFact {View 1} {Y} 1
+DEVise setGAttrLinkMode {View 1} 0
+DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
+
+# View {View 2} uses mapping {.label#Label_text_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 2} 0.000000 100.000000 0.000000 100.000000 37 0 0 37 0 37
+DEVise setLabel {View 2} 0 12 {Label_text() vs. recId}
+DEVise setViewStatistics {View 2} 00000000
+DEVise setViewDimensions {View 2} 2
+DEVise setViewSolid3D {View 2} 2
+DEVise setViewXYZoom {View 2} 1
+DEVise setViewDisplayDataValues {View 2} 0
+DEVise setFont {View 2} {title} 0 12 0 0
+DEVise setFont {View 2} {x axis} 0 12 0 0
+DEVise setFont {View 2} {y axis} 0 12 0 0
+DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
+DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 2} 0 1 0 "" 1 " " 1
+DEVise setHistogram {View 2} 0 100 10
+DEVise setCountMapping {View 2} 0 {} {} 0
+DEVise viewSetIsHighlight {View 2} 0
+DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 2} {%.4g}
+DEVise setYAxisFloatFormat {View 2} {%.4g}
+DEVise setViewAutoFilter {View 2} {0}
+DEVise setDupElim {View 2} {0}
+DEVise setNiceAxes {View 2} 0 0
+DEVise viewSetDisabledActions {View 2} 1 1 1 1
+DEVise setViewHelp {View 2} {axis label}
+DEVise setShowMouseLocation {View 2} {0}
+DEVise setLinkMultFact {View 2} {X} 1
+DEVise setLinkMultFact {View 2} {Y} 1
+DEVise setGAttrLinkMode {View 2} 0
+DEVise setDoHomeOnVisLink {View 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
+DEVise viewSetUseJmol {View 2} {0}
+
+# View {View 3} uses mapping {.label#Label_text_vs_recId 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 3} 0.000000 100.000000 0.000000 100.000000 37 13 0 37 0 37
+DEVise setLabel {View 3} 0 12 {Label_text() vs. recId}
+DEVise setViewStatistics {View 3} 00000000
+DEVise setViewDimensions {View 3} 2
+DEVise setViewSolid3D {View 3} 2
+DEVise setViewXYZoom {View 3} 1
+DEVise setViewDisplayDataValues {View 3} 0
+DEVise setFont {View 3} {title} 0 12 0 0
+DEVise setFont {View 3} {x axis} 0 12 0 0
+DEVise setFont {View 3} {y axis} 0 12 0 0
+DEVise viewSetHome {View 3} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 3} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 3} 1 0.500000 1.000000
+DEVise setViewGDS {View 3} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 3} 0 1 0 "" 1 " " 1
+DEVise setHistogram {View 3} 0 100 10
+DEVise setCountMapping {View 3} 0 {} {} 0
+DEVise viewSetIsHighlight {View 3} 0
+DEVise setXAxisDateFormat {View 3} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 3} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 3} {%.4g}
+DEVise setYAxisFloatFormat {View 3} {%.4g}
+DEVise setViewAutoFilter {View 3} {0}
+DEVise setDupElim {View 3} {0}
+DEVise setNiceAxes {View 3} 0 0
+DEVise viewSetDisabledActions {View 3} 1 1 1 1
+DEVise setViewHelp {View 3} {Visualization info}
+DEVise setShowMouseLocation {View 3} {0}
+DEVise setLinkMultFact {View 3} {X} 1
+DEVise setLinkMultFact {View 3} {Y} 1
+DEVise setGAttrLinkMode {View 3} 0
+DEVise setDoHomeOnVisLink {View 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 3} {1}
+DEVise viewSetUseJmol {View 3} {0}
+
+# Create interpreted mapping classes
+DEVise createMappingClass {S2order_value_vs_Residue_seq_code}
+DEVise createMappingClass {Label_text_vs_recId}
+
+# Create mapping instances (GData)
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {S2order_value_vs_Residue_seq_code} .4689o1 .4689o1#S2order_value_vs_Residue_seq_code {} {$Residue_seq_code} {$S2order_value} {} 25 1 0 0 2 0.1 {$S2order_value + $S2order_error} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4689o1#S2order_value_vs_Residue_seq_code} 1
+DEVise setMappingColors {.4689o1#S2order_value_vs_Residue_seq_code} {25} {3} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 50 50 {} 37 12 0 0 16 {"Sequence Number"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#Label_text_vs_recId} 1
+DEVise setMappingColors {.label#Label_text_vs_recId} {37} {0} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 50 50 {} 37 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#Label_text_vs_recId 2} 1
+DEVise setMappingColors {.label#Label_text_vs_recId 2} {37} {0} {0}
+
+# Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
+DEVise create {window} {TileLayout} DEViseWn0 0.203125 0.219167 0.496875 0.316667 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.203125 0.535833 0.496875 0.029167 0 0
+DEVise create {window} {TileLayout} DEViseWn2 0.203125 0.199167 0.496875 0.020000 0 0
+
+# Set up window layouts
+
+DEVise setWindowLayout {DEViseWn0} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn1} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn2} -1 -1 0
+
+# Create links
+
+# Create cursors
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+
+DEVise setAxisDisplay {View 1} {X} 1
+DEVise setAxisDisplay {View 1} {Y} 1
+DEVise setAxisTicks {View 1} {X} 1
+DEVise setAxisTicks {View 1} {Y} 1
+DEVise setAxisMultFact {View 1} {X} 1
+DEVise setAxisMultFact {View 1} {Y} 1
+
+DEVise setAxisDisplay {View 2} {X} 0
+DEVise setAxisDisplay {View 2} {Y} 0
+DEVise setAxisTicks {View 2} {X} 1
+DEVise setAxisTicks {View 2} {Y} 1
+DEVise setAxisMultFact {View 2} {X} 1
+DEVise setAxisMultFact {View 2} {Y} 1
+
+DEVise setAxisDisplay {View 3} {X} 0
+DEVise setAxisDisplay {View 3} {Y} 0
+DEVise setAxisTicks {View 3} {X} 1
+DEVise setAxisTicks {View 3} {Y} 1
+DEVise setAxisMultFact {View 3} {X} 1
+DEVise setAxisMultFact {View 3} {Y} 1
+
+# Put action into view
+
+# Put views in cursors
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping {View 1} {.4689o1#S2order_value_vs_Residue_seq_code}
+DEVise insertMapping {View 2} {.label#Label_text_vs_recId}
+DEVise insertMapping {View 3} {.label#Label_text_vs_recId 2}
+
+# Link views
+
+# Insert views into windows
+DEVise insertWindow {View 1} {DEViseWn0}
+DEVise insertWindow {View 2} {DEViseWn1}
+DEVise insertWindow {View 3} {DEViseWn2}
+
+# Set window pile/stack state
+DEVise setPileStackState {DEViseWn0} 1
+DEVise setPileStackState {DEViseWn1} 1
+DEVise setPileStackState {DEViseWn2} 1
+
+# Init history of view
+
+DEVise clearViewHistory {View 1}
+DEVise insertViewHistory {View 1} {0} {0} {100} {100} 0
+DEVise insertViewHistory {View 1} {3} {0.49} {179} {1.95} 0
+DEVise insertViewHistory {View 1} {3} {0} {179} {2} 0
+DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {1.95} 0
+DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {1.95} 0
+DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {2.009} 0
+DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {2.009} 0
+DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {2.009} 0
+DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {2.009} 0
+DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {2.009} 0
+DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {2.009} 0
+DEVise insertViewHistory {View 1} {2.45} {0} {191.55} {1.026} 0
+
+DEVise clearViewHistory {View 2}
+DEVise insertViewHistory {View 2} {0} {0} {100} {100} 0
+
+DEVise clearViewHistory {View 3}
+DEVise insertViewHistory {View 3} {0} {0} {100} {100} 0
+
+# Set camera location for each view
+DEVise set3DLocation {View 1} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 2} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 3} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+
+# Set string tables for each view
+
+# Session postscript
+DEVise sessionPost updateFilters
+DEVise sessionPost waitForQueries

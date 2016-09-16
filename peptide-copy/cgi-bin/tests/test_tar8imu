@@ -1,0 +1,37 @@
+#! /bin/csh -f
+
+# Test of torsion angle restraints -- use an explicitly-specified
+# restraint file (from remediated restraints).
+
+set result = 0
+
+rm -r -f */*/16270*
+rm -r -f */.*/16270*
+
+echo -n "Processing NMR-STAR: "
+./make_uvd name=16270\&file=test_data/bmr16270.str\&force=1
+if ($status != 0) then
+  echo "First invocation of uvd failed!"
+  set result = 1
+endif
+mv tmp/uvd.out tmp/uvd.out1
+
+echo -n "Processing mmCIF and torsion angle restraints: "
+./make_uvd name=16270\&file=test_data/bmr16270.str\&pdbid=2kid\&coord_index=2\&do_rrtar=3\&force=1
+if ($status != 0) then
+  echo "Second invocation of uvd failed!"
+  set result = 1
+endif
+
+
+source tests/test_tar8imu_check
+
+
+echo -n "Test_tar8imu result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

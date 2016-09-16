@@ -1,0 +1,138 @@
+#! /bin/csh -f
+
+# Test multi-entry processing with a visualization server upload and
+# an entry.
+
+set result = 0
+
+rm -r -f */*/16270*
+rm -r -f */.*/16270*
+rm -r -f */*/4879*
+rm -r -f */.*/4879*
+
+echo -n "Processing NMR-STAR: "
+./uvd -name 16270vs -file test_data/bmr16270.str -xbmrbid 4879 -force \
+  -check_pct
+if ($status != 0) then
+  echo "First invocation of uvd failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+#TEMP -- we need to add stuff here for the "multi-entry" session file,
+# once we actually generate that.
+set files = ( data_dir/uvd/16270vsam1.dat \
+	data_dir/uvd/16270vsam2.dat \
+	data_dir/uvd/16270vsamac1.dat \
+	data_dir/uvd/16270vsamac2.dat \
+	data_dir/uvd/16270vsas1.dat \
+	data_dir/uvd/16270vsas2.dat \
+	data_dir/uvd/16270vsc1.dat \
+	data_dir/uvd/16270vsc2.dat \
+	data_dir/uvd/16270vsd1.dat \
+	data_dir/uvd/16270vsd2.dat \
+	data_dir/uvd/16270vshc1.dat \
+	data_dir/uvd/16270vshc2.dat \
+	data_dir/uvd/16270vshn1.dat \
+	data_dir/uvd/16270vshn2.dat \
+	data_dir/uvd/16270vsmd.dat \
+	data_dir/uvd/16270vsp1.dat \
+	data_dir/uvd/16270vsp2.dat \
+	data_dir/uvd/16270vsrc1.dat \
+	data_dir/uvd/16270vsrc2.dat \
+	data_dir/uvd/16270vsrl.dat \
+	html_dir/uvd/16270vs/16270vsam1.html \
+	html_dir/uvd/16270vs/16270vsam2.html \
+	html_dir/uvd/16270vs/16270vsas1.html \
+	html_dir/uvd/16270vs/16270vsas2.html \
+	html_dir/uvd/16270vs/16270vsc1.html \
+	html_dir/uvd/16270vs/16270vsc2.html \
+	html_dir/uvd/16270vs/16270vsd1.html \
+	html_dir/uvd/16270vs/16270vsd2.html \
+	html_dir/uvd/16270vs/16270vshc1.html \
+	html_dir/uvd/16270vs/16270vshc2.html \
+	html_dir/uvd/16270vs/16270vshn1.html \
+	html_dir/uvd/16270vs/16270vshn2.html \
+	html_dir/uvd/16270vs/16270vsp1.html \
+	html_dir/uvd/16270vs/16270vsp2.html \
+	html_dir/uvd/16270vs/16270vsy.html \
+	html_dir/uvd/16270vs/16270vs+4879hc1+1.html \
+	html_dir/uvd/16270vs/16270vs+4879hc2+1.html \
+	html_dir/uvd/16270vs/16270vs+4879hn1+1.html \
+	html_dir/uvd/16270vs/16270vs+4879hn2+1.html \
+	html_dir/uvd/16270vs/16270vs+4879y.html \
+	session_dir/.uvd/16270vs/16270vsacdd \
+	session_dir/.uvd/16270vs/16270vsam1.ds \
+	session_dir/.uvd/16270vs/16270vsam2.ds \
+	session_dir/.uvd/16270vs/16270vsas1.ds \
+	session_dir/.uvd/16270vs/16270vsas2.ds \
+	session_dir/.uvd/16270vs/16270vsc1.ds \
+	session_dir/.uvd/16270vs/16270vsc2.ds \
+	session_dir/.uvd/16270vs/16270vsd1.ds \
+	session_dir/.uvd/16270vs/16270vsd2.ds \
+	session_dir/.uvd/16270vs/16270vshc1.ds \
+	session_dir/.uvd/16270vs/16270vshc2.ds \
+	session_dir/.uvd/16270vs/16270vshn1.ds \
+	session_dir/.uvd/16270vs/16270vshn2.ds \
+	session_dir/.uvd/16270vs/16270vsp1.ds \
+	session_dir/.uvd/16270vs/16270vsp2.ds \
+	session_dir/.uvd/16270vs/16270vs+4879hc1+1.ds \
+	session_dir/.uvd/16270vs/16270vs+4879hc2+1.ds \
+	session_dir/.uvd/16270vs/16270vs+4879hn1+1.ds \
+	session_dir/.uvd/16270vs/16270vs+4879hn2+1.ds \
+	data_dir/uvd/4879am1.dat \
+	data_dir/uvd/4879amac1.dat \
+	data_dir/uvd/4879as1.dat \
+	data_dir/uvd/4879c1.dat \
+	data_dir/uvd/4879d1.dat \
+	data_dir/uvd/4879hc1.dat \
+	data_dir/uvd/4879hn1.dat \
+	data_dir/uvd/4879md.dat \
+	data_dir/uvd/4879p1.dat \
+	data_dir/uvd/4879rc1.dat \
+	data_dir/uvd/4879rl.dat \
+	html_dir/uvd/4879/4879am1.html \
+	html_dir/uvd/4879/4879as1.html \
+	html_dir/uvd/4879/4879c1.html \
+	html_dir/uvd/4879/4879d1.html \
+	html_dir/uvd/4879/4879hc1.html \
+	html_dir/uvd/4879/4879hn1.html \
+	html_dir/uvd/4879/4879p1.html \
+	html_dir/uvd/4879/4879y.html \
+	session_dir/.uvd/4879/4879acdd \
+	session_dir/.uvd/4879/4879am1.ds \
+	session_dir/.uvd/4879/4879as1.ds \
+	session_dir/.uvd/4879/4879c1.ds \
+	session_dir/.uvd/4879/4879d1.ds \
+	session_dir/.uvd/4879/4879hc1.ds \
+	session_dir/.uvd/4879/4879hn1.ds \
+	session_dir/.uvd/4879/4879p1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "html_dir/uvd/16270vs/16270vs+4879y.html"
+set line = '<option value="16270vs/16270vs+4879hn1+1.html">Simulated 1H-15N backbone HSQC spectrum (137/134 peaks) (16270vs EA 1/4879 EA 1)</option>'
+source tests/check4line
+set line = '<option value="16270vs/16270vs+4879hc1+1.html">Simulated 1H-13C HSQC spectrum (666/805 peaks) (16270vs EA 1/4879EA 1)</option>'
+source tests/check4line
+set line = '<option value="16270vs/16270vs+4879hn2+1.html">Simulated 1H-15N backbone HSQC spectrum (3/134 peaks) (16270vs EA 2/4879 EA 1)</option>'
+source tests/check4line
+set line = '<option value="16270vs/16270vs+4879hc2+1.html">Simulated 1H-13C HSQC spectrum (18/805 peaks) (16270vs EA 2/4879EA 1)</option>'
+source tests/check4line
+
+
+echo -n "Test_mult3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

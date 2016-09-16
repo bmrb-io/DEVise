@@ -1,0 +1,67 @@
+echo "Checking output files"
+
+set files = ( data_dir/uvd/16270am1.dat \
+	data_dir/uvd/16270amac1.dat \
+	data_dir/uvd/16270as1.dat \
+	data_dir/uvd/16270c1.dat \
+	data_dir/uvd/16270d1.dat \
+	data_dir/uvd/16270hc1.dat \
+	data_dir/uvd/16270hn1.dat \
+	data_dir/uvd/16270md.dat \
+	data_dir/uvd/16270p1.dat \
+	data_dir/uvd/16270rc1.dat \
+	data_dir/uvd/16270rc2.dat \
+	data_dir/uvd/16270rl.dat \
+	data_dir/uvd/16270rrac2.dat \
+	data_dir/uvd/16270rrdistr2.dat \
+	data_dir/uvd/16270rrdistrc2.dat \
+	data_dir/uvd/16270rrdistr-md2.dat \
+	html_dir/uvd/16270/16270am1.html \
+	html_dir/uvd/16270/16270as1.html \
+	html_dir/uvd/16270/16270c1.html \
+	html_dir/uvd/16270/16270d1.html \
+	html_dir/uvd/16270/16270hc1.html \
+	html_dir/uvd/16270/16270hn1.html \
+	html_dir/uvd/16270/16270p1.html \
+	html_dir/uvd/16270/16270rrdistr2.html \
+	html_dir/uvd/16270/16270y.html \
+	session_dir/.uvd/16270/16270acdd \
+	session_dir/.uvd/16270/16270am1.ds \
+	session_dir/.uvd/16270/16270as1.ds \
+	session_dir/.uvd/16270/16270c1.ds \
+	session_dir/.uvd/16270/16270d1.ds \
+	session_dir/.uvd/16270/16270hc1.ds \
+	session_dir/.uvd/16270/16270hn1.ds \
+	session_dir/.uvd/16270/16270p1.ds \
+	session_dir/.uvd/16270/16270rrdistr2.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/uvd/16270rrdistr2.dat"
+set line = '^1	74	ASN	1_74	1	73	THR	1_73	1.8	3.70	1_74_H	H	1_73_H	H	NOE	Sequential	0.0	0.0	Non-violated	Non-ambiguous'
+source tests/check4line
+set line = '^1	102	ASP	1_102	1	102	ASP	1_102	1.8	3.50	1_102_H	H	1_102_HB2	HB2	NOE	Intra-residue	0.0	0.0	Non-violated	Ambiguous'
+source tests/check4line
+set line = '^1	107	ASP	1_107	1	110	VAL	1_110	2.5	3.5	1_107_O	O	1_110_N	N	hydrogen bond	Medium-range	0.0	0.0	Non-violated	Non-ambiguous'
+source tests/check4line
+
+set file = "data_dir/uvd/16270rrdistrc2.dat"
+set line = '^1 109 1_109 13 0 13 6 0 6 7 0 7 0 0 0 0 0 0 0 0 0 9 0 9 6 0 6 3 0 3 12 0 12 8 0 8 4 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
+source tests/check4line
+set line = '^1 108 1_108 19 0 19 8 0 8 11 0 11 5 0 5 4 0 4 1 0 1 14 0 14 10 0 10 4 0 4 10 0 10 4 0 4 6 0 6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
+source tests/check4line
+set line = '^1 110 1_110 27 0 27 13 0 13 14 0 14 3 0 3 2 0 2 1 0 1 8 0 8 4 0 4 4 0 4 17 0 17 10 0 10 7 0 7 16 0 16 14 0 14 2 0 2 0 0 0 0 0 0 0 0 0'
+source tests/check4line
+
+set file = "data_dir/uvd/16270rrdistr-md2.dat"
+set line = '^EA 1	1	All	All	All	\$All_viol-all_ambig-all	0	0	0	Restraints per residue (All \[1\])'
+source tests/check4line
+set line = '^EA 1	1	All	All	Intra-residue	\$Intra-res_viol-all_ambig-all	0	0	1	Restraints per residue (Intra-residue \[1\])'
+source tests/check4line
+set line = '^EA 1	1	All	Non-ambiguous	Intermolecular	\$Inter-mol_viol-all_ambig-no	0	2	5	Restraints per residue (Intermolecular non-ambiguous \[1\])'
+source tests/check4line

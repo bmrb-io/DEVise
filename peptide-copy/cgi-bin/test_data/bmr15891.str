@@ -1,0 +1,1947 @@
+data_15891
+
+#######################
+#  Entry information  #
+#######################
+
+save_entry_information
+   _Entry.Sf_category                    entry_information
+   _Entry.Sf_framecode                   entry_information
+   _Entry.ID                             15891
+   _Entry.Title                         
+;
+1H, 15N chemical shifts of the UHM domain of Puf60 in complex with Prp16(201-238)
+;
+   _Entry.Version_type                   new
+   _Entry.Submission_date                2008-07-25
+   _Entry.Accession_date                 2008-07-25
+   _Entry.Last_release_date              .
+   _Entry.Original_release_date          .
+   _Entry.Origination                    author
+   _Entry.NMR_STAR_version               3.0.8.116
+   _Entry.Original_NMR_STAR_version      3.0.8.116
+   _Entry.Experimental_method            NMR
+   _Entry.Experimental_method_subtype    solution
+   _Entry.Details                       '1H, 15N chemical shifts of the UHM domain of Puf60 in complex with Prp16(201-238)'
+   _Entry.BMRB_internal_directory_name   .
+
+   loop_
+      _Entry_author.Ordinal
+      _Entry_author.Given_name
+      _Entry_author.Family_name
+      _Entry_author.First_initial
+      _Entry_author.Middle_initials
+      _Entry_author.Family_title
+      _Entry_author.Entry_ID
+
+      1 Lorenzo Corsini . . . 15891 
+      2 Michael Sattler . . . 15891 
+
+   stop_
+
+   loop_
+      _Data_set.Type
+      _Data_set.Count
+      _Data_set.Entry_ID
+
+      assigned_chemical_shifts 1 15891 
+      spectral_peak_list       1 15891 
+
+   stop_
+
+   loop_
+      _Datum.Type
+      _Datum.Count
+      _Datum.Entry_ID
+
+      '1H chemical shifts'  97 15891 
+      '15N chemical shifts' 97 15891 
+
+   stop_
+
+   loop_
+      _Release.Release_number
+      _Release.Date
+      _Release.Submission_date
+      _Release.Type
+      _Release.Author
+      _Release.Detail
+      _Release.Entry_ID
+
+      4 2009-08-18 2008-07-25 update   BMRB   'added PubMed ID'                       15891 
+      3 2009-02-13 2008-07-25 update   BMRB   'add author sequence numbers in entity' 15891 
+      2 2008-12-03 2008-07-25 update   BMRB   'complete entry citation'               15891 
+      1 2008-10-15 2008-07-25 original author 'original release'                      15891 
+
+   stop_
+
+   loop_
+      _Related_entries.Database_name
+      _Related_entries.Database_accession_code
+      _Related_entries.Relationship
+      _Related_entries.Entry_ID
+
+      PDB  3dxb   'crystal structure of the UHM domain of Puf60'                                        15891 
+      PDB  2DNY   'NMR structure of the UHM domain of Puf60'                                            15891 
+      BMRB 15885 'backbone assignment of the UHM domain of Puf60'                                      15891 
+      BMRB 15887 '1H, 15N chemical shifts of the UHM domain of Puf60 in complex with U2AF65(85-112)'   15891 
+      BMRB 15888 '1H, 15N chemical shifts of the UHM domain of Puf60 in complex with SF1(1-25)'        15891 
+      BMRB 15889 '1H, 15N chemical shifts of the UHM domain of Puf60 in complex with SF3b155(194-229)' 15891 
+      BMRB 15890 '1H, 15N chemical shifts of the UHM domain of Puf60 in complex with SF3b155(317-357)' 15891 
+
+   stop_
+
+save_
+
+
+###############
+#  Citations  #
+###############
+
+save_entry_citation
+   _Citation.Sf_category                  citations
+   _Citation.Sf_framecode                 entry_citation
+   _Citation.Entry_ID                     15891
+   _Citation.ID                           1
+   _Citation.Class                       'entry citation'
+   _Citation.CAS_abstract_code            .
+   _Citation.MEDLINE_UI_code              .
+   _Citation.DOI                          .
+   _Citation.PubMed_ID                    19636907
+   _Citation.Full_citation                .
+   _Citation.Title                       'Backbone assignment of the UHM domain of Puf60 free and bound to five ligands'
+   _Citation.Status                       published
+   _Citation.Type                         journal
+   _Citation.Journal_abbrev              'Biomol. NMR Assignments'
+   _Citation.Journal_name_full           'Biomolecular NMR Assignments'
+   _Citation.Journal_volume               2
+   _Citation.Journal_issue                2
+   _Citation.Journal_ASTM                 .
+   _Citation.Journal_ISSN                 .
+   _Citation.Journal_CSD                  .
+   _Citation.Book_title                   .
+   _Citation.Book_chapter_title           .
+   _Citation.Book_volume                  .
+   _Citation.Book_series                  .
+   _Citation.Book_publisher               .
+   _Citation.Book_publisher_city          .
+   _Citation.Book_ISBN                    .
+   _Citation.Conference_title             .
+   _Citation.Conference_site              .
+   _Citation.Conference_state_province    .
+   _Citation.Conference_country           .
+   _Citation.Conference_start_date        .
+   _Citation.Conference_end_date          .
+   _Citation.Conference_abstract_number   .
+   _Citation.Thesis_institution           .
+   _Citation.Thesis_institution_city      .
+   _Citation.Thesis_institution_country   .
+   _Citation.WWW_URL                      .
+   _Citation.Page_first                   211
+   _Citation.Page_last                    214
+   _Citation.Year                         2008
+   _Citation.Details                      .
+
+   loop_
+      _Citation_author.Ordinal
+      _Citation_author.Given_name
+      _Citation_author.Family_name
+      _Citation_author.First_initial
+      _Citation_author.Middle_initials
+      _Citation_author.Family_title
+      _Citation_author.Entry_ID
+      _Citation_author.Citation_ID
+
+      1 Lorenzo Corsini . . . 15891 1 
+      2 Michael Sattler . . . 15891 1 
+
+   stop_
+
+   loop_
+      _Citation_keyword.Keyword
+      _Citation_keyword.Entry_ID
+      _Citation_keyword.Citation_ID
+
+       splicing                   15891 1 
+      'alternative splicing'      15891 1 
+      'FBP interacting repressor' 15891 1 
+       RRM                        15891 1 
+       UHM                        15891 1 
+      'UHM ligand motif, ULM'     15891 1 
+
+   stop_
+
+save_
+
+
+#############################################
+#  Molecular system (assembly) description  #
+#############################################
+
+save_assembly
+   _Assembly.Sf_category                       assembly
+   _Assembly.Sf_framecode                      assembly
+   _Assembly.Entry_ID                          15891
+   _Assembly.ID                                1
+   _Assembly.Name                             'minimal complex of Puf60 and Prp16(201-238)'
+   _Assembly.BMRB_code                         .
+   _Assembly.Number_of_components              2
+   _Assembly.Organic_ligands                   .
+   _Assembly.Metal_ions                        .
+   _Assembly.Non_standard_bonds                no
+   _Assembly.Ambiguous_conformational_states   .
+   _Assembly.Ambiguous_chem_comp_sites         .
+   _Assembly.Molecules_in_chemical_exchange    .
+   _Assembly.Paramagnetic                      no
+   _Assembly.Thiol_state                       .
+   _Assembly.Molecular_mass                    17256.9
+   _Assembly.Enzyme_commission_number          .
+   _Assembly.Details                           .
+   _Assembly.DB_query_date                     .
+   _Assembly.DB_query_revised_last_date        .
+
+   loop_
+      _Entity_assembly.ID
+      _Entity_assembly.Entity_assembly_name
+      _Entity_assembly.Entity_ID
+      _Entity_assembly.Entity_label
+      _Entity_assembly.Asym_ID
+      _Entity_assembly.PDB_chain_ID
+      _Entity_assembly.Experimental_data_reported
+      _Entity_assembly.Physical_state
+      _Entity_assembly.Conformational_isomer
+      _Entity_assembly.Chemical_exchange_state
+      _Entity_assembly.Magnetic_equivalence_group_code
+      _Entity_assembly.Role
+      _Entity_assembly.Details
+      _Entity_assembly.Entry_ID
+      _Entity_assembly.Assembly_ID
+
+      1 'UHM domain of Puf60' 1 $UHM_domain_of_Puf60 A . yes native no no . 'UHM domain'     . 15891 1 
+      2  Prp16(201-238)       2 $Prp16(201-238)      B . no  native no no . 'peptide ligand' . 15891 1 
+
+   stop_
+
+   loop_
+      _Assembly_db_link.Author_supplied
+      _Assembly_db_link.Database_code
+      _Assembly_db_link.Accession_code
+      _Assembly_db_link.Entry_mol_code
+      _Assembly_db_link.Entry_mol_name
+      _Assembly_db_link.Entry_experimental_method
+      _Assembly_db_link.Entry_structure_resolution
+      _Assembly_db_link.Entry_relation_type
+      _Assembly_db_link.Entry_details
+      _Assembly_db_link.Entry_ID
+      _Assembly_db_link.Assembly_ID
+
+      yes PDB  3dxb   . .  X-ray         2.2 'crystal structure of the UHM domain of PUF60, for which the backbone assignment is reported here' . 15891 1 
+      yes PDB  2DNY   . . 'solution NMR'  .  'NMR structure of the UHM domain of Puf60, for which the backbone assignment is reported here'     . 15891 1 
+      yes BMRB 15885 . . 'solution NMR'  .  'Backbone assignment of the UHM domain of Puf60'                                                   . 15891 1 
+      yes BMRB 15887 . . 'solution NMR'  .  '1H, 15N chemical shifts of the UHM domain of Puf60 in complex with U2AF65(85-112)'                . 15891 1 
+      yes BMRB 15888 . . 'solution NMR'  .  '1H, 15N chemical shifts of the UHM domain of Puf60 in complex with SF1(1-25)'                     . 15891 1 
+      yes BMRB 15889 . . 'solution NMR'  .  '1H, 15N chemical shifts of the UHM domain of Puf60 in complex with SF3b155(194-229)'              . 15891 1 
+      yes BMRB 15890 . . 'solution NMR'  .  '1H, 15N chemical shifts of the UHM domain of Puf60 in complex with SF3b155(317-357)'              . 15891 1 
+
+   stop_
+
+   loop_
+      _Assembly_bio_function.Biological_function
+      _Assembly_bio_function.Entry_ID
+      _Assembly_bio_function.Assembly_ID
+
+       splicing              15891 1 
+      'alternative splicing' 15891 1 
+
+   stop_
+
+save_
+
+
+    ####################################
+    #  Biological polymers and ligands #
+    ####################################
+
+save_UHM_domain_of_Puf60
+   _Entity.Sf_category                       entity
+   _Entity.Sf_framecode                      UHM_domain_of_Puf60
+   _Entity.Entry_ID                          15891
+   _Entity.ID                                1
+   _Entity.BMRB_code                         .
+   _Entity.Name                              UHM_domain_of_Puf60
+   _Entity.Type                              polymer
+   _Entity.Polymer_common_type               .
+   _Entity.Polymer_type                      polypeptide(L)
+   _Entity.Polymer_type_details              .
+   _Entity.Polymer_strand_ID                 .
+   _Entity.Polymer_seq_one_letter_code_can   .
+   _Entity.Polymer_seq_one_letter_code      
+;
+MKHHHHHHPMESTVMVLRNM
+VDPKDIDDDLEGEVTEECGK
+FGAVNRVIIYQEKQGEEEDA
+EIIVKIFVEFSIASETHKAI
+QALNGRWFAGRKVVAEVYDQ
+ERFDNSDLSA
+;
+   _Entity.Target_identifier                 .
+   _Entity.Polymer_author_defined_seq        .
+   _Entity.Polymer_author_seq_details        .
+   _Entity.Ambiguous_conformational_states   no
+   _Entity.Ambiguous_chem_comp_sites         no
+   _Entity.Nstd_monomer                      no
+   _Entity.Nstd_chirality                    no
+   _Entity.Nstd_linkage                      no
+   _Entity.Nonpolymer_comp_ID                .
+   _Entity.Nonpolymer_comp_label             .
+   _Entity.Number_of_monomers                110
+   _Entity.Number_of_nonpolymer_components   .
+   _Entity.Paramagnetic                      no
+   _Entity.Thiol_state                      'all free'
+   _Entity.Src_method                        .
+   _Entity.Parent_entity_ID                  .
+   _Entity.Fragment                         'U2AF homology motif, UHM'
+   _Entity.Mutation                          .
+   _Entity.EC_number                         .
+   _Entity.Calc_isoelectric_point            .
+   _Entity.Formula_weight                    12637.1
+   _Entity.Formula_weight_exptl              .
+   _Entity.Formula_weight_exptl_meth         .
+   _Entity.Details                           .
+   _Entity.DB_query_date                     .
+   _Entity.DB_query_revised_last_date        2013-01-14
+
+   loop_
+      _Entity_db_link.Author_supplied
+      _Entity_db_link.Database_code
+      _Entity_db_link.Accession_code
+      _Entity_db_link.Entry_mol_code
+      _Entity_db_link.Entry_mol_name
+      _Entity_db_link.Entry_experimental_method
+      _Entity_db_link.Entry_structure_resolution
+      _Entity_db_link.Entry_relation_type
+      _Entity_db_link.Entry_details
+      _Entity_db_link.Chimera_segment_ID
+      _Entity_db_link.Seq_query_to_submitted_percent
+      _Entity_db_link.Seq_subject_length
+      _Entity_db_link.Seq_identity
+      _Entity_db_link.Seq_positive
+      _Entity_db_link.Seq_homology_expectation_val
+      _Entity_db_link.Seq_align_begin
+      _Entity_db_link.Seq_align_end
+      _Entity_db_link.Seq_difference_details
+      _Entity_db_link.Seq_alignment_details
+      _Entity_db_link.Entry_ID
+      _Entity_db_link.Entity_ID
+
+      no BMRB        15885 .  UHM_domain_of_Puf60                                                                                                              . . . . .  92.73 103  99.02  99.02 2.91e-66 . . . . 15891 1 
+      no BMRB        15887 .  UHM_domain_of_Puf60                                                                                                              . . . . . 100.00 110 100.00 100.00 1.48e-74 . . . . 15891 1 
+      no BMRB        15888 .  UHM_domain_of_Puf60                                                                                                              . . . . . 100.00 110 100.00 100.00 1.48e-74 . . . . 15891 1 
+      no BMRB        15889 .  UHM_domain_of_Puf60                                                                                                              . . . . . 100.00 110 100.00 100.00 1.48e-74 . . . . 15891 1 
+      no BMRB        15890 .  UHM_domain_of_Puf60                                                                                                              . . . . . 100.00 110 100.00 100.00 1.48e-74 . . . . 15891 1 
+      no PDB  2DNY          . "Solution Structure Of The Third Rna Binding Domain Of Fbp- Interacting Repressor, Siahbp1"                                       . . . . .  90.91 119 100.00 100.00 1.10e-65 . . . . 15891 1 
+      no PDB  3DXB          . "Structure Of The Uhm Domain Of Puf60 Fused To Thioredoxin"                                                                       . . . . .  91.82 222 100.00 100.00 2.41e-64 . . . . 15891 1 
+      no DBJ  BAE28998      . "unnamed protein product [Mus musculus]"                                                                                          . . . . .  90.91 564  98.00  99.00 1.43e-60 . . . . 15891 1 
+      no DBJ  BAE30474      . "unnamed protein product [Mus musculus]"                                                                                          . . . . .  90.91 547  98.00  99.00 2.74e-60 . . . . 15891 1 
+      no DBJ  BAE40622      . "unnamed protein product [Mus musculus]"                                                                                          . . . . .  90.91 547  98.00  99.00 2.74e-60 . . . . 15891 1 
+      no DBJ  BAF85062      . "unnamed protein product [Homo sapiens]"                                                                                          . . . . .  90.91 559 100.00 100.00 1.47e-61 . . . . 15891 1 
+      no DBJ  BAI46053      . "poly-U binding splicing factor 60KDa [synthetic construct]"                                                                      . . . . .  90.91 499 100.00 100.00 2.21e-61 . . . . 15891 1 
+      no EMBL CAG33424      . "SIAHBP1 [Homo sapiens]"                                                                                                          . . . . .  90.91 559 100.00 100.00 1.47e-61 . . . . 15891 1 
+      no EMBL CAH89379      . "hypothetical protein [Pongo abelii]"                                                                                             . . . . .  90.91 513 100.00 100.00 2.17e-61 . . . . 15891 1 
+      no EMBL CAH93447      . "hypothetical protein [Pongo abelii]"                                                                                             . . . . .  90.91 558 100.00 100.00 1.37e-61 . . . . 15891 1 
+      no GB   AAB41656      . "siah binding protein 1 [Homo sapiens]"                                                                                           . . . . .  90.91 541 100.00 100.00 2.55e-61 . . . . 15891 1 
+      no GB   AAD44358      . "RNA-binding protein SiahBP [Rattus norvegicus]"                                                                                  . . . . .  90.91 565  98.00  99.00 2.09e-60 . . . . 15891 1 
+      no GB   AAF05605      . "poly-U binding splicing factor PUF60 [Homo sapiens]"                                                                             . . . . .  90.91 556 100.00 100.00 1.61e-61 . . . . 15891 1 
+      no GB   AAF23589      . "Ro ribonucleoprotein-binding protein 1 [Homo sapiens]"                                                                           . . . . .  90.91 559 100.00 100.00 1.47e-61 . . . . 15891 1 
+      no GB   AAF27522      . "FBP-interacting repressor [Homo sapiens]"                                                                                        . . . . .  90.91 542 100.00 100.00 2.60e-61 . . . . 15891 1 
+      no REF  NP_001039598  . "poly(U)-binding-splicing factor PUF60 [Bos taurus]"                                                                              . . . . .  90.91 530  98.00  99.00 2.37e-60 . . . . 15891 1 
+      no REF  NP_001127017  . "poly(U)-binding-splicing factor PUF60 [Pongo abelii]"                                                                            . . . . .  90.91 558 100.00 100.00 1.37e-61 . . . . 15891 1 
+      no REF  NP_001128734  . "DKFZP468L0227 protein [Pongo abelii]"                                                                                            . . . . .  90.91 513 100.00 100.00 2.17e-61 . . . . 15891 1 
+      no REF  NP_001129505  . "poly(U)-binding-splicing factor PUF60 isoform c [Homo sapiens]"                                                                  . . . . .  90.91 516 100.00 100.00 1.43e-61 . . . . 15891 1 
+      no REF  NP_001158072  . "poly(U)-binding-splicing factor PUF60 isoform c [Mus musculus]"                                                                  . . . . .  90.91 499  98.00  99.00 2.41e-60 . . . . 15891 1 
+      no SP   Q2HJG2        . "RecName: Full=Poly(U)-binding-splicing factor PUF60; AltName: Full=60 kDa poly(U)-binding-splicing factor"                       . . . . .  90.91 530  98.00  99.00 2.37e-60 . . . . 15891 1 
+      no SP   Q3UEB3        . "RecName: Full=Poly(U)-binding-splicing factor PUF60; AltName: Full=60 kDa poly(U)-binding-splicing factor"                       . . . . .  90.91 564  98.00  99.00 1.52e-60 . . . . 15891 1 
+      no SP   Q5R469        . "RecName: Full=Poly(U)-binding-splicing factor PUF60; AltName: Full=60 kDa poly(U)-binding-splicing factor"                       . . . . .  90.91 558 100.00 100.00 1.37e-61 . . . . 15891 1 
+      no SP   Q9UHX1        . "RecName: Full=Poly(U)-binding-splicing factor PUF60; AltName: Full=60 kDa poly(U)-binding-splicing factor; AltName: Full=FUSE-b" . . . . .  90.91 559 100.00 100.00 1.47e-61 . . . . 15891 1 
+      no SP   Q9WV25        . "RecName: Full=Poly(U)-binding-splicing factor PUF60; AltName: Full=60 kDa poly(U)-binding-splicing factor; AltName: Full=RNA-bi" . . . . .  90.91 564  98.00  99.00 1.52e-60 . . . . 15891 1 
+      no TPG  DAA22863      . "TPA: poly(U)-binding-splicing factor PUF60 [Bos taurus]"                                                                         . . . . .  90.91 530  99.00 100.00 2.58e-61 . . . . 15891 1 
+
+   stop_
+
+   loop_
+      _Entity_biological_function.Biological_function
+      _Entity_biological_function.Entry_ID
+      _Entity_biological_function.Entity_ID
+
+       splicing              15891 1 
+      'alternative splicing' 15891 1 
+
+   stop_
+
+   loop_
+      _Entity_comp_index.ID
+      _Entity_comp_index.Auth_seq_ID
+      _Entity_comp_index.Comp_ID
+      _Entity_comp_index.Comp_label
+      _Entity_comp_index.Entry_ID
+      _Entity_comp_index.Entity_ID
+
+        1  -6 MET . 15891 1 
+        2  -5 LYS . 15891 1 
+        3  -4 HIS . 15891 1 
+        4  -3 HIS . 15891 1 
+        5  -2 HIS . 15891 1 
+        6  -1 HIS . 15891 1 
+        7   0 HIS . 15891 1 
+        8   1 HIS . 15891 1 
+        9   2 PRO . 15891 1 
+       10   3 MET . 15891 1 
+       11   4 GLU . 15891 1 
+       12   5 SER . 15891 1 
+       13   6 THR . 15891 1 
+       14   7 VAL . 15891 1 
+       15   8 MET . 15891 1 
+       16   9 VAL . 15891 1 
+       17  10 LEU . 15891 1 
+       18  11 ARG . 15891 1 
+       19  12 ASN . 15891 1 
+       20  13 MET . 15891 1 
+       21  14 VAL . 15891 1 
+       22  15 ASP . 15891 1 
+       23  16 PRO . 15891 1 
+       24  17 LYS . 15891 1 
+       25  18 ASP . 15891 1 
+       26  19 ILE . 15891 1 
+       27  20 ASP . 15891 1 
+       28  21 ASP . 15891 1 
+       29  22 ASP . 15891 1 
+       30  23 LEU . 15891 1 
+       31  24 GLU . 15891 1 
+       32  25 GLY . 15891 1 
+       33  26 GLU . 15891 1 
+       34  27 VAL . 15891 1 
+       35  28 THR . 15891 1 
+       36  29 GLU . 15891 1 
+       37  30 GLU . 15891 1 
+       38  31 CYS . 15891 1 
+       39  32 GLY . 15891 1 
+       40  33 LYS . 15891 1 
+       41  34 PHE . 15891 1 
+       42  35 GLY . 15891 1 
+       43  36 ALA . 15891 1 
+       44  37 VAL . 15891 1 
+       45  38 ASN . 15891 1 
+       46  39 ARG . 15891 1 
+       47  40 VAL . 15891 1 
+       48  41 ILE . 15891 1 
+       49  42 ILE . 15891 1 
+       50  43 TYR . 15891 1 
+       51  44 GLN . 15891 1 
+       52  45 GLU . 15891 1 
+       53  46 LYS . 15891 1 
+       54  47 GLN . 15891 1 
+       55  48 GLY . 15891 1 
+       56  49 GLU . 15891 1 
+       57  50 GLU . 15891 1 
+       58  51 GLU . 15891 1 
+       59  52 ASP . 15891 1 
+       60  53 ALA . 15891 1 
+       61  54 GLU . 15891 1 
+       62  55 ILE . 15891 1 
+       63  56 ILE . 15891 1 
+       64  57 VAL . 15891 1 
+       65  58 LYS . 15891 1 
+       66  59 ILE . 15891 1 
+       67  60 PHE . 15891 1 
+       68  61 VAL . 15891 1 
+       69  62 GLU . 15891 1 
+       70  63 PHE . 15891 1 
+       71  64 SER . 15891 1 
+       72  65 ILE . 15891 1 
+       73  66 ALA . 15891 1 
+       74  67 SER . 15891 1 
+       75  68 GLU . 15891 1 
+       76  69 THR . 15891 1 
+       77  70 HIS . 15891 1 
+       78  71 LYS . 15891 1 
+       79  72 ALA . 15891 1 
+       80  73 ILE . 15891 1 
+       81  74 GLN . 15891 1 
+       82  75 ALA . 15891 1 
+       83  76 LEU . 15891 1 
+       84  77 ASN . 15891 1 
+       85  78 GLY . 15891 1 
+       86  79 ARG . 15891 1 
+       87  80 TRP . 15891 1 
+       88  81 PHE . 15891 1 
+       89  82 ALA . 15891 1 
+       90  83 GLY . 15891 1 
+       91  84 ARG . 15891 1 
+       92  85 LYS . 15891 1 
+       93  86 VAL . 15891 1 
+       94  87 VAL . 15891 1 
+       95  88 ALA . 15891 1 
+       96  89 GLU . 15891 1 
+       97  90 VAL . 15891 1 
+       98  91 TYR . 15891 1 
+       99  92 ASP . 15891 1 
+      100  93 GLN . 15891 1 
+      101  94 GLU . 15891 1 
+      102  95 ARG . 15891 1 
+      103  96 PHE . 15891 1 
+      104  97 ASP . 15891 1 
+      105  98 ASN . 15891 1 
+      106  99 SER . 15891 1 
+      107 100 ASP . 15891 1 
+      108 101 LEU . 15891 1 
+      109 102 SER . 15891 1 
+      110 103 ALA . 15891 1 
+
+   stop_
+
+   loop_
+      _Entity_poly_seq.Hetero
+      _Entity_poly_seq.Mon_ID
+      _Entity_poly_seq.Num
+      _Entity_poly_seq.Comp_index_ID
+      _Entity_poly_seq.Entry_ID
+      _Entity_poly_seq.Entity_ID
+
+      . MET   1   1 15891 1 
+      . LYS   2   2 15891 1 
+      . HIS   3   3 15891 1 
+      . HIS   4   4 15891 1 
+      . HIS   5   5 15891 1 
+      . HIS   6   6 15891 1 
+      . HIS   7   7 15891 1 
+      . HIS   8   8 15891 1 
+      . PRO   9   9 15891 1 
+      . MET  10  10 15891 1 
+      . GLU  11  11 15891 1 
+      . SER  12  12 15891 1 
+      . THR  13  13 15891 1 
+      . VAL  14  14 15891 1 
+      . MET  15  15 15891 1 
+      . VAL  16  16 15891 1 
+      . LEU  17  17 15891 1 
+      . ARG  18  18 15891 1 
+      . ASN  19  19 15891 1 
+      . MET  20  20 15891 1 
+      . VAL  21  21 15891 1 
+      . ASP  22  22 15891 1 
+      . PRO  23  23 15891 1 
+      . LYS  24  24 15891 1 
+      . ASP  25  25 15891 1 
+      . ILE  26  26 15891 1 
+      . ASP  27  27 15891 1 
+      . ASP  28  28 15891 1 
+      . ASP  29  29 15891 1 
+      . LEU  30  30 15891 1 
+      . GLU  31  31 15891 1 
+      . GLY  32  32 15891 1 
+      . GLU  33  33 15891 1 
+      . VAL  34  34 15891 1 
+      . THR  35  35 15891 1 
+      . GLU  36  36 15891 1 
+      . GLU  37  37 15891 1 
+      . CYS  38  38 15891 1 
+      . GLY  39  39 15891 1 
+      . LYS  40  40 15891 1 
+      . PHE  41  41 15891 1 
+      . GLY  42  42 15891 1 
+      . ALA  43  43 15891 1 
+      . VAL  44  44 15891 1 
+      . ASN  45  45 15891 1 
+      . ARG  46  46 15891 1 
+      . VAL  47  47 15891 1 
+      . ILE  48  48 15891 1 
+      . ILE  49  49 15891 1 
+      . TYR  50  50 15891 1 
+      . GLN  51  51 15891 1 
+      . GLU  52  52 15891 1 
+      . LYS  53  53 15891 1 
+      . GLN  54  54 15891 1 
+      . GLY  55  55 15891 1 
+      . GLU  56  56 15891 1 
+      . GLU  57  57 15891 1 
+      . GLU  58  58 15891 1 
+      . ASP  59  59 15891 1 
+      . ALA  60  60 15891 1 
+      . GLU  61  61 15891 1 
+      . ILE  62  62 15891 1 
+      . ILE  63  63 15891 1 
+      . VAL  64  64 15891 1 
+      . LYS  65  65 15891 1 
+      . ILE  66  66 15891 1 
+      . PHE  67  67 15891 1 
+      . VAL  68  68 15891 1 
+      . GLU  69  69 15891 1 
+      . PHE  70  70 15891 1 
+      . SER  71  71 15891 1 
+      . ILE  72  72 15891 1 
+      . ALA  73  73 15891 1 
+      . SER  74  74 15891 1 
+      . GLU  75  75 15891 1 
+      . THR  76  76 15891 1 
+      . HIS  77  77 15891 1 
+      . LYS  78  78 15891 1 
+      . ALA  79  79 15891 1 
+      . ILE  80  80 15891 1 
+      . GLN  81  81 15891 1 
+      . ALA  82  82 15891 1 
+      . LEU  83  83 15891 1 
+      . ASN  84  84 15891 1 
+      . GLY  85  85 15891 1 
+      . ARG  86  86 15891 1 
+      . TRP  87  87 15891 1 
+      . PHE  88  88 15891 1 
+      . ALA  89  89 15891 1 
+      . GLY  90  90 15891 1 
+      . ARG  91  91 15891 1 
+      . LYS  92  92 15891 1 
+      . VAL  93  93 15891 1 
+      . VAL  94  94 15891 1 
+      . ALA  95  95 15891 1 
+      . GLU  96  96 15891 1 
+      . VAL  97  97 15891 1 
+      . TYR  98  98 15891 1 
+      . ASP  99  99 15891 1 
+      . GLN 100 100 15891 1 
+      . GLU 101 101 15891 1 
+      . ARG 102 102 15891 1 
+      . PHE 103 103 15891 1 
+      . ASP 104 104 15891 1 
+      . ASN 105 105 15891 1 
+      . SER 106 106 15891 1 
+      . ASP 107 107 15891 1 
+      . LEU 108 108 15891 1 
+      . SER 109 109 15891 1 
+      . ALA 110 110 15891 1 
+
+   stop_
+
+save_
+
+
+save_Prp16(201-238)
+   _Entity.Sf_category                       entity
+   _Entity.Sf_framecode                      Prp16(201-238)
+   _Entity.Entry_ID                          15891
+   _Entity.ID                                2
+   _Entity.BMRB_code                         .
+   _Entity.Name                              Prp16(201-238)
+   _Entity.Type                              polymer
+   _Entity.Polymer_common_type               .
+   _Entity.Polymer_type                      polypeptide(L)
+   _Entity.Polymer_type_details              .
+   _Entity.Polymer_strand_ID                 .
+   _Entity.Polymer_seq_one_letter_code_can   .
+   _Entity.Polymer_seq_one_letter_code      
+;
+GAMGRHRPKDAATPSRSTWE
+EEDSGYGSSRRSQWESPSPT
+PS
+;
+   _Entity.Target_identifier                 .
+   _Entity.Polymer_author_defined_seq        .
+   _Entity.Polymer_author_seq_details        .
+   _Entity.Ambiguous_conformational_states   no
+   _Entity.Ambiguous_chem_comp_sites         no
+   _Entity.Nstd_monomer                      no
+   _Entity.Nstd_chirality                    no
+   _Entity.Nstd_linkage                      no
+   _Entity.Nonpolymer_comp_ID                .
+   _Entity.Nonpolymer_comp_label             .
+   _Entity.Number_of_monomers                42
+   _Entity.Number_of_nonpolymer_components   .
+   _Entity.Paramagnetic                      no
+   _Entity.Thiol_state                      'not present'
+   _Entity.Src_method                        .
+   _Entity.Parent_entity_ID                  .
+   _Entity.Fragment                          Prp16(201-238)
+   _Entity.Mutation                          .
+   _Entity.EC_number                         .
+   _Entity.Calc_isoelectric_point            .
+   _Entity.Formula_weight                    4619.8
+   _Entity.Formula_weight_exptl              .
+   _Entity.Formula_weight_exptl_meth         .
+   _Entity.Details                           .
+   _Entity.DB_query_date                     .
+   _Entity.DB_query_revised_last_date        2013-01-14
+
+   loop_
+      _Entity_db_link.Author_supplied
+      _Entity_db_link.Database_code
+      _Entity_db_link.Accession_code
+      _Entity_db_link.Entry_mol_code
+      _Entity_db_link.Entry_mol_name
+      _Entity_db_link.Entry_experimental_method
+      _Entity_db_link.Entry_structure_resolution
+      _Entity_db_link.Entry_relation_type
+      _Entity_db_link.Entry_details
+      _Entity_db_link.Chimera_segment_ID
+      _Entity_db_link.Seq_query_to_submitted_percent
+      _Entity_db_link.Seq_subject_length
+      _Entity_db_link.Seq_identity
+      _Entity_db_link.Seq_positive
+      _Entity_db_link.Seq_homology_expectation_val
+      _Entity_db_link.Seq_align_begin
+      _Entity_db_link.Seq_align_end
+      _Entity_db_link.Seq_difference_details
+      _Entity_db_link.Seq_alignment_details
+      _Entity_db_link.Entry_ID
+      _Entity_db_link.Entity_ID
+
+      no DBJ BAA13213     . "KIAA0224 [Homo sapiens]"                                                                                                         . . . . . 90.48 1256 100.00 100.00 5.91e-16 . . . . 15891 2 
+      no DBJ BAF84323     . "unnamed protein product [Homo sapiens]"                                                                                          . . . . . 90.48 1227 100.00 100.00 4.97e-16 . . . . 15891 2 
+      no DBJ BAG09667     . "pre-mRNA-splicing factor ATP-dependent RNA helicase PRP16 [synthetic construct]"                                                 . . . . . 90.48 1227 100.00 100.00 4.97e-16 . . . . 15891 2 
+      no DBJ BAG57191     . "unnamed protein product [Homo sapiens]"                                                                                          . . . . . 90.48 1220 100.00 100.00 4.96e-16 . . . . 15891 2 
+      no GB  AAC27431     . "pre-mRNA splicing factor (PRP16)(KIAA0224) [Homo sapiens]"                                                                       . . . . . 90.48 1227 100.00 100.00 4.97e-16 . . . . 15891 2 
+      no GB  AAC39729     . "pre-mRNA splicing factor [Homo sapiens]"                                                                                         . . . . . 90.48 1227 100.00 100.00 4.97e-16 . . . . 15891 2 
+      no GB  AAH04235     . "DEAH (Asp-Glu-Ala-His) box polypeptide 38 [Homo sapiens]"                                                                        . . . . . 90.48 1227 100.00 100.00 4.97e-16 . . . . 15891 2 
+      no GB  AAH08340     . "DEAH (Asp-Glu-Ala-His) box polypeptide 38 [Homo sapiens]"                                                                        . . . . . 90.48 1227 100.00 100.00 4.97e-16 . . . . 15891 2 
+      no GB  AAI18086     . "DEAH (Asp-Glu-Ala-His) box polypeptide 38 [Bos taurus]"                                                                          . . . . . 90.48 1227 100.00 100.00 6.03e-16 . . . . 15891 2 
+      no REF NP_001069266 . "pre-mRNA-splicing factor ATP-dependent RNA helicase PRP16 [Bos taurus]"                                                          . . . . . 90.48 1227 100.00 100.00 6.03e-16 . . . . 15891 2 
+      no REF NP_001099655 . "pre-mRNA-splicing factor ATP-dependent RNA helicase PRP16 [Rattus norvegicus]"                                                   . . . . . 90.48 1210  97.37 100.00 1.04e-15 . . . . 15891 2 
+      no REF NP_001244810 . "pre-mRNA-splicing factor ATP-dependent RNA helicase PRP16 [Macaca mulatta]"                                                      . . . . . 90.48 1227 100.00 100.00 5.27e-16 . . . . 15891 2 
+      no REF NP_054722    . "pre-mRNA-splicing factor ATP-dependent RNA helicase PRP16 [Homo sapiens]"                                                        . . . . . 90.48 1227 100.00 100.00 4.97e-16 . . . . 15891 2 
+      no REF XP_001500257 . "PREDICTED: pre-mRNA-splicing factor ATP-dependent RNA helicase PRP16-like [Equus caballus]"                                      . . . . . 90.48 1226  97.37 100.00 1.48e-15 . . . . 15891 2 
+      no SP  Q17R09       . "RecName: Full=Pre-mRNA-splicing factor ATP-dependent RNA helicase PRP16; AltName: Full=ATP-dependent RNA helicase DHX38; AltNam" . . . . . 90.48 1227 100.00 100.00 6.03e-16 . . . . 15891 2 
+      no SP  Q92620       . "RecName: Full=Pre-mRNA-splicing factor ATP-dependent RNA helicase PRP16; AltName: Full=ATP-dependent RNA helicase DHX38; AltNam" . . . . . 90.48 1227 100.00 100.00 4.97e-16 . . . . 15891 2 
+      no TPG DAA20084     . "TPA: pre-mRNA-splicing factor ATP-dependent RNA helicase PRP16 [Bos taurus]"                                                     . . . . . 90.48 1155 100.00 100.00 5.19e-16 . . . . 15891 2 
+
+   stop_
+
+   loop_
+      _Entity_biological_function.Biological_function
+      _Entity_biological_function.Entry_ID
+      _Entity_biological_function.Entity_ID
+
+       splicing      15891 2 
+      'RNA helicase' 15891 2 
+
+   stop_
+
+   loop_
+      _Entity_comp_index.ID
+      _Entity_comp_index.Auth_seq_ID
+      _Entity_comp_index.Comp_ID
+      _Entity_comp_index.Comp_label
+      _Entity_comp_index.Entry_ID
+      _Entity_comp_index.Entity_ID
+
+       1 . GLY . 15891 2 
+       2 . ALA . 15891 2 
+       3 . MET . 15891 2 
+       4 . GLY . 15891 2 
+       5 . ARG . 15891 2 
+       6 . HIS . 15891 2 
+       7 . ARG . 15891 2 
+       8 . PRO . 15891 2 
+       9 . LYS . 15891 2 
+      10 . ASP . 15891 2 
+      11 . ALA . 15891 2 
+      12 . ALA . 15891 2 
+      13 . THR . 15891 2 
+      14 . PRO . 15891 2 
+      15 . SER . 15891 2 
+      16 . ARG . 15891 2 
+      17 . SER . 15891 2 
+      18 . THR . 15891 2 
+      19 . TRP . 15891 2 
+      20 . GLU . 15891 2 
+      21 . GLU . 15891 2 
+      22 . GLU . 15891 2 
+      23 . ASP . 15891 2 
+      24 . SER . 15891 2 
+      25 . GLY . 15891 2 
+      26 . TYR . 15891 2 
+      27 . GLY . 15891 2 
+      28 . SER . 15891 2 
+      29 . SER . 15891 2 
+      30 . ARG . 15891 2 
+      31 . ARG . 15891 2 
+      32 . SER . 15891 2 
+      33 . GLN . 15891 2 
+      34 . TRP . 15891 2 
+      35 . GLU . 15891 2 
+      36 . SER . 15891 2 
+      37 . PRO . 15891 2 
+      38 . SER . 15891 2 
+      39 . PRO . 15891 2 
+      40 . THR . 15891 2 
+      41 . PRO . 15891 2 
+      42 . SER . 15891 2 
+
+   stop_
+
+   loop_
+      _Entity_poly_seq.Hetero
+      _Entity_poly_seq.Mon_ID
+      _Entity_poly_seq.Num
+      _Entity_poly_seq.Comp_index_ID
+      _Entity_poly_seq.Entry_ID
+      _Entity_poly_seq.Entity_ID
+
+      . GLY  1  1 15891 2 
+      . ALA  2  2 15891 2 
+      . MET  3  3 15891 2 
+      . GLY  4  4 15891 2 
+      . ARG  5  5 15891 2 
+      . HIS  6  6 15891 2 
+      . ARG  7  7 15891 2 
+      . PRO  8  8 15891 2 
+      . LYS  9  9 15891 2 
+      . ASP 10 10 15891 2 
+      . ALA 11 11 15891 2 
+      . ALA 12 12 15891 2 
+      . THR 13 13 15891 2 
+      . PRO 14 14 15891 2 
+      . SER 15 15 15891 2 
+      . ARG 16 16 15891 2 
+      . SER 17 17 15891 2 
+      . THR 18 18 15891 2 
+      . TRP 19 19 15891 2 
+      . GLU 20 20 15891 2 
+      . GLU 21 21 15891 2 
+      . GLU 22 22 15891 2 
+      . ASP 23 23 15891 2 
+      . SER 24 24 15891 2 
+      . GLY 25 25 15891 2 
+      . TYR 26 26 15891 2 
+      . GLY 27 27 15891 2 
+      . SER 28 28 15891 2 
+      . SER 29 29 15891 2 
+      . ARG 30 30 15891 2 
+      . ARG 31 31 15891 2 
+      . SER 32 32 15891 2 
+      . GLN 33 33 15891 2 
+      . TRP 34 34 15891 2 
+      . GLU 35 35 15891 2 
+      . SER 36 36 15891 2 
+      . PRO 37 37 15891 2 
+      . SER 38 38 15891 2 
+      . PRO 39 39 15891 2 
+      . THR 40 40 15891 2 
+      . PRO 41 41 15891 2 
+      . SER 42 42 15891 2 
+
+   stop_
+
+save_
+
+
+    ####################
+    #  Natural source  #
+    ####################
+
+save_natural_source
+   _Entity_natural_src_list.Sf_category    natural_source
+   _Entity_natural_src_list.Sf_framecode   natural_source
+   _Entity_natural_src_list.Entry_ID       15891
+   _Entity_natural_src_list.ID             1
+
+   loop_
+      _Entity_natural_src.ID
+      _Entity_natural_src.Entity_ID
+      _Entity_natural_src.Entity_label
+      _Entity_natural_src.Entity_chimera_segment_ID
+      _Entity_natural_src.NCBI_taxonomy_ID
+      _Entity_natural_src.Type
+      _Entity_natural_src.Common
+      _Entity_natural_src.Organism_name_scientific
+      _Entity_natural_src.Organism_name_common
+      _Entity_natural_src.Organism_acronym
+      _Entity_natural_src.ICTVdb_decimal_code
+      _Entity_natural_src.Superkingdom
+      _Entity_natural_src.Kingdom
+      _Entity_natural_src.Genus
+      _Entity_natural_src.Species
+      _Entity_natural_src.Strain
+      _Entity_natural_src.Variant
+      _Entity_natural_src.Subvariant
+      _Entity_natural_src.Organ
+      _Entity_natural_src.Tissue
+      _Entity_natural_src.Tissue_fraction
+      _Entity_natural_src.Cell_line
+      _Entity_natural_src.Cell_type
+      _Entity_natural_src.ATCC_number
+      _Entity_natural_src.Organelle
+      _Entity_natural_src.Cellular_location
+      _Entity_natural_src.Fragment
+      _Entity_natural_src.Fraction
+      _Entity_natural_src.Secretion
+      _Entity_natural_src.Plasmid
+      _Entity_natural_src.Plasmid_details
+      _Entity_natural_src.Gene_mnemonic
+      _Entity_natural_src.Dev_stage
+      _Entity_natural_src.Details
+      _Entity_natural_src.Citation_ID
+      _Entity_natural_src.Citation_label
+      _Entity_natural_src.Entry_ID
+      _Entity_natural_src.Entity_natural_src_list_ID
+
+      1 1 $UHM_domain_of_Puf60 . 9606 organism . 'Homo sapiens' Human . . Eukaryota Metazoa Homo sapiens . . . . . . . . . . . . . . . . . . . . . 15891 1 
+      2 2 $Prp16(201-238)      . 9606 organism . 'Homo sapiens' Human . . Eukaryota Metazoa Homo sapiens . . . . . . . . . . . . . . . . . . . . . 15891 1 
+
+   stop_
+
+save_
+
+
+    #########################
+    #  Experimental source  #
+    #########################
+
+save_experimental_source
+   _Entity_experimental_src_list.Sf_category    experimental_source
+   _Entity_experimental_src_list.Sf_framecode   experimental_source
+   _Entity_experimental_src_list.Entry_ID       15891
+   _Entity_experimental_src_list.ID             1
+
+   loop_
+      _Entity_experimental_src.ID
+      _Entity_experimental_src.Entity_ID
+      _Entity_experimental_src.Entity_label
+      _Entity_experimental_src.Entity_chimera_segment_ID
+      _Entity_experimental_src.Production_method
+      _Entity_experimental_src.Host_org_scientific_name
+      _Entity_experimental_src.Host_org_name_common
+      _Entity_experimental_src.Host_org_details
+      _Entity_experimental_src.Host_org_NCBI_taxonomy_ID
+      _Entity_experimental_src.Host_org_genus
+      _Entity_experimental_src.Host_org_species
+      _Entity_experimental_src.Host_org_strain
+      _Entity_experimental_src.Host_org_variant
+      _Entity_experimental_src.Host_org_subvariant
+      _Entity_experimental_src.Host_org_organ
+      _Entity_experimental_src.Host_org_tissue
+      _Entity_experimental_src.Host_org_tissue_fraction
+      _Entity_experimental_src.Host_org_cell_line
+      _Entity_experimental_src.Host_org_cell_type
+      _Entity_experimental_src.Host_org_cellular_location
+      _Entity_experimental_src.Host_org_organelle
+      _Entity_experimental_src.Host_org_gene
+      _Entity_experimental_src.Host_org_culture_collection
+      _Entity_experimental_src.Host_org_ATCC_number
+      _Entity_experimental_src.Vector_type
+      _Entity_experimental_src.PDBview_host_org_vector_name
+      _Entity_experimental_src.PDBview_plasmid_name
+      _Entity_experimental_src.Vector_name
+      _Entity_experimental_src.Vector_details
+      _Entity_experimental_src.Vendor_name
+      _Entity_experimental_src.Host_org_dev_stage
+      _Entity_experimental_src.Details
+      _Entity_experimental_src.Citation_ID
+      _Entity_experimental_src.Citation_label
+      _Entity_experimental_src.Entry_ID
+      _Entity_experimental_src.Entity_experimental_src_list_ID
+
+      1 1 $UHM_domain_of_Puf60 . 'recombinant technology' 'Escherichia coli' . . . Escherichia coli K12 BL21(DE3)pLysS . . . . . . . . . . . . . . pET9d . . . . . . 15891 1 
+      2 2 $Prp16(201-238)      . 'recombinant technology' 'Escherichia coli' . . . Escherichia coli K12 BL21(DE3)pLysS . . . . . . . . . . . . . . pET9d . . . . . . 15891 1 
+
+   stop_
+
+save_
+
+
+#####################################
+#  Sample contents and methodology  #
+#####################################
+	 
+    ########################
+    #  Sample description  #
+    ########################
+
+save_minimal_complex_of_Puf60_and_Prp16(201-238)
+   _Sample.Sf_category                      sample
+   _Sample.Sf_framecode                     minimal_complex_of_Puf60_and_Prp16(201-238)
+   _Sample.Entry_ID                         15891
+   _Sample.ID                               1
+   _Sample.Type                             solution
+   _Sample.Sub_type                         .
+   _Sample.Details                          .
+   _Sample.Aggregate_sample_number          .
+   _Sample.Solvent_system                  '95% H2O/5% D2O'
+   _Sample.Preparation_date                 .
+   _Sample.Preparation_expiration_date      .
+   _Sample.Polycrystallization_protocol     .
+   _Sample.Single_crystal_protocol          .
+   _Sample.Crystal_grow_apparatus           .
+   _Sample.Crystal_grow_atmosphere          .
+   _Sample.Crystal_grow_details             .
+   _Sample.Crystal_grow_method              .
+   _Sample.Crystal_grow_method_cit_ID       .
+   _Sample.Crystal_grow_pH                  .
+   _Sample.Crystal_grow_pH_range            .
+   _Sample.Crystal_grow_pressure            .
+   _Sample.Crystal_grow_pressure_esd        .
+   _Sample.Crystal_grow_seeding             .
+   _Sample.Crystal_grow_seeding_cit_ID      .
+   _Sample.Crystal_grow_temp                .
+   _Sample.Crystal_grow_temp_details        .
+   _Sample.Crystal_grow_temp_esd            .
+   _Sample.Crystal_grow_time                .
+   _Sample.Oriented_sample_prep_protocol    .
+   _Sample.Lyophilization_cryo_protectant   .
+   _Sample.Storage_protocol                 .
+
+   loop_
+      _Sample_component.ID
+      _Sample_component.Mol_common_name
+      _Sample_component.Isotopic_labeling
+      _Sample_component.Assembly_ID
+      _Sample_component.Assembly_label
+      _Sample_component.Entity_ID
+      _Sample_component.Entity_label
+      _Sample_component.Product_ID
+      _Sample_component.Type
+      _Sample_component.Concentration_val
+      _Sample_component.Concentration_val_min
+      _Sample_component.Concentration_val_max
+      _Sample_component.Concentration_val_units
+      _Sample_component.Concentration_val_err
+      _Sample_component.Vendor
+      _Sample_component.Vendor_product_name
+      _Sample_component.Vendor_product_code
+      _Sample_component.Entry_ID
+      _Sample_component.Sample_ID
+
+      1 'UHM domain of Puf60' '[U-100% 13C; U-100% 15N]' . . 1 $UHM_domain_of_Puf60 . .   0.129 . . mM 0.01 . . . 15891 1 
+      2  Prp16(201-238)       'natural abundance'        . . 2 $Prp16(201-238)      . .   1.93  . . mM 0.01 . . . 15891 1 
+      3  NaH2PO4              'natural abundance'        . .  .  .                   . .  50     . . mM  .   . . . 15891 1 
+      4  NaCl                 'natural abundance'        . .  .  .                   . . 150     . . mM  .   . . . 15891 1 
+      5  b-mercaptoethanol    'natural abundance'        . .  .  .                   . .   5     . . mM  .   . . . 15891 1 
+      6  H2O                  'natural abundance'        . .  .  .                   . .  95     . . %   .   . . . 15891 1 
+      7  D2O                  '[U-100% 2H]'              . .  .  .                   . .   5     . . %   .   . . . 15891 1 
+
+   stop_
+
+save_
+
+
+#######################
+#  Sample conditions  #
+#######################
+
+save_sample_conditions_1
+   _Sample_condition_list.Sf_category    sample_conditions
+   _Sample_condition_list.Sf_framecode   sample_conditions_1
+   _Sample_condition_list.Entry_ID       15891
+   _Sample_condition_list.ID             1
+   _Sample_condition_list.Details        .
+
+   loop_
+      _Sample_condition_variable.Type
+      _Sample_condition_variable.Val
+      _Sample_condition_variable.Val_err
+      _Sample_condition_variable.Val_units
+      _Sample_condition_variable.Entry_ID
+      _Sample_condition_variable.Sample_condition_list_ID
+
+       temperature     295   0.1  K   15891 1 
+       pH                6.8 0.1  pH  15891 1 
+       pressure          1    .   atm 15891 1 
+      'ionic strength'   0.2 0.01 M   15891 1 
+
+   stop_
+
+save_
+
+
+############################
+#  Computer software used  #
+############################
+
+save_TOPSPIN
+   _Software.Sf_category    software
+   _Software.Sf_framecode   TOPSPIN
+   _Software.Entry_ID       15891
+   _Software.ID             1
+   _Software.Name           TOPSPIN
+   _Software.Version        1.3
+   _Software.Details       'Data collection'
+
+   loop_
+      _Vendor.Name
+      _Vendor.Address
+      _Vendor.Electronic_address
+      _Vendor.Entry_ID
+      _Vendor.Software_ID
+
+      'Bruker Biospin' . . 15891 1 
+
+   stop_
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      collection 15891 1 
+
+   stop_
+
+save_
+
+
+save_NMRPipe
+   _Software.Sf_category    software
+   _Software.Sf_framecode   NMRPipe
+   _Software.Entry_ID       15891
+   _Software.ID             2
+   _Software.Name           NMRPipe
+   _Software.Version        .
+   _Software.Details        .
+
+   loop_
+      _Vendor.Name
+      _Vendor.Address
+      _Vendor.Electronic_address
+      _Vendor.Entry_ID
+      _Vendor.Software_ID
+
+      'Delaglio, Grzesiek, Vuister, Zhu, Pfeifer and Bax' . . 15891 2 
+
+   stop_
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      processing 15891 2 
+
+   stop_
+
+save_
+
+
+save_NMRView
+   _Software.Sf_category    software
+   _Software.Sf_framecode   NMRView
+   _Software.Entry_ID       15891
+   _Software.ID             3
+   _Software.Name           NMRView
+   _Software.Version        .
+   _Software.Details        .
+
+   loop_
+      _Vendor.Name
+      _Vendor.Address
+      _Vendor.Electronic_address
+      _Vendor.Entry_ID
+      _Vendor.Software_ID
+
+      'Johnson, One Moon Scientific' . . 15891 3 
+
+   stop_
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      'chemical shift assignment' 15891 3 
+
+   stop_
+
+save_
+
+
+#########################
+#  Experimental detail  #
+#########################
+
+    ##################################
+    #  NMR Spectrometer definitions  #
+    ##################################
+
+save_spectrometer_1
+   _NMR_spectrometer.Sf_category      NMR_spectrometer
+   _NMR_spectrometer.Sf_framecode     spectrometer_1
+   _NMR_spectrometer.Entry_ID         15891
+   _NMR_spectrometer.ID               1
+   _NMR_spectrometer.Details          .
+   _NMR_spectrometer.Manufacturer     Bruker
+   _NMR_spectrometer.Model            DRX
+   _NMR_spectrometer.Serial_number    .
+   _NMR_spectrometer.Field_strength   500
+
+save_
+
+
+save_NMR_spectrometer_list
+   _NMR_spectrometer_list.Sf_category    NMR_spectrometer_list
+   _NMR_spectrometer_list.Sf_framecode   NMR_spectrometer_list
+   _NMR_spectrometer_list.Entry_ID       15891
+   _NMR_spectrometer_list.ID             1
+
+   loop_
+      _NMR_spectrometer_view.ID
+      _NMR_spectrometer_view.Name
+      _NMR_spectrometer_view.Manufacturer
+      _NMR_spectrometer_view.Model
+      _NMR_spectrometer_view.Serial_number
+      _NMR_spectrometer_view.Field_strength
+      _NMR_spectrometer_view.Details
+      _NMR_spectrometer_view.Citation_ID
+      _NMR_spectrometer_view.Citation_label
+      _NMR_spectrometer_view.Entry_ID
+      _NMR_spectrometer_view.NMR_spectrometer_list_ID
+
+      1 spectrometer_1 Bruker DRX . 500 . . . 15891 1 
+
+   stop_
+
+save_
+
+
+    #############################
+    #  NMR applied experiments  #
+    #############################
+
+save_experiment_list
+   _Experiment_list.Sf_category    experiment_list
+   _Experiment_list.Sf_framecode   experiment_list
+   _Experiment_list.Entry_ID       15891
+   _Experiment_list.ID             1
+   _Experiment_list.Details        .
+
+   loop_
+      _Experiment.ID
+      _Experiment.Name
+      _Experiment.Raw_data_flag
+      _Experiment.NMR_spec_expt_ID
+      _Experiment.NMR_spec_expt_label
+      _Experiment.Sample_ID
+      _Experiment.Sample_label
+      _Experiment.Sample_state
+      _Experiment.Sample_volume
+      _Experiment.Sample_volume_units
+      _Experiment.Sample_condition_list_ID
+      _Experiment.Sample_condition_list_label
+      _Experiment.Sample_spinning_rate
+      _Experiment.Sample_angle
+      _Experiment.NMR_tube_type
+      _Experiment.NMR_spectrometer_ID
+      _Experiment.NMR_spectrometer_label
+      _Experiment.NMR_spectrometer_probe_ID
+      _Experiment.NMR_spectrometer_probe_label
+      _Experiment.NMR_spectral_processing_ID
+      _Experiment.NMR_spectral_processing_label
+      _Experiment.Entry_ID
+      _Experiment.Experiment_list_ID
+
+      1 '2D 1H-15N HSQC' no . . 1 $minimal_complex_of_Puf60_and_Prp16(201-238) isotropic . . 1 $sample_conditions_1 . . . 1 $spectrometer_1 . . . . 15891 1 
+
+   stop_
+
+save_
+
+
+####################
+#  NMR parameters  #
+####################
+
+    ##############################
+    #  Assigned chemical shifts  #
+    ##############################
+
+	################################
+	#  Chemical shift referencing  #
+	################################
+
+save_chemical_shift_reference_1
+   _Chem_shift_reference.Sf_category    chem_shift_reference
+   _Chem_shift_reference.Sf_framecode   chemical_shift_reference_1
+   _Chem_shift_reference.Entry_ID       15891
+   _Chem_shift_reference.ID             1
+   _Chem_shift_reference.Details        .
+
+   loop_
+      _Chem_shift_ref.Atom_type
+      _Chem_shift_ref.Atom_isotope_number
+      _Chem_shift_ref.Mol_common_name
+      _Chem_shift_ref.Atom_group
+      _Chem_shift_ref.Concentration_val
+      _Chem_shift_ref.Concentration_units
+      _Chem_shift_ref.Solvent
+      _Chem_shift_ref.Rank
+      _Chem_shift_ref.Chem_shift_units
+      _Chem_shift_ref.Chem_shift_val
+      _Chem_shift_ref.Ref_method
+      _Chem_shift_ref.Ref_type
+      _Chem_shift_ref.Indirect_shift_ratio
+      _Chem_shift_ref.External_ref_loc
+      _Chem_shift_ref.External_ref_sample_geometry
+      _Chem_shift_ref.External_ref_axis
+      _Chem_shift_ref.Indirect_shift_ratio_cit_ID
+      _Chem_shift_ref.Indirect_shift_ratio_cit_label
+      _Chem_shift_ref.Ref_correction_type
+      _Chem_shift_ref.Correction_val
+      _Chem_shift_ref.Correction_val_cit_ID
+      _Chem_shift_ref.Correction_val_cit_label
+      _Chem_shift_ref.Entry_ID
+      _Chem_shift_ref.Chem_shift_reference_ID
+
+      H  1 DSS 'methyl protons' . . . . ppm 0.00 internal direct   1.000000000 . . . . . . . . . 15891 1 
+      N 15 DSS 'methyl protons' . . . . ppm 0.00 n/a      indirect 0.101329118 . . . . . . . . . 15891 1 
+
+   stop_
+
+save_
+
+
+     ###################################
+     #  Assigned chemical shift lists  #
+     ###################################
+
+###################################################################
+#       Chemical Shift Ambiguity Index Value Definitions          #
+#                                                                 #
+# The values other than 1 are used for those atoms with different #
+# chemical shifts that cannot be assigned to stereospecific atoms #
+# or to specific residues or chains.                              #
+#                                                                 #
+#   Index Value            Definition                             #
+#                                                                 #
+#      1             Unique (including isolated methyl protons,   #
+#                         geminal atoms, and geminal methyl       #
+#                         groups with identical chemical shifts)  #
+#                         (e.g. ILE HD11, HD12, HD13 protons)     #
+#      2             Ambiguity of geminal atoms or geminal methyl #
+#                         proton groups (e.g. ASP HB2 and HB3     #
+#                         protons, LEU CD1 and CD2 carbons, or    #
+#                         LEU HD11, HD12, HD13 and HD21, HD22,    #
+#                         HD23 methyl protons)                    #
+#      3             Aromatic atoms on opposite sides of          #
+#                         symmetrical rings (e.g. TYR HE1 and HE2 #
+#                         protons)                                #
+#      4             Intraresidue ambiguities (e.g. LYS HG and    #
+#                         HD protons or TRP HZ2 and HZ3 protons)  #
+#      5             Interresidue ambiguities (LYS 12 vs. LYS 27) #
+#      6             Intermolecular ambiguities (e.g. ASP 31 CA   #
+#                         in monomer 1 and ASP 31 CA in monomer 2 #
+#                         of an asymmetrical homodimer, duplex    #
+#                         DNA assignments, or other assignments   #
+#                         that may apply to atoms in one or more  #
+#                         molecule in the molecular assembly)     #
+#      9             Ambiguous, specific ambiguity not defined    #
+#                                                                 #
+###################################################################
+save_assigned_chem_shift_list_1
+   _Assigned_chem_shift_list.Sf_category                   assigned_chemical_shifts
+   _Assigned_chem_shift_list.Sf_framecode                  assigned_chem_shift_list_1
+   _Assigned_chem_shift_list.Entry_ID                      15891
+   _Assigned_chem_shift_list.ID                            1
+   _Assigned_chem_shift_list.Sample_condition_list_ID      1
+   _Assigned_chem_shift_list.Sample_condition_list_label  $sample_conditions_1
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_label   $chemical_shift_reference_1
+   _Assigned_chem_shift_list.Chem_shift_1H_err             .
+   _Assigned_chem_shift_list.Chem_shift_13C_err            .
+   _Assigned_chem_shift_list.Chem_shift_15N_err            .
+   _Assigned_chem_shift_list.Chem_shift_31P_err            .
+   _Assigned_chem_shift_list.Chem_shift_2H_err             .
+   _Assigned_chem_shift_list.Chem_shift_19F_err            .
+   _Assigned_chem_shift_list.Error_derivation_method       .
+   _Assigned_chem_shift_list.Details                      '1H and 15N chemical shift assignments were transferred from the free UHM domain of Puf60 by titration.'
+   _Assigned_chem_shift_list.Text_data_format              .
+   _Assigned_chem_shift_list.Text_data                     .
+
+   loop_
+      _Chem_shift_experiment.Experiment_ID
+      _Chem_shift_experiment.Experiment_name
+      _Chem_shift_experiment.Sample_ID
+      _Chem_shift_experiment.Sample_label
+      _Chem_shift_experiment.Sample_state
+      _Chem_shift_experiment.Entry_ID
+      _Chem_shift_experiment.Assigned_chem_shift_list_ID
+
+      1 '2D 1H-15N HSQC' . . . 15891 1 
+
+   stop_
+
+   loop_
+      _Chem_shift_software.Software_ID
+      _Chem_shift_software.Software_label
+      _Chem_shift_software.Method_ID
+      _Chem_shift_software.Method_label
+      _Chem_shift_software.Entry_ID
+      _Chem_shift_software.Assigned_chem_shift_list_ID
+
+      3 $NMRView . . 15891 1 
+
+   stop_
+
+   loop_
+      _Atom_chem_shift.ID
+      _Atom_chem_shift.Assembly_atom_ID
+      _Atom_chem_shift.Entity_assembly_ID
+      _Atom_chem_shift.Entity_ID
+      _Atom_chem_shift.Comp_index_ID
+      _Atom_chem_shift.Seq_ID
+      _Atom_chem_shift.Comp_ID
+      _Atom_chem_shift.Atom_ID
+      _Atom_chem_shift.Atom_type
+      _Atom_chem_shift.Atom_isotope_number
+      _Atom_chem_shift.Val
+      _Atom_chem_shift.Val_err
+      _Atom_chem_shift.Assign_fig_of_merit
+      _Atom_chem_shift.Ambiguity_code
+      _Atom_chem_shift.Occupancy
+      _Atom_chem_shift.Resonance_ID
+      _Atom_chem_shift.Auth_entity_assembly_ID
+      _Atom_chem_shift.Auth_seq_ID
+      _Atom_chem_shift.Auth_comp_ID
+      _Atom_chem_shift.Auth_atom_ID
+      _Atom_chem_shift.Details
+      _Atom_chem_shift.Entry_ID
+      _Atom_chem_shift.Assigned_chem_shift_list_ID
+
+        1 . 1 1  11  11 GLU H H  1   8.302 0.0018 . 1 . . .   4 GLU HN . 15891 1 
+        2 . 1 1  11  11 GLU N N 15 121.835 0.013  . 1 . . .   4 GLU N  . 15891 1 
+        3 . 1 1  12  12 SER H H  1   8.208 0.0018 . 1 . . .   5 SER HN . 15891 1 
+        4 . 1 1  12  12 SER N N 15 115.874 0.013  . 1 . . .   5 SER N  . 15891 1 
+        5 . 1 1  13  13 THR H H  1   8.365 0.0018 . 1 . . .   6 THR HN . 15891 1 
+        6 . 1 1  13  13 THR N N 15 113.656 0.013  . 1 . . .   6 THR N  . 15891 1 
+        7 . 1 1  14  14 VAL H H  1   8.882 0.0018 . 1 . . .   7 VAL HN . 15891 1 
+        8 . 1 1  14  14 VAL N N 15 126.029 0.013  . 1 . . .   7 VAL N  . 15891 1 
+        9 . 1 1  15  15 MET H H  1   9.082 0.0018 . 1 . . .   8 MET HN . 15891 1 
+       10 . 1 1  15  15 MET N N 15 127.587 0.013  . 1 . . .   8 MET N  . 15891 1 
+       11 . 1 1  16  16 VAL H H  1   9.330 0.0018 . 1 . . .   9 VAL HN . 15891 1 
+       12 . 1 1  16  16 VAL N N 15 124.305 0.013  . 1 . . .   9 VAL N  . 15891 1 
+       13 . 1 1  17  17 LEU H H  1   9.078 0.0018 . 1 . . .  10 LEU HN . 15891 1 
+       14 . 1 1  17  17 LEU N N 15 126.343 0.013  . 1 . . .  10 LEU N  . 15891 1 
+       15 . 1 1  18  18 ARG H H  1   9.554 0.0018 . 1 . . .  11 ARG HN . 15891 1 
+       16 . 1 1  18  18 ARG N N 15 124.095 0.013  . 1 . . .  11 ARG N  . 15891 1 
+       17 . 1 1  19  19 ASN H H  1   8.816 0.0018 . 1 . . .  12 ASN HN . 15891 1 
+       18 . 1 1  19  19 ASN N N 15 116.993 0.013  . 1 . . .  12 ASN N  . 15891 1 
+       19 . 1 1  20  20 MET H H  1   8.589 0.0018 . 1 . . .  13 MET HN . 15891 1 
+       20 . 1 1  20  20 MET N N 15 116.668 0.013  . 1 . . .  13 MET N  . 15891 1 
+       21 . 1 1  21  21 VAL H H  1   6.690 0.0018 . 1 . . .  14 VAL HN . 15891 1 
+       22 . 1 1  21  21 VAL N N 15 136.667 0.013  . 1 . . .  14 VAL N  . 15891 1 
+       23 . 1 1  22  22 ASP H H  1   8.880 0.0018 . 1 . . .  15 ASP HN . 15891 1 
+       24 . 1 1  22  22 ASP N N 15 125.234 0.013  . 1 . . .  15 ASP N  . 15891 1 
+       25 . 1 1  24  24 LYS H H  1   8.641 0.0018 . 1 . . .  17 LYS HN . 15891 1 
+       26 . 1 1  24  24 LYS N N 15 115.754 0.013  . 1 . . .  17 LYS N  . 15891 1 
+       27 . 1 1  25  25 ASP H H  1   8.016 0.0018 . 1 . . .  18 ASP HN . 15891 1 
+       28 . 1 1  25  25 ASP N N 15 118.407 0.013  . 1 . . .  18 ASP N  . 15891 1 
+       29 . 1 1  26  26 ILE H H  1   7.171 0.0018 . 1 . . .  19 ILE HN . 15891 1 
+       30 . 1 1  26  26 ILE N N 15 119.797 0.013  . 1 . . .  19 ILE N  . 15891 1 
+       31 . 1 1  27  27 ASP H H  1   7.404 0.0018 . 1 . . .  20 ASP HN . 15891 1 
+       32 . 1 1  27  27 ASP N N 15 126.808 0.013  . 1 . . .  20 ASP N  . 15891 1 
+       33 . 1 1  28  28 ASP H H  1   8.473 0.0018 . 1 . . .  21 ASP HN . 15891 1 
+       34 . 1 1  28  28 ASP N N 15 117.939 0.013  . 1 . . .  21 ASP N  . 15891 1 
+       35 . 1 1  29  29 ASP H H  1   8.298 0.0018 . 1 . . .  22 ASP HN . 15891 1 
+       36 . 1 1  29  29 ASP N N 15 118.988 0.013  . 1 . . .  22 ASP N  . 15891 1 
+       37 . 1 1  30  30 LEU H H  1   7.441 0.0018 . 1 . . .  23 LEU HN . 15891 1 
+       38 . 1 1  30  30 LEU N N 15 123.316 0.013  . 1 . . .  23 LEU N  . 15891 1 
+       39 . 1 1  31  31 GLU H H  1   8.983 0.0018 . 1 . . .  24 GLU HN . 15891 1 
+       40 . 1 1  31  31 GLU N N 15 118.808 0.013  . 1 . . .  24 GLU N  . 15891 1 
+       41 . 1 1  32  32 GLY H H  1   8.667 0.0018 . 1 . . .  25 GLY HN . 15891 1 
+       42 . 1 1  32  32 GLY N N 15 110.509 0.013  . 1 . . .  25 GLY N  . 15891 1 
+       43 . 1 1  33  33 GLU H H  1   8.121 0.0018 . 1 . . .  26 GLU HN . 15891 1 
+       44 . 1 1  33  33 GLU N N 15 124.175 0.013  . 1 . . .  26 GLU N  . 15891 1 
+       45 . 1 1  34  34 VAL H H  1   8.557 0.0018 . 1 . . .  27 VAL HN . 15891 1 
+       46 . 1 1  34  34 VAL N N 15 120.007 0.013  . 1 . . .  27 VAL N  . 15891 1 
+       47 . 1 1  35  35 THR H H  1   8.371 0.0018 . 1 . . .  28 THR HN . 15891 1 
+       48 . 1 1  35  35 THR N N 15 117.373 0.013  . 1 . . .  28 THR N  . 15891 1 
+       49 . 1 1  36  36 GLU H H  1   8.221 0.0018 . 1 . . .  29 GLU HN . 15891 1 
+       50 . 1 1  36  36 GLU N N 15 122.571 0.013  . 1 . . .  29 GLU N  . 15891 1 
+       51 . 1 1  37  37 GLU H H  1   7.788 0.0018 . 1 . . .  30 GLU HN . 15891 1 
+       52 . 1 1  37  37 GLU N N 15 119.033 0.013  . 1 . . .  30 GLU N  . 15891 1 
+       53 . 1 1  38  38 CYS H H  1   8.441 0.0018 . 1 . . .  31 CYS HN . 15891 1 
+       54 . 1 1  38  38 CYS N N 15 113.386 0.013  . 1 . . .  31 CYS N  . 15891 1 
+       55 . 1 1  39  39 GLY H H  1   8.112 0.0018 . 1 . . .  32 GLY HN . 15891 1 
+       56 . 1 1  39  39 GLY N N 15 107.754 0.013  . 1 . . .  32 GLY N  . 15891 1 
+       57 . 1 1  40  40 LYS H H  1   7.018 0.0018 . 1 . . .  33 LYS HN . 15891 1 
+       58 . 1 1  40  40 LYS N N 15 117.864 0.013  . 1 . . .  33 LYS N  . 15891 1 
+       59 . 1 1  41  41 PHE H H  1   7.719 0.0018 . 1 . . .  34 PHE HN . 15891 1 
+       60 . 1 1  41  41 PHE N N 15 116.488 0.013  . 1 . . .  34 PHE N  . 15891 1 
+       61 . 1 1  42  42 GLY H H  1   7.361 0.0018 . 1 . . .  35 GLY HN . 15891 1 
+       62 . 1 1  42  42 GLY N N 15 104.272 0.013  . 1 . . .  35 GLY N  . 15891 1 
+       63 . 1 1  43  43 ALA H H  1   8.205 0.0018 . 1 . . .  36 ALA HN . 15891 1 
+       64 . 1 1  43  43 ALA N N 15 122.223 0.013  . 1 . . .  36 ALA N  . 15891 1 
+       65 . 1 1  44  44 VAL H H  1   8.359 0.0018 . 1 . . .  37 VAL HN . 15891 1 
+       66 . 1 1  44  44 VAL N N 15 124.844 0.013  . 1 . . .  37 VAL N  . 15891 1 
+       67 . 1 1  45  45 ASN H H  1   9.368 0.0018 . 1 . . .  38 ASN HN . 15891 1 
+       68 . 1 1  45  45 ASN N N 15 128.232 0.013  . 1 . . .  38 ASN N  . 15891 1 
+       69 . 1 1  46  46 ARG H H  1   7.375 0.0018 . 1 . . .  39 ARG HN . 15891 1 
+       70 . 1 1  46  46 ARG N N 15 115.035 0.013  . 1 . . .  39 ARG N  . 15891 1 
+       71 . 1 1  47  47 VAL H H  1   8.350 0.0018 . 1 . . .  40 VAL HN . 15891 1 
+       72 . 1 1  47  47 VAL N N 15 122.450 0.013  . 1 . . .  40 VAL N  . 15891 1 
+       73 . 1 1  48  48 ILE H H  1   9.238 0.0018 . 1 . . .  41 ILE HN . 15891 1 
+       74 . 1 1  48  48 ILE N N 15 125.729 0.013  . 1 . . .  41 ILE N  . 15891 1 
+       75 . 1 1  49  49 ILE H H  1   9.087 0.0018 . 1 . . .  42 ILE HN . 15891 1 
+       76 . 1 1  49  49 ILE N N 15 128.927 0.013  . 1 . . .  42 ILE N  . 15891 1 
+       77 . 1 1  50  50 TYR H H  1   9.254 0.0018 . 1 . . .  43 TYR HN . 15891 1 
+       78 . 1 1  50  50 TYR N N 15 131.671 0.013  . 1 . . .  43 TYR N  . 15891 1 
+       79 . 1 1  51  51 GLN H H  1   8.079 0.0018 . 1 . . .  44 GLN HN . 15891 1 
+       80 . 1 1  51  51 GLN N N 15 126.279 0.013  . 1 . . .  44 GLN N  . 15891 1 
+       81 . 1 1  52  52 GLU H H  1   8.683 0.0018 . 1 . . .  45 GLU HN . 15891 1 
+       82 . 1 1  52  52 GLU N N 15 123.061 0.013  . 1 . . .  45 GLU N  . 15891 1 
+       83 . 1 1  53  53 LYS H H  1   8.878 0.0018 . 1 . . .  46 LYS HN . 15891 1 
+       84 . 1 1  53  53 LYS N N 15 130.376 0.013  . 1 . . .  46 LYS N  . 15891 1 
+       85 . 1 1  54  54 GLN H H  1   9.054 0.0018 . 1 . . .  47 GLN HN . 15891 1 
+       86 . 1 1  54  54 GLN N N 15 124.065 0.013  . 1 . . .  47 GLN N  . 15891 1 
+       87 . 1 1  55  55 GLY H H  1   7.646 0.0018 . 1 . . .  48 GLY HN . 15891 1 
+       88 . 1 1  55  55 GLY N N 15 108.786 0.013  . 1 . . .  48 GLY N  . 15891 1 
+       89 . 1 1  56  56 GLU H H  1   8.447 0.0018 . 1 . . .  49 GLU HN . 15891 1 
+       90 . 1 1  56  56 GLU N N 15 116.908 0.013  . 1 . . .  49 GLU N  . 15891 1 
+       91 . 1 1  57  57 GLU H H  1   8.745 0.0018 . 1 . . .  50 GLU HN . 15891 1 
+       92 . 1 1  57  57 GLU N N 15 120.262 0.013  . 1 . . .  50 GLU N  . 15891 1 
+       93 . 1 1  58  58 GLU H H  1   8.926 0.0018 . 1 . . .  51 GLU HN . 15891 1 
+       94 . 1 1  58  58 GLU N N 15 122.252 0.013  . 1 . . .  51 GLU N  . 15891 1 
+       95 . 1 1  59  59 ASP H H  1   8.251 0.0018 . 1 . . .  52 ASP HN . 15891 1 
+       96 . 1 1  59  59 ASP N N 15 116.369 0.013  . 1 . . .  52 ASP N  . 15891 1 
+       97 . 1 1  60  60 ALA H H  1   7.121 0.0018 . 1 . . .  53 ALA HN . 15891 1 
+       98 . 1 1  60  60 ALA N N 15 122.127 0.013  . 1 . . .  53 ALA N  . 15891 1 
+       99 . 1 1  61  61 GLU H H  1   8.515 0.0018 . 1 . . .  54 GLU HN . 15891 1 
+      100 . 1 1  61  61 GLU N N 15 121.446 0.013  . 1 . . .  54 GLU N  . 15891 1 
+      101 . 1 1  62  62 ILE H H  1   8.272 0.0018 . 1 . . .  55 ILE HN . 15891 1 
+      102 . 1 1  62  62 ILE N N 15 123.319 0.013  . 1 . . .  55 ILE N  . 15891 1 
+      103 . 1 1  63  63 ILE H H  1   8.461 0.0018 . 1 . . .  56 ILE HN . 15891 1 
+      104 . 1 1  63  63 ILE N N 15 123.796 0.013  . 1 . . .  56 ILE N  . 15891 1 
+      105 . 1 1  64  64 VAL H H  1   8.669 0.0018 . 1 . . .  57 VAL HN . 15891 1 
+      106 . 1 1  64  64 VAL N N 15 123.186 0.013  . 1 . . .  57 VAL N  . 15891 1 
+      107 . 1 1  65  65 LYS H H  1   9.604 0.0018 . 1 . . .  58 LYS HN . 15891 1 
+      108 . 1 1  65  65 LYS N N 15 130.330 0.013  . 1 . . .  58 LYS N  . 15891 1 
+      109 . 1 1  66  66 ILE H H  1   7.949 0.0018 . 1 . . .  59 ILE HN . 15891 1 
+      110 . 1 1  66  66 ILE N N 15 121.476 0.013  . 1 . . .  59 ILE N  . 15891 1 
+      111 . 1 1  67  67 PHE H H  1   9.504 0.0018 . 1 . . .  60 PHE HN . 15891 1 
+      112 . 1 1  67  67 PHE N N 15 126.238 0.013  . 1 . . .  60 PHE N  . 15891 1 
+      113 . 1 1  68  68 VAL H H  1   9.188 0.0018 . 1 . . .  61 VAL HN . 15891 1 
+      114 . 1 1  68  68 VAL N N 15 122.177 0.013  . 1 . . .  61 VAL N  . 15891 1 
+      115 . 1 1  69  69 GLU H H  1   8.628 0.0018 . 1 . . .  62 GLU HN . 15891 1 
+      116 . 1 1  69  69 GLU N N 15 127.932 0.013  . 1 . . .  62 GLU N  . 15891 1 
+      117 . 1 1  70  70 PHE H H  1   8.734 0.0018 . 1 . . .  63 PHE HN . 15891 1 
+      118 . 1 1  70  70 PHE N N 15 127.302 0.013  . 1 . . .  63 PHE N  . 15891 1 
+      119 . 1 1  71  71 SER H H  1   8.615 0.0018 . 1 . . .  64 SER HN . 15891 1 
+      120 . 1 1  71  71 SER N N 15 116.144 0.013  . 1 . . .  64 SER N  . 15891 1 
+      121 . 1 1  72  72 ILE H H  1   7.946 0.0018 . 1 . . .  65 ILE HN . 15891 1 
+      122 . 1 1  72  72 ILE N N 15 116.159 0.013  . 1 . . .  65 ILE N  . 15891 1 
+      123 . 1 1  73  73 ALA H H  1   8.824 0.0018 . 1 . . .  66 ALA HN . 15891 1 
+      124 . 1 1  73  73 ALA N N 15 126.823 0.013  . 1 . . .  66 ALA N  . 15891 1 
+      125 . 1 1  74  74 SER H H  1   8.032 0.0018 . 1 . . .  67 SER HN . 15891 1 
+      126 . 1 1  74  74 SER N N 15 110.779 0.013  . 1 . . .  67 SER N  . 15891 1 
+      127 . 1 1  75  75 GLU H H  1   7.311 0.0018 . 1 . . .  68 GLU HN . 15891 1 
+      128 . 1 1  75  75 GLU N N 15 124.080 0.013  . 1 . . .  68 GLU N  . 15891 1 
+      129 . 1 1  76  76 THR H H  1   7.030 0.0018 . 1 . . .  69 THR HN . 15891 1 
+      130 . 1 1  76  76 THR N N 15 115.230 0.013  . 1 . . .  69 THR N  . 15891 1 
+      131 . 1 1  77  77 HIS H H  1   7.816 0.0018 . 1 . . .  70 HIS HN . 15891 1 
+      132 . 1 1  77  77 HIS N N 15 116.593 0.013  . 1 . . .  70 HIS N  . 15891 1 
+      133 . 1 1  78  78 LYS H H  1   7.399 0.0018 . 1 . . .  71 LYS HN . 15891 1 
+      134 . 1 1  78  78 LYS N N 15 120.310 0.013  . 1 . . .  71 LYS N  . 15891 1 
+      135 . 1 1  79  79 ALA H H  1   7.823 0.0018 . 1 . . .  72 ALA HN . 15891 1 
+      136 . 1 1  79  79 ALA N N 15 122.780 0.013  . 1 . . .  72 ALA N  . 15891 1 
+      137 . 1 1  80  80 ILE H H  1   8.069 0.0018 . 1 . . .  73 ILE HN . 15891 1 
+      138 . 1 1  80  80 ILE N N 15 118.170 0.013  . 1 . . .  73 ILE N  . 15891 1 
+      139 . 1 1  81  81 GLN H H  1   7.512 0.0018 . 1 . . .  74 GLN HN . 15891 1 
+      140 . 1 1  81  81 GLN N N 15 115.829 0.013  . 1 . . .  74 GLN N  . 15891 1 
+      141 . 1 1  82  82 ALA H H  1   7.177 0.0018 . 1 . . .  75 ALA HN . 15891 1 
+      142 . 1 1  82  82 ALA N N 15 119.138 0.013  . 1 . . .  75 ALA N  . 15891 1 
+      143 . 1 1  83  83 LEU H H  1   8.052 0.0018 . 1 . . .  76 LEU HN . 15891 1 
+      144 . 1 1  83  83 LEU N N 15 115.964 0.013  . 1 . . .  76 LEU N  . 15891 1 
+      145 . 1 1  84  84 ASN H H  1   8.272 0.0018 . 1 . . .  77 ASN HN . 15891 1 
+      146 . 1 1  84  84 ASN N N 15 115.289 0.013  . 1 . . .  77 ASN N  . 15891 1 
+      147 . 1 1  85  85 GLY H H  1   8.741 0.0018 . 1 . . .  78 GLY HN . 15891 1 
+      148 . 1 1  85  85 GLY N N 15 116.548 0.013  . 1 . . .  78 GLY N  . 15891 1 
+      149 . 1 1  86  86 ARG H H  1   7.621 0.0018 . 1 . . .  79 ARG HN . 15891 1 
+      150 . 1 1  86  86 ARG N N 15 120.430 0.013  . 1 . . .  79 ARG N  . 15891 1 
+      151 . 1 1  87  87 TRP H H  1   8.549 0.0018 . 1 . . .  80 TRP HN . 15891 1 
+      152 . 1 1  87  87 TRP N N 15 121.476 0.013  . 1 . . .  80 TRP N  . 15891 1 
+      153 . 1 1  88  88 PHE H H  1   9.548 0.0018 . 1 . . .  81 PHE HN . 15891 1 
+      154 . 1 1  88  88 PHE N N 15 125.624 0.013  . 1 . . .  81 PHE N  . 15891 1 
+      155 . 1 1  90  90 GLY H H  1   8.502 0.0018 . 1 . . .  83 GLY HN . 15891 1 
+      156 . 1 1  90  90 GLY N N 15 103.064 0.013  . 1 . . .  83 GLY N  . 15891 1 
+      157 . 1 1  91  91 ARG H H  1   8.110 0.0018 . 1 . . .  84 ARG HN . 15891 1 
+      158 . 1 1  91  91 ARG N N 15 120.996 0.013  . 1 . . .  84 ARG N  . 15891 1 
+      159 . 1 1  92  92 LYS H H  1   8.114 0.0018 . 1 . . .  85 LYS HN . 15891 1 
+      160 . 1 1  92  92 LYS N N 15 123.966 0.013  . 1 . . .  85 LYS N  . 15891 1 
+      161 . 1 1  93  93 VAL H H  1   8.632 0.0018 . 1 . . .  86 VAL HN . 15891 1 
+      162 . 1 1  93  93 VAL N N 15 129.206 0.013  . 1 . . .  86 VAL N  . 15891 1 
+      163 . 1 1  94  94 VAL H H  1   8.002 0.0018 . 1 . . .  87 VAL HN . 15891 1 
+      164 . 1 1  94  94 VAL N N 15 127.497 0.013  . 1 . . .  87 VAL N  . 15891 1 
+      165 . 1 1  95  95 ALA H H  1   8.646 0.0018 . 1 . . .  88 ALA HN . 15891 1 
+      166 . 1 1  95  95 ALA N N 15 130.899 0.013  . 1 . . .  88 ALA N  . 15891 1 
+      167 . 1 1  96  96 GLU H H  1   8.619 0.0018 . 1 . . .  89 GLU HN . 15891 1 
+      168 . 1 1  96  96 GLU N N 15 118.014 0.013  . 1 . . .  89 GLU N  . 15891 1 
+      169 . 1 1  97  97 VAL H H  1   8.389 0.0018 . 1 . . .  90 VAL HN . 15891 1 
+      170 . 1 1  97  97 VAL N N 15 120.966 0.013  . 1 . . .  90 VAL N  . 15891 1 
+      171 . 1 1  98  98 TYR H H  1   8.702 0.0018 . 1 . . .  91 TYR HN . 15891 1 
+      172 . 1 1  98  98 TYR N N 15 129.550 0.013  . 1 . . .  91 TYR N  . 15891 1 
+      173 . 1 1  99  99 ASP H H  1   7.478 0.0018 . 1 . . .  92 ASP HN . 15891 1 
+      174 . 1 1  99  99 ASP N N 15 127.302 0.013  . 1 . . .  92 ASP N  . 15891 1 
+      175 . 1 1 100 100 GLN H H  1   8.636 0.0018 . 1 . . .  93 GLN HN . 15891 1 
+      176 . 1 1 100 100 GLN N N 15 129.191 0.013  . 1 . . .  93 GLN N  . 15891 1 
+      177 . 1 1 102 102 ARG H H  1   8.065 0.0018 . 1 . . .  95 ARG HN . 15891 1 
+      178 . 1 1 102 102 ARG N N 15 118.937 0.013  . 1 . . .  95 ARG N  . 15891 1 
+      179 . 1 1 103 103 PHE H H  1   8.304 0.0018 . 1 . . .  96 PHE HN . 15891 1 
+      180 . 1 1 103 103 PHE N N 15 120.307 0.013  . 1 . . .  96 PHE N  . 15891 1 
+      181 . 1 1 104 104 ASP H H  1   9.306 0.0018 . 1 . . .  97 ASP HN . 15891 1 
+      182 . 1 1 104 104 ASP N N 15 122.717 0.013  . 1 . . .  97 ASP N  . 15891 1 
+      183 . 1 1 105 105 ASN H H  1   7.517 0.0018 . 1 . . .  98 ASN HN . 15891 1 
+      184 . 1 1 105 105 ASN N N 15 117.654 0.013  . 1 . . .  98 ASN N  . 15891 1 
+      185 . 1 1 106 106 SER H H  1   7.986 0.0018 . 1 . . .  99 SER HN . 15891 1 
+      186 . 1 1 106 106 SER N N 15 112.337 0.013  . 1 . . .  99 SER N  . 15891 1 
+      187 . 1 1 107 107 ASP H H  1   8.306 0.0018 . 1 . . . 100 ASP HN . 15891 1 
+      188 . 1 1 107 107 ASP N N 15 117.103 0.013  . 1 . . . 100 ASP N  . 15891 1 
+      189 . 1 1 108 108 LEU H H  1   8.276 0.0018 . 1 . . . 101 LEU HN . 15891 1 
+      190 . 1 1 108 108 LEU N N 15 127.917 0.013  . 1 . . . 101 LEU N  . 15891 1 
+      191 . 1 1 109 109 SER H H  1   7.852 0.0018 . 1 . . . 102 SER HN . 15891 1 
+      192 . 1 1 109 109 SER N N 15 113.266 0.013  . 1 . . . 102 SER N  . 15891 1 
+      193 . 1 1 110 110 ALA H H  1   7.962 0.0018 . 1 . . . 103 ALA HN . 15891 1 
+      194 . 1 1 110 110 ALA N N 15 131.633 0.013  . 1 . . . 103 ALA N  . 15891 1 
+
+   stop_
+
+save_
+
+
+    #########################
+    #  Spectral peak lists  #
+    #########################
+
+save_spectral_peak_list_1
+   _Spectral_peak_list.Sf_category                     spectral_peak_list
+   _Spectral_peak_list.Sf_framecode                    spectral_peak_list_1
+   _Spectral_peak_list.Entry_ID                        15891
+   _Spectral_peak_list.ID                              1
+   _Spectral_peak_list.Sample_ID                       1
+   _Spectral_peak_list.Sample_label                   $minimal_complex_of_Puf60_and_Prp16(201-238)
+   _Spectral_peak_list.Sample_condition_list_ID        1
+   _Spectral_peak_list.Sample_condition_list_label    $sample_conditions_1
+   _Spectral_peak_list.Experiment_ID                   1
+   _Spectral_peak_list.Experiment_name                '2D 1H-15N HSQC'
+   _Spectral_peak_list.Number_of_spectral_dimensions   .
+   _Spectral_peak_list.Details                        'chemical shifts transferred by titration'
+   _Spectral_peak_list.Text_data_format                .
+   _Spectral_peak_list.Text_data                      
+;
+    0 2.393 24.350 0.000 0 2 {?}
+{88.hn} 8.646 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{88.n} 130.899 0.362 0.362 { ?} 0.000 0 0 0 {?}
+    1 1.392 13.100 0.000 0 2 {?}
+{46.hn} 8.878 0.047 0.047 { ?} 0.000 0 0 0 {?}
+{46.n} 130.376 0.348 0.348 { ?} 0.000 0 0 0 {?}
+    2 2.396 24.141 0.000 0 2 {?}
+{91.hn} 8.702 0.057 0.057 { ?} 0.000 0 0 0 {?}
+{91.n} 129.550 0.356 0.356 { ?} 0.000 0 0 0 {?}
+    3 1.909 19.270 0.000 0 2 {?}
+{86.hn} 8.632 0.037 0.037 { ?} 0.000 0 0 0 {?}
+{86.n} 129.206 0.482 0.482 { ?} 0.000 0 0 0 {?}
+    4 2.588 24.348 0.000 0 2 {?}
+{62.hn} 8.628 0.055 0.055 { ?} 0.000 0 0 0 {?}
+{62.n} 127.932 0.352 0.352 { ?} 0.000 0 0 0 {?}
+    5 1.946 18.327 0.000 0 2 {?}
+{63.hn} 8.734 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{63.n} 127.302 0.321 0.321 { ?} 0.000 0 0 0 {?}
+    6 2.759 28.581 0.000 0 2 {?}
+{15.hn} 8.880 0.048 0.048 { ?} 0.000 0 0 0 {?}
+{15.n} 125.234 0.421 0.421 { ?} 0.000 0 0 0 {?}
+    7 4.009 40.182 0.000 0 2 {?}
+{57.hn} 8.669 0.037 0.037 { ?} 0.000 0 0 0 {?}
+{57.n} 123.186 0.482 0.482 { ?} 0.000 0 0 0 {?}
+    8 1.268 9.291 0.000 0 2 {?}
+{51.hn} 8.926 0.035 0.035 { ?} 0.000 0 0 0 {?}
+{51.n} 122.252 0.397 0.397 { ?} 0.000 0 0 0 {?}
+    9 5.378 44.782 0.000 0 2 {?}
+{50.hn} 8.745 0.042 0.042 { ?} 0.000 0 0 0 {?}
+{50.n} 120.262 0.500 0.500 { ?} 0.000 0 0 0 {?}
+   10 3.228 32.857 0.000 0 2 {?}
+{27.hn} 8.557 0.055 0.055 { ?} 0.000 0 0 0 {?}
+{27.n} 120.007 0.429 0.429 { ?} 0.000 0 0 0 {?}
+   11 2.121 24.469 0.000 0 2 {?}
+{12.hn} 8.816 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{12.n} 116.993 0.429 0.429 { ?} 0.000 0 0 0 {?}
+   12 2.029 13.876 0.000 0 2 {?}
+{13.hn} 8.589 0.031 0.031 { ?} 0.000 0 0 0 {?}
+{13.n} 116.668 0.346 0.346 { ?} 0.000 0 0 0 {?}
+   13 2.219 16.682 0.000 0 2 {?}
+{78.hn} 8.741 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{78.n} 116.548 0.348 0.348 { ?} 0.000 0 0 0 {?}
+   14 3.845 33.193 0.000 0 2 {?}
+{17.hn} 8.641 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{17.n} 115.754 0.321 0.321 { ?} 0.000 0 0 0 {?}
+   15 3.065 28.240 0.000 0 2 {?}
+{25.hn} 8.667 0.054 0.054 { ?} 0.000 0 0 0 {?}
+{25.n} 110.509 0.371 0.371 { ?} 0.000 0 0 0 {?}
+   16 2.413 22.934 0.000 0 2 {?}
+{101.hn} 8.276 0.055 0.055 { ?} 0.000 0 0 0 {?}
+{101.n} 127.917 0.375 0.375 { ?} 0.000 0 0 0 {?}
+   17 2.267 21.852 0.000 0 2 {?}
+{87.hn} 8.002 0.061 0.061 { ?} 0.000 0 0 0 {?}
+{87.n} 127.497 0.348 0.348 { ?} 0.000 0 0 0 {?}
+   18 1.574 7.302 0.000 0 2 {?}
+{20.hn} 7.404 0.041 0.041 { ?} 0.000 0 0 0 {?}
+{20.n} 126.808 0.151 0.151 { ?} 0.000 0 0 0 {?}
+   19 2.886 27.804 0.000 0 2 {?}
+{44.hn} 8.079 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{44.n} 126.279 0.429 0.429 { ?} 0.000 0 0 0 {?}
+   20 5.258 36.922 0.000 0 2 {?}
+{85.hn} 8.114 0.037 0.037 { ?} 0.000 0 0 0 {?}
+{85.n} 123.966 0.348 0.348 { ?} 0.000 0 0 0 {?}
+   21 3.115 33.742 0.000 0 2 {?}
+{72.hn} 7.823 0.055 0.055 { ?} 0.000 0 0 0 {?}
+{72.n} 122.780 0.429 0.429 { ?} 0.000 0 0 0 {?}
+   22 3.495 33.909 0.000 0 2 {?}
+{40.hn} 8.350 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{40.n} 122.450 0.402 0.402 { ?} 0.000 0 0 0 {?}
+   23 4.489 51.120 0.000 0 2 {?}
+{53.hn} 7.121 0.061 0.061 { ?} 0.000 0 0 0 {?}
+{53.n} 122.127 0.455 0.455 { ?} 0.000 0 0 0 {?}
+   24 1.800 19.848 0.000 0 2 {?}
+{59.hn} 7.949 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{59.n} 121.476 0.402 0.402 { ?} 0.000 0 0 0 {?}
+   25 3.805 34.913 0.000 0 2 {?}
+{19.hn} 7.171 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{19.n} 119.797 0.429 0.429 { ?} 0.000 0 0 0 {?}
+   26 3.430 34.410 0.000 0 2 {?}
+{75.hn} 7.177 0.047 0.047 { ?} 0.000 0 0 0 {?}
+{75.n} 119.138 0.414 0.414 { ?} 0.000 0 0 0 {?}
+   27 3.141 23.964 0.000 0 2 {?}
+{73.hn} 8.069 0.033 0.033 { ?} 0.000 0 0 0 {?}
+{73.n} 118.170 0.267 0.267 { ?} 0.000 0 0 0 {?}
+   28 4.164 46.419 0.000 0 2 {?}
+{95.hn} 8.065 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{95.n} 118.937 0.375 0.375 { ?} 0.000 0 0 0 {?}
+   29 3.194 30.182 0.000 0 2 {?}
+{98.hn} 7.517 0.044 0.044 { ?} 0.000 0 0 0 {?}
+{98.n} 117.654 0.372 0.372 { ?} 0.000 0 0 0 {?}
+   30 3.946 45.103 0.000 0 2 {?}
+{70.hn} 7.816 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{70.n} 116.593 0.429 0.429 { ?} 0.000 0 0 0 {?}
+   31 3.772 26.568 0.000 0 2 {?}
+{52.hn} 8.251 0.031 0.031 { ?} 0.000 0 0 0 {?}
+{52.n} 116.369 0.321 0.321 { ?} 0.000 0 0 0 {?}
+   32 4.290 36.456 0.000 0 2 {?}
+{5.hn} 8.208 0.035 0.035 { ?} 0.000 0 0 0 {?}
+{5.n} 115.874 0.443 0.443 { ?} 0.000 0 0 0 {?}
+   33 2.775 29.011 0.000 0 2 {?}
+{34.hn} 7.719 0.055 0.055 { ?} 0.000 0 0 0 {?}
+{34.n} 116.488 0.402 0.402 { ?} 0.000 0 0 0 {?}
+   34 4.074 35.031 0.000 0 2 {?}
+{39.hn} 7.375 0.040 0.040 { ?} 0.000 0 0 0 {?}
+{39.n} 115.035 0.416 0.416 { ?} 0.000 0 0 0 {?}
+   35 2.921 24.203 0.000 0 2 {?}
+{102.hn} 7.852 0.044 0.044 { ?} 0.000 0 0 0 {?}
+{102.n} 113.266 0.372 0.372 { ?} 0.000 0 0 0 {?}
+   36 3.115 29.050 0.000 0 2 {?}
+{99.hn} 7.986 0.044 0.044 { ?} 0.000 0 0 0 {?}
+{99.n} 112.337 0.394 0.394 { ?} 0.000 0 0 0 {?}
+   37 4.989 47.574 0.000 0 2 {?}
+{48.hn} 7.646 0.062 0.062 { ?} 0.000 0 0 0 {?}
+{48.n} 108.786 0.390 0.390 { ?} 0.000 0 0 0 {?}
+   38 2.626 26.255 0.000 0 2 {?}
+{32.hn} 8.112 0.059 0.059 { ?} 0.000 0 0 0 {?}
+{32.n} 107.754 0.406 0.406 { ?} 0.000 0 0 0 {?}
+   39 1.612 12.852 0.000 0 2 {?}
+{58.hn} 9.604 0.041 0.041 { ?} 0.000 0 0 0 {?}
+{58.n} 130.330 0.375 0.375 { ?} 0.000 0 0 0 {?}
+   40 1.840 13.252 0.000 0 2 {?}
+{11.hn} 9.554 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{11.n} 124.095 0.348 0.348 { ?} 0.000 0 0 0 {?}
+   41 1.895 16.929 0.000 0 2 {?}
+{81.hn} 9.548 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{81.n} 125.624 0.388 0.388 { ?} 0.000 0 0 0 {?}
+   42 1.783 20.383 0.000 0 2 {?}
+{60.hn} 9.504 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{60.n} 126.238 0.415 0.415 { ?} 0.000 0 0 0 {?}
+   43 2.406 21.313 0.000 0 2 {?}
+{38.hn} 9.368 0.050 0.050 { ?} 0.000 0 0 0 {?}
+{38.n} 128.232 0.367 0.367 { ?} 0.000 0 0 0 {?}
+   44 2.527 25.635 0.000 0 2 {?}
+{9.hn} 9.330 0.050 0.050 { ?} 0.000 0 0 0 {?}
+{9.n} 124.305 0.411 0.411 { ?} 0.000 0 0 0 {?}
+   45 3.206 29.012 0.000 0 2 {?}
+{97.hn} 9.306 0.050 0.050 { ?} 0.000 0 0 0 {?}
+{97.n} 122.717 0.384 0.384 { ?} 0.000 0 0 0 {?}
+   46 2.128 21.988 0.000 0 2 {?}
+{43.hn} 9.254 0.047 0.047 { ?} 0.000 0 0 0 {?}
+{43.n} 131.671 0.402 0.402 { ?} 0.000 0 0 0 {?}
+   47 2.579 26.999 0.000 0 2 {?}
+{41.hn} 9.238 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{41.n} 125.729 0.415 0.415 { ?} 0.000 0 0 0 {?}
+   48 2.524 20.946 0.000 0 2 {?}
+{61.hn} 9.188 0.046 0.046 { ?} 0.000 0 0 0 {?}
+{61.n} 122.177 0.375 0.375 { ?} 0.000 0 0 0 {?}
+   49 2.188 17.602 0.000 0 2 {?}
+{8.hn} 9.082 0.041 0.041 { ?} 0.000 0 0 0 {?}
+{8.n} 127.587 0.382 0.382 { ?} 0.000 0 0 0 {?}
+   50 2.797 23.246 0.000 0 2 {?}
+{42.hn} 9.087 0.041 0.041 { ?} 0.000 0 0 0 {?}
+{42.n} 128.927 0.408 0.408 { ?} 0.000 0 0 0 {?}
+   51 1.711 17.716 0.000 0 2 {?}
+{10.hn} 9.078 0.061 0.061 { ?} 0.000 0 0 0 {?}
+{10.n} 126.343 0.321 0.321 { ?} 0.000 0 0 0 {?}
+   52 3.808 37.187 0.000 0 2 {?}
+{47.hn} 9.054 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{47.n} 124.065 0.411 0.411 { ?} 0.000 0 0 0 {?}
+   53 3.904 36.307 0.000 0 2 {?}
+{24.hn} 8.983 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{24.n} 118.808 0.402 0.402 { ?} 0.000 0 0 0 {?}
+   54 2.552 24.257 0.000 0 2 {?}
+{7.hn} 8.882 0.041 0.041 { ?} 0.000 0 0 0 {?}
+{7.n} 126.029 0.403 0.403 { ?} 0.000 0 0 0 {?}
+   55 2.883 28.622 0.000 0 2 {?}
+{66.hn} 8.824 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{66.n} 126.823 0.388 0.388 { ?} 0.000 0 0 0 {?}
+   56 3.368 30.170 0.000 0 2 {?}
+{45.hn} 8.683 0.031 0.031 { ?} 0.000 0 0 0 {?}
+{45.n} 123.061 0.429 0.429 { ?} 0.000 0 0 0 {?}
+   57 2.504 24.926 0.000 0 2 {?}
+{64.hn} 8.615 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{64.n} 116.144 0.348 0.348 { ?} 0.000 0 0 0 {?}
+   58 2.785 26.555 0.000 0 2 {?}
+{89.hn} 8.619 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{89.n} 118.014 0.375 0.375 { ?} 0.000 0 0 0 {?}
+   59 3.928 36.313 0.000 0 2 {?}
+{54.hn} 8.515 0.046 0.046 { ?} 0.000 0 0 0 {?}
+{54.n} 121.446 0.396 0.396 { ?} 0.000 0 0 0 {?}
+   60 2.833 28.156 0.000 0 2 {?}
+{31.hn} 8.441 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{31.n} 113.386 0.394 0.394 { ?} 0.000 0 0 0 {?}
+   61 2.423 27.104 0.000 0 2 {?}
+{56.hn} 8.461 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{56.n} 123.796 0.402 0.402 { ?} 0.000 0 0 0 {?}
+   62 1.678 11.145 0.000 0 2 {?}
+{21.hn} 8.473 0.037 0.037 { ?} 0.000 0 0 0 {?}
+{21.n} 117.939 0.348 0.348 { ?} 0.000 0 0 0 {?}
+   63 3.094 30.225 0.000 0 2 {?}
+{80.hn} 8.549 0.044 0.044 { ?} 0.000 0 0 0 {?}
+{80.n} 121.476 0.441 0.441 { ?} 0.000 0 0 0 {?}
+   64 4.043 37.656 0.000 0 2 {?}
+{90.hn} 8.389 0.056 0.056 { ?} 0.000 0 0 0 {?}
+{90.n} 120.966 0.442 0.442 { ?} 0.000 0 0 0 {?}
+   65 2.665 24.702 0.000 0 2 {?}
+{6.hn} 8.365 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{6.n} 113.656 0.350 0.350 { ?} 0.000 0 0 0 {?}
+   66 3.079 29.974 0.000 0 2 {?}
+{37.hn} 8.359 0.050 0.050 { ?} 0.000 0 0 0 {?}
+{37.n} 124.844 0.439 0.439 { ?} 0.000 0 0 0 {?}
+   67 2.481 26.027 0.000 0 2 {?}
+{77.hn} 8.272 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{77.n} 115.289 0.402 0.402 { ?} 0.000 0 0 0 {?}
+   68 3.143 29.375 0.000 0 2 {?}
+{22.hn} 8.298 0.055 0.055 { ?} 0.000 0 0 0 {?}
+{22.n} 118.988 0.321 0.321 { ?} 0.000 0 0 0 {?}
+   69 2.617 24.986 0.000 0 2 {?}
+{55.hn} 8.272 0.061 0.061 { ?} 0.000 0 0 0 {?}
+{55.n} 123.319 0.348 0.348 { ?} 0.000 0 0 0 {?}
+   70 2.908 28.247 0.000 0 2 {?}
+{100.hn} 8.306 0.038 0.038 { ?} 0.000 0 0 0 {?}
+{100.n} 117.103 0.202 0.202 { ?} 0.000 0 0 0 {?}
+   71 2.678 29.931 0.000 0 2 {?}
+{96.hn} 8.304 0.055 0.055 { ?} 0.000 0 0 0 {?}
+{96.n} 120.307 0.462 0.462 { ?} 0.000 0 0 0 {?}
+   72 2.591 23.479 0.000 0 2 {?}
+{28.hn} 8.371 0.034 0.034 { ?} 0.000 0 0 0 {?}
+{28.n} 117.373 0.202 0.202 { ?} 0.000 0 0 0 {?}
+   73 3.195 35.470 0.000 0 2 {?}
+{4.hn} 8.302 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{4.n} 121.835 0.411 0.411 { ?} 0.000 0 0 0 {?}
+   74 3.588 25.195 0.000 0 2 {?}
+{18.hn} 8.016 0.048 0.048 { ?} 0.000 0 0 0 {?}
+{18.n} 118.407 0.305 0.305 { ?} 0.000 0 0 0 {?}
+   75 3.026 21.135 0.000 0 2 {?}
+{76.hn} 8.052 0.033 0.033 { ?} 0.000 0 0 0 {?}
+{76.n} 115.964 0.396 0.396 { ?} 0.000 0 0 0 {?}
+   76 3.435 23.108 0.000 0 2 {?}
+{65.hn} 7.946 0.037 0.037 { ?} 0.000 0 0 0 {?}
+{65.n} 116.159 0.375 0.375 { ?} 0.000 0 0 0 {?}
+   77 2.951 24.643 0.000 0 2 {?}
+{30.hn} 7.788 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{30.n} 119.033 0.357 0.357 { ?} 0.000 0 0 0 {?}
+   78 3.134 29.972 0.000 0 2 {?}
+{103.hn} 7.962 0.061 0.061 { ?} 0.000 0 0 0 {?}
+{103.n} 131.633 0.402 0.402 { ?} 0.000 0 0 0 {?}
+   79 3.354 32.629 0.000 0 2 {?}
+{74.hn} 7.512 0.044 0.044 { ?} 0.000 0 0 0 {?}
+{74.n} 115.829 0.406 0.406 { ?} 0.000 0 0 0 {?}
+   80 4.643 48.443 0.000 0 2 {?}
+{92.hn} 7.478 0.067 0.067 { ?} 0.000 0 0 0 {?}
+{92.n} 127.302 0.348 0.348 { ?} 0.000 0 0 0 {?}
+   81 3.325 3.325 0.000 0 2 {?}
+{23.hn} 7.441 0.057 0.057 { ?} 0.000 0 0 0 {?}
+{23.n} 123.316 0.428 0.428 { ?} 0.000 0 0 0 {?}
+   82 3.749 37.815 0.000 0 2 {?}
+{71.hn} 7.399 0.052 0.052 { ?} 0.000 0 0 0 {?}
+{71.n} 120.310 0.405 0.405 { ?} 0.000 0 0 0 {?}
+   83 3.317 29.517 0.000 0 2 {?}
+{35.hn} 7.361 0.044 0.044 { ?} 0.000 0 0 0 {?}
+{35.n} 104.272 0.416 0.416 { ?} 0.000 0 0 0 {?}
+   84 2.815 21.357 0.000 0 2 {?}
+{69.hn} 7.030 0.040 0.040 { ?} 0.000 0 0 0 {?}
+{69.n} 115.230 0.372 0.372 { ?} 0.000 0 0 0 {?}
+   85 1.238 12.080 0.000 0 2 {?}
+{14.hn} 6.690 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{14.n} 105.641 0.328 0.328 { ?} 0.000 0 0 0 {?}
+   86 3.282 46.420 0.000 0 2 {?}
+{26.hn} 8.121 0.046 0.046 { ?} 0.000 0 0 0 {?}
+{26.n} 124.175 0.420 0.420 { ?} 0.000 0 0 0 {?}
+   87 2.545 24.453 0.000 0 2 {?}
+{68.hn} 7.311 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{68.n} 124.080 0.375 0.375 { ?} 0.000 0 0 0 {?}
+   88 3.748 46.020 0.000 0 2 {?}
+{29.hn} 8.221 0.041 0.041 { ?} 0.000 0 0 0 {?}
+{29.n} 122.571 0.455 0.455 { ?} 0.000 0 0 0 {?}
+   89 3.115 33.743 0.000 0 2 {?}
+{84.hn} 8.110 0.055 0.055 { ?} 0.000 0 0 0 {?}
+{84.n} 120.996 0.455 0.455 { ?} 0.000 0 0 0 {?}
+   90 3.528 31.589 0.000 0 2 {?}
+{79.hn} 7.621 0.050 0.050 { ?} 0.000 0 0 0 {?}
+{79.n} 120.430 0.369 0.369 { ?} 0.000 0 0 0 {?}
+   91 2.044 20.285 0.000 0 2 {?}
+{49.hn} 8.447 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{49.n} 116.908 0.415 0.415 { ?} 0.000 0 0 0 {?}
+   92 3.247 26.433 0.000 0 2 {?}
+{36.hn} 8.205 0.049 0.049 { ?} 0.000 0 0 0 {?}
+{36.n} 122.223 0.241 0.241 { ?} 0.000 0 0 0 {?}
+   93 2.830 21.979 0.000 0 2 {?}
+{33.hn} 7.018 0.040 0.040 { ?} 0.000 0 0 0 {?}
+{33.n} 117.864 0.394 0.394 { ?} 0.000 0 0 0 {?}
+   94 2.809 31.358 0.000 0 2 {?}
+{93.hn} 8.636 0.043 0.043 { ?} 0.000 0 0 0 {?}
+{93.n} 129.191 0.455 0.455 { ?} 0.000 0 0 0 {?}
+   95 2.434 24.414 0.000 0 2 {?}
+{83.hn} 8.502 0.044 0.044 { ?} 0.000 0 0 0 {?}
+{83.n} 103.064 0.394 0.394 { ?} 0.000 0 0 0 {?}
+   96 1.282 9.632 0.000 0 2 {?}
+{67.hn} 8.032 0.040 0.040 { ?} 0.000 0 0 0 {?}
+{67.n} 110.779 0.350 0.350 { ?} 0.000 0 0 0 {?}
+
+;
+
+   loop_
+      _Spectral_dim.ID
+      _Spectral_dim.Atom_type
+      _Spectral_dim.Atom_isotope_number
+      _Spectral_dim.Spectral_region
+      _Spectral_dim.Magnetization_linkage_ID
+      _Spectral_dim.Sweep_width
+      _Spectral_dim.Encoding_code
+      _Spectral_dim.Encoded_source_dimension_ID
+      _Spectral_dim.Entry_ID
+      _Spectral_dim.Spectral_peak_list_ID
+
+      1 H  1 HN . 3255.21 . . 15891 1 
+      3 N 15 N  . 1572.33 . . 15891 1 
+
+   stop_
+
+   loop_
+      _Spectral_peak_software.Software_ID
+      _Spectral_peak_software.Software_label
+      _Spectral_peak_software.Method_ID
+      _Spectral_peak_software.Method_label
+      _Spectral_peak_software.Entry_ID
+      _Spectral_peak_software.Spectral_peak_list_ID
+
+      3 $NMRView . . 15891 1 
+
+   stop_
+
+save_
+

@@ -1,0 +1,36 @@
+#! /bin/csh -f
+
+# Test an entry with DNA and protein.
+
+set result = 0
+
+rm -r -f */15083*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -name 15083 -file test_data/bmr15083.str -force -check_pct \
+  -do_pdb 2
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+source tests/test68_check
+
+# 2.1 and 3.1 files have different sample info.
+set file = "data_dir/15083md.dat"
+set attr = '$H1_DeltaShift'
+set line = "^EA 1 (DNA)	1	H1 delta chem shift \[1\]	-	1 mM Sigma-54-DNA (U-15N U-13C) complex; 250 mM NaCl; 10 mM deuterated-HEPES, pH 6.9; 1 mM EDTA ;...	ionic strength: 250 mM; pH: 6.9 pH; pressure: 1 atm; temperature: 303 K	15083d1	$attr"
+source tests/check4line
+set attr = '$assigForN'
+set line = "^EA 3 (polypeptide(L))	3	% 15N assign per res \[3\]	-	1 mM Sigma-54-DNA (U-15N U-13C) complex; 250 mM NaCl; 10 mM deuterated-HEPES, pH 6.9; 1 mM EDTA ;...	ionic strength: 250 mM; pH: 6.9 pH; pressure: 1 atm; temperature: 303 K	15083p3	$attr"
+source tests/check4line
+
+
+echo -n "Test68 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

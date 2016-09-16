@@ -1,0 +1,31 @@
+#! /bin/csh -f
+
+# Tests visualization-server mode -- local NMR-STAR file, but will try
+# to get and process data from PDB.  Note: this NMR-STAR file is one
+# assembled by Jafar from various uploaded pieces.
+
+set result = 0
+
+rm -r -f */test13_out*
+rm -r -f */*/test13_out*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+#TEMP -- -check_res_list makes this fail -- should fix input file.
+./vsc -file test_data/Jafar1.str -name test13_out -do_csr 2 -force -check_pct
+if ($status != 0) then
+  echo "First invocation of vsc failed!"
+  set result = 1
+endif
+
+
+source tests/test13_check
+
+
+echo -n "Test13 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

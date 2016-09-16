@@ -1,0 +1,32 @@
+# Schema for reading atomic (really half-bond) coordinates.
+
+# $Id$
+
+type bmrb-atom_coord_ambiguity ascii
+comment #
+whitespace ' '
+
+attr Entity_assembly_ID int
+attr Residue_seq_code int
+attr Residue_label string 4
+attr Atom_name string 5
+attr Atom_type string 3
+
+# Location of atom.
+attr Atom_coord_x float
+attr Atom_coord_y float
+attr Atom_coord_z float
+
+# Location of the end of a half-bond (middle of the bond) relative to the
+# atom.
+attr Bond_rel_x float
+attr Bond_rel_y float
+attr Bond_rel_z float
+
+# Structure type (backbone, side_chains, all_hydrogens.
+attr Struct_type string 14
+
+# A string representing a figure of merit range; these strings are
+# then mapped to colors.
+attr ambiguity_color string 4
+attr ambiguity_value int

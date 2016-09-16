@@ -1,0 +1,85 @@
+#! /bin/csh -f
+
+# Tests "upload and visualize" mode.
+
+set result = 0
+
+rm -r -f */*/test46_out*
+rm -r -f */.*/test46_out*
+
+echo -n "Processing NMR-STAR: "
+# This is 4038/4096.
+./uvd -file test_data/20070227.50906.str -name test46_out -force -check_pct
+if ($status != 0) then
+  echo "First invocation of uvd failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/uvd/test46_outam1.dat \
+	data_dir/uvd/test46_outamac1.dat \
+	data_dir/uvd/test46_outas1.dat \
+	data_dir/uvd/test46_outc1.dat \
+	data_dir/uvd/test46_outd1.dat \
+	data_dir/uvd/test46_outg1.dat \
+	data_dir/uvd/test46_outhc1.dat \
+	data_dir/uvd/test46_outhn1.dat \
+	data_dir/uvd/test46_outmd.dat \
+	data_dir/uvd/test46_outp1.dat \
+	data_dir/uvd/test46_outrc1.dat \
+	data_dir/uvd/test46_outrl.dat \
+	data_dir/uvd/test46_outt11.dat \
+	data_dir/uvd/test46_outt12.dat \
+	data_dir/uvd/test46_outt13.dat \
+	data_dir/uvd/test46_outt21.dat \
+	data_dir/uvd/test46_outt22.dat \
+	data_dir/uvd/test46_outt23.dat \
+	html_dir/uvd/test46_out/test46_outam1.html \
+	html_dir/uvd/test46_out/test46_outas1.html \
+	html_dir/uvd/test46_out/test46_outc1.html \
+	html_dir/uvd/test46_out/test46_outd1.html \
+	html_dir/uvd/test46_out/test46_outg1.html \
+	html_dir/uvd/test46_out/test46_outhc1.html \
+	html_dir/uvd/test46_out/test46_outhn1.html \
+	html_dir/uvd/test46_out/test46_outp1.html \
+	html_dir/uvd/test46_out/test46_outt11.html \
+	html_dir/uvd/test46_out/test46_outt12.html \
+	html_dir/uvd/test46_out/test46_outt13.html \
+	html_dir/uvd/test46_out/test46_outt21.html \
+	html_dir/uvd/test46_out/test46_outt22.html \
+	html_dir/uvd/test46_out/test46_outt23.html \
+	html_dir/uvd/test46_out/test46_outy.html \
+	session_dir/.uvd/test46_out/test46_outacdd \
+	session_dir/.uvd/test46_out/test46_outam1.ds \
+	session_dir/.uvd/test46_out/test46_outas1.ds \
+	session_dir/.uvd/test46_out/test46_outc1.ds \
+	session_dir/.uvd/test46_out/test46_outd1.ds \
+	session_dir/.uvd/test46_out/test46_outg1.ds \
+	session_dir/.uvd/test46_out/test46_outhc1.ds \
+	session_dir/.uvd/test46_out/test46_outhn1.ds \
+	session_dir/.uvd/test46_out/test46_outp1.ds \
+	session_dir/.uvd/test46_out/test46_outt11.ds \
+	session_dir/.uvd/test46_out/test46_outt12.ds \
+	session_dir/.uvd/test46_out/test46_outt13.ds \
+	session_dir/.uvd/test46_out/test46_outt21.ds \
+	session_dir/.uvd/test46_out/test46_outt22.ds \
+	session_dir/.uvd/test46_out/test46_outt23.ds )
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test46 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

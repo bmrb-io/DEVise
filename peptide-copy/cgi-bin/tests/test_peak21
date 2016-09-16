@@ -1,0 +1,27 @@
+#! /bin/csh -f
+
+# Tests BMRB 17273 -- this *should* fail because the peak list save
+# frame contains multiple sets of peaks.
+
+set result = 0
+
+rm -r -f */17273*
+
+echo "Processing should fail..."
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -name 17273 -file test_data/bmr17273_3.str.17 -force -check_res_list -check_pct -peakonly
+if ($status == 0) then
+  echo "s2d *should* fail -- input has multiple peak sets in one save frame!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/test_peak21.out
+
+
+echo -n "Test_peak21 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
