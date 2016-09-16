@@ -114,8 +114,8 @@ using namespace std;
 #define X
 
 #ifdef X
-#include <tcl.h>
-#include <tk.h>
+#include <tcl/tcl.h>
+#include <tk/tk.h>
 
 static Tcl_Interp *globalInterp = 0;
 

@@ -63,8 +63,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
-#include <tcl.h>
-#include <tk.h>
+#include <tcl/tcl.h>
+#include <tk/tk.h>
 
 #include "compustat.h"
 #include "tapedrive.h"

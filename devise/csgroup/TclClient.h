@@ -41,7 +41,7 @@
 #ifndef _TclClient_h_
 #define _TclClient_h_
 
-#include <tcl.h>
+#include <tcl/tcl.h>
 
 #include "Client.h"
 

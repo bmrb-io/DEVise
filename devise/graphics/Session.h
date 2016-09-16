@@ -189,7 +189,7 @@
 
 #include <sys/types.h>
 
-#include <tcl.h> // for ClientData
+#include <tcl/tcl.h> // for ClientData
 
 #include "DevStatus.h"
 #include "Color.h" // for PaletteID
