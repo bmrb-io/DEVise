@@ -26,15 +26,14 @@
 
 if (! -e bin) then
   mkdir -p bin
-endif 
+endif
 
 if (-e bin/devised) then
   rm bin/devised
 endif
 
 cd bin
-#TEMP -- get rid of hard-coded linux_rhel6
-ln -s ../../../linux_rhel6/generic/devised .
+ln -s ../../../linux_debian/generic/devised .
 if (! -e Tasvir) then
   ln -s /p/devise/public/bin/Tasvir .
 endif
@@ -42,7 +41,7 @@ cd ..
 
 if (! -e lib) then
   mkdir -p lib
-endif 
+endif
 
 if (! -e lib/composite.ini) then
   cd lib
