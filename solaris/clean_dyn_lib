@@ -1,7 +1,0 @@
-#! /bin/csh -f
-
-# $Id$
-
-if (-e dyn_lib) then
-  rm -r dyn_lib
-endif

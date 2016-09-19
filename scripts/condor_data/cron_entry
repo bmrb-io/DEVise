@@ -1,1 +1,0 @@
-37 01 * * * cd /p/devise/demo/CondorData; run_condor_update

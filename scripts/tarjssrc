@@ -1,3 +1,0 @@
-#! /bin/csh -f
-tar cvfXz js_sources.tar.gz scripts/src_exclude \
-    design_doc scripts Java/JavaScreen

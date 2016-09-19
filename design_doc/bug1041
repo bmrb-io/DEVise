@@ -1,8 +1,0 @@
-The problem seems to be that the CGI script is getting stuck in the
-loop where it's reading the response from the JSPoP.  And it looks
-like that's happening because in some cases the JSPoP isn't closing
-the socket on its end, so I think the CGI script calls sysread()
-and that probably never returns because the socket is open.
-
-Hmm -- show (all) view help and then hide view help seems to cause
-problems...

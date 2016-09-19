@@ -1,3 +1,0 @@
-MC = IRIX
-
-include makefile.common

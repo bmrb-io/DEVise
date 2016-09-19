@@ -1,7 +1,0 @@
-#! /bin/csh -f
-
-# $Id$
-
-if (-e release_dir) then
-  rm -r release_dir
-endif

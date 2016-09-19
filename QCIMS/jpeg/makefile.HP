@@ -1,3 +1,0 @@
-MC = HP
-
-include makefile.common

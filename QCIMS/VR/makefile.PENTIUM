@@ -1,9 +1,0 @@
-MC=PENTIUM
-
-XLIBPATH = -L/s/X11/lib -R/s/X11/lib
-
-XLIBINCLUDE = -I/s/X11/include
-
-XLIB = -lX11
-
-include makefile.common
