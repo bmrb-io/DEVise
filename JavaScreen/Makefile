@@ -23,35 +23,16 @@ include Makefile.config
 
 JAVAC = $(JAVA_BIN3)/javac -d . -source 1.7 -target 1.7
 
-all: js jsa jspop jss circ_log
+all: js jsa
 js: js.class
 
 jsa: jsa.class
-jsb: jsb.class
-
-jspop: jspop.class
-
-jss: jss.class
-
-circ_log: CircularLog.class
 
 js.class: *.java utils client
 	$(JAVAC) js.java
 
 jsa.class: *.java utils client appletclass
 	$(JAVAC) jsa.java
-
-jsb.class: *.java utils client appletclass
-	$(JAVAC) jsb.java 
-
-jspop.class: *.java
-	$(JAVAC) *.java
-
-jss.class: *.java utils
-	$(JAVAC) jss.java
-
-CircularLog.class: CircularLog.java
-	$(JAVAC) CircularLog.java
 
 utils: *.java
 	$(JAVAC) DEViseCommands.java DEViseGlobals.java YError.java \
@@ -79,7 +60,7 @@ client: *.java
     UI/DEViseMouseCursor.java UI/DEViseHtmlWindow.java \
     DEViseScreenResizeHandler.java DEViseSessionMenuButton.java
 
-appletclass: DEViseJSApplet.java 
+appletclass: DEViseJSApplet.java
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
 
 jar:
@@ -106,43 +87,6 @@ jara:
 	    org/jmol/*/*.class org/jmol/*/*/*.class org/jmol/*/*/*/*.class \
 	    org/jmol/*/*/*.txt org/jmol/*/*.properties \
 	    javax/*/*.class
-
-# Note: with the current cert, this is not needed.
-realkey:
-	cert_scripts/create_real_keystore.csh
-
-testkey:
-	cert_scripts/create_test_keystore.csh
-
-export_test_cert:
-	cert_scripts/export_test_cert.csh
-
-print_cert:
-	keytool -storetype pkcs12 -keystore js_certs/uw_signing_chain.pfx \
-		-list -v
-
-# Note: with the current cert, this is not needed.
-import_cert:
-	cert_scripts/import_cert.csh
-
-# Other possible TSAs are http://timestamp.verisign.com and
-# http://tsa.starfieldtech.com (see
-# http://ant.apache.org/manual/Tasks/signjar.html).
-sign:
-	jarsigner -tsa https://timestamp.geotrust.com/tsa -storetype pkcs12 \
-		-keystore js_certs/uw_signing_chain.pfx \
-		devise_js.jar "university of wisconsin-madison's internet2 id"
-
-showcerts:
-	keytool -printcert -jarfile devise_js.jar
-
-testsign:
-	jarsigner -tsa https://timestamp.geotrust.com/tsa \
-		-keystore js_certs/js_test.jks devise_js.jar js_test
-
-# Show Java control panel (to import certs, etc.).
-java_control:
-	javaws -viewer
 
 clean: classclean
 	-rm devise_js.jar
