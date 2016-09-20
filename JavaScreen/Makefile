@@ -89,19 +89,30 @@ jara:
 	    javax/*/*.class
 
 clean:
+	-rm -rf bin2 bin2p
+	-rm demo public
 	-rm devise_js.jar
 	-rm js_version
 	-rm JavaScreen/*.class
 	-rm JavaScreen/UI/*.class
 
+bin2:
+	mkdir bin2
+	# java needs special treatment for yola (SGI).
+	echo $(JAVA_BIN2)/java > bin2/java
+	ln -s $(PERL_BIN2)/perl bin2
+
+# Note: bin2p is for JSPoP area.
+bin2p:
+	mkdir bin2p
+	# java needs special treatment for yola (SGI).
+	echo $(JAVA_BIN2P)/java > bin2p/java
+	ln -s $(PERL_BIN2P)/perl bin2p
+
 .PHONY: setup
-setup:
+setup: bin2 bin2p
 	./setup
-	make -f Makefile.setup setup
 	jar xf JmolApplet.jar
-	# Note:  The target path here may need to change according
-	# to where the actual cert files are.
-	ln -s /p/devise/ext3/wenger4/certs js_certs
 
 .PHONY: setupclean
 setupclean:
