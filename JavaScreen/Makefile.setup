@@ -18,21 +18,10 @@
 
 ############################################################
 
-# Default is to kill Xvfb when killing JSS; some config files change
-# this.
-KILL_XVFB = 1
-
-DEVISE_VIS = /p/devise/demo
-DEVISE_SESSION = $$DEVISE_VIS/session.js
-DEVISE_TMP_SESSION = $$DEVISE_SESSION/.tmp
-DEVISE_HOME_TABLE = $$DEVISE_SCHEMA/catalog.dte
-
-XVFB_ARGS =
-
 include Makefile.config
 
 setup: do_setup
-do_setup: bin2 bin2p dyn_lib install_info logs xvfb error_email vis_setup
+do_setup: bin2 bin2p dyn_lib install_info logs error_email vis_setup
 
 clean:
 	-rm -rf bin2 bin2p
@@ -50,7 +39,6 @@ bin2:
 	# java needs special treatment for yola (SGI).
 	echo $(JAVA_BIN2)/java > bin2/java
 	ln -s $(PERL_BIN2)/perl bin2
-	ln -s $(XVFB_BIN2)/Xvfb bin2
 
 # Note: bin2p is for JSPoP area.
 bin2p:
@@ -98,12 +86,8 @@ vis_setup:
 logs:
 	mkdir logs
 
-xvfb:
-	scripts/Xvfb_setup $(KILL_XVFB)
-	echo 'setenv XVFB_ARGS $(XVFB_ARGS)' > scripts/Xvfb_args
-
-install: install_info error_email xvfb
+install: install_info error_email
 	./install_js
 
-client_install: install_info error_email xvfb
+client_install: install_info error_email
 	./install_js -client

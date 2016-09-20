@@ -88,11 +88,9 @@ jara:
 	    org/jmol/*/*/*.txt org/jmol/*/*.properties \
 	    javax/*/*.class
 
-clean: classclean
+clean:
 	-rm devise_js.jar
 	-rm js_version
-
-classclean:
 	-rm JavaScreen/*.class
 	-rm JavaScreen/UI/*.class
 
