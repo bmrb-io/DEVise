@@ -23,7 +23,7 @@ include Makefile.config
 
 JAVAC = $(JAVA_BIN3)/javac -d . -source 1.7 -target 1.7
 
-all: js jsa
+all: setup js jsa
 js: js.class
 
 jsa: jsa.class
@@ -63,53 +63,13 @@ client: *.java
 appletclass: DEViseJSApplet.java
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
 
-jar:
-	cp Manifest.txt Manifest_real.txt
-	make jara
-	./js -version > js_version
-
-# Jar file with all-permissions instead of sandbox -- for testing only
-jar_all:
-	cp Manifest_all.txt Manifest_real.txt
-	make jara
-	./js -version > js_version
-
-jara:
-	make classclean
-	-rm devise_js.jar
-	make js jsa jsb
-	jar cfm devise_js.jar Manifest_real.txt \
-	    JavaScreen/*.class JavaScreen/UI/*.class \
- 	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
- 	    JavaScreen/resources/toolbar_cursors/*.png \
-	    JavaScreen/html/*.html \
-	    JmolApplet.class \
-	    org/jmol/*/*.class org/jmol/*/*/*.class org/jmol/*/*/*/*.class \
-	    org/jmol/*/*/*.txt org/jmol/*/*.properties \
-	    javax/*/*.class
-
 clean:
-	-rm -rf bin2 bin2p
-	-rm demo public
 	-rm devise_js.jar
-	-rm js_version
 	-rm JavaScreen/*.class
 	-rm JavaScreen/UI/*.class
 
-bin2:
-	mkdir bin2
-	# java needs special treatment for yola (SGI).
-	echo $(JAVA_BIN2)/java > bin2/java
-	ln -s $(PERL_BIN2)/perl bin2
-
-# Note: bin2p is for JSPoP area.
-bin2p:
-	mkdir bin2p
-	# java needs special treatment for yola (SGI).
-	echo $(JAVA_BIN2P)/java > bin2p/java
-	ln -s $(PERL_BIN2P)/perl bin2p
 
 .PHONY: setup
-setup: bin2 bin2p
+setup:
 	./setup
 	jar xf JmolApplet.jar
