@@ -9,5 +9,5 @@
 ############################################################
 
 unsetenv CLASSPATH
-set javaexec = `cat bin2/java`
+set javaexec = `which java`
 $javaexec -Xmx128M -cp . JavaScreen.js -cgiurl/cgi-bin/devise/js.cgi -screensize700x500 $*
