@@ -231,9 +231,9 @@ public class DEViseAnimPanel extends Canvas implements Runnable
             }
         }
 
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    DEViseUtils.printAllThreads("Thread " + animator + " ending");
-	}
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("Thread " + animator + " ending");
+    }
     }
 
     public synchronized void setActiveImageNumber(int number)
@@ -261,7 +261,7 @@ public class DEViseAnimPanel extends Canvas implements Runnable
 
     public void start()
     {
-	startTime = new Date();
+    startTime = new Date();
 
         if (!isAnimated) {
             return;
@@ -271,29 +271,29 @@ public class DEViseAnimPanel extends Canvas implements Runnable
             animator = new Thread(this);
             animator.setName("Animator panel");
             animator.start();
-            
-	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
-		DEViseUtils.printAllThreads("Starting thread " + animator);
-	    }
+
+        if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("Starting thread " + animator);
+        }
         }
     }
 
     public void stop()
     {
-	if (startTime != null) {
-	    Date now = new Date();
-	    long interval = now.getTime() - startTime.getTime();
+    if (startTime != null) {
+        Date now = new Date();
+        long interval = now.getTime() - startTime.getTime();
 
-	    if (interval < jsc.jsValues.uiglobals.minWaitTime) {
-	    	try {
-		    Thread.sleep(jsc.jsValues.uiglobals.minWaitTime - interval);
-		} catch (InterruptedException ex) {
-		    System.err.println("Sleep interrupted: " + ex.toString());
-		}
-	    }
+        if (interval < jsc.jsValues.uiglobals.minWaitTime) {
+            try {
+            Thread.sleep(jsc.jsValues.uiglobals.minWaitTime - interval);
+        } catch (InterruptedException ex) {
+            System.err.println("Sleep interrupted: " + ex.toString());
+        }
+        }
 
-	    startTime = null;
-	}
+        startTime = null;
+    }
 
         if (!isAnimated) {
             return;
@@ -304,9 +304,9 @@ public class DEViseAnimPanel extends Canvas implements Runnable
         }
 
         if (animator.isAlive()) {
-	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
-		DEViseUtils.printAllThreads("Stopping thread " + animator);
-	    }
+        if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("Stopping thread " + animator);
+        }
             animator.stop();
         }
 

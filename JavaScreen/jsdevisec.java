@@ -861,10 +861,10 @@
 // When a user opens a session normally, the default will be that their
 // connection is not available for collaboration;
 // User can set password for collaboration:
-// 	Added collabPass (default = "guest");
-// 	Added CollabPassDlg() and showCollabPass() for set collaboration passwd;
+//  Added collabPass (default = "guest");
+//  Added CollabPassDlg() and showCollabPass() for set collaboration passwd;
 // Enter password for collaboration:
-// 	Added enterCollabPass() and EnterCollabPassDlg().
+//  Added enterCollabPass() and EnterCollabPassDlg().
 //
 // Revision 1.86  2001/02/20 20:02:26  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
@@ -1061,7 +1061,7 @@ import  java.net.*;
 import  java.awt.event.*;
 import  java.util.*;
 import  java.lang.*;
-import	org.jmol.viewer.JmolConstants;
+import  org.jmol.viewer.JmolConstants;
 import  javax.swing.*;
 import  javax.swing.table.*;
 import  javax.swing.event.ListSelectionListener;
@@ -1069,7 +1069,7 @@ import  javax.swing.event.ListSelectionEvent;
 
 import JavaScreen.DEViseButton;
 import JavaScreen.DEViseCanvas2D;
-import	JavaScreen.UI.*;
+import  JavaScreen.UI.*;
 
 public class jsdevisec extends JPanel
 {
@@ -1130,7 +1130,7 @@ public class jsdevisec extends JPanel
     private DEViseJmolMenuButton jmolButton;
     private DEViseSessionMenuButton sessionMenuButton;
 
-    public boolean isSessionOpened = false; 
+    public boolean isSessionOpened = false;
     // Visualization type for BMRB sessions.
     public String _currentVisType = null;
 
@@ -1189,11 +1189,11 @@ public class jsdevisec extends JPanel
     private DEViseScreenResizeHandler _resizeHandler =
       new DEViseScreenResizeHandler(this);
 
-	private int drillDownX;
+    private int drillDownX;
 
-	private int drillDownY;
+    private int drillDownY;
 
-	private DEViseCanvas2D dCanvas2D;
+    private DEViseCanvas2D dCanvas2D;
 
     //---------------------------------------------------------------------
     // Constructor.
@@ -1201,38 +1201,38 @@ public class jsdevisec extends JPanel
     public jsdevisec(Applet parentApplet, JFrame frame, Vector images,
       DEViseJSValues jv, boolean showAllButtons)
     {
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    DEViseUtils.printAllThreads("In jsdevisec constructor");
-	}
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("In jsdevisec constructor");
+    }
 
-	// Handle resizes of this component.
+    // Handle resizes of this component.
         addComponentListener(new ComponentAdapter() {
-	    public void componentResized(ComponentEvent e) {
-	        _resizeHandler.handleResize();
-	    }
-	});
+        public void componentResized(ComponentEvent e) {
+            _resizeHandler.handleResize();
+        }
+    });
 
-	// create the DEViseJSValues object
-	jsValues = jv;
+    // create the DEViseJSValues object
+    jsValues = jv;
 
-	if (jsValues.debug._logEnabled) {
-	    jsValues.debug._logger = new DEViseDebugLog(jsValues);
-	}
+    if (jsValues.debug._logEnabled) {
+        jsValues.debug._logger = new DEViseDebugLog(jsValues);
+    }
 
-	_parentApplet = (DEViseJSApplet)parentApplet;
+    _parentApplet = (DEViseJSApplet)parentApplet;
 
-	// frame might be null if JavaScreen is running inside a browser
-	if (frame != null) {
-	    parentFrame = frame;
-	} else {
-	    parentFrame = new JFrame();
-	    isCenterScreen = true;
-	}
+    // frame might be null if JavaScreen is running inside a browser
+    if (frame != null) {
+        parentFrame = frame;
+    } else {
+        parentFrame = new JFrame();
+        isCenterScreen = true;
+    }
 
   if (jv.debug._debugLevel > 0) {
-		System.out.println("Creating new debug window");
-		debugWindow = new YLogGUI(jv.debug._debugLevel);
-	}
+        System.out.println("Creating new debug window");
+        debugWindow = new YLogGUI(jv.debug._debugLevel);
+    }
 
         // determine the font size according to JavaScreen size
         int width = jsValues.uiglobals.maxScreenSize.width;
@@ -1240,231 +1240,232 @@ public class jsdevisec extends JPanel
 
         if (width > 800) {
             jsValues.uiglobals.font = DEViseFonts.getFont(14,
-	      DEViseFonts.SANS_SERIF, 1, 0);
+          DEViseFonts.SANS_SERIF, 1, 0);
             jsValues.uiglobals.font2 = DEViseFonts.getFont(14,
-	      DEViseFonts.SANS_SERIF, 0, 0);
+          DEViseFonts.SANS_SERIF, 0, 0);
             jsValues.uiglobals.textFont = DEViseFonts.getFont(14,
-	      DEViseFonts.SERIF, 0, 0);
+          DEViseFonts.SERIF, 0, 0);
         } else if (width > 640) {
             jsValues.uiglobals.font = DEViseFonts.getFont(12,
-	      DEViseFonts.SANS_SERIF, 1, 0);
+          DEViseFonts.SANS_SERIF, 1, 0);
             jsValues.uiglobals.font2 = DEViseFonts.getFont(12,
-	      DEViseFonts.SANS_SERIF, 0, 0);
+          DEViseFonts.SANS_SERIF, 0, 0);
             jsValues.uiglobals.textFont = DEViseFonts.getFont(12,
-	      DEViseFonts.SERIF, 0, 0);
+          DEViseFonts.SERIF, 0, 0);
         } else {
             jsValues.uiglobals.font = DEViseFonts.getFont(10,
-	      DEViseFonts.SANS_SERIF, 1, 0);
+          DEViseFonts.SANS_SERIF, 1, 0);
             jsValues.uiglobals.font2 = DEViseFonts.getFont(10,
-	      DEViseFonts.SANS_SERIF, 0, 0);
+          DEViseFonts.SANS_SERIF, 0, 0);
             jsValues.uiglobals.textFont = DEViseFonts.getFont(10,
-	      DEViseFonts.SERIF, 0, 0);
-	}
+          DEViseFonts.SERIF, 0, 0);
+    }
 
-	// set attributes for the main frame
+    // set attributes for the main frame
         setBackground(jsValues.uiglobals.bg);
         setForeground(jsValues.uiglobals.fg);
         setFont(jsValues.uiglobals.font);
         setLayout(new BorderLayout(1, 1));
 
-	// mouse cursors
-	mouseCursor = new DEViseMouseCursor(jsValues);
+    // mouse cursors
+    mouseCursor = new DEViseMouseCursor(jsValues);
 
-	// throbber
-	animPanel = new DEViseAnimPanel(this, images, 100);
+    // throbber
+    animPanel = new DEViseAnimPanel(this, images, 100);
 
-	// main menu buttons
-	_mainButtons = new DEViseMainButtons(this);
-	stopButton = _mainButtons.getStopButton();
+    // main menu buttons
+    _mainButtons = new DEViseMainButtons(this);
+    stopButton = _mainButtons.getStopButton();
         Component[] buttons = _mainButtons.getButtons();
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(buttons,
-  	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 6,
-  	  DEViseComponentPanel.ALIGN_LEFT, this);
-	if (jsValues.connection.useCgi) {
-	    cgiMode();
-	} else {
-	    socketMode();
-	}
-	buttonPanel.add(commMode);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 6,
+      DEViseComponentPanel.ALIGN_LEFT, this);
+    if (jsValues.connection.useCgi) {
+        cgiMode();
+    } else {
+        socketMode();
+    }
+    buttonPanel.add(commMode);
         jmolButton = new DEViseJmolMenuButton(jsValues);
-	buttonPanel.add(jmolButton);
-	if (!showAllButtons) {
-	    jmolButton.hide();
-	}
+    buttonPanel.add(jmolButton);
+    if (!showAllButtons) {
+        jmolButton.hide();
+        jmolButton.setVisible(false;)
+    }
 
-	sessionMenuButton = new DEViseSessionMenuButton(this);
-	buttonPanel.add(sessionMenuButton);
-	if (!showAllButtons) {
-	    sessionMenuButton.hide();
-	}
-	
-	//Adding restart button
-	JButton restartBtn = new JButton();
-	try {
-		ImageIcon icon = new ImageIcon(loadImage("resources/toolbar_icons/refresh.png", jsValues));
-		restartBtn.setIcon(icon);
-	} catch(Exception e) {
-		System.err.println("Error creating restart button : " + e);
-	}
-	restartBtn.setBackground(jsValues.uiglobals.bg);
-	restartBtn.setForeground(jsValues.uiglobals.fg);
-	restartBtn.setBorderPainted(false);
-	restartBtn.setContentAreaFilled(false);
-	restartBtn.setOpaque(false);
-	restartBtn.setMargin(new Insets(0, 0, 0, 0));
-	restartBtn.setToolTipText("Restart Session");
-	restartBtn.addActionListener(new ActionListener()
+    sessionMenuButton = new DEViseSessionMenuButton(this);
+    buttonPanel.add(sessionMenuButton);
+    if (!showAllButtons) {
+        sessionMenuButton.hide();
+    }
+
+    //Adding restart button
+    JButton restartBtn = new JButton();
+    try {
+        ImageIcon icon = new ImageIcon(loadImage("resources/toolbar_icons/refresh.png", jsValues));
+        restartBtn.setIcon(icon);
+    } catch(Exception e) {
+        System.err.println("Error creating restart button : " + e);
+    }
+    restartBtn.setBackground(jsValues.uiglobals.bg);
+    restartBtn.setForeground(jsValues.uiglobals.fg);
+    restartBtn.setBorderPainted(false);
+    restartBtn.setContentAreaFilled(false);
+    restartBtn.setOpaque(false);
+    restartBtn.setMargin(new Insets(0, 0, 0, 0));
+    restartBtn.setToolTipText("Restart Session");
+    restartBtn.addActionListener(new ActionListener()
     {
         public void actionPerformed(ActionEvent event)
         {
             restartSession();
         }
     });
-	buttonPanel.add(restartBtn, 0);
+    buttonPanel.add(restartBtn, 0);
 
-	// viewInfo contains the process counter
-	viewInfo = new DEViseViewInfo(this, images);
+    // viewInfo contains the process counter
+    viewInfo = new DEViseViewInfo(this, images);
 
-	//
-	// Constrain the screen width to be within the min and max width,
-	// if they are valid; width is set to max if not already set.
-	//
+    //
+    // Constrain the screen width to be within the min and max width,
+    // if they are valid; width is set to max if not already set.
+    //
         if (jsValues.uiglobals.screenSize.width <= 0) {
 
-	    jsValues.uiglobals.screenSize.width =
-	      jsValues.uiglobals.maxScreenSize.width;
+        jsValues.uiglobals.screenSize.width =
+          jsValues.uiglobals.maxScreenSize.width;
 
         } else if (jsValues.uiglobals.screenSize.width <
-	  jsValues.uiglobals.minScreenSize.width &&
-	    jsValues.uiglobals.screenSize.width > 0) {
+      jsValues.uiglobals.minScreenSize.width &&
+        jsValues.uiglobals.screenSize.width > 0) {
 
-	    jsValues.uiglobals.screenSize.width =
-	      jsValues.uiglobals.minScreenSize.width;
+        jsValues.uiglobals.screenSize.width =
+          jsValues.uiglobals.minScreenSize.width;
 
         } else if (jsValues.uiglobals.screenSize.width >
-	  jsValues.uiglobals.maxScreenSize.width) {
+      jsValues.uiglobals.maxScreenSize.width) {
 
-	    jsValues.uiglobals.screenSize.width =
-	      jsValues.uiglobals.maxScreenSize.width;
+        jsValues.uiglobals.screenSize.width =
+          jsValues.uiglobals.maxScreenSize.width;
         }
 
-	//
-	// Constrain the screen height to be within the min and max height,
-	// if they are valid; height is set to max if not already set.
-	//
+    //
+    // Constrain the screen height to be within the min and max height,
+    // if they are valid; height is set to max if not already set.
+    //
         if (jsValues.uiglobals.screenSize.height <= 0) {
 
-	    jsValues.uiglobals.screenSize.height =
-	      jsValues.uiglobals.maxScreenSize.height;
+        jsValues.uiglobals.screenSize.height =
+          jsValues.uiglobals.maxScreenSize.height;
 
         } else if (jsValues.uiglobals.screenSize.height <
-	  jsValues.uiglobals.minScreenSize.height &&
-	  jsValues.uiglobals.screenSize.height > 0) {
+      jsValues.uiglobals.minScreenSize.height &&
+      jsValues.uiglobals.screenSize.height > 0) {
 
-	    jsValues.uiglobals.screenSize.height =
-	      jsValues.uiglobals.minScreenSize.height;
+        jsValues.uiglobals.screenSize.height =
+          jsValues.uiglobals.minScreenSize.height;
 
         } else if (jsValues.uiglobals.screenSize.height >
-	  jsValues.uiglobals.maxScreenSize.height) {
+      jsValues.uiglobals.maxScreenSize.height) {
 
-	    jsValues.uiglobals.screenSize.height =
-	      jsValues.uiglobals.maxScreenSize.height;
+        jsValues.uiglobals.screenSize.height =
+          jsValues.uiglobals.maxScreenSize.height;
         }
 
-	//
-	// Determine the screen resolution.
-	//
+    //
+    // Determine the screen resolution.
+    //
         Toolkit kit = Toolkit.getDefaultToolkit();
-	jsValues.uiglobals.screenRes = kit.getScreenResolution();
+    jsValues.uiglobals.screenRes = kit.getScreenResolution();
 
         jscreen = new DEViseScreen(this);
 
-		// Note: we're just relying on the file names of the images,
-		// and the code that reads them in, to assume that image 9
-		// and image 10 are what we need for the traffic light.
+        // Note: we're just relying on the file names of the images,
+        // and the code that reads them in, to assume that image 9
+        // and image 10 are what we need for the traffic light.
         if (images != null && images.size() == 11) {
             try {
-	        light = new DEViseTrafficLight((Image)images.elementAt(9),
-		  (Image)images.elementAt(10), "0", this);
-	    } catch (YException e) {
-		light = null;
-	    }
+            light = new DEViseTrafficLight((Image)images.elementAt(9),
+          (Image)images.elementAt(10), "0", this);
+        } catch (YException e) {
+        light = null;
         }
-		
-	// Right now the DEViseStatusMessage class isn't implemented. Eventually
-	// it will contain text-based status info about communication mode,
-	// loading status, etc.
-	statusMessage = new DEViseStatusMessage();
-	statusMessage.setText("Select cursor/zoom in XY/3D rotate");
-		
-		
-	// The menuPanel contains the throbber and main application menus.
-	// Right now the background color is manually set using a value
-	// from jsValues. Eventually this will hopefully be set using
-	// Java Swing Look and Feel.
+        }
+
+    // Right now the DEViseStatusMessage class isn't implemented. Eventually
+    // it will contain text-based status info about communication mode,
+    // loading status, etc.
+    statusMessage = new DEViseStatusMessage();
+    statusMessage.setText("Select cursor/zoom in XY/3D rotate");
+
+
+    // The menuPanel contains the throbber and main application menus.
+    // Right now the background color is manually set using a value
+    // from jsValues. Eventually this will hopefully be set using
+    // Java Swing Look and Feel.
         menuPanel = new DEViseMenuPanel(animPanel, buttonPanel,
-	  _mainButtons.getFeedbackButton(),
-	  jsValues.session.disableButtons);
-	menuPanel.setBackground(jsValues.uiglobals.bg);
-	menuPanel.inheritBackground(); // causes children to inherit bg color
+      _mainButtons.getFeedbackButton(),
+      jsValues.session.disableButtons);
+    menuPanel.setBackground(jsValues.uiglobals.bg);
+    menuPanel.inheritBackground(); // causes children to inherit bg color
         if (jsValues.uiglobals.inBrowser) {
-	    menuPanel.setFont(DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0));
+        menuPanel.setFont(DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0));
         }
-		
-	// The statusPanel is at the bottom of the interface and holds status
-	// information. Right now the background color is manually set using a
-	// value from jsValues. Eventually this will hopefully be set using
-	// Java Swing Look and Feel.
-	statusPanel = new DEViseStatusPanel(light, statusMessage, viewInfo);
-	statusPanel.setBackground(jsValues.uiglobals.bg);
-	statusPanel.inheritBackground(); // causes children to inherit bg color
 
-	// ToolBar
-	toolBar = new DEViseToolBar(jsValues, mouseCursor);
-	toolBar.setBackground(jsValues.uiglobals.bg);
-	
+    // The statusPanel is at the bottom of the interface and holds status
+    // information. Right now the background color is manually set using a
+    // value from jsValues. Eventually this will hopefully be set using
+    // Java Swing Look and Feel.
+    statusPanel = new DEViseStatusPanel(light, statusMessage, viewInfo);
+    statusPanel.setBackground(jsValues.uiglobals.bg);
+    statusPanel.inheritBackground(); // causes children to inherit bg color
 
-	// Add the main panels to the parent JPanel (this)
-	add(menuPanel, BorderLayout.NORTH);
-	add(statusPanel, BorderLayout.SOUTH);
+    // ToolBar
+    toolBar = new DEViseToolBar(jsValues, mouseCursor);
+    toolBar.setBackground(jsValues.uiglobals.bg);
 
-	// Note: leftPanel and rightPanel exist only to carry the background
-	// color around the sides of the jscreen, for a more unified look.
-	// I got rid of the screenPanel partly because that goofed up
-	// the fix for the jsb layout problem I just ran into.  wenger
-	// 2007-04-19
-	JPanel leftPanel = new JPanel();
-	leftPanel.setBackground(jsValues.uiglobals.bg);
-	add(leftPanel, BorderLayout.WEST);
-	
-	leftPanel.add(toolBar);
-	
-	JPanel rightPanel = new JPanel();
-	rightPanel.setPreferredSize(new Dimension(3, 3));
-	rightPanel.setBackground(jsValues.uiglobals.bg);
-	add(rightPanel, BorderLayout.EAST);
 
-	add(jscreen, BorderLayout.CENTER);
-	
+    // Add the main panels to the parent JPanel (this)
+    add(menuPanel, BorderLayout.NORTH);
+    add(statusPanel, BorderLayout.SOUTH);
+
+    // Note: leftPanel and rightPanel exist only to carry the background
+    // color around the sides of the jscreen, for a more unified look.
+    // I got rid of the screenPanel partly because that goofed up
+    // the fix for the jsb layout problem I just ran into.  wenger
+    // 2007-04-19
+    JPanel leftPanel = new JPanel();
+    leftPanel.setBackground(jsValues.uiglobals.bg);
+    add(leftPanel, BorderLayout.WEST);
+
+    leftPanel.add(toolBar);
+
+    JPanel rightPanel = new JPanel();
+    rightPanel.setPreferredSize(new Dimension(3, 3));
+    rightPanel.setBackground(jsValues.uiglobals.bg);
+    add(rightPanel, BorderLayout.EAST);
+
+    add(jscreen, BorderLayout.CENTER);
+
         isSessionOpened = false;
 
         //
-	// Create the one DEViseCmdDispatcher instance we will have.
-	//
+    // Create the one DEViseCmdDispatcher instance we will have.
+    //
         dispatcher = new DEViseCmdDispatcher(this);
 
         if (FUNKY_COLORS) {
             setBackground(Color.gray);
-	    // topPanel.setBackground(Color.magenta);
+        // topPanel.setBackground(Color.magenta);
             // mainPanel.setBackground(Color.blue);
-	    menuPanel.setBackground(Color.red);
+        menuPanel.setBackground(Color.red);
             buttonPanel.setBackground(Color.blue);
             animPanel.setBackground(Color.green);
             light.setBackground(Color.yellow);
             viewInfo.setBackground(Color.black);
             jscreen.setBackground(Color.orange);
-	    statusPanel.setBackground(Color.pink);
-	}
+        statusPanel.setBackground(Color.pink);
+    }
     } // end of constructor
 
 // ------------------------------------------------------------------------
@@ -1475,12 +1476,12 @@ public class jsdevisec extends JPanel
     // components have been established.
     public void start()
     {
-	jscreen.setScreenDim(jscreen.getWidth(), jscreen.getHeight());
+    jscreen.setScreenDim(jscreen.getWidth(), jscreen.getHeight());
 
-	//
-	// Open the session if a session name was specified.
-	//
-	String sessionName = jsValues.session.defaultName;
+    //
+    // Open the session if a session name was specified.
+    //
+    String sessionName = jsValues.session.defaultName;
         if (sessionName != null) {
             int index = sessionName.lastIndexOf('/');
             if (index > 0) {
@@ -1490,76 +1491,76 @@ public class jsdevisec extends JPanel
                 currentSession = sessionName;
             }
 
-	    if (jsValues.uiglobals._hideBmrbSessionNames) {
-	        _currentVisType = DEViseUtils.getVisType(currentSession);
-	    }
+        if (jsValues.uiglobals._hideBmrbSessionNames) {
+            _currentVisType = DEViseUtils.getVisType(currentSession);
+        }
 
-	    String cmd = DEViseCommands.SET_DISPLAY_SIZE + " " +
-	      jsValues.uiglobals.screenSize.width + " " +
-	      jsValues.uiglobals.screenSize.height + " " +
-	      jsValues.uiglobals.screenRes + " " +
-	      jsValues.uiglobals.screenRes + "\n" +
-	      DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" +
-	      currentSession + "}";
-	    
-	    // For collaboration leader, set collaboration name
-	    if (jsValues.session.collabLeaderName != null) {
-	        cmd = cmd + "\n" + DEViseCommands.SET_COLLAB_PASS +
-		  " {" + jsValues.session.collabLeaderName + 
-		  "} {" + jsValues.session.collabLeaderPass + "}";
-		isCollab = true;
-		collabModeL();
-	    }
+        String cmd = DEViseCommands.SET_DISPLAY_SIZE + " " +
+          jsValues.uiglobals.screenSize.width + " " +
+          jsValues.uiglobals.screenSize.height + " " +
+          jsValues.uiglobals.screenRes + " " +
+          jsValues.uiglobals.screenRes + "\n" +
+          DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" +
+          currentSession + "}";
 
-	    dispatcher.start(cmd);
-	} else {
-	    // for collaboration leader, set collaboration name
-	    if (jsValues.session.collabLeaderName != null) {
-	        String cmd = DEViseCommands.SET_COLLAB_PASS +
-		  " {" + jsValues.session.collabLeaderName + 
-		  "} {" + jsValues.session.collabLeaderPass + "}";
-				dispatcher.start(cmd);
-				isCollab = true; 
-				collabModeL();
-			}
-	    
-	    // for automatic collaboration
-	    if (jsValues.session.collabName != null) {
-		String flag = new Integer(2).toString();
-		String id = new Integer(0).toString();
-		String cmd = DEViseCommands.COLLABORATE + 
-	          " {" + flag + "} {" + id + "} {" + 
-	          jsValues.session.collabName + "} {" + 
-	          jsValues.session.collabPass + "}";
-		// temp specialID 
-		specialID = 0;
-		dispatcher.start(cmd);
-	    }
-	}
+        // For collaboration leader, set collaboration name
+        if (jsValues.session.collabLeaderName != null) {
+            cmd = cmd + "\n" + DEViseCommands.SET_COLLAB_PASS +
+          " {" + jsValues.session.collabLeaderName +
+          "} {" + jsValues.session.collabLeaderPass + "}";
+        isCollab = true;
+        collabModeL();
+        }
 
-	if (jsValues.session.autoPlayback) {
-	    logFileName = jsValues.session.clientLogName;
-	    isOriginal = jsValues.session.playbackOriginal;
-	    isDisplay = jsValues.session.playbackDisplay;
-	    logPlayBack();
-	}
+        dispatcher.start(cmd);
+    } else {
+        // for collaboration leader, set collaboration name
+        if (jsValues.session.collabLeaderName != null) {
+            String cmd = DEViseCommands.SET_COLLAB_PASS +
+          " {" + jsValues.session.collabLeaderName +
+          "} {" + jsValues.session.collabLeaderPass + "}";
+                dispatcher.start(cmd);
+                isCollab = true;
+                collabModeL();
+            }
+
+        // for automatic collaboration
+        if (jsValues.session.collabName != null) {
+        String flag = new Integer(2).toString();
+        String id = new Integer(0).toString();
+        String cmd = DEViseCommands.COLLABORATE +
+              " {" + flag + "} {" + id + "} {" +
+              jsValues.session.collabName + "} {" +
+              jsValues.session.collabPass + "}";
+        // temp specialID
+        specialID = 0;
+        dispatcher.start(cmd);
+        }
+    }
+
+    if (jsValues.session.autoPlayback) {
+        logFileName = jsValues.session.clientLogName;
+        isOriginal = jsValues.session.playbackOriginal;
+        isDisplay = jsValues.session.playbackDisplay;
+        logPlayBack();
+    }
     }
 
     public void refreshAllData(boolean doHome)
     {
-	String cmd = DEViseCommands.REFRESH_DATA;
-	cmd += doHome ? " 1" : " 0";
+    String cmd = DEViseCommands.REFRESH_DATA;
+    cmd += doHome ? " 1" : " 0";
         dispatcher.start(cmd);
     }
 
     public void restartSession()
     {
         if (currentSession == null && !jsValues.uiglobals.inBrowser) {
-	    showMsg("You do not have any current session!");
-	    return;
-	}
-	dispatcher.start(DEViseCommands.OPEN_SESSION + " {" +
-	  currentDir + "/" + currentSession + "}");
+        showMsg("You do not have any current session!");
+        return;
+    }
+    dispatcher.start(DEViseCommands.OPEN_SESSION + " {" +
+      currentDir + "/" + currentSession + "}");
     }
 
     public void closeSession()
@@ -1568,7 +1569,7 @@ public class jsdevisec extends JPanel
             showMsg("You do not have any open session!");
             return;
         }
-	_currentVisType = null;
+    _currentVisType = null;
         dispatcher.start(DEViseCommands.CLOSE_SESSION);
     }
 
@@ -1578,32 +1579,32 @@ public class jsdevisec extends JPanel
         if (specialID != -1) {
             showMsg("Cannot 'Open' while following.");
             return;
-	}
+    }
 
         dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" +
-	  currentDir + "}");
+      currentDir + "}");
     }
 
     public void openSession(String fullSessionName)
     {
-	if (jsValues.uiglobals._hideBmrbSessionNames) {
-	    _currentVisType = DEViseUtils.getVisType(fullSessionName);
-	}
+    if (jsValues.uiglobals._hideBmrbSessionNames) {
+        _currentVisType = DEViseUtils.getVisType(fullSessionName);
+    }
 
-	jscreen.setScreenDim(jscreen.getWidth(), jscreen.getHeight());
+    jscreen.setScreenDim(jscreen.getWidth(), jscreen.getHeight());
 
-	String command = "";
+    String command = "";
         if (isSessionOpened) {
-	    command += DEViseCommands.CLOSE_SESSION + "\n";
-	}
+        command += DEViseCommands.CLOSE_SESSION + "\n";
+    }
 
         command += DEViseCommands.SET_DISPLAY_SIZE + " " +
-	  jsValues.uiglobals.screenSize.width + " " +
-	  jsValues.uiglobals.screenSize.height + " " +
-	  jsValues.uiglobals.screenRes + " " +
-	  jsValues.uiglobals.screenRes + "\n" +
-	  DEViseCommands.OPEN_SESSION + " {" +
-	  fullSessionName + "}";
+      jsValues.uiglobals.screenSize.width + " " +
+      jsValues.uiglobals.screenSize.height + " " +
+      jsValues.uiglobals.screenRes + " " +
+      jsValues.uiglobals.screenRes + "\n" +
+      DEViseCommands.OPEN_SESSION + " {" +
+      fullSessionName + "}";
         dispatcher.start(command);
     }
 
@@ -1637,20 +1638,20 @@ public class jsdevisec extends JPanel
 
     public void showViewHelp()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.viewHelp()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.viewHelp()");
+    }
         if (!isSessionOpened) {
             showMsg("You do not have any open session!");
             return;
         }
 
         // Don't call showAllHelp() until we know that the dispatcher is
-	// not busy.  This is to avoid lock-ups caused by calling
-	// showAllHelp() twice before getting a response
+    // not busy.  This is to avoid lock-ups caused by calling
+    // showAllHelp() twice before getting a response
         while(dispatcher.getStatus() != DEViseCmdDispatcher.STATUS_IDLE) {}
 
         jscreen.showAllHelp();
@@ -1658,77 +1659,77 @@ public class jsdevisec extends JPanel
 
     public void hideViewHelp()
     {
-	jscreen.hideAllHelp();
+    jscreen.hideAllHelp();
 
         // Don't call hideAllHelp() until we know that the dispatcher is
-	// not busy.  This is to avoid lock-ups caused by calling
-	// showAllHelp() twice before getting a response
+    // not busy.  This is to avoid lock-ups caused by calling
+    // showAllHelp() twice before getting a response
         while(dispatcher.getStatus() != DEViseCmdDispatcher.STATUS_IDLE) {}
 
-	dispatcher.start(DEViseCommands.HIDE_ALL_VIEW_HELP);
+    dispatcher.start(DEViseCommands.HIDE_ALL_VIEW_HELP);
     }
 
     public void hideDebug() {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.hideDebug()");
-	}
-	if (debugWindow != null) {
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.hideDebug()");
+    }
+    if (debugWindow != null) {
             debugWindow.setVisible(false);
-	}
+    }
     }
 
     public void showDebug() {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showDebug()");
-	}
-	if (debugWindow != null) {
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showDebug()");
+    }
+    if (debugWindow != null) {
             debugWindow.setVisible(true);
-	}
+    }
     }
 
     public void showJmol(DEViseCanvas3DJmol canvas)
     {
-	Runnable doShowJmol = new DoShowJmol(canvas);
-	SwingUtilities.invokeLater(doShowJmol);
+    Runnable doShowJmol = new DoShowJmol(canvas);
+    SwingUtilities.invokeLater(doShowJmol);
     }
 
     private class DoShowJmol implements Runnable {
         private DEViseCanvas3DJmol _canvas;
 
-	DoShowJmol(DEViseCanvas3DJmol canvas) {
-	    _canvas = canvas;
-	}
+    DoShowJmol(DEViseCanvas3DJmol canvas) {
+        _canvas = canvas;
+    }
 
-	public void run() {
+    public void run() {
             jmolButton.show(_canvas);
-	    toolBar.setJmolCanvas(_canvas);
-	    validate();
-	}
+        toolBar.setJmolCanvas(_canvas);
+        validate();
+    }
     }
 
     public void hideJmol()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.hideJmol()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.hideJmol()");
+    }
         Runnable doHideJmol = new Runnable() {
-	    public void run() {
+        public void run() {
                 jmolButton.hide();
-	        toolBar.setJmolCanvas(null);
-	        validate();
-	    }
-	};
+            toolBar.setJmolCanvas(null);
+            validate();
+        }
+    };
 
-	SwingUtilities.invokeLater(doHideJmol);
+    SwingUtilities.invokeLater(doHideJmol);
     }
 
     public void createSessionMenuItem(String menuType, String menuName,
@@ -1740,47 +1741,47 @@ public class jsdevisec extends JPanel
     public void hideSessionMenu()
     {
         Runnable doHideSessionMenu = new Runnable() {
-	    public void run() {
-	        sessionMenuButton.hide();
-	        validate();
-	    }
-	};
+        public void run() {
+            sessionMenuButton.hide();
+            validate();
+        }
+    };
 
-	SwingUtilities.invokeLater(doHideSessionMenu);
+    SwingUtilities.invokeLater(doHideSessionMenu);
     }
 
     public void showDocument(String url, boolean showDialog)
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showDocument()");
-	}
-	pn("Showing URL: <" + url + ">");
-    	if (_parentApplet != null) {
-	     _parentApplet.showDocument(url, "_blank",
-	       showDialog ? this : null);
-	} else {
-	     System.out.println("Can't show document " + url +
-	       " because not an applet");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showDocument()");
+    }
+    pn("Showing URL: <" + url + ">");
+        if (_parentApplet != null) {
+         _parentApplet.showDocument(url, "_blank",
+           showDialog ? this : null);
+    } else {
+         System.out.println("Can't show document " + url +
+           " because not an applet");
+    }
     }
 
     public void showHelpInBrowser()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showHelpInBrowser()");
-	}
-    	if (_parentApplet != null) {
-	     _parentApplet.showHelpInBrowser();
-	} else {
-	     System.out.println("Can't show help in browser " +
-	       "because not an applet");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showHelpInBrowser()");
+    }
+        if (_parentApplet != null) {
+         _parentApplet.showHelpInBrowser();
+    } else {
+         System.out.println("Can't show help in browser " +
+           "because not an applet");
+    }
     }
 
 /*TEMP
@@ -1788,13 +1789,13 @@ public class jsdevisec extends JPanel
     {
         //TEMP -- version, copyright, web site
 
-	//TEMP!!
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showAbout()");
-	}
+    //TEMP!!
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showAbout()");
+    }
         aboutDlg = new AboutDlg(this, parentFrame, isCenterScreen);
         aboutDlg.open();
         aboutDlg = null;
@@ -1803,18 +1804,18 @@ TEMP*/
 
     public void showFeedbackInBrowser()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showFeedbackInBrowser()");
-	}
-    	if (_parentApplet != null) {
-	     _parentApplet.showFeedbackInBrowser(currentSession);
-	} else {
-	     System.out.println("Can't show feedback page in browser " +
-	       "because not an applet");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showFeedbackInBrowser()");
+    }
+        if (_parentApplet != null) {
+         _parentApplet.showFeedbackInBrowser(currentSession);
+    } else {
+         System.out.println("Can't show feedback page in browser " +
+           "because not an applet");
+    }
     }
 
     // print out message to debug window
@@ -1824,8 +1825,8 @@ TEMP*/
         if (jsValues.debug._debugLevel > 0 && debugWindow != null) {
             debugWindow.pn(msg, level);
         } else {
-	    msgBuffer.addElement(msg);
-    	}
+        msgBuffer.addElement(msg);
+        }
     }
 
     public void pn(String msg)
@@ -1838,17 +1839,17 @@ TEMP*/
         if (jsValues.debug._debugLevel > 0 && debugWindow != null) {
             debugWindow.p(msg, level);
         } else {
-	    msgBuffer.addElement(msg);
-    	}
+        msgBuffer.addElement(msg);
+        }
     }
 
     public void pnStackTrace(Throwable throwable)
     {
-	pn("Stack trace:");
-    	StackTraceElement ste[] = throwable.getStackTrace();
-	for (int index = 0; index < ste.length; index++) {
-	    pn("  " + ste[index].toString());
-	}
+    pn("Stack trace:");
+        StackTraceElement ste[] = throwable.getStackTrace();
+    for (int index = 0; index < ste.length; index++) {
+        pn("  " + ste[index].toString());
+    }
     }
 
     public void p(String msg)
@@ -1859,115 +1860,115 @@ TEMP*/
     // Shows or hides the log window, based on what the menu item is.
     public void setLog(MenuItem logMenuItem)
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.setLog()");
-	}
-	String label = logMenuItem.getLabel();
-	
-	if (label.equals(DEViseMainButtons.displayLogStr)) {
-	    jsValues.debug._debugLevel = 1;
-	    debugWindow = new YLogGUI(jsValues.debug._debugLevel);
-	    showDebug();
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.setLog()");
+    }
+    String label = logMenuItem.getLabel();
 
-	    showProperty("java.version");
-	    showProperty("java.vendor");
-	    showProperty("java.class.version");
-	    pn("");
+    if (label.equals(DEViseMainButtons.displayLogStr)) {
+        jsValues.debug._debugLevel = 1;
+        debugWindow = new YLogGUI(jsValues.debug._debugLevel);
+        showDebug();
 
-	    showProperty("java.runtime.version");
-	    showProperty("java.runtime.name");
-	    pn("");
+        showProperty("java.version");
+        showProperty("java.vendor");
+        showProperty("java.class.version");
+        pn("");
 
-	    showProperty("java.vm.version");
-	    showProperty("java.vm.vendor");
-	    pn("");
+        showProperty("java.runtime.version");
+        showProperty("java.runtime.name");
+        pn("");
 
-	    showProperty("os.arch");
-	    showProperty("os.name");
-	    showProperty("os.version");
-	    pn("");
+        showProperty("java.vm.version");
+        showProperty("java.vm.vendor");
+        pn("");
 
-	    pn("JavaScreen version: " + DEViseGlobals.VERSION);
-	    pn("Protocol version: " + DEViseGlobals.PROTOCOL_VERSION);
-	    pn("Jmol version: " + JmolConstants.version);
-	    pn("");
+        showProperty("os.arch");
+        showProperty("os.name");
+        showProperty("os.version");
+        pn("");
 
-	    /* Print all system properties
-	    Properties props = System.getProperties();
-	    Enumeration names = props.propertyNames();
-	    while (names.hasMoreElements()) {
-		String name = (String)names.nextElement();
-	        showProperty(name);
-	    }
-	    pn("");
-	    */
-	
-	    for (int i = 0; i < msgBuffer.size(); i++) {
-		String msg = (String)msgBuffer.elementAt(i);
-		pn(msg);
-	    }
-	    
-	    msgBuffer.removeAllElements();
-	    logMenuItem.setLabel(DEViseMainButtons.closeLogStr);
-	
-	} else {
-	    jsValues.debug._debugLevel = 0;
-	    hideDebug();
-	    debugWindow = null;
-	    logMenuItem.setLabel(DEViseMainButtons.displayLogStr);
-	}
+        pn("JavaScreen version: " + DEViseGlobals.VERSION);
+        pn("Protocol version: " + DEViseGlobals.PROTOCOL_VERSION);
+        pn("Jmol version: " + JmolConstants.version);
+        pn("");
+
+        /* Print all system properties
+        Properties props = System.getProperties();
+        Enumeration names = props.propertyNames();
+        while (names.hasMoreElements()) {
+        String name = (String)names.nextElement();
+            showProperty(name);
+        }
+        pn("");
+        */
+
+        for (int i = 0; i < msgBuffer.size(); i++) {
+        String msg = (String)msgBuffer.elementAt(i);
+        pn(msg);
+        }
+
+        msgBuffer.removeAllElements();
+        logMenuItem.setLabel(DEViseMainButtons.closeLogStr);
+
+    } else {
+        jsValues.debug._debugLevel = 0;
+        hideDebug();
+        debugWindow = null;
+        logMenuItem.setLabel(DEViseMainButtons.displayLogStr);
+    }
 
     }
 
     // Show the given property in the log window.
     public void showProperty(String propertyName)
     {
-    	try {
-	    String propValue = System.getProperty(propertyName);
-	    pn(propertyName + ": " + propValue);
-	} catch (Exception ex) {
-	    pn("Exception (" + ex + ") showing property " + propertyName);
-	}
+        try {
+        String propValue = System.getProperty(propertyName);
+        pn(propertyName + ": " + propValue);
+    } catch (Exception ex) {
+        pn("Exception (" + ex + ") showing property " + propertyName);
+    }
     }
 
     // show message in message box
     public String showMsg(String msg, String title, int style)
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 3 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 2 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showMsg()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 3 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 2 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showMsg()");
+    }
 
-	jsValues.debug.log("Showing message box: " + msg); 
-/*	mainPanel.setBackground(jsValues.uiglobals.bg_warn);*/
+    jsValues.debug.log("Showing message box: " + msg);
+/*  mainPanel.setBackground(jsValues.uiglobals.bg_warn);*/
 
-	// Note: we have two cases here to make things work in the case
-	// where we have more than one message box shown at once.  msgbox
-	// is a class member so we know whether we have at least one
-	// message box showing.
+    // Note: we have two cases here to make things work in the case
+    // where we have more than one message box shown at once.  msgbox
+    // is a class member so we know whether we have at least one
+    // message box showing.
         if (msgbox == null) {
             msgbox = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, jsValues.uiglobals.font, jsValues.uiglobals.bg, jsValues.uiglobals.fg);
             msgbox.open();
             String result = msgbox.getResult();
             msgbox = null;
-/*	    mainPanel.setBackground(jsValues.uiglobals.bg);*/
-	    jsValues.debug.log("Done with message box");
+/*      mainPanel.setBackground(jsValues.uiglobals.bg);*/
+        jsValues.debug.log("Done with message box");
 
             return result;
         } else {
-	    // We only get here if we already have one message box showing,
-	    // and need to show another one.
+        // We only get here if we already have one message box showing,
+        // and need to show another one.
             YMsgBox box = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, jsValues.uiglobals.font, jsValues.uiglobals.bg, jsValues.uiglobals.fg);
             box.open();
             String result = box.getResult();
             box = null;
-/*	    mainPanel.setBackground(jsValues.uiglobals.bg);*/
-	    jsValues.debug.log("Done with message box");
+/*      mainPanel.setBackground(jsValues.uiglobals.bg);*/
+        jsValues.debug.log("Done with message box");
             return result;
         }
     }
@@ -1982,15 +1983,15 @@ TEMP*/
         return showMsg(msg, "Confirm", YMsgBox.YMBXYESNO);
     }
 
-	// flag is apparently set to false if there is an error
+    // flag is apparently set to false if there is an error
     public void showSession(String[] msg, boolean flag)
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showSession()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showSession()");
+    }
         if (flag) {
             if (sessiondlg != null) {
                 sessiondlg.setSessionList(msg);
@@ -2000,9 +2001,9 @@ TEMP*/
             }
         } else {
             showMsg(msg[0]);
-	    // Set the session directory back to the previous one and
-	    // update it on the session dialog.
-	    currentDir = previousDir;
+        // Set the session directory back to the previous one and
+        // update it on the session dialog.
+        currentDir = previousDir;
             if (sessiondlg != null) {
                 sessiondlg.setDirectory();
             }
@@ -2011,156 +2012,156 @@ TEMP*/
 
     public void showClientList(String msg)
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showClientList()");
-	}
-	if(isCollabIdDlgOpened == false) {
-	    try {
-		collabIdDlg = new CollabIdDlg(this, parentFrame,
-					      isCenterScreen, msg);
-		collabIdDlg.open();
-	    } catch (YException ex) {
-		System.err.println(ex.getMessage());
-	    }
-	    collabIdDlg = null;
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showClientList()");
+    }
+    if(isCollabIdDlgOpened == false) {
+        try {
+        collabIdDlg = new CollabIdDlg(this, parentFrame,
+                          isCenterScreen, msg);
+        collabIdDlg.open();
+        } catch (YException ex) {
+        System.err.println(ex.getMessage());
+        }
+        collabIdDlg = null;
+    }
     }
 
     public void showCollabPass()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showCollabPass()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showCollabPass()");
+    }
         collabpassdlg = new CollabPassDlg(this, parentFrame, isCenterScreen);
         collabpassdlg.open();
-	collabpassdlg = null;
+    collabpassdlg = null;
     }
 
     public void displayID()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.displayID()");
-	}
-	String idstr = new Integer(jsValues.connection.connectionID).toString();
-	showMsg("My client ID is:  " + idstr);
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.displayID()");
+    }
+    String idstr = new Integer(jsValues.connection.connectionID).toString();
+    showMsg("My client ID is:  " + idstr);
     }
 
     public void disableCollab()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.disableCollab()");
-	}
-	String command = new String();
-	command = DEViseCommands.DISABLE_COLLAB;
-	dispatcher.start(command);
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.disableCollab()");
+    }
+    String command = new String();
+    command = DEViseCommands.DISABLE_COLLAB;
+    dispatcher.start(command);
     }
 
     public void enterCollabPass()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.enterCollabPass()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.enterCollabPass()");
+    }
         entercollabpassdlg = new EnterCollabPassDlg(this, parentFrame, isCenterScreen);
         entercollabpassdlg.open();
-	entercollabpassdlg = null;
+    entercollabpassdlg = null;
     }
 
     public void showCollabState(String msg)
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showCollabState()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showCollabState()");
+    }
         collabstatedlg = new CollabStateDlg(this, parentFrame, isCenterScreen, msg);
         collabstatedlg.open();
-        if (specialID == -1 && ! jsValues.session.autoPlayback)	
-	    collabstatedlg = null;        
+        if (specialID == -1 && ! jsValues.session.autoPlayback)
+        collabstatedlg = null;
     }
-    
+
     public void setDrillDownMarkerCoordinates(int xCoord, int yCoord, DEViseCanvas2D canvas2D){
-    	drillDownX = xCoord;
-    	drillDownY = yCoord;
-    	dCanvas2D  = canvas2D;
+        drillDownX = xCoord;
+        drillDownY = yCoord;
+        dCanvas2D  = canvas2D;
     }
 
     public void showRecord(String[] msg)
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showRecord()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showRecord()");
+    }
 
-	// Don't drill-down twice w/o user re-selecting drill-down mode.
-	// toolBar.setNormal();
-		recorddlg = RecordDlg.getInstance();
-		if(recorddlg != null){
-			recorddlg.getOkButton().doClick(); //automatically closes an open dialog so that a new dialog can be opened
-		}
+    // Don't drill-down twice w/o user re-selecting drill-down mode.
+    // toolBar.setNormal();
+        recorddlg = RecordDlg.getInstance();
+        if(recorddlg != null){
+            recorddlg.getOkButton().doClick(); //automatically closes an open dialog so that a new dialog can be opened
+        }
         recorddlg = new RecordDlg(parentFrame, isCenterScreen, msg, this);
         dCanvas2D.drawDrillDownMark(drillDownX, drillDownY);
         recorddlg.setModalityType(ModalityType.MODELESS);
         recorddlg.open();
         if (specialID == -1 && ! jsValues.session.autoPlayback)
-	    recorddlg = null;
+        recorddlg = null;
     }
 
     public String showViewDialogHelp(String msg){
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showViewDialogHelp()");
-	}
-       
-	if(msg == null) {
-	   System.out.println("conflict 1");
-	   return null;
-	   }
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showViewDialogHelp()");
+    }
+
+    if(msg == null) {
+       System.out.println("conflict 1");
+       return null;
+       }
 
         return showMsg(msg, "Help", YMsgBox.YMBXOK);
     }
 
     public void showServerState(String msg)
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showServerState()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showServerState()");
+    }
         statedlg = new ServerStateDlg(parentFrame, isCenterScreen, msg, this);
         statedlg.open();
-        if (specialID == -1 && ! jsValues.session.autoPlayback) 
-	    statedlg = null;
+        if (specialID == -1 && ! jsValues.session.autoPlayback)
+        statedlg = null;
     }
 
     public void showSetting()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showSetting()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showSetting()");
+    }
         settingdlg = new SettingDlg(this, parentFrame, isCenterScreen);
         settingdlg.open();
         settingdlg = null;
@@ -2168,28 +2169,28 @@ TEMP*/
 
     public boolean showDynamicsMovieDlg()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showDynamicsMovieDlg()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showDynamicsMovieDlg()");
+    }
         dynMovieDlg = new DynMovieDlg(this, parentFrame,
-	  isCenterScreen);
+      isCenterScreen);
         dynMovieDlg.open();
-	boolean result = dynMovieDlg.isOk;
+    boolean result = dynMovieDlg.isOk;
         dynMovieDlg = null;
-	return result;
+    return result;
     }
 
     public void setCgiUrl()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.setCgiUrl()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.setCgiUrl()");
+    }
         setcgiurldlg = new SetCgiUrlDlg(this, parentFrame, isCenterScreen);
         setcgiurldlg.open();
         setcgiurldlg = null;
@@ -2198,12 +2199,12 @@ TEMP*/
     // set the logfile name for command log playback
     public void setLogFile()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.setLogFile()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.setLogFile()");
+    }
         setlogfiledlg = new SetLogFileDlg(this, parentFrame, isCenterScreen);
         setlogfiledlg.open();
         setlogfiledlg = null;
@@ -2212,17 +2213,17 @@ TEMP*/
     // command log playback
     public void logPlayBack()
     {
-	playback = new DEVisePlayback(this, dispatcher, logFileName);
+    playback = new DEVisePlayback(this, dispatcher, logFileName);
     }
 
     public void showCollab()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showCollab()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showCollab()");
+    }
         collabSelectDlg = new CollabSelectDlg(this, parentFrame, isCenterScreen);
         collabSelectDlg.open();
         collabSelectDlg = null;
@@ -2231,8 +2232,8 @@ TEMP*/
     public boolean isShowingMsg()
     {
         if (sessiondlg != null || settingdlg != null || statedlg != null ||
-	  recorddlg != null || msgbox != null || setcgiurldlg != null ||
-	  dynMovieDlg != null) {
+      recorddlg != null || msgbox != null || setcgiurldlg != null ||
+      dynMovieDlg != null) {
             return true;
         } else {
             return false;
@@ -2245,21 +2246,21 @@ TEMP*/
     {
         boolean reallyQuit = true;
 
-	if (specialID == -1) { 
-	    if (dispatcher.getStatus() ==
-	      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
-		String result = confirmMsg("JavaScreen still busy talking " +
-					   "to server!\nDo you wish to exit anyway?");
-		if (result.equals(YMsgBox.YIDNO)) {
-		    reallyQuit = false;
-		}
-	    }
-	}
-	//TEMP -- do we want to check for an open session here?
+    if (specialID == -1) {
+        if (dispatcher.getStatus() ==
+          DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
+        String result = confirmMsg("JavaScreen still busy talking " +
+                       "to server!\nDo you wish to exit anyway?");
+        if (result.equals(YMsgBox.YIDNO)) {
+            reallyQuit = false;
+        }
+        }
+    }
+    //TEMP -- do we want to check for an open session here?
 
-	if (reallyQuit) {
+    if (reallyQuit) {
             destroy();
-	}
+    }
     }
 
     public synchronized boolean getQuitStatus()
@@ -2269,139 +2270,139 @@ TEMP*/
 
     public void destroy()
     {
-	if (DEBUG >= 1) {
-	    System.out.println("jsdevisec.destroy()");
-	}
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.destroy()");
-	}
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    System.out.println("Thread count before jsdevisec.destroy(): " +
-	      Thread.activeCount());
-	}
+    if (DEBUG >= 1) {
+        System.out.println("jsdevisec.destroy()");
+    }
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.destroy()");
+    }
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        System.out.println("Thread count before jsdevisec.destroy(): " +
+          Thread.activeCount());
+    }
 
         if (isQuit) {
             return;
         }
 
         isQuit = true;
-	
-	// Note: this must be done before destroying the dispatcher;
-	// otherwise we get null pointer errors because we get window
-	// events after the dispatcher has been destroyed.
-	// parentFrame.dispose();
+
+    // Note: this must be done before destroying the dispatcher;
+    // otherwise we get null pointer errors because we get window
+    // events after the dispatcher has been destroyed.
+    // parentFrame.dispose();
         parentFrame.setVisible(false);  //-- Fix for bug 1030  -- kancherla
-	 
-	if (debugWindow != null) {
-	    debugWindow.dispose();
-	    debugWindow = null;
-	}
+
+    if (debugWindow != null) {
+        debugWindow.dispose();
+        debugWindow = null;
+    }
 
         if (dispatcher != null) {
-	    if (specialID != -1 && dispatcher.dispatcherThread != null) {
-		dispatcher.dispatcherThread.stop();
-		dispatcher.dispatcherThread = null;
-	    }
+        if (specialID != -1 && dispatcher.dispatcherThread != null) {
+        dispatcher.dispatcherThread.stop();
+        dispatcher.dispatcherThread = null;
+        }
             dispatcher.destroy();
             dispatcher = null;
         }
 
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    DEViseUtils.printAllThreads("After jsdevisec.destroy()");
-	}
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("After jsdevisec.destroy()");
+    }
 
         if (!jsValues.uiglobals.isApplet) {
-	    System.exit(0);
-	}
+        System.exit(0);
     }
-    
+    }
+
     public void socketMode()
     {
-	commMode.setForeground(commModeNormalColor);
+    commMode.setForeground(commModeNormalColor);
         commMode.setText("Socket");
     }
 
     public void setDisplayMode(int mode)
     {
-	dispatcher.start(DEViseCommands.SET_DISPLAY_MODE + " " + mode);
+    dispatcher.start(DEViseCommands.SET_DISPLAY_MODE + " " + mode);
     }
 
     // Go out of collaboration leader mode.  (This is called with isLeader
     // false if we are sort of halfway to being a leader.)
     public void collabModeUnlead(boolean isLeader)
     {
-	isCollab = false;
-	if (jsValues.connection.useCgi) {
-	    cgiMode();
-	} else {
-	    socketMode();
-	}
-	if (isLeader) disableCollab();
-	jsValues.session.collabLeaderPass = DEViseGlobals.DEFAULT_COLLAB_PASS;
+    isCollab = false;
+    if (jsValues.connection.useCgi) {
+        cgiMode();
+    } else {
+        socketMode();
+    }
+    if (isLeader) disableCollab();
+    jsValues.session.collabLeaderPass = DEViseGlobals.DEFAULT_COLLAB_PASS;
     }
 
     // Go into collaboration leader mode.
     public void collabModeL()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.collabModeL()");
-	}
-	commMode.setForeground(commModeNormalColor);
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.collabModeL()");
+    }
+    commMode.setForeground(commModeNormalColor);
         commMode.setText("Collab (L)");
     }
 
     // Go into collaboration follower mode.
     public void collabModeF()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.collabModeF()");
-	}
-	commMode.setForeground(commModeNormalColor);
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.collabModeF()");
+    }
+    commMode.setForeground(commModeNormalColor);
         commMode.setText("Collab (F)");
     }
 
     public void cgiMode()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.cgiMode()");
-	}
-	commMode.setForeground(commModeNormalColor);
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.cgiMode()");
+    }
+    commMode.setForeground(commModeNormalColor);
         commMode.setText("CGI");
     }
 
     public void disconnectedMode()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.disconnectedMode()");
-	}
-	commMode.setForeground(Color.red);
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.disconnectedMode()");
+    }
+    commMode.setForeground(Color.red);
         commMode.setText("Disconnected");
     }
 
     public void playbackMode()
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.playbackMode()");
-	}
-	commMode.setForeground(commModeNormalColor);
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.playbackMode()");
+    }
+    commMode.setForeground(commModeNormalColor);
         commMode.setText("Playback");
     }
 
@@ -2409,76 +2410,76 @@ TEMP*/
     {
         pn("jsdevisec.collabInit(" + leaderId + " )");
 
-	//TEMP We really should do this here (on the assumption that saving
-	// an existing session will be taken care of by the JSPoP).
-	// jscreen.updateScreen(false);
+    //TEMP We really should do this here (on the assumption that saving
+    // an existing session will be taken care of by the JSPoP).
+    // jscreen.updateScreen(false);
 
-	//TEMP We really shouldn't set specialID until here, in case we
-	// didn't succeed in collaborating, but not setting it earlier
-	// somehow goofs things up.  RKW 2001-11-12.
-        
-	specialID = leaderId;
+    //TEMP We really shouldn't set specialID until here, in case we
+    // didn't succeed in collaborating, but not setting it earlier
+    // somehow goofs things up.  RKW 2001-11-12.
 
-	collabModeF();
+    specialID = leaderId;
+
+    collabModeF();
     }
 
     public synchronized void collabQuit()
     {
-	pn("Quit from collaboration mode.");
+    pn("Quit from collaboration mode.");
 
-	dispatcher.clearStatus();
-	if ( !dispatcher.dispatcherThread.isInterrupted() )
-	    dispatcher.dispatcherThread.interrupt();
-	animPanel.stop();
-	stopButton.setBackground(jsValues.uiglobals.bg);
-	jscreen.updateScreen(false);
+    dispatcher.clearStatus();
+    if ( !dispatcher.dispatcherThread.isInterrupted() )
+        dispatcher.dispatcherThread.interrupt();
+    animPanel.stop();
+    stopButton.setBackground(jsValues.uiglobals.bg);
+    jscreen.updateScreen(false);
 
-	// go back to normal mode
-	specialID = -1;
-	socketMode();
-    }	
+    // go back to normal mode
+    specialID = -1;
+    socketMode();
+    }
 
     // Restore any pre-collaboration session.
     public synchronized void restorePreCollab()
     {
-	//TEMP -- this should really be taken care of by the DEViseClient
-	// object in the JSPoP, but I don't want to make too many changes
-	// right now.  RKW 2001-11-12.
+    //TEMP -- this should really be taken care of by the DEViseClient
+    // object in the JSPoP, but I don't want to make too many changes
+    // right now.  RKW 2001-11-12.
         if (sessionSaved) {
-	    isSessionOpened = true;
-	    dispatcher.start(DEViseCommands.REOPEN_SESSION);
-	    sessionSaved = false;
-	}
+        isSessionOpened = true;
+        dispatcher.start(DEViseCommands.REOPEN_SESSION);
+        sessionSaved = false;
+    }
     }
 
-    public void setDisplaySize(String command) 
+    public void setDisplaySize(String command)
     {
-	String[] cmds = DEViseGlobals.parseString(command);
-	
-	oldScreenWidth = jsValues.uiglobals.screenSize.width;
-	oldScreenHeight = jsValues.uiglobals.screenSize.height;
-	oldScreenRes = jsValues.uiglobals.screenRes;
-	
-	jsValues.uiglobals.screenSize.width = Integer.parseInt(cmds[1]);
-	jsValues.uiglobals.screenSize.height = Integer.parseInt(cmds[2]); 
-	jsValues.uiglobals.screenRes = Integer.parseInt(cmds[3]);
+    String[] cmds = DEViseGlobals.parseString(command);
+
+    oldScreenWidth = jsValues.uiglobals.screenSize.width;
+    oldScreenHeight = jsValues.uiglobals.screenSize.height;
+    oldScreenRes = jsValues.uiglobals.screenRes;
+
+    jsValues.uiglobals.screenSize.width = Integer.parseInt(cmds[1]);
+    jsValues.uiglobals.screenSize.height = Integer.parseInt(cmds[2]);
+    jsValues.uiglobals.screenRes = Integer.parseInt(cmds[3]);
     }
 
-    public void restoreDisplaySize() 
+    public void restoreDisplaySize()
     {
-	jsValues.uiglobals.screenSize.width = oldScreenWidth;
-	jsValues.uiglobals.screenSize.height = oldScreenHeight; 
-	jsValues.uiglobals.screenRes = oldScreenRes;
+    jsValues.uiglobals.screenSize.width = oldScreenWidth;
+    jsValues.uiglobals.screenSize.height = oldScreenHeight;
+    jsValues.uiglobals.screenRes = oldScreenRes;
     }
 
     public void showUrlMsg(String url)
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showUrlMsg()");
-	}
+    if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+      !SwingUtilities.isEventDispatchThread())) {
+        System.out.println(Thread.currentThread() +
+          " calls jsdevisec.showUrlMsg()");
+    }
         showUrlDlg = new ShowUrlDlg(url, this, parentFrame, isCenterScreen);
         showUrlDlg.open();
         showUrlDlg = null;
@@ -2487,23 +2488,23 @@ TEMP*/
     public static Image loadImage(String imagePath, DEViseJSValues jsValues)
       throws YException, IOException
     {
-	if (DEBUG >= 1) {
-    	    System.out.println("jsdevisec.loadImage(" + imagePath + ")");
-	}
+    if (DEBUG >= 1) {
+            System.out.println("jsdevisec.loadImage(" + imagePath + ")");
+    }
 
-	// Seems like we need the MediaTracker stuff in here to wait
-	// for images to load -- if we don't do that, the images don't
-	// seem to work right.  wenger 2007-06-15.
-	if (jsValues._tracker == null) {
-	    jsValues._tracker = new MediaTracker(jsValues._imageLoadComp);
-	}
+    // Seems like we need the MediaTracker stuff in here to wait
+    // for images to load -- if we don't do that, the images don't
+    // seem to work right.  wenger 2007-06-15.
+    if (jsValues._tracker == null) {
+        jsValues._tracker = new MediaTracker(jsValues._imageLoadComp);
+    }
 
-	Image image = null;
+    Image image = null;
 
-	Toolkit tk = jsValues._imageLoadComp.getToolkit();
+    Toolkit tk = jsValues._imageLoadComp.getToolkit();
 
         InputStream is = jsValues._imageLoadComp.getClass().
-	  getResourceAsStream(imagePath);
+      getResourceAsStream(imagePath);
         BufferedInputStream bis = new BufferedInputStream(is);
         final int MAX_IMAGE_SIZE = 20000;
         byte[] imageData = new byte[MAX_IMAGE_SIZE];
@@ -2520,39 +2521,39 @@ TEMP*/
         try  {
             jsValues._tracker.waitForID(0);
         }  catch (InterruptedException e)  {
-	    YException ex =  new YException("MediaTracker interrupted " +
-	      "while waiting for image " + imagePath);
-	    System.err.println(ex);
-	    throw ex;
+        YException ex =  new YException("MediaTracker interrupted " +
+          "while waiting for image " + imagePath);
+        System.err.println(ex);
+        throw ex;
         }
 
-	if (jsValues._tracker.isErrorID(0)) {
-	    YException ex =  new YException("MediaTracker error " +
-	      "on image " + imagePath);
-	    System.err.println(ex);
-	    throw ex;
-	}
-
-	return image;
+    if (jsValues._tracker.isErrorID(0)) {
+        YException ex =  new YException("MediaTracker error " +
+          "on image " + imagePath);
+        System.err.println(ex);
+        throw ex;
     }
 
-	public DEViseStatusPanel getStatusPanel() {
-		return statusPanel;
-	}
+    return image;
+    }
+
+    public DEViseStatusPanel getStatusPanel() {
+        return statusPanel;
+    }
 }
 
 // ------------------------------------------------------------------------
 
 // Dialog to show record values (drill-down).
 class RecordDlg extends Dialog
-{	
-	private static RecordDlg instance = null;
-	
-	jsdevisec jsc = null;
+{
+    private static RecordDlg instance = null;
+
+    jsdevisec jsc = null;
 
     private DEViseButton okButton;
 
-	private boolean status = false; // true means this dialog is showing
+    private boolean status = false; // true means this dialog is showing
     private JTable table;
     String[] urls;
 
@@ -2561,11 +2562,11 @@ class RecordDlg extends Dialog
     {
         super(owner, true);
 
-	setResizable(true);
-	
-	jsc = what;
-	
-	okButton = new DEViseButton("  OK  ", jsc.jsValues);
+    setResizable(true);
+
+    jsc = what;
+
+    okButton = new DEViseButton("  OK  ", jsc.jsValues);
 
         jsc.jsValues.debug.log("Creating RecordDlg");
 
@@ -2575,118 +2576,118 @@ class RecordDlg extends Dialog
 
         setTitle("Record Attributes");
 
-	// -1 here because first item in data is the command name.
+    // -1 here because first item in data is the command name.
         int attrCount = data.length - 1;
 
-	//
-	// Split strings from DEVise into attribute and value.
-	//
-	String[] attributes = new String[attrCount];
-	String[] values = new String[attrCount];
+    //
+    // Split strings from DEVise into attribute and value.
+    //
+    String[] attributes = new String[attrCount];
+    String[] values = new String[attrCount];
         for (int i = 0; i < attrCount; i++) {
-	    //TEMP: eliminate this line when bug 1023 is fixed
+        //TEMP: eliminate this line when bug 1023 is fixed
             jsc.pn("DIAG data: <" + data[i+1] + ">");//TEMP
-	    String delimiter = ": ";
-	    int tempIndex = data[i+1].indexOf(delimiter);
-	    if (tempIndex != -1) {
-	        attributes[i] = new String(data[i+1].substring(0, tempIndex));
-	        values[i] = new String(data[i+1].substring(tempIndex +
-		  delimiter.length(), data[i+1].length()));
-	    } else {
-	        attributes[i] = new String(data[i+1]);
-	        values[i] = new String("");
-	    }
-	    //TEMP: eliminate this line when bug 1023 is fixed
+        String delimiter = ": ";
+        int tempIndex = data[i+1].indexOf(delimiter);
+        if (tempIndex != -1) {
+            attributes[i] = new String(data[i+1].substring(0, tempIndex));
+            values[i] = new String(data[i+1].substring(tempIndex +
+          delimiter.length(), data[i+1].length()));
+        } else {
+            attributes[i] = new String(data[i+1]);
+            values[i] = new String("");
+        }
+        //TEMP: eliminate this line when bug 1023 is fixed
             jsc.pn("  DIAG attribute: <" + attributes[i] + ">");//TEMP
-	    //TEMP: eliminate this line when bug 1023 is fixed
+        //TEMP: eliminate this line when bug 1023 is fixed
             jsc.pn("  DIAG value: <" + values[i] + ">");//TEMP
-	}
+    }
 
-	//
-	// Figure out how many attributes to show.
-	//
-	int attrsToShow = 0;
+    //
+    // Figure out how many attributes to show.
+    //
+    int attrsToShow = 0;
         String noDDMarker = "_nodd";
         for (int i = 0; i < attrCount; i++) {
-	    if (!attributes[i].endsWith(noDDMarker)) {
-	        attrsToShow++;
-	    }
-	}
+        if (!attributes[i].endsWith(noDDMarker)) {
+            attrsToShow++;
+        }
+    }
 
-	//
-	// Generate the array of data for the JTable.
-	//
-	String[][] swingData = null;
-	int attrNum = 0;
+    //
+    // Generate the array of data for the JTable.
+    //
+    String[][] swingData = null;
+    int attrNum = 0;
         if (attrsToShow > 0) {
-	    swingData = new String[attrsToShow][2];
-	    urls = new String[attrsToShow];
+        swingData = new String[attrsToShow][2];
+        urls = new String[attrsToShow];
             for (int i = 0; i < attrCount; i++) {
-	        if (!attributes[i].endsWith(noDDMarker)) {
+            if (!attributes[i].endsWith(noDDMarker)) {
 
-		    // Figure out if this is a URL, save the "plain" URL
-		    // string if so.
-		    String urlMarker = "_url";
-		    if (attributes[i].endsWith(urlMarker)) {
-			// Strip off "_url" from the attribute name.
-			int suffix = attributes[i].indexOf(urlMarker);
-			swingData[attrNum][0] = attributes[i].substring(0,
-			  suffix);
-		        swingData[attrNum][1] = str2Description(values[i]);
-		        urls[attrNum] = str2Url(values[i]);
-		    } else {
-	                swingData[attrNum][0] = attributes[i];
-	                swingData[attrNum][1] = values[i];
-		        urls[attrNum] = null;
-		    }
-		    attrNum++;
-		}
-	    }
+            // Figure out if this is a URL, save the "plain" URL
+            // string if so.
+            String urlMarker = "_url";
+            if (attributes[i].endsWith(urlMarker)) {
+            // Strip off "_url" from the attribute name.
+            int suffix = attributes[i].indexOf(urlMarker);
+            swingData[attrNum][0] = attributes[i].substring(0,
+              suffix);
+                swingData[attrNum][1] = str2Description(values[i]);
+                urls[attrNum] = str2Url(values[i]);
+            } else {
+                    swingData[attrNum][0] = attributes[i];
+                    swingData[attrNum][1] = values[i];
+                urls[attrNum] = null;
+            }
+            attrNum++;
+        }
+        }
         }
 
         // set layout manager
-	BorderLayout layout = new BorderLayout();
-	layout.setVgap(10);
-	setLayout(layout);
+    BorderLayout layout = new BorderLayout();
+    layout.setVgap(10);
+    setLayout(layout);
 
         String[] columnNames = {"Attribute", "Value"};
         table = new JTable(swingData, columnNames);
 
-	// Make the value column right-justified (see JS bug 981) -- making
-	// *everything* justified for now, not just numbers...
-	DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+    // Make the value column right-justified (see JS bug 981) -- making
+    // *everything* justified for now, not just numbers...
+    DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(JLabel.RIGHT);
         TableColumn tColumn = table.getColumnModel().getColumn(1);
-	tColumn.setCellRenderer(renderer);
+    tColumn.setCellRenderer(renderer);
 
-	table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	table.setCellSelectionEnabled(true);
+    table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    table.setCellSelectionEnabled(true);
 
-	table.addMouseListener(new MouseAdapter() {
-	    public void mouseClicked(MouseEvent me) {
-		if (table.getSelectedColumn() == 1 &&
-		  urls[table.getSelectedRow()] != null) {
-		    jsc.showDocument(urls[table.getSelectedRow()], true);
-		}
-	    }
-	});
-   
+    table.addMouseListener(new MouseAdapter() {
+        public void mouseClicked(MouseEvent me) {
+        if (table.getSelectedColumn() == 1 &&
+          urls[table.getSelectedRow()] != null) {
+            jsc.showDocument(urls[table.getSelectedRow()], true);
+        }
+        }
+    });
+
         // Pack the second column of the table (make the column widths
-	// fit the widths of the attributes and values).
+    // fit the widths of the attributes and values).
         int margin = 2;
         for (int column = 0; column < table.getColumnCount(); column++) {
-    	    packColumn(table, column, margin);
+            packColumn(table, column, margin);
         }
 
         Dimension panesize = table.getPreferredSize();
         removeAll();
-	    
-	JScrollPane pane = new JScrollPane(table);
-	if(panesize.height > 600) panesize.height = 600;
-	if(panesize.width > 800) panesize.width = 800;
-	pane.setPreferredSize(panesize);
-	    
-	add(pane, BorderLayout.CENTER);
+
+    JScrollPane pane = new JScrollPane(table);
+    if(panesize.height > 600) panesize.height = 600;
+    if(panesize.width > 800) panesize.width = 800;
+    pane.setPreferredSize(panesize);
+
+    add(pane, BorderLayout.CENTER);
         add(okButton, BorderLayout.SOUTH);
         pack();
 
@@ -2716,69 +2717,69 @@ class RecordDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			if (jsc.drillDownCanvas != null) {
-			    jsc.drillDownCanvas.eraseDrillDownMark();
-			    jsc.drillDownCanvas = null;
-			}
+            if (jsc.drillDownCanvas != null) {
+                jsc.drillDownCanvas.eraseDrillDownMark();
+                jsc.drillDownCanvas = null;
+            }
                         close();
-			// close the dialog in followers
-			if (jsc.specialID == -1 && jsc.isCollab) {
-			    try {
-				jsc.dispatcher.sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
-			    } catch (YException ex) {
-				System.out.println(ex.getMessage());
-			    }
-			}
+            // close the dialog in followers
+            if (jsc.specialID == -1 && jsc.isCollab) {
+                try {
+                jsc.dispatcher.sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+                } catch (YException ex) {
+                System.out.println(ex.getMessage());
+                }
+            }
                     }
                 });
         instance = this;
     }
-    
+
     public static RecordDlg getInstance(){
-		return instance;
-	}
-    
+        return instance;
+    }
+
     public DEViseButton getOkButton() {
-		return okButton;
-	}
-    
-	//
+        return okButton;
+    }
+
+    //
     // The next two methods split up a string of the form "{description}{url}".
     // If the braces aren't there, both methods return the whole string.
     //
 
     private String str2Description(String value) {
-	//TEMP: eliminate this line when bug 1023 is fixed
-	jsc.pn("    DIAG str2Description(" + value + ")");//TEMP
-	String desc = value;
-	if (value.startsWith("{")) {
-	    int end = value.indexOf('}', 1);
-	    if (end > 0) {
-	    	desc = value.substring(1, end);
-	    }
-	}
-	//TEMP: eliminate this line when bug 1023 is fixed
-	jsc.pn("      DIAG desc <" + desc + ">");//TEMP
+    //TEMP: eliminate this line when bug 1023 is fixed
+    jsc.pn("    DIAG str2Description(" + value + ")");//TEMP
+    String desc = value;
+    if (value.startsWith("{")) {
+        int end = value.indexOf('}', 1);
+        if (end > 0) {
+            desc = value.substring(1, end);
+        }
+    }
+    //TEMP: eliminate this line when bug 1023 is fixed
+    jsc.pn("      DIAG desc <" + desc + ">");//TEMP
         return "<html><u>" + desc + "</u></html>";
     }
 
     private String str2Url(String value) {
-	String url = value;
-	if (value.startsWith("{")) {
-	    // Skip past the first {...} section (the description).
-	    int end = value.indexOf('}', 1);
-	    int beginning = value.indexOf('{', end);
-	    if (beginning > 0) {
-		beginning++; // skip over '{'
-	        end = value.indexOf('}', beginning);
-		if (end > 0) {
-		    url = value.substring(beginning, end);
-		}
-	    }
-	}
-	return url;
+    String url = value;
+    if (value.startsWith("{")) {
+        // Skip past the first {...} section (the description).
+        int end = value.indexOf('}', 1);
+        int beginning = value.indexOf('{', end);
+        if (beginning > 0) {
+        beginning++; // skip over '{'
+            end = value.indexOf('}', beginning);
+        if (end > 0) {
+            url = value.substring(beginning, end);
+        }
+        }
     }
-    
+    return url;
+    }
+
     // Sets the preferred width of the visible column specified
     // by vColIndex. The column will be just wide enough
     // to show the column head and the widest cell in the column.
@@ -2787,10 +2788,10 @@ class RecordDlg extends Dialog
     private void packColumn(JTable table, int vColIndex, int margin) {
         TableModel model = table.getModel();
         DefaultTableColumnModel colModel =
-	  (DefaultTableColumnModel)table.getColumnModel();
+      (DefaultTableColumnModel)table.getColumnModel();
         TableColumn col = colModel.getColumn(vColIndex);
         int width = 0;
-    
+
         // Get width of column header
         TableCellRenderer renderer = col.getHeaderRenderer();
         if (renderer == null) {
@@ -2799,19 +2800,19 @@ class RecordDlg extends Dialog
         Component comp = renderer.getTableCellRendererComponent(
             table, col.getHeaderValue(), false, false, 0, 0);
         width = comp.getPreferredSize().width;
-    
+
         // Get maximum width of column data
         for (int r=0; r<table.getRowCount(); r++) {
             renderer = table.getCellRenderer(r, vColIndex);
             comp = renderer.getTableCellRendererComponent(
                 table, table.getValueAt(r, vColIndex), false, false,
-		r, vColIndex);
+        r, vColIndex);
             width = Math.max(width, comp.getPreferredSize().width);
         }
-    
+
         // Add margin
         width += 2*margin;
-    
+
         // Set the width
         col.setPreferredWidth(width);
     }
@@ -2879,12 +2880,12 @@ class SessionDlg extends JFrame
 
     private class FileDirInfo {
         public boolean isDir;
-	public String filename;
+    public String filename;
     }
 
     public SessionDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String[] data)
     {
-	what.jsValues.debug.log("Creating SessionDlg");
+    what.jsValues.debug.log("Creating SessionDlg");
 
         jsc = what;
 
@@ -2914,7 +2915,7 @@ class SessionDlg extends JFrame
         button[0] = okButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
         panel.setBackground(jsc.jsValues.uiglobals.bg);
 
         // set layout manager
@@ -2972,9 +2973,9 @@ class SessionDlg extends JFrame
             {
                 public void mouseClicked(MouseEvent event)
                 {
-		    if (event.getClickCount() > 1) {
-		        dirOrFileSelected();
-		    }
+            if (event.getClickCount() > 1) {
+                dirOrFileSelected();
+            }
                 }
             });
 
@@ -2982,7 +2983,7 @@ class SessionDlg extends JFrame
             {
                 public void actionPerformed(ActionEvent event)
                 {
-		    dirOrFileSelected();
+            dirOrFileSelected();
                 }
             });
 
@@ -2997,49 +2998,49 @@ class SessionDlg extends JFrame
 
     private void dirOrFileSelected()
     {
-	if (!selectionMade) {
-	    selectionMade = true;
+    if (!selectionMade) {
+        selectionMade = true;
             int idx;
             if ((fileList.getItemCount() > 0) &&
               ((idx = fileList.getSelectedIndex()) != -1)) {
-		FileDirInfo fdi = (FileDirInfo)fileInfo.elementAt(idx);
+        FileDirInfo fdi = (FileDirInfo)fileInfo.elementAt(idx);
 
-		if (fdi.isDir) {
-	            if (fdi.filename.equals("..")) { // go up a directory
+        if (fdi.isDir) {
+                if (fdi.filename.equals("..")) { // go up a directory
                         jsc.previousDir = jsc.currentDir;
-	                if (jsc.currentDir.equals(jsc.rootDir)) {
-	                    jsc.showMsg("You do not have access to this directory!");
-		            return;
+                    if (jsc.currentDir.equals(jsc.rootDir)) {
+                        jsc.showMsg("You do not have access to this directory!");
+                    return;
                         }
 
-	                // Remove the last element from the currentDir string.
+                    // Remove the last element from the currentDir string.
                         int index = jsc.currentDir.lastIndexOf('/');
-	                if (index > 0) {
-	                    jsc.previousDir = jsc.currentDir;
-		            jsc.currentDir = jsc.currentDir.substring(0, index);
+                    if (index > 0) {
+                        jsc.previousDir = jsc.currentDir;
+                    jsc.currentDir = jsc.currentDir.substring(0, index);
                         } else {
-	                    jsc.showMsg("Invalid current directory \"" +
-		              jsc.currentDir + "\"!");
-		            jsc.previousDir = jsc.currentDir;
-		            jsc.currentDir = jsc.rootDir;
-		            close();
+                        jsc.showMsg("Invalid current directory \"" +
+                      jsc.currentDir + "\"!");
+                    jsc.previousDir = jsc.currentDir;
+                    jsc.currentDir = jsc.rootDir;
+                    close();
                         }
                     } else {
-	                jsc.previousDir = jsc.currentDir;
-	                jsc.currentDir = jsc.currentDir + "/" + fdi.filename;
-	            }
+                    jsc.previousDir = jsc.currentDir;
+                    jsc.currentDir = jsc.currentDir + "/" + fdi.filename;
+                }
 
                     directory.setText("/" + jsc.currentDir);
-	            validate();
-	            jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST +
-		      " {" + jsc.currentDir + "}");
+                validate();
+                jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST +
+              " {" + jsc.currentDir + "}");
                 } else { // a file
                     jsc.currentSession = fdi.filename;
-		    jsc.openSession(jsc.currentDir + "/" + fdi.filename);
+            jsc.openSession(jsc.currentDir + "/" + fdi.filename);
                     close();
                 }
             }
-	}
+    }
     }
 
     public void setSessionList(String[] data)
@@ -3057,47 +3058,47 @@ class SessionDlg extends JFrame
         // need to correct for num < 1
         int number = (sessions.length - 1) / 3;
         sessionNames = new String[number];
-	// Whether this is a file (as opposed to a directory).
+    // Whether this is a file (as opposed to a directory).
         boolean[] isDirs = new boolean[number];
         String tmpstr = null;
         for (int i = 0; i < number; i++) {
             sessionNames[i] = sessions[i * 3 + 1];
             tmpstr = sessions[i * 3 + 2];
-	    isDirs[i] = !tmpstr.equals("0");
+        isDirs[i] = !tmpstr.equals("0");
         }
 
         fileList.removeAll();
-	fileInfo = new Vector();
+    fileInfo = new Vector();
 
         for (int i = 0; i < number; i++) {
-	    // Workaround for DEVise/JS bug 933.
-	    if (sessionNames[i].endsWith("acdd")) {
-	        continue;
-	    }
-	    FileDirInfo fdi = new FileDirInfo();
-	    if (isDirs[i]) {
-		fdi.isDir = true;
-		fdi.filename = sessionNames[i];
+        // Workaround for DEVise/JS bug 933.
+        if (sessionNames[i].endsWith("acdd")) {
+            continue;
+        }
+        FileDirInfo fdi = new FileDirInfo();
+        if (isDirs[i]) {
+        fdi.isDir = true;
+        fdi.filename = sessionNames[i];
                 fileList.add("[" + sessionNames[i] + "]");
-	    } else {
-		fdi.isDir = false;
-		fdi.filename = sessionNames[i];
-		String visType = DEViseUtils.getVisType(sessionNames[i]);
-		if (!visType.equals("")) {
-		    String filename = sessionNames[i];
-		    sessionNames[i] = visType;
-		    if (!jsc.jsValues.uiglobals._hideBmrbSessionNames) {
-		        sessionNames[i] += " (" + filename + ")";
-		    }
-	        }
+        } else {
+        fdi.isDir = false;
+        fdi.filename = sessionNames[i];
+        String visType = DEViseUtils.getVisType(sessionNames[i]);
+        if (!visType.equals("")) {
+            String filename = sessionNames[i];
+            sessionNames[i] = visType;
+            if (!jsc.jsValues.uiglobals._hideBmrbSessionNames) {
+                sessionNames[i] += " (" + filename + ")";
+            }
+            }
                 fileList.add(sessionNames[i]);
             }
-	    fileInfo.add(fdi);
+        fileInfo.add(fdi);
         }
 
         validate();
 
-	selectionMade = false;
+    selectionMade = false;
     }
 
     protected void processEvent(AWTEvent event)
@@ -3118,7 +3119,7 @@ class SessionDlg extends JFrame
     // dispatcher thread
     public void open()
     {
-	jsc.jsValues.debug.log("Opening SessionDlg");
+    jsc.jsValues.debug.log("Opening SessionDlg");
         isShowing = true;
         setVisible(true);
     }
@@ -3132,13 +3133,13 @@ class SessionDlg extends JFrame
 
             jsc.sessiondlg = null;
         }
-	jsc.jsValues.debug.log("Closed SessionDlg");
+    jsc.jsValues.debug.log("Closed SessionDlg");
     }
 
     public void setDirectory()
     {
         directory.setText("/" + jsc.currentDir);
-	validate();
+    validate();
     }
 }
 
@@ -3162,7 +3163,7 @@ class SettingDlg extends Dialog
     {
         super(owner, true);
 
-	what.jsValues.debug.log("Creating SettingDlg");
+    what.jsValues.debug.log("Creating SettingDlg");
 
         jsc = what;
 
@@ -3172,18 +3173,18 @@ class SettingDlg extends Dialog
         collabButton = new DEViseButton("Request", jsc.jsValues);
         cancelButton = new DEViseButton("Close", jsc.jsValues);
 
-	//
-	// Get the version info from the JSPoP (send the command, and
-	// wait for it to finish or fail).
-	//
-	jsc.dispatcher.start(DEViseCommands.GET_POP_VERSION + " {0} {0}");
-	while (jsc.dispatcher.getStatus() != DEViseCmdDispatcher.STATUS_IDLE) {
-	    try {
-	        Thread.sleep(100);
-	    } catch (InterruptedException ex) {
-	        System.err.println("InterruptedException: " + ex);
-	    }
-	}
+    //
+    // Get the version info from the JSPoP (send the command, and
+    // wait for it to finish or fail).
+    //
+    jsc.dispatcher.start(DEViseCommands.GET_POP_VERSION + " {0} {0}");
+    while (jsc.dispatcher.getStatus() != DEViseCmdDispatcher.STATUS_IDLE) {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ex) {
+            System.err.println("InterruptedException: " + ex);
+        }
+    }
 
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
@@ -3203,17 +3204,17 @@ class SettingDlg extends Dialog
         screenY.setText("" + jsc.jsValues.uiglobals.screenSize.height);
 
         if (jsc.specialID == -1) {
-	    statButton.setBackground(jsc.jsValues.uiglobals.bg);
-	} else {
-	    statButton.setBackground(Color.red);
-	}
+        statButton.setBackground(jsc.jsValues.uiglobals.bg);
+    } else {
+        statButton.setBackground(Color.red);
+    }
 
-	if (jsc.specialID == -1) {
-	    collabButton.setBackground(jsc.jsValues.uiglobals.bg);
-	} else {
-	    collabButton.setBackground(Color.red);
-	}
-	    
+    if (jsc.specialID == -1) {
+        collabButton.setBackground(jsc.jsValues.uiglobals.bg);
+    } else {
+        collabButton.setBackground(Color.red);
+    }
+
         if (jsc.jsValues.uiglobals.inBrowser) {
             screenX.setEditable(false);
             screenY.setEditable(false);
@@ -3231,7 +3232,7 @@ class SettingDlg extends Dialog
         c.weightx = 1.0;
         c.weighty = 1.0;
 
-	// JavaScreen (client) version.
+    // JavaScreen (client) version.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label label1 = new Label("JavaScreen Version:");
@@ -3244,7 +3245,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(version, c);
         add(version);
 
-	// Jmol version.
+    // Jmol version.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label labelJmol1 = new Label("Jmol Version:");
@@ -3257,7 +3258,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(labelJmol2, c);
         add(labelJmol2);
 
-	// JSPoP version.
+    // JSPoP version.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label labelPopVer = new Label("JSPoP Version:");
@@ -3270,7 +3271,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(labelPopVerValue, c);
         add(labelPopVerValue);
 
-	// DEVise version.
+    // DEVise version.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label labelDevVer = new Label("DEVise Version:");
@@ -3283,7 +3284,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(labelDevVerValue, c);
         add(labelDevVerValue);
 
-	// JSPoP ID.
+    // JSPoP ID.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label labelPopID = new Label("JSPoP ID:");
@@ -3296,7 +3297,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(labelPopIDValue, c);
         add(labelPopIDValue);
 
-	// Is CGI?
+    // Is CGI?
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label labelIsCgi = new Label("Is CGI:");
@@ -3305,13 +3306,13 @@ class SettingDlg extends Dialog
 
         c.insets = new Insets(10, 0, 0, 5);
         c.gridwidth = GridBagConstraints.REMAINDER;
-	String isCgiValue =
-	  jsc.dispatcher.getIsCgi() != 0 ? "yes" : "no";
+    String isCgiValue =
+      jsc.dispatcher.getIsCgi() != 0 ? "yes" : "no";
         Label labelIsCgiValue = new Label(isCgiValue);
         gridbag.setConstraints(labelIsCgiValue, c);
         add(labelIsCgiValue);
 
-	// Is mod_perl?
+    // Is mod_perl?
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label labelIsModPerl = new Label("Is mod_perl:");
@@ -3320,13 +3321,13 @@ class SettingDlg extends Dialog
 
         c.insets = new Insets(10, 0, 0, 5);
         c.gridwidth = GridBagConstraints.REMAINDER;
-	String isModPerlValue =
-	  jsc.dispatcher.getIsModPerl() != 0 ? "yes" : "no";
+    String isModPerlValue =
+      jsc.dispatcher.getIsModPerl() != 0 ? "yes" : "no";
         Label labelIsModPerlValue = new Label(isModPerlValue);
         gridbag.setConstraints(labelIsModPerlValue, c);
         add(labelIsModPerlValue);
 
-	// JavaScreen size.
+    // JavaScreen size.
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label label2 = new Label("JavaScreen Size:");
@@ -3345,7 +3346,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(setButton, c);
         add(setButton);
 
-	// JSPoP status.
+    // JSPoP status.
         c.insets = new Insets(10, 10, 10, 0);
         c.gridwidth = 1;
         Label label3 = new Label("JSPOP Status:");
@@ -3357,7 +3358,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(statButton, c);
         add(statButton);
 
-	// My ID.
+    // My ID.
         c.insets = new Insets(10, 10, 10, 0);
         c.gridwidth = 1;
         Label label5 = new Label("My ID:");
@@ -3369,7 +3370,7 @@ class SettingDlg extends Dialog
         gridbag.setConstraints(meButton, c);
         add(meButton);
 
-	// Collaboration status.
+    // Collaboration status.
         c.insets = new Insets(10, 10, 10, 0);
         c.gridwidth = 1;
         Label label4 = new Label("Collaboration Status:");
@@ -3440,32 +3441,32 @@ class SettingDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.dispatcher.start(DEViseCommands.GET_SERVER_STATE);
+            jsc.dispatcher.start(DEViseCommands.GET_SERVER_STATE);
 
                         close();
                     }
                 });
-	}
+    }
 
-	if (jsc.specialID == -1) {
-	    collabButton.addActionListener(new ActionListener()
+    if (jsc.specialID == -1) {
+        collabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.dispatcher.start(DEViseCommands.GET_COLLAB_LIST);
+            jsc.dispatcher.start(DEViseCommands.GET_COLLAB_LIST);
                         close();
                     }
                 });
         }
 
-	meButton.addActionListener(new ActionListener()
-	    {
-		public void actionPerformed(ActionEvent event)
-		{
-		    close();
-		    jsc.displayID();	
-		}
-	    });
+    meButton.addActionListener(new ActionListener()
+        {
+        public void actionPerformed(ActionEvent event)
+        {
+            close();
+            jsc.displayID();
+        }
+        });
 
         cancelButton.addActionListener(new ActionListener()
                 {
@@ -3495,7 +3496,7 @@ class SettingDlg extends Dialog
     // dispatcher thread
     public void open()
     {
-	jsc.jsValues.debug.log("Opening SettingDlg");
+    jsc.jsValues.debug.log("Opening SettingDlg");
         status = true;
         setVisible(true);
     }
@@ -3507,7 +3508,7 @@ class SettingDlg extends Dialog
 
             status = false;
         }
-	jsc.jsValues.debug.log("Closed SettingDlg");
+    jsc.jsValues.debug.log("Closed SettingDlg");
     }
 
     // true means this dialog is showing
@@ -3537,37 +3538,37 @@ class ServerStateDlg extends Dialog
     {
         super(owner, true);
 
-	jsc = what;
+    jsc = what;
 
         okButton = new DEViseButton("   OK   ", jsc.jsValues);
 
-	jsc.jsValues.debug.log("Creating ServerStateDlg");
+    jsc.jsValues.debug.log("Creating ServerStateDlg");
 
-	String[] serverInfo = null, activeClientInfo = null,
-	  suspClientInfo = null;
+    String[] serverInfo = null, activeClientInfo = null,
+      suspClientInfo = null;
 
-	String[] list = DEViseGlobals.parseString(data);
-	int listIndex = 0;
-	
-	if (list != null && list.length > 3) {
+    String[] list = DEViseGlobals.parseString(data);
+    int listIndex = 0;
+
+    if (list != null && list.length > 3) {
             try {
                 int serverCount = Integer.parseInt(list[listIndex++]);
                 if (serverCount != 0) {
                     serverInfo = new String[serverCount];
                     for (int i = 0; i < serverCount; i++) {
-		        String[] subList = DEViseGlobals.parseStr(
-			  list[listIndex++], " ");
+                String[] subList = DEViseGlobals.parseStr(
+              list[listIndex++], " ");
                         serverInfo[i] = subList[0] + " " + subList[1];
                     }
                 }
 
-		listIndex++; // skip total clients value
+        listIndex++; // skip total clients value
                 int activeClientCount = Integer.parseInt(list[listIndex++]);
                 if (activeClientCount != 0) {
                     activeClientInfo = new String[activeClientCount];
                     for (int i = 0; i < activeClientCount; i++) {
-		        String[] subList = DEViseGlobals.parseStr(
-			  list[listIndex++], " ");
+                String[] subList = DEViseGlobals.parseStr(
+              list[listIndex++], " ");
                         activeClientInfo[i] = subList[0] + " " + subList[1];
                     }
                 }
@@ -3575,9 +3576,9 @@ class ServerStateDlg extends Dialog
                 int suspClientCount = Integer.parseInt(list[listIndex++]);
                 if (suspClientCount != 0) {
                     suspClientInfo = new String[suspClientCount];
-		    for (int i = 0; i < suspClientCount; i++) {
-		        String[] subList = DEViseGlobals.parseStr(
-			  list[listIndex++], " ");
+            for (int i = 0; i < suspClientCount; i++) {
+                String[] subList = DEViseGlobals.parseStr(
+              list[listIndex++], " ");
                         suspClientInfo[i] = subList[0] + " " + subList[1];
                     }
                 }
@@ -3684,15 +3685,15 @@ class ServerStateDlg extends Dialog
                     public void actionPerformed(ActionEvent event)
                     {
                         close();
-			
-			// close the dialog in followers
-			if (jsc.specialID == -1 && jsc.isCollab) {
-			    try {
-				jsc.dispatcher.sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
-			    } catch (YException ex) {
-				System.out.println(ex.getMessage());
-			    }
-			}
+
+            // close the dialog in followers
+            if (jsc.specialID == -1 && jsc.isCollab) {
+                try {
+                jsc.dispatcher.sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+                } catch (YException ex) {
+                System.out.println(ex.getMessage());
+                }
+            }
                     }
                 });
 
@@ -3716,7 +3717,7 @@ class ServerStateDlg extends Dialog
     // dispatcher thread
     public void open()
     {
-	jsc.jsValues.debug.log("Opening ServerStateDlg");
+    jsc.jsValues.debug.log("Opening ServerStateDlg");
         status = true;
         setVisible(true);
     }
@@ -3728,7 +3729,7 @@ class ServerStateDlg extends Dialog
 
             status = false;
         }
-	jsc.jsValues.debug.log("Closed ServerStateDlg");
+    jsc.jsValues.debug.log("Closed ServerStateDlg");
     }
 
     // true means this dialog is showing
@@ -3753,12 +3754,12 @@ class SetCgiUrlDlg extends Dialog
     {
         super(owner, true);
 
-	what.jsValues.debug.log("Creating SetCgiUrlDlg");
+    what.jsValues.debug.log("Creating SetCgiUrlDlg");
 
         jsc = what;
 
         setButton = new DEViseButton("   Set   ", jsc.jsValues);
-        cancelButton = new DEViseButton("  Cancel ", jsc.jsValues);    
+        cancelButton = new DEViseButton("  Cancel ", jsc.jsValues);
 
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
@@ -3767,7 +3768,7 @@ class SetCgiUrlDlg extends Dialog
         setTitle("Setting CGI URL");
 
         url.setBackground(jsc.jsValues.uiglobals.textBg);
-	url.setForeground(jsc.jsValues.uiglobals.textFg);
+    url.setForeground(jsc.jsValues.uiglobals.textFg);
         url.setFont(jsc.jsValues.uiglobals.textFont);
 
         url.setText(jsc.jsValues.connection.cgiURL);
@@ -3796,7 +3797,7 @@ class SetCgiUrlDlg extends Dialog
         button[0] = setButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
         panel.setBackground(jsc.jsValues.uiglobals.bg);
 
         gridbag.setConstraints(panel, c);
@@ -3830,9 +3831,9 @@ class SetCgiUrlDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.jsValues.connection.useCgi = true;
-			jsc.cgiMode();
-			jsc.jsValues.connection.cgiURL = url.getText();
+            jsc.jsValues.connection.useCgi = true;
+            jsc.cgiMode();
+            jsc.jsValues.connection.cgiURL = url.getText();
                         close();
                     }
                 });
@@ -3864,7 +3865,7 @@ class SetCgiUrlDlg extends Dialog
     // dispatcher thread
     public void open()
     {
-	jsc.jsValues.debug.log("Opening SetCgiUrlDlg");
+    jsc.jsValues.debug.log("Opening SetCgiUrlDlg");
         status = true;
         setVisible(true);
     }
@@ -3876,7 +3877,7 @@ class SetCgiUrlDlg extends Dialog
 
             status = false;
         }
-	jsc.jsValues.debug.log("Closed SetCgiUrlDlg");
+    jsc.jsValues.debug.log("Closed SetCgiUrlDlg");
     }
 
     // true means this dialog is showing
@@ -3903,12 +3904,12 @@ class SetLogFileDlg extends Dialog
     {
         super(owner, true);
 
-	what.jsValues.debug.log("Creating SetLogFileDlg");
+    what.jsValues.debug.log("Creating SetLogFileDlg");
 
         jsc = what;
 
         setButton = new DEViseButton("   Play   ", jsc.jsValues);
-        cancelButton = new DEViseButton("  Cancel ", jsc.jsValues);    
+        cancelButton = new DEViseButton("  Cancel ", jsc.jsValues);
 
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
@@ -3917,15 +3918,15 @@ class SetLogFileDlg extends Dialog
         setTitle("Setting Logfile Name");
 
         file.setBackground(jsc.jsValues.uiglobals.textBg);
-	file.setForeground(jsc.jsValues.uiglobals.textFg);
+    file.setForeground(jsc.jsValues.uiglobals.textFg);
         file.setFont(jsc.jsValues.uiglobals.textFont);
 
         display.setBackground(jsc.jsValues.uiglobals.textBg);
-	display.setForeground(jsc.jsValues.uiglobals.textFg);
+    display.setForeground(jsc.jsValues.uiglobals.textFg);
         display.setFont(jsc.jsValues.uiglobals.textFont);
 
         original.setBackground(jsc.jsValues.uiglobals.textBg);
-	original.setForeground(jsc.jsValues.uiglobals.textFg);
+    original.setForeground(jsc.jsValues.uiglobals.textFg);
         original.setFont(jsc.jsValues.uiglobals.textFont);
 
         // set layout manager
@@ -3952,7 +3953,7 @@ class SetLogFileDlg extends Dialog
         checkbox[0] = display;
         checkbox[1] = original;
         DEViseComponentPanel panel1 = new DEViseComponentPanel(checkbox,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
         panel1.setBackground(jsc.jsValues.uiglobals.bg);
 
         gridbag.setConstraints(panel1, c);
@@ -3962,7 +3963,7 @@ class SetLogFileDlg extends Dialog
         button[0] = setButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel2 = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
         panel2.setBackground(jsc.jsValues.uiglobals.bg);
 
         gridbag.setConstraints(panel2, c);
@@ -3996,18 +3997,18 @@ class SetLogFileDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.logFileName = file.getText();
+            jsc.logFileName = file.getText();
 
-			File file = new File(jsc.logFileName);
-			if(!file.exists()) {
-			    jsc.showMsg("File not found: " + jsc.logFileName);
-			}
-			else {
-			    jsc.isDisplay = display.getState();
-			    jsc.isOriginal = original.getState();
-			    close();
-			    jsc.logPlayBack();
-			}
+            File file = new File(jsc.logFileName);
+            if(!file.exists()) {
+                jsc.showMsg("File not found: " + jsc.logFileName);
+            }
+            else {
+                jsc.isDisplay = display.getState();
+                jsc.isOriginal = original.getState();
+                close();
+                jsc.logPlayBack();
+            }
                     }
                 });
 
@@ -4015,7 +4016,7 @@ class SetLogFileDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			close();
+            close();
                     }
                 });
     }
@@ -4033,7 +4034,7 @@ class SetLogFileDlg extends Dialog
     //TEMP -- do we need this?
     public void open()
     {
-	jsc.jsValues.debug.log("Opening SetLogFileDlg");
+    jsc.jsValues.debug.log("Opening SetLogFileDlg");
         status = true;
         setVisible(true);
     }
@@ -4046,7 +4047,7 @@ class SetLogFileDlg extends Dialog
 
             status = false;
         }
-	jsc.jsValues.debug.log("Closed SetLogFileDlg");
+    jsc.jsValues.debug.log("Closed SetLogFileDlg");
     }
 }
 
@@ -4068,7 +4069,7 @@ class CollabSelectDlg extends Dialog
     {
         super(owner, true);
 
-	what.jsValues.debug.log("Creating CollabSelectDlg");
+    what.jsValues.debug.log("Creating CollabSelectDlg");
 
         jsc = what;
 
@@ -4084,29 +4085,29 @@ class CollabSelectDlg extends Dialog
 
         setTitle("JavaScreen Collaboration");
 
-	if ((jsc.specialID == -1) && (!jsc.isCollab)) {
-	    collabButton.setBackground(jsc.jsValues.uiglobals.bg);
-	} else {
-	    collabButton.setBackground(Color.red);
-	}
+    if ((jsc.specialID == -1) && (!jsc.isCollab)) {
+        collabButton.setBackground(jsc.jsValues.uiglobals.bg);
+    } else {
+        collabButton.setBackground(Color.red);
+    }
 
-	if (jsc.specialID != -1) {
-	    endButton.setBackground(jsc.jsValues.uiglobals.bg);
-	} else {
-	    endButton.setBackground(Color.red);
-	}
+    if (jsc.specialID != -1) {
+        endButton.setBackground(jsc.jsValues.uiglobals.bg);
+    } else {
+        endButton.setBackground(Color.red);
+    }
 
-	if ((jsc.specialID == -1) && (!jsc.isCollab)) {
-	    enCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
-	} else {
-	    enCollabButton.setBackground(Color.red);
-	}
+    if ((jsc.specialID == -1) && (!jsc.isCollab)) {
+        enCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
+    } else {
+        enCollabButton.setBackground(Color.red);
+    }
 
-	if ((jsc.specialID == -1) && (jsc.isCollab)) {
-	    disCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
-	} else {
-	    disCollabButton.setBackground(Color.red);
-	}
+    if ((jsc.specialID == -1) && (jsc.isCollab)) {
+        disCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
+    } else {
+        disCollabButton.setBackground(Color.red);
+    }
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -4159,93 +4160,93 @@ class CollabSelectDlg extends Dialog
 
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
-	if ((jsc.specialID == -1) && (!jsc.isCollab)) {
-	    collabButton.addActionListener(new ActionListener()
+    if ((jsc.specialID == -1) && (!jsc.isCollab)) {
+        collabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			String command = new String();
-			
-			// if switch from "socket" mode, save current 
-			// session.
-			// TEMP: this should really be taken care of in
-			// the JSPoP, so we don't save and close the session
-			// unless we have actually succeeded in getting
-			// into collaboration mode.  RKW 2001-11-12.
-			// (If we start collaboration and then cancel,
-			// we've lost our pre-collaboration session.)
+            String command = new String();
+
+            // if switch from "socket" mode, save current
+            // session.
+            // TEMP: this should really be taken care of in
+            // the JSPoP, so we don't save and close the session
+            // unless we have actually succeeded in getting
+            // into collaboration mode.  RKW 2001-11-12.
+            // (If we start collaboration and then cancel,
+            // we've lost our pre-collaboration session.)
                         if (jsc.isSessionOpened) {
-			    jsc.jscreen.updateScreen(false);
-			    jsc.sessionSaved = true;
-			    command = DEViseCommands.SAVE_CUR_SESSION + "\n";
+                jsc.jscreen.updateScreen(false);
+                jsc.sessionSaved = true;
+                command = DEViseCommands.SAVE_CUR_SESSION + "\n";
                         }
 
-			// if already in "collaboration" mode,
-			// send JAVAC_CollabExit to exit from previous collaboration
-			if (jsc.specialID != -1) {
-			    // Note: the GUI doesn't seem to let you get to
-			    // here, so I'm not sure whether this works.
-			    // RKW 2001-11-13.
-			    if (!jsc.dispatcher.dispatcherThread.isInterrupted()) {
-				jsc.collabinterrupted = true;
-				jsc.dispatcher.dispatcherThread.interrupt();
-			    }
-			    jsc.specialID = -1;
-			}
+            // if already in "collaboration" mode,
+            // send JAVAC_CollabExit to exit from previous collaboration
+            if (jsc.specialID != -1) {
+                // Note: the GUI doesn't seem to let you get to
+                // here, so I'm not sure whether this works.
+                // RKW 2001-11-13.
+                if (!jsc.dispatcher.dispatcherThread.isInterrupted()) {
+                jsc.collabinterrupted = true;
+                jsc.dispatcher.dispatcherThread.interrupt();
+                }
+                jsc.specialID = -1;
+            }
 
-			command = command + DEViseCommands.ASK_COLLAB_LEADER;
-			jsc.dispatcher.start(command);
+            command = command + DEViseCommands.ASK_COLLAB_LEADER;
+            jsc.dispatcher.start(command);
 
-			close();
+            close();
                     }
                 });
-	    }
+        }
 
-	if (jsc.specialID != -1) {
-	    endButton.addActionListener(new ActionListener()
+    if (jsc.specialID != -1) {
+        endButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.socketMode();
-			jsc.specialID = -1;
-			jsc.collabinterrupted = true;
-			jsc.dispatcher.dispatcherThread.interrupt();
-			
-			jsc.animPanel.stop();
-			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-			jsc.jscreen.updateScreen(false);
-			jsc.dispatcher.clearStatus();
-			
-			jsc.restorePreCollab();
+            jsc.socketMode();
+            jsc.specialID = -1;
+            jsc.collabinterrupted = true;
+            jsc.dispatcher.dispatcherThread.interrupt();
 
- 			close();
+            jsc.animPanel.stop();
+            jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+            jsc.jscreen.updateScreen(false);
+            jsc.dispatcher.clearStatus();
+
+            jsc.restorePreCollab();
+
+            close();
                     }
                 });
-	    }
+        }
 
-	if ((jsc.specialID == -1) && (!jsc.isCollab)) {
-	    enCollabButton.addActionListener(new ActionListener()
+    if ((jsc.specialID == -1) && (!jsc.isCollab)) {
+        enCollabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			close();
-			jsc.showCollabPass();
+            close();
+            jsc.showCollabPass();
                     }
                 });
-	    }
+        }
 
-	if ((jsc.specialID == -1) && (jsc.isCollab)) {
-	    disCollabButton.addActionListener(new ActionListener()
+    if ((jsc.specialID == -1) && (jsc.isCollab)) {
+        disCollabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			close();
-			jsc.collabModeUnlead(true);
+            close();
+            jsc.collabModeUnlead(true);
                     }
                 });
-	    }
+        }
 
-	cancelButton.addActionListener(new ActionListener()
+    cancelButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
@@ -4273,7 +4274,7 @@ class CollabSelectDlg extends Dialog
     // dispatcher thread
     public void open()
     {
-	jsc.jsValues.debug.log("Opening CollabSelectDlg");
+    jsc.jsValues.debug.log("Opening CollabSelectDlg");
         status = true;
         setVisible(true);
     }
@@ -4285,7 +4286,7 @@ class CollabSelectDlg extends Dialog
 
             status = false;
         }
-	jsc.jsValues.debug.log("Closed CollabSelectDlg");
+    jsc.jsValues.debug.log("Closed CollabSelectDlg");
     }
 
     // true means this dialog is showing
@@ -4313,7 +4314,7 @@ class CollabIdDlg extends JFrame
     public CollabIdDlg(jsdevisec what, Frame owner, boolean isCenterScreen,
       String data) throws YException
     {
-	what.jsValues.debug.log("Creating CollabIdDlg");
+    what.jsValues.debug.log("Creating CollabIdDlg");
 
         jsc = what;
 
@@ -4337,7 +4338,7 @@ class CollabIdDlg extends JFrame
         button[0] = okButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
         panel.setBackground(jsc.jsValues.uiglobals.bg);
 
         // set layout manager
@@ -4390,8 +4391,8 @@ class CollabIdDlg extends JFrame
                 public void mouseClicked(MouseEvent event)
                 {
                     if (event.getClickCount() > 1) {
-		        startCollab();
-		    }
+                startCollab();
+            }
                 }
             });
 
@@ -4399,7 +4400,7 @@ class CollabIdDlg extends JFrame
             {
                 public void actionPerformed(ActionEvent event)
                 {
-		    startCollab();
+            startCollab();
                 }
             });
 
@@ -4408,8 +4409,8 @@ class CollabIdDlg extends JFrame
                 public void actionPerformed(ActionEvent event)
                 {
                     close();
-	            jsc.dispatcher.clearStatus();
-		    jsc.restorePreCollab();
+                jsc.dispatcher.clearStatus();
+            jsc.restorePreCollab();
                 }
             });
 
@@ -4417,43 +4418,43 @@ class CollabIdDlg extends JFrame
 
     public void setClientList(String data) throws YException
     {
-      	clients = DEViseGlobals.parseString(data);	
+        clients = DEViseGlobals.parseString(data);
 
         //clientList.removeAll();
 
         for (int i = 1; i <= (clients.length-1)/4; i++) {
-	    String list = new String(); 
-	    list = clients[(i-1)*4+1] + clients[(i-1)*4+2] 
-		   + clients[(i-1)*4+3] + clients[(i-1)*4+4];
-	    clientList.add(list);
-	}
+        String list = new String();
+        list = clients[(i-1)*4+1] + clients[(i-1)*4+2]
+           + clients[(i-1)*4+3] + clients[(i-1)*4+4];
+        clientList.add(list);
+    }
 
-	if (clientList.getItemCount() <= 0) {
-	    clientList.add("No available collaboration leader.");
-	    emptyList = true;
-	} else {
-	    validate();
+    if (clientList.getItemCount() <= 0) {
+        clientList.add("No available collaboration leader.");
+        emptyList = true;
+    } else {
+        validate();
         }
     }
 
     private void startCollab() {
         if (!emptyList) {
-	    int idx = clientList.getSelectedIndex();
-	    if (idx != -1) {
-	        String list = clientList.getItem(idx);
-		int n = list.indexOf(' ');
-		String clientID = list.substring(0,n);
-		jsc.specialID = Integer.parseInt(clientID);
+        int idx = clientList.getSelectedIndex();
+        if (idx != -1) {
+            String list = clientList.getItem(idx);
+        int n = list.indexOf(' ');
+        String clientID = list.substring(0,n);
+        jsc.specialID = Integer.parseInt(clientID);
 
                 close();
-		jsc.enterCollabPass();
-	    }
-	} else { // no available collaboration leader
-	    // go back to normal mode
-	    jsc.collabQuit();
-	    jsc.restorePreCollab();
-	    close(); 
-	}
+        jsc.enterCollabPass();
+        }
+    } else { // no available collaboration leader
+        // go back to normal mode
+        jsc.collabQuit();
+        jsc.restorePreCollab();
+        close();
+    }
     }
 
     protected void processEvent(AWTEvent event)
@@ -4468,7 +4469,7 @@ class CollabIdDlg extends JFrame
 
     public void open()
     {
-	jsc.jsValues.debug.log("Opening CollabIdDlg");
+    jsc.jsValues.debug.log("Opening CollabIdDlg");
         status = true;
         jsc.isCollabIdDlgOpened = true;
         setVisible(true);
@@ -4479,10 +4480,10 @@ class CollabIdDlg extends JFrame
         if (status) {
             dispose();
             status = false;
-	    jsc.isCollabIdDlgOpened = false;
+        jsc.isCollabIdDlgOpened = false;
             jsc.collabIdDlg = null;
         }
-	jsc.jsValues.debug.log("Closed CollabIdDlg");
+    jsc.jsValues.debug.log("Closed CollabIdDlg");
     }
 
     // true means this dialog is showing
@@ -4509,7 +4510,7 @@ class CollabPassDlg extends Dialog
     {
         super(owner, true);
 
-	what.jsValues.debug.log("Creating CollabPassDlg");
+    what.jsValues.debug.log("Creating CollabPassDlg");
 
         jsc = what;
 
@@ -4534,25 +4535,25 @@ class CollabPassDlg extends Dialog
         c.weighty = 1.0;
         c.insets = new Insets(10, 10, 10, 10);
 
-	pass.setText(jsc.jsValues.session.collabLeaderPass);
+    pass.setText(jsc.jsValues.session.collabLeaderPass);
 
         DEViseButton [] button = new DEViseButton[2];
         button[0] = setButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
         panel.setBackground(jsc.jsValues.uiglobals.bg);
 
         c.gridwidth = 1;
-	Label label1 = new Label("Collaboration Name:");
+    Label label1 = new Label("Collaboration Name:");
         gridbag.setConstraints(label1, c);
         add(label1);
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(name, c);
-        add(name); 
+        add(name);
 
-	c.gridwidth = 1;
-	Label label2 = new Label("Collaboration Passwd:");
+    c.gridwidth = 1;
+    Label label2 = new Label("Collaboration Passwd:");
         gridbag.setConstraints(label2, c);
         add(label2);
         c.gridwidth = GridBagConstraints.REMAINDER;
@@ -4591,19 +4592,19 @@ class CollabPassDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-                        jsc.isCollab = true; 
-			jsc.collabModeL();
+                        jsc.isCollab = true;
+            jsc.collabModeL();
 
-			jsc.jsValues.session.collabLeaderPass = 
-			    pass.getText();
-			jsc.jsValues.session.collabLeaderName = 
-			    name.getText();
-			String command = new String();
-			command = DEViseCommands.SET_COLLAB_PASS + 
-			    " {" + jsc.jsValues.session.collabLeaderName + "}" + 
-			    " {" + jsc.jsValues.session.collabLeaderPass + "}";
-			close();
-			jsc.dispatcher.start(command);
+            jsc.jsValues.session.collabLeaderPass =
+                pass.getText();
+            jsc.jsValues.session.collabLeaderName =
+                name.getText();
+            String command = new String();
+            command = DEViseCommands.SET_COLLAB_PASS +
+                " {" + jsc.jsValues.session.collabLeaderName + "}" +
+                " {" + jsc.jsValues.session.collabLeaderPass + "}";
+            close();
+            jsc.dispatcher.start(command);
                     }
                 });
 
@@ -4629,7 +4630,7 @@ class CollabPassDlg extends Dialog
 
     public void open()
     {
-	jsc.jsValues.debug.log("Opening CollabPassDlg");
+    jsc.jsValues.debug.log("Opening CollabPassDlg");
         status = true;
         setVisible(true);
     }
@@ -4641,7 +4642,7 @@ class CollabPassDlg extends Dialog
 
             status = false;
         }
-	jsc.jsValues.debug.log("Closed CollabPassDlg");
+    jsc.jsValues.debug.log("Closed CollabPassDlg");
     }
 
     // true means this dialog is showing
@@ -4667,7 +4668,7 @@ class EnterCollabPassDlg extends Dialog
     {
         super(owner, true);
 
-	what.jsValues.debug.log("Creating EnterCollabPassDlg");
+    what.jsValues.debug.log("Creating EnterCollabPassDlg");
 
         jsc = what;
 
@@ -4691,12 +4692,12 @@ class EnterCollabPassDlg extends Dialog
         c.weighty = 1.0;
         c.insets = new Insets(10, 10, 10, 10);
 
-	pass.setText(DEViseGlobals.DEFAULT_COLLAB_PASS);
+    pass.setText(DEViseGlobals.DEFAULT_COLLAB_PASS);
 
         DEViseButton [] button = new DEViseButton[1];
         button[0] = setButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
 
 
         c.gridwidth = 1;
@@ -4738,16 +4739,16 @@ class EnterCollabPassDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.collabPass = pass.getText();
+            jsc.collabPass = pass.getText();
 
-			String id = new Integer(jsc.specialID).toString();
-			String flag = new Integer(1).toString();
-			String command = DEViseCommands.COLLABORATE + 
-			    " {" +  flag + "} {" + id + "} {} {" + 
-			    jsc.collabPass + "}";
+            String id = new Integer(jsc.specialID).toString();
+            String flag = new Integer(1).toString();
+            String command = DEViseCommands.COLLABORATE +
+                " {" +  flag + "} {" + id + "} {} {" +
+                jsc.collabPass + "}";
 
                         jsc.dispatcher.start(command);
-			close();
+            close();
                     }
                 });
     }
@@ -4764,7 +4765,7 @@ class EnterCollabPassDlg extends Dialog
 
     public void open()
     {
-	jsc.jsValues.debug.log("Opening CollabPassDlg");
+    jsc.jsValues.debug.log("Opening CollabPassDlg");
         status = true;
         setVisible(true);
     }
@@ -4776,7 +4777,7 @@ class EnterCollabPassDlg extends Dialog
 
             status = false;
         }
-	jsc.jsValues.debug.log("Closed CollabPassDlg");
+    jsc.jsValues.debug.log("Closed CollabPassDlg");
     }
 
     // true means this dialog is showing
@@ -4801,8 +4802,8 @@ class CollabStateDlg extends Dialog
 
     public CollabStateDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String data)
     {
-	super(owner, true);
-	what.jsValues.debug.log("Creating CollabStateDlg");
+    super(owner, true);
+    what.jsValues.debug.log("Creating CollabStateDlg");
 
         jsc = what;
 
@@ -4824,7 +4825,7 @@ class CollabStateDlg extends Dialog
         DEViseButton [] button = new DEViseButton[1];
         button[0] = closeButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -4875,27 +4876,27 @@ class CollabStateDlg extends Dialog
         closeButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-		    {
-			close();
-			// close the dialog in followers
-			if (jsc.specialID == -1 && jsc.isCollab) {
-			    try {
-				jsc.dispatcher.sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
-			    } catch (YException ex) {
-				System.out.println(ex.getMessage());
-			    }
-			} 
-		    }
+            {
+            close();
+            // close the dialog in followers
+            if (jsc.specialID == -1 && jsc.isCollab) {
+                try {
+                jsc.dispatcher.sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+                } catch (YException ex) {
+                System.out.println(ex.getMessage());
+                }
+            }
+            }
                 });
     }
 
     public void setCollabList(String data)
     {
-      	followers = DEViseGlobals.parseString(data);	
+        followers = DEViseGlobals.parseString(data);
 
         for (int i = 1; i < followers.length; i++) {
-	    collabList.add(" " + i + ":" + " " + followers[i]);
-	}
+        collabList.add(" " + i + ":" + " " + followers[i]);
+    }
 
         validate();
     }
@@ -4912,7 +4913,7 @@ class CollabStateDlg extends Dialog
 
     public void open()
     {
-	jsc.jsValues.debug.log("Opening CollabStateDlg");
+    jsc.jsValues.debug.log("Opening CollabStateDlg");
         status = true;
         setVisible(true);
     }
@@ -4923,7 +4924,7 @@ class CollabStateDlg extends Dialog
             dispose();
             status = false;
         }
-	jsc.jsValues.debug.log("Closed CollabStateDlg");
+    jsc.jsValues.debug.log("Closed CollabStateDlg");
     }
 
     // true means this dialog is showing
@@ -4952,7 +4953,7 @@ class DynMovieDlg extends Dialog
     {
         super(owner, true);
 
-	what.jsValues.debug.log("Creating DynMovieDlg");
+    what.jsValues.debug.log("Creating DynMovieDlg");
 
         jsc = what;
 
@@ -4967,14 +4968,14 @@ class DynMovieDlg extends Dialog
         GridBagConstraints  c = new GridBagConstraints();
         setLayout(gridbag);
 
-    	msg = new Label(
-	  "Creating edited dynamics movie -- this may take several minutes.");
+        msg = new Label(
+      "Creating edited dynamics movie -- this may take several minutes.");
 
         c.gridwidth = 1;
-	c.gridx = 0;
-	c.gridx = 0;
-	c.ipadx = 20;
-	c.ipady = 20;
+    c.gridx = 0;
+    c.gridx = 0;
+    c.ipadx = 20;
+    c.ipady = 20;
         gridbag.setConstraints(msg, c);
         add(msg);
 
@@ -4985,13 +4986,13 @@ class DynMovieDlg extends Dialog
         button[0] = okButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
         panel.setBackground(jsc.jsValues.uiglobals.bg);
 
-	c.gridx = 0;
-	c.gridy = 1;
-	c.ipadx = 10;
-	c.ipady = 10;
+    c.gridx = 0;
+    c.gridy = 1;
+    c.ipadx = 10;
+    c.ipady = 10;
         gridbag.setConstraints(panel, c);
         add(panel);
 
@@ -5023,7 +5024,7 @@ class DynMovieDlg extends Dialog
             {
                 public void actionPerformed(ActionEvent event)
                 {
-		    isOk = true;
+            isOk = true;
                     close();
                 }
             });
@@ -5050,7 +5051,7 @@ class DynMovieDlg extends Dialog
 
     public void open()
     {
-	jsc.jsValues.debug.log("Opening CollabPassDlg");
+    jsc.jsValues.debug.log("Opening CollabPassDlg");
         status = true;
         setVisible(true);
     }
@@ -5062,7 +5063,7 @@ class DynMovieDlg extends Dialog
 
             status = false;
         }
-	jsc.jsValues.debug.log("Closed DynMovieDlg");
+    jsc.jsValues.debug.log("Closed DynMovieDlg");
     }
 
     // true means this dialog is showing
@@ -5090,7 +5091,7 @@ class ShowUrlDlg extends Dialog
     {
         super(owner, true);
 
-	what.jsValues.debug.log("Creating ShowUrlDlg");
+    what.jsValues.debug.log("Creating ShowUrlDlg");
 
         jsc = what;
 
@@ -5103,10 +5104,10 @@ class ShowUrlDlg extends Dialog
         setTitle("Showing Web Document");
 
         urlText.setBackground(jsc.jsValues.uiglobals.textBg);
-	urlText.setForeground(jsc.jsValues.uiglobals.textFg);
+    urlText.setForeground(jsc.jsValues.uiglobals.textFg);
         urlText.setFont(jsc.jsValues.uiglobals.textFont);
-	urlText.setText(url);
-	urlText.setEditable(false);
+    urlText.setText(url);
+    urlText.setEditable(false);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -5118,45 +5119,45 @@ class ShowUrlDlg extends Dialog
         c.weightx = 1.0;
         c.weighty = 1.0;
         c.insets = new Insets(5, 5, 0, 5);
-	c.ipadx = 0;
-	c.ipady = 0;
+    c.ipadx = 0;
+    c.ipady = 0;
         c.gridwidth = 1;
 
         c.gridwidth = GridBagConstraints.REMAINDER;
-	c.gridx = 0;
-	c.gridy = 0;
-	msg1.setAlignment(Label.CENTER);
+    c.gridx = 0;
+    c.gridy = 0;
+    msg1.setAlignment(Label.CENTER);
         gridbag.setConstraints(msg1, c);
         add(msg1);
 
         c.insets = new Insets(0, 5, 5, 5);
-	c.gridy = 1;
-	msg2.setAlignment(Label.CENTER);
+    c.gridy = 1;
+    msg2.setAlignment(Label.CENTER);
         gridbag.setConstraints(msg2, c);
         add(msg2);
 
         Label label = new Label("URL:");
         c.insets = new Insets(10, 5, 5, 5);
         c.gridwidth = 1;
-	c.gridx = 0;
-	c.gridy = 2;
+    c.gridx = 0;
+    c.gridy = 2;
         gridbag.setConstraints(label, c);
         add(label);
 
         c.gridwidth = GridBagConstraints.REMAINDER;
-	c.gridx = 1;
-	c.gridy = 2;
+    c.gridx = 1;
+    c.gridy = 2;
         gridbag.setConstraints(urlText, c);
         add(urlText);
 
         DEViseButton [] button = new DEViseButton[1];
         button[0] = okButton;
         DEViseComponentPanel panel2 = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
         panel2.setBackground(jsc.jsValues.uiglobals.bg);
 
-	c.gridx = 0;
-	c.gridy = 3;
+    c.gridx = 0;
+    c.gridy = 3;
         gridbag.setConstraints(panel2, c);
         add(panel2);
 
@@ -5188,7 +5189,7 @@ class ShowUrlDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			close();
+            close();
                     }
                 });
     }
@@ -5205,10 +5206,10 @@ class ShowUrlDlg extends Dialog
 
     public void open()
     {
-	jsc.jsValues.debug.log("Opening ShowUrlDlg");
+    jsc.jsValues.debug.log("Opening ShowUrlDlg");
         status = true;
         setVisible(true);
-	toFront();
+    toFront();
     }
 
     public synchronized void close()
@@ -5218,7 +5219,7 @@ class ShowUrlDlg extends Dialog
 
             status = false;
         }
-	jsc.jsValues.debug.log("Closed ShowUrlDlg");
+    jsc.jsValues.debug.log("Closed ShowUrlDlg");
     }
 
     // true means this dialog is showing
@@ -5242,9 +5243,9 @@ class AboutDlg extends Dialog
         super(owner, true);
 
         jsc = what;
-	jsc.jsValues.debug.log("Creating AboutDlg");
+    jsc.jsValues.debug.log("Creating AboutDlg");
 
-        closeButton = new DEViseButton("  Close  ", jsc.jsValues);    
+        closeButton = new DEViseButton("  Close  ", jsc.jsValues);
 
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
@@ -5266,7 +5267,7 @@ class AboutDlg extends Dialog
         DEViseButton [] button = new DEViseButton[1];
         button[0] = closeButton;
         DEViseComponentPanel panel2 = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+      DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
         panel2.setBackground(jsc.jsValues.uiglobals.bg);
 
         gridbag.setConstraints(panel2, c);
@@ -5278,7 +5279,7 @@ class AboutDlg extends Dialog
         Point parentLoc = null;
         Dimension parentSize = null;
 
-	//TEMP -- do we need this?
+    //TEMP -- do we need this?
         if (isCenterScreen) {
             Toolkit kit = Toolkit.getDefaultToolkit();
             parentSize = kit.getScreenSize();
@@ -5301,7 +5302,7 @@ class AboutDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			close();
+            close();
                     }
                 });
     }
@@ -5318,7 +5319,7 @@ class AboutDlg extends Dialog
 
     public void open()
     {
-	jsc.jsValues.debug.log("Opening AboutDlg");
+    jsc.jsValues.debug.log("Opening AboutDlg");
         status = true;
         setVisible(true);
     }
@@ -5330,7 +5331,7 @@ class AboutDlg extends Dialog
 
             status = false;
         }
-	jsc.jsValues.debug.log("Closed AboutDlg");
+    jsc.jsValues.debug.log("Closed AboutDlg");
     }
 }
 TEMP*/

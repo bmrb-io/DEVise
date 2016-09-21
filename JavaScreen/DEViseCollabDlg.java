@@ -80,74 +80,74 @@ public class DEViseCollabDlg implements Runnable
 
     public DEViseCollabDlg(jsdevisec j, int d, String[] msgs) {
         jsc = j;
-	dlg = d;
-	args = msgs;
+    dlg = d;
+    args = msgs;
 
-	thread = new Thread(this);
-	thread.setName("Collab dialog 1");
-	thread.start();
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    DEViseUtils.printAllThreads("Starting thread " + thread);
-	}
+    thread = new Thread(this);
+    thread.setName("Collab dialog 1");
+    thread.start();
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("Starting thread " + thread);
+    }
     }
 
     public DEViseCollabDlg(jsdevisec j, int d, String msg) {
         jsc = j;
-	dlg = d;
-	arg = msg;
+    dlg = d;
+    arg = msg;
 
-	thread = new Thread(this);
-	thread.setName("Collab dialog 2");
-	thread.start();
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    DEViseUtils.printAllThreads("Starting thread " + thread);
-	}
+    thread = new Thread(this);
+    thread.setName("Collab dialog 2");
+    thread.start();
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("Starting thread " + thread);
+    }
     }
 
     public void run()
     {
-	switch (dlg) {
-	case DLG_RECORD: // showRecordDlg()
-	    jsc.showRecord(args);
-	    break;
-	case DLG_SERVER_STATE: // showServerState()
-	    jsc.showServerState(args[1]);
-	    break;
-	case DLG_COLLAB_STATE: // showCollabState()
-	    jsc.showCollabState(arg);
-	    break;
-	default:
-	    System.err.println("Illegal dialog type: " + dlg);
-	}
+    switch (dlg) {
+    case DLG_RECORD: // showRecordDlg()
+        jsc.showRecord(args);
+        break;
+    case DLG_SERVER_STATE: // showServerState()
+        jsc.showServerState(args[1]);
+        break;
+    case DLG_COLLAB_STATE: // showCollabState()
+        jsc.showCollabState(arg);
+        break;
+    default:
+        System.err.println("Illegal dialog type: " + dlg);
+    }
 
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    DEViseUtils.printAllThreads("Thread " + thread + " ending");
-	}
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("Thread " + thread + " ending");
+    }
     }
 
     public void stop()
     {
-	switch (dlg) {
-	case DLG_RECORD: // showRecordDlg()
-	    jsc.recorddlg.close();
-	    if (jsc.recorddlg != null)
-		jsc.recorddlg = null;
-	    break;
-	case DLG_SERVER_STATE: // showServerState()
-	    jsc.statedlg.close();
-	    jsc.statedlg = null;
-	    break;  
-	case DLG_COLLAB_STATE: // showCollabState()
-	    jsc.collabstatedlg.close();
-	    jsc.collabstatedlg = null;
-	    break;   
-	default:
-	    System.err.println("Illegal dialog type: " + dlg);
-	}
+    switch (dlg) {
+    case DLG_RECORD: // showRecordDlg()
+        jsc.recorddlg.close();
+        if (jsc.recorddlg != null)
+        jsc.recorddlg = null;
+        break;
+    case DLG_SERVER_STATE: // showServerState()
+        jsc.statedlg.close();
+        jsc.statedlg = null;
+        break;
+    case DLG_COLLAB_STATE: // showCollabState()
+        jsc.collabstatedlg.close();
+        jsc.collabstatedlg = null;
+        break;
+    default:
+        System.err.println("Illegal dialog type: " + dlg);
+    }
 
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    DEViseUtils.printAllThreads("Stopping thread " + thread);
-	}
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("Stopping thread " + thread);
+    }
         thread.stop();
     }
 }

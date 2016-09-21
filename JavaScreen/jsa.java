@@ -399,7 +399,7 @@ class jscframe extends JFrame
         add(jsc);
         setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();
-        jsc.start();
+    jsc.start();
 
         Point loc = new Point(0, 0);
         Dimension size = getSize();
@@ -417,7 +417,7 @@ class jscframe extends JFrame
         // necessary for processEvent method to work
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
-        show();
+        setVisible(true);
     }
 
     public boolean isQuit()

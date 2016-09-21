@@ -311,9 +311,9 @@
 // version is now 10.0 -- JS code accepts but ignores new arguments.
 //
 // Revision 1.116  2002/01/24 16:24:27  xuk
-// Fixed bug 739: restore pre-collaboration state, if cancel before 
+// Fixed bug 739: restore pre-collaboration state, if cancel before
 // completely going into collaboration mode or enter wrong collaboration password.
-// 													     
+//
 // Revision 1.115  2001/12/13 21:35:02  wenger
 // Added flexibility to enable/disable mouse location display individually
 // for X and Y axes (needed for peptide-cgi session improvements requested
@@ -350,7 +350,7 @@
 // CGI mode working again.)
 //
 // Revision 1.108  2001/11/06 16:27:19  xuk
-// Reset collaboration follower's screen size and resolution to deal with 
+// Reset collaboration follower's screen size and resolution to deal with
 // different screen size from leaders.
 //
 // Revision 1.107  2001/10/30 17:29:35  xuk
@@ -360,10 +360,10 @@
 // Created DEViseClient object for collaborating clients in jspop.
 // 1. Modified sockSendCmd(), no difference between normal and collaborating modes;
 // 2. Modified start(), no difference between normal and collaborating modes;
-// 	                now JAVAC_Connect command has no collab_passwd argument;
-// 			enable heartbeat in collaboration mode;
+//                  now JAVAC_Connect command has no collab_passwd argument;
+//          enable heartbeat in collaboration mode;
 // 3. Modified run(), in collaboration mode, break loop when specialID == 1;
-// 4. Modified sendRcvCommand(), in collaboration mode, when current thread is 
+// 4. Modified sendRcvCommand(), in collaboration mode, when current thread is
 //    interrupted, sends JAVAC_CollabExit command to jspop;
 //
 // Revision 1.105.2.2  2001/11/07 17:22:36  wenger
@@ -501,7 +501,7 @@
 // Made the JS can switch between collaboration and socket modes.
 //
 // Revision 1.72  2001/01/31 22:23:55  xuk
-// Modify processReceivedCommand(), for wrong collaboration JS ID. 
+// Modify processReceivedCommand(), for wrong collaboration JS ID.
 // Stop current thread when receives JAVAC_ERROR command from jspop.
 //
 // Revision 1.71  2001/01/30 03:03:28  xuk
@@ -596,7 +596,7 @@
 // Include ID and cgiFlag in every command sent out.
 //
 // Revision 1.65.4.22  2000/11/21 01:51:31  xuk
-// Change some non-final static variables to non-static. Add a new class, 
+// Change some non-final static variables to non-static. Add a new class,
 // DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
 //
 // Revision 1.65.4.21  2000/11/16 15:19:23  wenger
@@ -666,7 +666,7 @@
 // Add wait() in the while loop of run() function. Not occupy CPU.
 //
 // Revision 1.65.4.4  2000/10/10 04:48:19  xuk
-// Fix the bugs of Stop button color and gears in the upper left corner: 
+// Fix the bugs of Stop button color and gears in the upper left corner:
 // jsc.animPanel.start() and jsc.stopButton.setBackground(Color.red) in run() function.
 //
 // Revision 1.65.4.3  2000/10/09 16:29:43  xuk
@@ -901,13 +901,13 @@ public class DEViseCmdDispatcher implements Runnable
     private synchronized void setStatus(int arg)
     {
         _status = arg;
-	if (_commands == null || _commands.length < 1 ||
-	  !_commands[0].startsWith(DEViseCommands.HEART_BEAT)) {
-	    // We must NOT do this for a heartbeat command; otherwise, if you are in the
-	    // middle of dragging a cursor, and there's a heartbeat, things get totally
-	    // goofed up.
+    if (_commands == null || _commands.length < 1 ||
+      !_commands[0].startsWith(DEViseCommands.HEART_BEAT)) {
+        // We must NOT do this for a heartbeat command; otherwise, if you are in the
+        // middle of dragging a cursor, and there's a heartbeat, things get totally
+        // goofed up.
             jsc.jscreen.reEvaluateMousePosition();
-	}
+    }
     }
 
     //---------------------------------------------------------------------
@@ -955,17 +955,17 @@ public class DEViseCmdDispatcher implements Runnable
     {
         return _popID;
     }
- 
+
     //---------------------------------------------------------------------
     public int getIsCgi()
     {
-    	return _isCgi;
+        return _isCgi;
     }
 
     //---------------------------------------------------------------------
     public int getIsModPerl()
     {
-    	return _isModPerl;
+        return _isModPerl;
     }
 
     //---------------------------------------------------------------------
@@ -977,7 +977,7 @@ public class DEViseCmdDispatcher implements Runnable
     // condition between two commands getting in here at the same time,
     // and both trying to modify the status flag, etc.
 
-    // Note: this method MUST call notifyAll() if it exits in any way other 
+    // Note: this method MUST call notifyAll() if it exits in any way other
     // than the normal exit from the end (so that we don't get stuck in
     // the wait() in another thread.
 
@@ -995,122 +995,122 @@ public class DEViseCmdDispatcher implements Runnable
             System.out.println("DEViseCmdDispatcher.start(" + cmd + ")");
             System.out.println("  In thread: " + Thread.currentThread());
         }
-	jsc.jsValues.debug.log("Sending command (" + cmd + ")");
+    jsc.jsValues.debug.log("Sending command (" + cmd + ")");
 
         if (getStatus() == STATUS_RUNNING_NON_HB || _cmdWaiting) {
-            if (!cmd.startsWith(DEViseCommands.HEART_BEAT) && 
-		!jsc.jsValues.session.autoPlayback) {
-		jsc.showMsg("JavaScreen is busy working\nPlease try again later");
-	    }
+            if (!cmd.startsWith(DEViseCommands.HEART_BEAT) &&
+        !jsc.jsValues.session.autoPlayback) {
+        jsc.showMsg("JavaScreen is busy working\nPlease try again later");
+        }
             if (_debug) {
-	        System.out.println("Command rejected because one is already pending or waiting");
-	    }
+            System.out.println("Command rejected because one is already pending or waiting");
+        }
             return;
         } else if (getStatus() == STATUS_RUNNING_HB) {
-	    if (_debug) {
-	        System.out.println("Starting another command while a heartbeat is pending");
-	    }
+        if (_debug) {
+            System.out.println("Starting another command while a heartbeat is pending");
+        }
 
-	    // Note: we wait here because otherwise a second command could
-	    // sneak in between the end of start() and the beginning of
-	    // the corresponding run() and overwrite the _commands array.
-	    waitForCmds();
-	}
+        // Note: we wait here because otherwise a second command could
+        // sneak in between the end of start() and the beginning of
+        // the corresponding run() and overwrite the _commands array.
+        waitForCmds();
+    }
 
         if (cmd.startsWith(DEViseCommands.HEART_BEAT)) {
             setStatus(STATUS_RUNNING_HB);
-	} else {
+    } else {
             setStatus(STATUS_RUNNING_NON_HB);
-	}
+    }
 
-    	_cmdStart = System.currentTimeMillis() * 1.0e-3;
+        _cmdStart = System.currentTimeMillis() * 1.0e-3;
 
         jsc.animPanel.start();
         jsc.stopButton.setBackground(Color.red);
         jsc.stopNumber = 0;
 
-	if (jsc.jsValues.connection.useCgi == false) { // not using cgi, default case
-	    // If we don't have a socket to the jspop, attempt to create one.
-	    if (commSocket == null) {
-		boolean isEnd = false;
-		while (!isEnd) {
-		    if (!connect()) {
-			if (testCgi()) {
-			    jsc.showMsg("Direct socket " +
-			      "connection is not available (may be blocked " +
-			      "by firewall).  Continuing in CGI mode.");
-			    jsc.cgiMode();
-			    jsc.jsValues.connection.useCgi = true;
-			    isEnd = true;
-			} else {
-			    jsc.showMsg("Connection to JSPoP is not " +
-			      "currently available");
-			    jsc.animPanel.stop();
-			    jsc.stopButton.setBackground(
-			      jsc.jsValues.uiglobals.bg);
-			    setStatus(STATUS_IDLE);
-			    notifyAll();
-			    return;
-			}
-		    } else {
-			isEnd = true;
-		    }
-		}
-	    }
-	} else { // in cgi mode, close the socket
-	    //TEMPTEMP -- is this the right place to do this?  does
-	    // the socket get closed after replies are received, or isn't
-	    // it closed until the next command is sent????
-	    if (commSocket != null) {
-		commSocket.closeSocket();
-		commSocket = null;
-		jsc.pn("Socket has been closed.");
-	    }	
-	}	
+    if (jsc.jsValues.connection.useCgi == false) { // not using cgi, default case
+        // If we don't have a socket to the jspop, attempt to create one.
+        if (commSocket == null) {
+        boolean isEnd = false;
+        while (!isEnd) {
+            if (!connect()) {
+            if (testCgi()) {
+                jsc.showMsg("Direct socket " +
+                  "connection is not available (may be blocked " +
+                  "by firewall).  Continuing in CGI mode.");
+                jsc.cgiMode();
+                jsc.jsValues.connection.useCgi = true;
+                isEnd = true;
+            } else {
+                jsc.showMsg("Connection to JSPoP is not " +
+                  "currently available");
+                jsc.animPanel.stop();
+                jsc.stopButton.setBackground(
+                  jsc.jsValues.uiglobals.bg);
+                setStatus(STATUS_IDLE);
+                notifyAll();
+                return;
+            }
+            } else {
+            isEnd = true;
+            }
+        }
+        }
+    } else { // in cgi mode, close the socket
+        //TEMPTEMP -- is this the right place to do this?  does
+        // the socket get closed after replies are received, or isn't
+        // it closed until the next command is sent????
+        if (commSocket != null) {
+        commSocket.closeSocket();
+        commSocket = null;
+        jsc.pn("Socket has been closed.");
+        }
+    }
 
-	// for collabration JavaScreen	
-	if (jsc.specialID != -1) {
-	    jsc.pn("We entered one collabration JavaScreen.");
+    // for collabration JavaScreen
+    if (jsc.specialID != -1) {
+        jsc.pn("We entered one collabration JavaScreen.");
         }
 
-	// If we don't have a connection yet, prepend a connection request
-	// command to whatever was passed in.
+    // If we don't have a connection yet, prepend a connection request
+    // command to whatever was passed in.
 
-	if (!_connectedAlready) {
-	    cmd = DEViseCommands.CONNECT + " {" +
-		jsc.jsValues.connection.username + "} {" +
-		jsc.jsValues.connection.password + "} {" +
-		DEViseGlobals.PROTOCOL_VERSION + "} {}\n" + cmd;
-		// Note: fourth argument is IP address; CGI script will
-		// fill in for CGI mode.
-	    
-	    _connectedAlready = true;
+    if (!_connectedAlready) {
+        cmd = DEViseCommands.CONNECT + " {" +
+        jsc.jsValues.connection.username + "} {" +
+        jsc.jsValues.connection.password + "} {" +
+        DEViseGlobals.PROTOCOL_VERSION + "} {}\n" + cmd;
+        // Note: fourth argument is IP address; CGI script will
+        // fill in for CGI mode.
 
-	    // Start the heartbeat thread.
-	    if (!jsc.jsValues.session.autoPlayback) {
-		_heartbeat = new DEViseHeartbeat(this);
-	    }
+        _connectedAlready = true;
+
+        // Start the heartbeat thread.
+        if (!jsc.jsValues.session.autoPlayback) {
+        _heartbeat = new DEViseHeartbeat(this);
+        }
         }
 
-	_commands = DEViseGlobals.parseStr(cmd);
-	if (_commands == null || _commands.length == 0) {
-	    jsc.showMsg("Invalid command: \"" + cmd + "\"");
-	    jsc.animPanel.stop();
-	    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-	    setStatus(STATUS_IDLE);
-	    notifyAll();
-	    return;
-	}
+    _commands = DEViseGlobals.parseStr(cmd);
+    if (_commands == null || _commands.length == 0) {
+        jsc.showMsg("Invalid command: \"" + cmd + "\"");
+        jsc.animPanel.stop();
+        jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+        setStatus(STATUS_IDLE);
+        notifyAll();
+        return;
+    }
 
-	jsc.jscreen.setLastAction(cmd);
-	// Note: command(s) will actually be sent by the run() method
-	// of this class.
+    jsc.jscreen.setLastAction(cmd);
+    // Note: command(s) will actually be sent by the run() method
+    // of this class.
         dispatcherThread = new Thread(this);
         dispatcherThread.setName("Command thread for " + cmd);
         dispatcherThread.start();
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    DEViseUtils.printAllThreads("Starting thread " + dispatcherThread);
-	}
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("Starting thread " + dispatcherThread);
+    }
 
         if (_debug) {
             System.out.println("Done with DEViseCmdDispatcher.start()");
@@ -1122,13 +1122,13 @@ public class DEViseCmdDispatcher implements Runnable
     public synchronized void waitForCmds()
     {
         while (getStatus() == STATUS_RUNNING_NON_HB || _cmdWaiting) {
-	    try {
-	        wait();
-	    } catch (InterruptedException ex) {
-	        System.err.println("InterruptedException (" +
-		  ex.toString() + ") waiting for command");
-	    }
-	}
+        try {
+            wait();
+        } catch (InterruptedException ex) {
+            System.err.println("InterruptedException (" +
+          ex.toString() + ") waiting for command");
+        }
+    }
     }
 
     //---------------------------------------------------------------------
@@ -1144,7 +1144,7 @@ public class DEViseCmdDispatcher implements Runnable
     {
         if (_debug) {
             System.out.println("DEViseCmdDispatcher.stop(" +
-	      isDisconnect + ")");
+          isDisconnect + ")");
         }
 
         if (isDisconnect) {
@@ -1155,10 +1155,10 @@ public class DEViseCmdDispatcher implements Runnable
                     return;
                 } else {
                     if (dispatcherThread != null) {
-			if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	                    DEViseUtils.printAllThreads("Stopping thread " +
-			      dispatcherThread);
-			}
+            if (DEViseGlobals.DEBUG_THREADS >= 1) {
+                        DEViseUtils.printAllThreads("Stopping thread " +
+                  dispatcherThread);
+            }
                         dispatcherThread.stop();
                         dispatcherThread = null;
                     }
@@ -1182,7 +1182,7 @@ public class DEViseCmdDispatcher implements Runnable
             setAbortStatus(true);
         }
 
-	return;
+    return;
     }
 
     //---------------------------------------------------------------------
@@ -1193,80 +1193,80 @@ public class DEViseCmdDispatcher implements Runnable
             System.out.println("DEViseCmdDispatcher.destroy()");
         }
 
-	//
-	// Destroy the heartbeat thread -- we *must* make sure that no
-	// heartbeats are sent after the JAVAC_Exit command is sent.
-	//
-	if (_heartbeat != null) {
+    //
+    // Destroy the heartbeat thread -- we *must* make sure that no
+    // heartbeats are sent after the JAVAC_Exit command is sent.
+    //
+    if (_heartbeat != null) {
             _heartbeat.stop();
             _heartbeat = null;
-	}
+    }
 
-	// send a Java_Collab_Exit if we are collaborating.
-	if (jsc.specialID != -1) {
-	    // We are a collaboration follower.
-	    try {
+    // send a Java_Collab_Exit if we are collaborating.
+    if (jsc.specialID != -1) {
+        // We are a collaboration follower.
+        try {
                 jsc.pn("Sending: \"" + DEViseCommands.STOP_COLLAB +"\"");
-		commSocket.sendCmd(DEViseCommands.STOP_COLLAB, 
-				   DEViseGlobals.API_JAVA, 
-				   jsc.jsValues.connection.connectionID);
-		jsc.restoreDisplaySize();
+        commSocket.sendCmd(DEViseCommands.STOP_COLLAB,
+                   DEViseGlobals.API_JAVA,
+                   jsc.jsValues.connection.connectionID);
+        jsc.restoreDisplaySize();
             } catch (YException e) {
                 jsc.showMsg(e.getMsg());
             }
-	}
+    }
 
-	//
-	// Send a JAVAC_Exit command if we're connected.
-	//
+    //
+    // Send a JAVAC_Exit command if we're connected.
+    //
         if (getOnlineStatus()) {
-	    try {
+        try {
                 if (_debug) {
                     System.out.println("Sending JAVAC_Exit command in " +
-		      "DEViseCmdDispatcher.destroy()");
-		}
+              "DEViseCmdDispatcher.destroy()");
+        }
 
                 jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
                 sendCmd(DEViseCommands.EXIT);
-		// Try to prevent "Abrupt end of input stream" errors at
-		// the JSPoP.  We need this so the JSPoP has some time
-		// to shut things down before we close the client end of
-		// the socket.
-		Thread.sleep(2000);
-	    } catch (InterruptedException ex) {
-	        System.err.println("Sleep interrupted: " + ex.getMessage());
+        // Try to prevent "Abrupt end of input stream" errors at
+        // the JSPoP.  We need this so the JSPoP has some time
+        // to shut things down before we close the client end of
+        // the socket.
+        Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+            System.err.println("Sleep interrupted: " + ex.getMessage());
             } catch (YException e) {
                 jsc.showMsg(e.getMsg());
             }
         }
 
-	//
-	// Kill the dispatcher thread and disconnect.
-	//
-	if (getStatus() != STATUS_IDLE && dispatcherThread != null) {
-	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	        DEViseUtils.printAllThreads("Stopping thread " +
-		  dispatcherThread);
-	    }
-	    dispatcherThread.stop();
-	    dispatcherThread = null;
-	}
+    //
+    // Kill the dispatcher thread and disconnect.
+    //
+    if (getStatus() != STATUS_IDLE && dispatcherThread != null) {
+        if (DEViseGlobals.DEBUG_THREADS >= 1) {
+            DEViseUtils.printAllThreads("Stopping thread " +
+          dispatcherThread);
+        }
+        dispatcherThread.stop();
+        dispatcherThread = null;
+    }
         disconnect();
 
-	//
-	// Set the GUI state appropriately.
-	//
+    //
+    // Set the GUI state appropriately.
+    //
         jsc.animPanel.stop();
-	jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-	jsc.jscreen.updateScreen(false);
+    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+    jsc.jscreen.updateScreen(false);
 
-	//
-	// Set the status appropriately.
-	//
+    //
+    // Set the status appropriately.
+    //
         if (getStatus() != STATUS_IDLE) {
             setAbortStatus(true);
         }
-	setStatus(STATUS_IDLE);
+    setStatus(STATUS_IDLE);
     }
 
     //---------------------------------------------------------------------
@@ -1274,14 +1274,14 @@ public class DEViseCmdDispatcher implements Runnable
     {
         try {
             commSocket = new DEViseCommSocket(jsc.jsValues.connection.hostname,
-	      jsc.jsValues.connection.cmdport, SOCK_REC_TIMEOUT,
-	      SOCK_CONST_TIMEOUT);
-	    jsc.pn("Socket connection set up!");
+          jsc.jsValues.connection.cmdport, SOCK_REC_TIMEOUT,
+          SOCK_CONST_TIMEOUT);
+        jsc.pn("Socket connection set up!");
             return true;
         } catch (YException e) {
-	    System.err.println(e.getMessage() + " (in " + e.getWhere() + ")");
+        System.err.println(e.getMessage() + " (in " + e.getWhere() + ")");
             errMsg = e.getMessage();
-	    jsc.pn("Socket connection turned down!");
+        jsc.pn("Socket connection turned down!");
             disconnect();
             return false;
         }
@@ -1293,9 +1293,9 @@ public class DEViseCmdDispatcher implements Runnable
     {
         try {
             commSocket = new DEViseCommSocket(jsc.jsValues.connection.hostname,
-	      jsc.jsValues.connection.cmdport, SOCK_REC_TIMEOUT,
-	      SOCK_CONST_TIMEOUT);
-	    jsc.pn("Socket connection set up!");
+          jsc.jsValues.connection.cmdport, SOCK_REC_TIMEOUT,
+          SOCK_CONST_TIMEOUT);
+        jsc.pn("Socket connection set up!");
             return true;
         } catch (YException e) {
             return false;
@@ -1310,7 +1310,7 @@ public class DEViseCmdDispatcher implements Runnable
             commSocket = null;
         }
 
-	_connectedAlready = false;
+    _connectedAlready = false;
 
         isOnline = false;
         isAbort = false;
@@ -1328,118 +1328,118 @@ public class DEViseCmdDispatcher implements Runnable
         if (_debug) {
             System.out.println("DEViseCmdDispatcher.run(" + _commands[0] + ")");
         }
-		
-	if (jsc.specialID == -1) { // for formal JS
-	    try {
-		for (int i = 0; i < _commands.length; i++) {
-		    if (getAbortStatus()) {
-			setAbortStatus(false);
-			break;
-		    }
-		    
-		    if (_commands[i].length() == 0) {
-			continue;
-		    } else if (!_commands[i].startsWith(DEViseCommands.JS_PREFIX)) {
-			jsc.pn("Invalid command: " + _commands[i]);
-			continue;
-		    }
 
-		    if (_commands[i].startsWith(DEViseCommands.CLOSE_SESSION)) {
-			jsc.jscreen.updateScreen(false);
-			DEViseViewInfo.clearFormatters();
-			try {
-			    processCmd(_commands[i]);
-			} catch (YException e1) {
-			    jsc.showMsg(e1.getMsg());
-			    disconnect();
-			}
-		    } else if (_commands[i].startsWith(DEViseCommands.OPEN_SESSION)) {
-			jsc.jscreen.updateScreen(false);
-			processCmd(_commands[i]);
-		    } else {
-			processCmd(_commands[i]);
-		    }
-		}
+    if (jsc.specialID == -1) { // for formal JS
+        try {
+        for (int i = 0; i < _commands.length; i++) {
+            if (getAbortStatus()) {
+            setAbortStatus(false);
+            break;
+            }
 
-		// Note: this is the "standard" place where the GUI gets
-		// changed to indicate that the command is finished.
-    	        double cmdTime =
-		  (System.currentTimeMillis() * 1.0e-3) - _cmdStart;
-		String timeOut =
-		  (new DecimalFormat("###.###")).format(cmdTime);
-		System.out.println("Command time: " + timeOut);
-		jsc.pn("Command time: " + timeOut);
+            if (_commands[i].length() == 0) {
+            continue;
+            } else if (!_commands[i].startsWith(DEViseCommands.JS_PREFIX)) {
+            jsc.pn("Invalid command: " + _commands[i]);
+            continue;
+            }
 
-		jsc.animPanel.stop();
-		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-	    } catch (YException e) {
-		jsc.animPanel.stop();
-		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-		
-		// turn off the counter and the traffic light
-	        if (UPDATE_VIEW_INFO) {
-		    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_IDLE,
-		      false);
-		    jsc.viewInfo.updateCount(0);
-	        }
-		
-		// user pressed the stop button
-		switch (e.getID()) {
-		case 0: // low level communication error
-		    jsc.showMsg(e.getMsg());
-		    jsc.jscreen.updateScreen(false);
-		    disconnect();
-		    break;
-		case 1: // invalid response from server
-		case 2: // ill-formated command received from server
-		    jsc.showMsg(e.getMsg());
-		    jsc.jscreen.updateScreen(false);
-		    try {
-			jsc.pn("Sending: \"" + DEViseCommands.CLOSE_SESSION +
-			       "\"");
-			sendCmd(DEViseCommands.CLOSE_SESSION);
-		    } catch (YException e1) {
-			jsc.showMsg(e1.getMsg());
-			disconnect();
-		    }
-		    break;
-		default:
-		    jsc.showMsg(e.getMsg());
-		    jsc.jscreen.updateScreen(false);
-		    disconnect();
-		    break;
-		}
-	    }
-	    
-	    setAbortStatus(false);
-	    setStatus(STATUS_IDLE);
-	}
-	// Collabration JavaScreen, waiting for incoming commands
-	else {
-	    try {
-		for (int i = 0; i < _commands.length; i++) {
-		    processCmd(_commands[i]); 
-		}
-		while (jsc.specialID != -1) {
-		    processCmd(null);
-		}
-	    } catch (YException e) {
-	    }
+            if (_commands[i].startsWith(DEViseCommands.CLOSE_SESSION)) {
+            jsc.jscreen.updateScreen(false);
+            DEViseViewInfo.clearFormatters();
+            try {
+                processCmd(_commands[i]);
+            } catch (YException e1) {
+                jsc.showMsg(e1.getMsg());
+                disconnect();
+            }
+            } else if (_commands[i].startsWith(DEViseCommands.OPEN_SESSION)) {
+            jsc.jscreen.updateScreen(false);
+            processCmd(_commands[i]);
+            } else {
+            processCmd(_commands[i]);
+            }
         }
 
-	notifyAll();
+        // Note: this is the "standard" place where the GUI gets
+        // changed to indicate that the command is finished.
+                double cmdTime =
+          (System.currentTimeMillis() * 1.0e-3) - _cmdStart;
+        String timeOut =
+          (new DecimalFormat("###.###")).format(cmdTime);
+        System.out.println("Command time: " + timeOut);
+        jsc.pn("Command time: " + timeOut);
+
+        jsc.animPanel.stop();
+        jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+        } catch (YException e) {
+        jsc.animPanel.stop();
+        jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+
+        // turn off the counter and the traffic light
+            if (UPDATE_VIEW_INFO) {
+            jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_IDLE,
+              false);
+            jsc.viewInfo.updateCount(0);
+            }
+
+        // user pressed the stop button
+        switch (e.getID()) {
+        case 0: // low level communication error
+            jsc.showMsg(e.getMsg());
+            jsc.jscreen.updateScreen(false);
+            disconnect();
+            break;
+        case 1: // invalid response from server
+        case 2: // ill-formated command received from server
+            jsc.showMsg(e.getMsg());
+            jsc.jscreen.updateScreen(false);
+            try {
+            jsc.pn("Sending: \"" + DEViseCommands.CLOSE_SESSION +
+                   "\"");
+            sendCmd(DEViseCommands.CLOSE_SESSION);
+            } catch (YException e1) {
+            jsc.showMsg(e1.getMsg());
+            disconnect();
+            }
+            break;
+        default:
+            jsc.showMsg(e.getMsg());
+            jsc.jscreen.updateScreen(false);
+            disconnect();
+            break;
+        }
+        }
+
+        setAbortStatus(false);
+        setStatus(STATUS_IDLE);
+    }
+    // Collabration JavaScreen, waiting for incoming commands
+    else {
+        try {
+        for (int i = 0; i < _commands.length; i++) {
+            processCmd(_commands[i]);
+        }
+        while (jsc.specialID != -1) {
+            processCmd(null);
+        }
+        } catch (YException e) {
+        }
+        }
+
+    notifyAll();
 
         if (_debug) {
-	    System.out.println("  Done with DEViseCmdDispatcher.run(" +
-			     _commands[0] + ")");
+        System.out.println("  Done with DEViseCmdDispatcher.run(" +
+                 _commands[0] + ")");
         }
-	jsc.jsValues.debug.log("  Done sending " + _commands[0] +
-	  " and getting replies");
+    jsc.jsValues.debug.log("  Done sending " + _commands[0] +
+      " and getting replies");
 
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    DEViseUtils.printAllThreads("Thread " + dispatcherThread +
-	      " ending");
-	}
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("Thread " + dispatcherThread +
+          " ending");
+    }
     }
 
     //---------------------------------------------------------------------
@@ -1449,8 +1449,8 @@ public class DEViseCmdDispatcher implements Runnable
     {
         if (_debug) {
             System.out.println(Thread.currentThread() + ":");
-	    System.out.println("  DEViseCmdDispatcher.processCmd(" +
-	      command + ")");
+        System.out.println("  DEViseCmdDispatcher.processCmd(" +
+          command + ")");
         }
 
         // sending command to server, and wait until server finish processing and
@@ -1458,47 +1458,47 @@ public class DEViseCmdDispatcher implements Runnable
         String[] rsp = sendRcvCmd(command);
 
         // turn on the 'process' light
-	if (UPDATE_VIEW_INFO) {
+    if (UPDATE_VIEW_INFO) {
             jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING,
-	      true);
-	}
+          true);
+    }
 
-	if (rsp != null) { // rsp == null means interrupted from collaboration mode 
-	    for (int i = 0; i < rsp.length; i++) {
-		// adjust the counter
-	        if (UPDATE_VIEW_INFO) {
-		    jsc.viewInfo.updateCount(rsp.length - 1 - i);
-	        }
-		
-		jsc.pn("Processing command (" + (rsp.length - 1 - i) + ") " +
-		       rsp[i]);
-		jsc.jsValues.debug.log("Processing command (" +
-				       (rsp.length - 1 - i) + ") " + rsp[i]);
+    if (rsp != null) { // rsp == null means interrupted from collaboration mode
+        for (int i = 0; i < rsp.length; i++) {
+        // adjust the counter
+            if (UPDATE_VIEW_INFO) {
+            jsc.viewInfo.updateCount(rsp.length - 1 - i);
+            }
 
-		processReceivedCommand(command, rsp[i]);
-		
-		jsc.pn("  Done with command " + rsp[i]);
-		jsc.pn("  Free mem: " + Runtime.getRuntime().freeMemory() +
-		       " Total mem: " + Runtime.getRuntime().totalMemory());
-		jsc.jsValues.debug.log("  Done with command " + rsp[i]);
-	    }
-	}
-	
-	_commCgi = null;
+        jsc.pn("Processing command (" + (rsp.length - 1 - i) + ") " +
+               rsp[i]);
+        jsc.jsValues.debug.log("Processing command (" +
+                       (rsp.length - 1 - i) + ") " + rsp[i]);
+
+        processReceivedCommand(command, rsp[i]);
+
+        jsc.pn("  Done with command " + rsp[i]);
+        jsc.pn("  Free mem: " + Runtime.getRuntime().freeMemory() +
+               " Total mem: " + Runtime.getRuntime().totalMemory());
+        jsc.jsValues.debug.log("  Done with command " + rsp[i]);
+        }
+    }
+
+    _commCgi = null;
 
         // turn off the 'process' light
-	if (UPDATE_VIEW_INFO) {
+    if (UPDATE_VIEW_INFO) {
             jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING,
-	      false);
-	}
+          false);
+    }
 
         System.gc();
 
-	//disconnect();
+    //disconnect();
 
         //System.out.println("Memory: " +
-	    //Runtime.getRuntime().freeMemory() + "/" +
-	    //Runtime.getRuntime().totalMemory());
+        //Runtime.getRuntime().freeMemory() + "/" +
+        //Runtime.getRuntime().totalMemory());
     }
 
     //---------------------------------------------------------------------
@@ -1507,11 +1507,11 @@ public class DEViseCmdDispatcher implements Runnable
     private synchronized void processReceivedCommand(String command, String response)
       throws YException
     {
-	if (_debug) {
+    if (_debug) {
             System.out.println(Thread.currentThread() + ":");
-	    System.out.println("  DEViseCmdDispatcher.processReceivedCommand(" +
-	      command + ", " + response + ")");
-	}
+        System.out.println("  DEViseCmdDispatcher.processReceivedCommand(" +
+          command + ", " + response + ")");
+    }
 
         String[] args = DEViseGlobals.parseString(response);
         if (args == null || args.length < 1) {
@@ -1520,64 +1520,64 @@ public class DEViseCmdDispatcher implements Runnable
               response + "\"", "DEViseCmdDispatcher::processCmd()", 2);
         }
 
-	//TEMP -- for some commands we don't seem to check the arg count...
+    //TEMP -- for some commands we don't seem to check the arg count...
         if (args[0].equals(DEViseCommands.DONE)) {
             // this command will guaranteed to be the last
-	    if (command != null) {
-		if (command.startsWith(DEViseCommands.OPEN_SESSION) ||
-		  command.startsWith(DEViseCommands.REOPEN_SESSION)) {
-		    jsc.jscreen.updateScreen(true);
-		}
-	    }
+        if (command != null) {
+        if (command.startsWith(DEViseCommands.OPEN_SESSION) ||
+          command.startsWith(DEViseCommands.REOPEN_SESSION)) {
+            jsc.jscreen.updateScreen(true);
+        }
+        }
 
         } else if (args[0].equals(DEViseCommands.FAIL)) {
             jsc.showMsg(response);
             jsc.jscreen.updateScreen(false);
 
-	    // for autotest detection
-	    if (jsc.jsValues.session.autoPlayback) {
-		System.err.println("\nError found with JavaScreen: " +
-				   response);
-	    }
-	    
+        // for autotest detection
+        if (jsc.jsValues.session.autoPlayback) {
+        System.err.println("\nError found with JavaScreen: " +
+                   response);
+        }
+
         } else if (args[0].equals(DEViseCommands.CLOSE_SESSION)) {
             // this command is for collaboration JS
             jsc.jscreen.updateScreen(false);
 
         } else if (args[0].equals(DEViseCommands.ERROR)) {
             // this command will guaranteed to be the last
-	    if (jsc.specialID != -1) {
+        if (jsc.specialID != -1) {
                 // a collaborator
-		jsc.showMsg(response);
+        jsc.showMsg(response);
 
-		jsc.socketMode();
-		jsc.specialID = -1;
-		jsc.collabinterrupted = true;
-		jsc.dispatcher.dispatcherThread.interrupt();
-		jsc.animPanel.stop();
-		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-		jsc.jscreen.updateScreen(false);
-		setStatus(STATUS_IDLE);
-		
-		jsc.restorePreCollab();
+        jsc.socketMode();
+        jsc.specialID = -1;
+        jsc.collabinterrupted = true;
+        jsc.dispatcher.dispatcherThread.interrupt();
+        jsc.animPanel.stop();
+        jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+        jsc.jscreen.updateScreen(false);
+        setStatus(STATUS_IDLE);
 
-	    } else {
-		if (command.startsWith(DEViseCommands.SET_COLLAB_PASS)) {
-		    jsc.collabModeUnlead(false);
-		    jsc.showMsg(response);
-		} else if (!command.startsWith(
-		  DEViseCommands.GET_SESSION_LIST)) {
-		    jsc.showMsg(response);
-		} else {
-		    jsc.showSession(new String[] {response}, false);
-		}
-	    }
+        jsc.restorePreCollab();
 
-	    // for autotest detection
-	    if (jsc.jsValues.session.autoPlayback) {
-		System.err.println("\nError found with JavaScreen: " +
-				   response);
-	    }
+        } else {
+        if (command.startsWith(DEViseCommands.SET_COLLAB_PASS)) {
+            jsc.collabModeUnlead(false);
+            jsc.showMsg(response);
+        } else if (!command.startsWith(
+          DEViseCommands.GET_SESSION_LIST)) {
+            jsc.showMsg(response);
+        } else {
+            jsc.showSession(new String[] {response}, false);
+        }
+        }
+
+        // for autotest detection
+        if (jsc.jsValues.session.autoPlayback) {
+        System.err.println("\nError found with JavaScreen: " +
+                   response);
+        }
 
         } else if (args[0].equals(DEViseCommands.SET_DISPLAY_SIZE)) {
             jsc.setDisplaySize(response);
@@ -1586,45 +1586,45 @@ public class DEViseCmdDispatcher implements Runnable
             jsc.showClientList(response);
 
         } else if (args[0].equals(DEViseCommands.INIT_COLLAB)) {
-	    jsc.collabInit(Integer.parseInt(args[1]));
+        jsc.collabInit(Integer.parseInt(args[1]));
 
         } else if (args[0].equals(DEViseCommands.COLLAB_EXIT)) {
-	    jsc.collabQuit();
-	    //TEMP -- should the stuff below all get moved into collabQuit()?
-	    // RKW 2001-11-12.
-	    jsc.restoreDisplaySize();
-	    jsc.restorePreCollab();
+        jsc.collabQuit();
+        //TEMP -- should the stuff below all get moved into collabQuit()?
+        // RKW 2001-11-12.
+        jsc.restoreDisplaySize();
+        jsc.restorePreCollab();
         } else if (args[0].equals(DEViseCommands.COLLAB_STATE)) {
             if (jsc.specialID == -1) { // for normal JS
-		if (! jsc.jsValues.session.autoPlayback) {
-		    jsc.showCollabState(response);
-		} else {
-		    // for auto playback and auto test
-		    collabdlg = new DEViseCollabDlg(jsc,
-		      DEViseCollabDlg.DLG_COLLAB_STATE, response);
-		    // close dialog after 5 sec.
+        if (! jsc.jsValues.session.autoPlayback) {
+            jsc.showCollabState(response);
+        } else {
+            // for auto playback and auto test
+            collabdlg = new DEViseCollabDlg(jsc,
+              DEViseCollabDlg.DLG_COLLAB_STATE, response);
+            // close dialog after 5 sec.
 
-		    try {
-			Thread.sleep(5000);
-		    } catch (InterruptedException e) {
-		    }
+            try {
+            Thread.sleep(5000);
+            } catch (InterruptedException e) {
+            }
 
-		    collabdlg.stop();
-		    collabdlg = null;
+            collabdlg.stop();
+            collabdlg = null;
 
-		    // close followers dialog
-		    if (jsc.isCollab) {
-			try {
-			    sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
-			} catch (YException ex) {
-			    System.out.println(ex.getMessage());
-			}
-		    }
-		}	
+            // close followers dialog
+            if (jsc.isCollab) {
+            try {
+                sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+            } catch (YException ex) {
+                System.out.println(ex.getMessage());
+            }
+            }
+        }
             } else { // for collaboration followers
-		collabdlg = new DEViseCollabDlg(jsc,
-		  DEViseCollabDlg.DLG_COLLAB_STATE, response);
-	    } 
+        collabdlg = new DEViseCollabDlg(jsc,
+          DEViseCollabDlg.DLG_COLLAB_STATE, response);
+        }
         } else if (args[0].equals(DEViseCommands.UPDATE_SERVER_STATE)) {
             if (args.length != 2) {
                 throw new YException(
@@ -1633,53 +1633,53 @@ public class DEViseCmdDispatcher implements Runnable
             }
 
             if (jsc.specialID == -1) { // for normal JS
-		if (! jsc.jsValues.session.autoPlayback) {
-		    jsc.showServerState(args[1]);
-		} else {
-		    // for auto playback and auto test
-		    collabdlg = new DEViseCollabDlg(jsc,
-		      DEViseCollabDlg.DLG_SERVER_STATE, args);
-		    // close dialog after 5 sec.
+        if (! jsc.jsValues.session.autoPlayback) {
+            jsc.showServerState(args[1]);
+        } else {
+            // for auto playback and auto test
+            collabdlg = new DEViseCollabDlg(jsc,
+              DEViseCollabDlg.DLG_SERVER_STATE, args);
+            // close dialog after 5 sec.
 
-		    try {
-			Thread.sleep(5000);
-		    } catch (InterruptedException e) {
-		    }
+            try {
+            Thread.sleep(5000);
+            } catch (InterruptedException e) {
+            }
 
-		    collabdlg.stop();
-		    collabdlg = null;
+            collabdlg.stop();
+            collabdlg = null;
 
-		    // close followers dialog
-		    if (jsc.isCollab) {
-			try {
-			    sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
-			} catch (YException ex) {
-			    System.out.println(ex.getMessage());
-			}
-		    }
-		}	
+            // close followers dialog
+            if (jsc.isCollab) {
+            try {
+                sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+            } catch (YException ex) {
+                System.out.println(ex.getMessage());
+            }
+            }
+        }
             } else { // for collaboration followers
-		collabdlg = new DEViseCollabDlg(jsc,
-		  DEViseCollabDlg.DLG_SERVER_STATE, args);
-	    } 
+        collabdlg = new DEViseCollabDlg(jsc,
+          DEViseCollabDlg.DLG_SERVER_STATE, args);
+        }
 
         } else if (args[0].equals(DEViseCommands.CREATE_VIEW)) {
-	    createView(response, args);
+        createView(response, args);
 
         } else if (args[0].equals(DEViseCommands.UPDATE_VIEW_IMAGE)) {
-	    updateViewImage(response, args);
+        updateViewImage(response, args);
 
         } else if (args[0].equals(DEViseCommands.UPDATE_GDATA)) {
-	    updateGData(response, args);
+        updateGData(response, args);
 
         } else if (args[0].equals(DEViseCommands.UPDATE_SESSION_LIST)) {
-	    // Number of arguments is variable.
-	    if (jsc.specialID == -1) { // only for normal JS 
-		jsc.showSession(args, true);
-            } 
+        // Number of arguments is variable.
+        if (jsc.specialID == -1) { // only for normal JS
+        jsc.showSession(args, true);
+            }
 
         } else if (args[0].equals(DEViseCommands.DRAW_CURSOR)) {
-	    drawCursor(response, args);
+        drawCursor(response, args);
 
         } else if (args[0].equals(DEViseCommands.ERASE_CURSOR)) {
             if (args.length != 3) {
@@ -1691,46 +1691,46 @@ public class DEViseCmdDispatcher implements Runnable
             jsc.jscreen.hideCursor(args[1], args[2]);
 
         } else if (args[0].equals(DEViseCommands.UPDATE_RECORD_VALUE)) {
-	    // Number of arguments is variable.
+        // Number of arguments is variable.
             if (jsc.specialID == -1) { // for normal JS
-		if (! jsc.jsValues.session.autoPlayback) {
-		    jsc.showRecord(args);
-		} else {
-		    // for auto playback and auto test
-		    collabdlg = new DEViseCollabDlg(jsc,
-		      DEViseCollabDlg.DLG_RECORD, args);
-		    // close dialog after 5 sec.
+        if (! jsc.jsValues.session.autoPlayback) {
+            jsc.showRecord(args);
+        } else {
+            // for auto playback and auto test
+            collabdlg = new DEViseCollabDlg(jsc,
+              DEViseCollabDlg.DLG_RECORD, args);
+            // close dialog after 5 sec.
 
-		    try {
-			Thread.sleep(5000);
-		    } catch (InterruptedException e) {
-		    }
+            try {
+            Thread.sleep(5000);
+            } catch (InterruptedException e) {
+            }
 
-		    collabdlg.stop();
-		    collabdlg = null;
+            collabdlg.stop();
+            collabdlg = null;
 
-		    // close followers dialog
-		    if (jsc.isCollab) {
-			try {
-			    sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
-			} catch (YException ex) {
-			    System.out.println(ex.getMessage());
-			}
-		    }
-		}	
+            // close followers dialog
+            if (jsc.isCollab) {
+            try {
+                sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+            } catch (YException ex) {
+                System.out.println(ex.getMessage());
+            }
+            }
+        }
             } else { // for collaboration followers
-		collabdlg = new DEViseCollabDlg(jsc,
-		  DEViseCollabDlg.DLG_RECORD, args);
-	    } 
+        collabdlg = new DEViseCollabDlg(jsc,
+          DEViseCollabDlg.DLG_RECORD, args);
+        }
 
         } else if (args[0].equals(DEViseCommands.CLOSE_COLLAB_DLG)) {
-	    if (collabdlg != null) {
-		collabdlg.stop();
-		collabdlg = null;
-	    }
+        if (collabdlg != null) {
+        collabdlg.stop();
+        collabdlg = null;
+        }
 
         } else if (args[0].equals(DEViseCommands.VIEW_DATA_AREA)) {
-	    viewDataArea(response, args);
+        viewDataArea(response, args);
 
         } else if (args[0].equals(DEViseCommands.DELETE_VIEW)) {
             if (args.length != 2) {
@@ -1751,7 +1751,7 @@ public class DEViseCmdDispatcher implements Runnable
             jsc.jscreen.removeChildViews(args[1]);
 
         } else if (args[0].equals(DEViseCommands.USER)) {
-	    user(args);
+        user(args);
 
         } else if (args[0].equals(DEViseCommands.SHOW_VIEW_HELP)) {
             if (args.length != 3) {
@@ -1769,7 +1769,7 @@ public class DEViseCmdDispatcher implements Runnable
             }
 
         } else if (args[0].equals(DEViseCommands.HIDE_ALL_VIEW_HELP)) {
-	    jsc.jscreen.hideAllHelp();
+        jsc.jscreen.hideAllHelp();
 
         } else if (args[0].equals(DEViseCommands.SET_3D_CONFIG)) {
             // this command is for collaboration JS
@@ -1777,36 +1777,36 @@ public class DEViseCmdDispatcher implements Runnable
 
         } else if (args[0].equals(DEViseCommands.UPDATEJS)) {
             // update JS after open_session or close_session
-	    jsc.jscreen.updateScreen(false);
+        jsc.jscreen.updateScreen(false);
 
         } else if (args[0].equals(DEViseCommands.RESET_COLLAB_NAME)) {
-	    // First, reset the variable that says we are collaborating
-	    jsc.isCollab = false;
+        // First, reset the variable that says we are collaborating
+        jsc.isCollab = false;
             if(jsc.jsValues.connection.useCgi) {
-	        jsc.cgiMode();
-	    } else {
-	        jsc.socketMode();
-	    }
+            jsc.cgiMode();
+        } else {
+            jsc.socketMode();
+        }
 
             // collaboration name already exist
-	    jsc.showMsg("Already have collaboration name \"" + 
-			jsc.jsValues.session.collabLeaderName + 
-			"\". Please choose another one.");
-	    jsc.showCollabPass();
+        jsc.showMsg("Already have collaboration name \"" +
+            jsc.jsValues.session.collabLeaderName +
+            "\". Please choose another one.");
+        jsc.showCollabPass();
 
         } else if (args[0].equals(DEViseCommands.POP_VERSION)) {
             _popVersion = args[1];
             _popID = args[2];
             _deviseVersion = args[3];
-	    _isCgi = Integer.parseInt(args[4]);
-	    _isModPerl = Integer.parseInt(args[5]);
+        _isCgi = Integer.parseInt(args[4]);
+        _isModPerl = Integer.parseInt(args[5]);
 
         } else if (args[0].equals(DEViseCommands.SET_VIEW_COLORS)) {
             String viewname = args[1];
             DEViseView view = jsc.jscreen.getView(viewname);
 
-	    if (view != null) {
-	        int background, foreground;
+        if (view != null) {
+            int background, foreground;
 
                 Color color = DEViseUIGlobals.convertColor(args[2]);
                 if (color != null) {
@@ -1822,24 +1822,24 @@ public class DEViseCmdDispatcher implements Runnable
                     throw new NumberFormatException();
                 }
 
-	        view.setColors(foreground, background);
-	    } else {
-		throw new YException("View " + viewname + " not found");
-	    }
+            view.setColors(foreground, background);
+        } else {
+        throw new YException("View " + viewname + " not found");
+        }
 
         } else if (args[0].equals(DEViseCommands.SET_USE_JMOL)) {
             String viewname = args[1];
             DEViseView view = jsc.jscreen.getView(viewname);
 
-	    if (view != null) {
-		int tmpVal = Integer.parseInt(args[2]);
-		view.setUseJmol(tmpVal != 0);
-	    } else {
-		throw new YException("View " + viewname + " not found");
-	    }
+        if (view != null) {
+        int tmpVal = Integer.parseInt(args[2]);
+        view.setUseJmol(tmpVal != 0);
+        } else {
+        throw new YException("View " + viewname + " not found");
+        }
 
         } else if (args[0].equals(DEViseCommands.VIEW_DATA_URL)) {
-	    jsc.showDocument(args[1], true);
+        jsc.showDocument(args[1], true);
 
         } else {
             throw new YException("Unsupported command (" + response +
@@ -1905,8 +1905,8 @@ public class DEViseCmdDispatcher implements Runnable
             Font dtf = null;
 
             // Show value meanings: 0 = none; 1 = xy; 2 = x; 3 = y;
-	    // values are this way for backwards compatibility.
-	    int showMouseLoc = 1;
+        // values are this way for backwards compatibility.
+        int showMouseLoc = 1;
 
             if (args.length == 26) {
                 // When viewtitle is empty, then arg 25 is the show mouse
@@ -1995,7 +1995,7 @@ public class DEViseCmdDispatcher implements Runnable
                 view.viewDTFont = dtf;
                 view.viewDTX = dtx + view.viewLocInCanvas.x;
                 view.viewDTY = dty + view.viewLocInCanvas.y;
-		view.setShowMouseLoc(showMouseLoc);
+        view.setShowMouseLoc(showMouseLoc);
             }
 
             jsc.jscreen.addView(view);
@@ -2032,25 +2032,25 @@ public class DEViseCmdDispatcher implements Runnable
               "\"", "DEViseCmdDispatcher::processCmd()", 2);
         }
 
-	byte[] imageData;
-	if (jsc.jsValues.connection.useCgi) {
-	    imageData = _commCgi.receiveData(imageSize);
+    byte[] imageData;
+    if (jsc.jsValues.connection.useCgi) {
+        imageData = _commCgi.receiveData(imageSize);
         } else {
-	    imageData = sockReceiveData(imageSize);
+        imageData = sockReceiveData(imageSize);
         }
 
         MediaTracker tracker = new MediaTracker(jsc);
         Toolkit kit = jsc.getToolkit();
         Image image = kit.createImage(imageData);
-	final int imageId = 0;
+    final int imageId = 0;
         tracker.addImage(image, imageId);
         try {
             tracker.waitForID(imageId);
         }  catch (InterruptedException e) {
-	    System.err.println("tracker.waitForID() failed: " +
-	      e.getMessage());
-	    jsc.jsValues.debug.log("tracker.waitForID() failed: " +
-	      e.getMessage());
+        System.err.println("tracker.waitForID() failed: " +
+          e.getMessage());
+        jsc.jsValues.debug.log("tracker.waitForID() failed: " +
+          e.getMessage());
         }
 
         if (tracker.isErrorID(imageId)) {
@@ -2104,10 +2104,10 @@ public class DEViseCmdDispatcher implements Runnable
 //            Runtime.getRuntime().totalMemory());
 
         byte[] gdata;
-	if (jsc.jsValues.connection.useCgi) {
-	    gdata = _commCgi.receiveData(gdataSize);
+    if (jsc.jsValues.connection.useCgi) {
+        gdata = _commCgi.receiveData(gdataSize);
         } else {
-	    gdata = sockReceiveData(gdataSize);
+        gdata = sockReceiveData(gdataSize);
         }
 
         String gdataStr = new String(gdata);
@@ -2211,8 +2211,8 @@ public class DEViseCmdDispatcher implements Runnable
                 cursor = new DEViseCursor(jsc, cursorName, viewname,
                   rect, move, resize, gridx, gridy, isedge, type, color);
             } catch (YException e1) {
-		jsc.showMsg(e1.getMsg());		
-		throw new YException("Invalid cursor data received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        jsc.showMsg(e1.getMsg());
+        throw new YException("Invalid cursor data received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
             }
 
             jsc.jscreen.updateCursor(viewname, cursor);
@@ -2240,20 +2240,20 @@ public class DEViseCmdDispatcher implements Runnable
 
             // Ven - for mouse display format string
             String format = args[5];
-	    float factor = Float.valueOf(args[6]).floatValue();
+        float factor = Float.valueOf(args[6]).floatValue();
 
-	    int label = 0;
-	    int type = 0;
-	    int size = 0;
-	    int bold = 0;
-	    int italic = 0;
+        int label = 0;
+        int type = 0;
+        int size = 0;
+        int bold = 0;
+        int italic = 0;
 
-	    label = (Integer.valueOf(args[7])).intValue();
-	    type = (Integer.valueOf(args[8])).intValue();	
-	    size = (Integer.valueOf(args[9])).intValue();
-	    bold = (Integer.valueOf(args[10])).intValue();
-	    italic = (Integer.valueOf(args[11])).intValue();		 
-	    
+        label = (Integer.valueOf(args[7])).intValue();
+        type = (Integer.valueOf(args[8])).intValue();
+        size = (Integer.valueOf(args[9])).intValue();
+        bold = (Integer.valueOf(args[10])).intValue();
+        italic = (Integer.valueOf(args[11])).intValue();
+
             jsc.jscreen.updateViewDataRange(viewname, viewaxis, min, max,
               format, factor, label, type, size, bold, italic);
         } catch (NumberFormatException e) {
@@ -2290,44 +2290,44 @@ public class DEViseCmdDispatcher implements Runnable
     //---------------------------------------------------------------------
     private byte[] sockReceiveData(int size) throws YException
     {
-	if (_debug) {
-	    System.out.println("DEViseCmdDispatcher.sockReceiveData(" + size +
-	      ")");
-	}
+    if (_debug) {
+        System.out.println("DEViseCmdDispatcher.sockReceiveData(" + size +
+          ")");
+    }
 
         byte[] imgData = null;
 
         // turn on the receive light
-	if (UPDATE_VIEW_INFO) {
+    if (UPDATE_VIEW_INFO) {
             jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, true);
-	}
+    }
 
         jsc.pn("Trying to receive data (" + size + ") from socket ...");
-	jsc.pn("  Bytes available: " + commSocket.dataAvailable());
+    jsc.pn("  Bytes available: " + commSocket.dataAvailable());
         jsc.jsValues.debug.log("Trying to receive data (" + size +
-	  ") from socket ...");
-	jsc.jsValues.debug.log("  Bytes available: " + commSocket.dataAvailable());
+      ") from socket ...");
+    jsc.jsValues.debug.log("  Bytes available: " + commSocket.dataAvailable());
 
         imgData = commSocket.receiveData(size);
 
         jsc.pn("Successfully received data (" + size + ") from socket ...");
-	jsc.pn("  First: " + imgData[0] + "; middle: " +
-	  imgData[imgData.length/2] + "; last: " + imgData[imgData.length-1]);
-	jsc.pn("  Bytes available: " + commSocket.dataAvailable());
+    jsc.pn("  First: " + imgData[0] + "; middle: " +
+      imgData[imgData.length/2] + "; last: " + imgData[imgData.length-1]);
+    jsc.pn("  Bytes available: " + commSocket.dataAvailable());
         jsc.jsValues.debug.log("Successfully received data (" + size +
-	  ") from socket ...");
-	jsc.jsValues.debug.log("  First: " + imgData[0] + "; middle: " +
-	  imgData[imgData.length/2] + "; last: " + imgData[imgData.length-1]);
+      ") from socket ...");
+    jsc.jsValues.debug.log("  First: " + imgData[0] + "; middle: " +
+      imgData[imgData.length/2] + "; last: " + imgData[imgData.length-1]);
 
         // turn off the receive light
-	if (UPDATE_VIEW_INFO) {
+    if (UPDATE_VIEW_INFO) {
             jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING,
-	      false);
-	}
+          false);
+    }
 
         if (imgData == null) {
             throw new YException("Invalid response received from server",
-	      "DEViseCmdDispatcher::sockReceiveData()", 1);
+          "DEViseCmdDispatcher::sockReceiveData()", 1);
         }
 
         return imgData;
@@ -2345,64 +2345,64 @@ public class DEViseCmdDispatcher implements Runnable
     private String[] sendRcvCmd(String command, boolean expectResponse)
       throws YException
     {
-	if (_debug) {
-	    System.out.println("DEViseCmdDispatcher.sendRcvCmd(" +
-	      command + ", " + expectResponse + ")");
-	}
+    if (_debug) {
+        System.out.println("DEViseCmdDispatcher.sendRcvCmd(" +
+          command + ", " + expectResponse + ")");
+    }
 
         Vector rspbuf = new Vector();
 
-        if ( (jsc.specialID == -1 && command != null) || 
-	     command != null ) { 
-	    // turn on the 'send' light
-	    if (UPDATE_VIEW_INFO) {
-	        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING,
-		  true);
-	    }
-	    // sending command to server, and expect an immediate response
+        if ( (jsc.specialID == -1 && command != null) ||
+         command != null ) {
+        // turn on the 'send' light
+        if (UPDATE_VIEW_INFO) {
+            jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING,
+          true);
+        }
+        // sending command to server, and expect an immediate response
             // of "JAVAC_Ack"
-	    jsc.pn("~~~~~~~~~~~~~~~~~~~~~");
-	    jsc.pn("Sending: \"" + command + "\"");
+        jsc.pn("~~~~~~~~~~~~~~~~~~~~~");
+        jsc.pn("Sending: \"" + command + "\"");
 
             if (jsc.jsValues.connection.useCgi) {
                 _commCgi = new DEViseCommCgi(jsc.jsValues);
                 _commCgi.sendCmd(command);
             } else {
-	        sockSendCmd(command);
+            sockSendCmd(command);
             }
 
-	    // turn off the 'send' light
-	    if (UPDATE_VIEW_INFO) {
-	        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING,
-		  false);
-	    }
-	} else { // for collabration JS
-	    jsc.pn("Waiting for commands in collaboration...");
-	}
+        // turn off the 'send' light
+        if (UPDATE_VIEW_INFO) {
+            jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING,
+          false);
+        }
+    } else { // for collabration JS
+        jsc.pn("Waiting for commands in collaboration...");
+    }
 
         // turn on the counter
-	if (UPDATE_VIEW_INFO) {
+    if (UPDATE_VIEW_INFO) {
             jsc.viewInfo.updateCount(0);
-	}
+    }
 
         // turn on the 'receive' light
-	if (UPDATE_VIEW_INFO) {
+    if (UPDATE_VIEW_INFO) {
             jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, true);
-	}
+    }
 
         // wait to receive the response from server
         String response = null;
 
-	// isEnd is true when we have finished receiving *all* commands.
+    // isEnd is true when we have finished receiving *all* commands.
         boolean isEnd = false;
         while (!isEnd) {
-	    // isFinish is true when we have finished receiving the current
-	    // command.
+        // isFinish is true when we have finished receiving the current
+        // command.
             boolean isFinish = false;
 
             while (!isFinish) {
                 try {
-	            if (jsc.jsValues.connection.useCgi) {
+                if (jsc.jsValues.connection.useCgi) {
                         response = _commCgi.receiveCmd(expectResponse);
                         if (response == "cgi no response") {
                             jsc.pn("CGI no response");
@@ -2414,68 +2414,68 @@ public class DEViseCmdDispatcher implements Runnable
 
                     jsc.pn("Receive: \"" + response + "\"");
 
-		    if (response.startsWith("Connection disabled")) {
-			commSocket = null;
-	
-			jsc.disconnectedMode();		
-			
-			boolean end = false;
-			while (!end) {  
-			    if (!reconnect()) {
-				jsc.pn("###### Reconnecting failed.");
-				try {
-				    Thread.sleep(10000);
-				} catch (InterruptedException e) {
-				}	
+            if (response.startsWith("Connection disabled")) {
+            commSocket = null;
 
-			    } else {
-				end = true;
-				jsc.pn("###### Reconnecting successed.");
-				if (jsc.jsValues.connection.useCgi) {
-				    jsc.cgiMode();
-				} else {
-				    jsc.socketMode();
-				}
-			    }
-			}
+            jsc.disconnectedMode();
 
-			jsc.pn("Resending command: " + command);
-			if (jsc.jsValues.connection.useCgi) {
-			    _commCgi = null;
-			    _commCgi = new DEViseCommCgi(jsc.jsValues);
-			    _commCgi.sendCmd(command);
-			} else {
-			    sockSendCmd(command);
-			}
+            boolean end = false;
+            while (!end) {
+                if (!reconnect()) {
+                jsc.pn("###### Reconnecting failed.");
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                }
 
-			continue;
-		    }
+                } else {
+                end = true;
+                jsc.pn("###### Reconnecting successed.");
+                if (jsc.jsValues.connection.useCgi) {
+                    jsc.cgiMode();
+                } else {
+                    jsc.socketMode();
+                }
+                }
+            }
+
+            jsc.pn("Resending command: " + command);
+            if (jsc.jsValues.connection.useCgi) {
+                _commCgi = null;
+                _commCgi = new DEViseCommCgi(jsc.jsValues);
+                _commCgi.sendCmd(command);
+            } else {
+                sockSendCmd(command);
+            }
+
+            continue;
+            }
 
                     isFinish = true;
                 } catch (InterruptedIOException e) {
-		    if (jsc.collabinterrupted) {
-			jsc.collabinterrupted = false;
-			commSocket.sendCmd(DEViseCommands.STOP_COLLAB, 
-					   DEViseGlobals.API_JAVA, 
-					   jsc.jsValues.connection.connectionID);
-			jsc.pn("Sent out StopCollab command after interrupt.");
-			jsc.restoreDisplaySize();
-			return null;
-		    }
+            if (jsc.collabinterrupted) {
+            jsc.collabinterrupted = false;
+            commSocket.sendCmd(DEViseCommands.STOP_COLLAB,
+                       DEViseGlobals.API_JAVA,
+                       jsc.jsValues.connection.connectionID);
+            jsc.pn("Sent out StopCollab command after interrupt.");
+            jsc.restoreDisplaySize();
+            return null;
+            }
                     if (getAbortStatus()) {
-			// switch out of collaboration mode
-			//if (jsc.specialID != -1) {
-			//  commSocket.sendCmd(DEViseCommands.COLLAB_EXIT);
-			//} 
-			//else 
-			if (jsc.jsValues.connection.useCgi) {
+            // switch out of collaboration mode
+            //if (jsc.specialID != -1) {
+            //  commSocket.sendCmd(DEViseCommands.COLLAB_EXIT);
+            //}
+            //else
+            if (jsc.jsValues.connection.useCgi) {
                             sendRcvCmd(DEViseCommands.ABORT);
                         } else {
                             commSocket.sendCmd(DEViseCommands.ABORT);
                         }
                         setAbortStatus(false);
                     }
-		}
+        }
             }
 
             if (response == null || response.length() == 0) {
@@ -2497,21 +2497,21 @@ public class DEViseCmdDispatcher implements Runnable
                         } else {
 
                             if (cmd.startsWith(DEViseCommands.DONE) ||
-			      cmd.startsWith(DEViseCommands.ERROR) ||
-			      cmd.startsWith(DEViseCommands.FAIL)) {
+                  cmd.startsWith(DEViseCommands.ERROR) ||
+                  cmd.startsWith(DEViseCommands.FAIL)) {
                                 isEnd = true;
                             }
 
                             rspbuf.addElement(cmd);
 
-	                    if (UPDATE_VIEW_INFO) {
+                        if (UPDATE_VIEW_INFO) {
                                 jsc.viewInfo.updateCount(rspbuf.size());
-	                    }
+                        }
                         }
                     } else {
-                	throw new YException("Unsupported command (" +
-			  response + ")received from server",
-		          "DEViseCmdDispatcher::processCmd()", 2);
+                    throw new YException("Unsupported command (" +
+              response + ")received from server",
+                  "DEViseCmdDispatcher::processCmd()", 2);
                     }
                 }
             }
@@ -2522,10 +2522,10 @@ public class DEViseCmdDispatcher implements Runnable
             rspstr[i] = (String)rspbuf.elementAt(i);
 
         // turn off the 'receive' light
-	if (UPDATE_VIEW_INFO) {
+    if (UPDATE_VIEW_INFO) {
             jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING,
-	      false);
-	}
+          false);
+    }
 
         return rspstr;
     }
@@ -2540,8 +2540,8 @@ public class DEViseCmdDispatcher implements Runnable
 
         if (jsc.jsValues.connection.useCgi) {
             // cgi routing -- we must send *and* receive for the CGI
-	    // to work right.
-	    sendRcvCmd(command, false);
+        // to work right.
+        sendRcvCmd(command, false);
         } else {
             sockSendCmd(command);
         }
@@ -2553,69 +2553,69 @@ public class DEViseCmdDispatcher implements Runnable
     // if we call it from another class we're bypassing part of the "normal"
     // command processing.  However, because of the way Kai has implemented
     // collaboration, it has to be public for now.  RKW 2001-03-08.
-    public synchronized void sockSendCmd(String command) throws YException 
+    public synchronized void sockSendCmd(String command) throws YException
     {
         if (_debug) {
             System.out.println("DEViseCmdDispatcher.sockSendCmd(" +
-	      command + ")");
+          command + ")");
         }
 
-	if (commSocket == null) {
-	    throw new YException("Command socket is not available");
-	}
+    if (commSocket == null) {
+        throw new YException("Command socket is not available");
+    }
 
-	if ( !commSocket.isAvailable() ) {
-	    commSocket = null;
-	    jsc.disconnectedMode();
+    if ( !commSocket.isAvailable() ) {
+        commSocket = null;
+        jsc.disconnectedMode();
 
-	    boolean end = false;
-	    while (!end) {
-		if (!reconnect()) {
-		    jsc.pn("###### Reconnecting failed.");
-		    try {
-			Thread.sleep(10000);
-		    } catch (InterruptedException e) {
-		    }
-		} else {
-		    end = true;
-		    jsc.pn("###### Reconnecting successed.");
-		    jsc.socketMode();    
-		}
-	    }
+        boolean end = false;
+        while (!end) {
+        if (!reconnect()) {
+            jsc.pn("###### Reconnecting failed.");
+            try {
+            Thread.sleep(10000);
+            } catch (InterruptedException e) {
+            }
+        } else {
+            end = true;
+            jsc.pn("###### Reconnecting successed.");
+            jsc.socketMode();
+        }
+        }
 
-	    jsc.pn("Send command:" + command);
+        jsc.pn("Send command:" + command);
 
-	    commSocket.sendCmd(command, DEViseGlobals.API_JAVA, jsc.jsValues.connection.connectionID);
-	    return;
-	}
+        commSocket.sendCmd(command, DEViseGlobals.API_JAVA, jsc.jsValues.connection.connectionID);
+        return;
+    }
 
-	// send the command
-	commSocket.sendCmd(command, DEViseGlobals.API_JAVA,
-			   jsc.jsValues.connection.connectionID);
+    // send the command
+    commSocket.sendCmd(command, DEViseGlobals.API_JAVA,
+               jsc.jsValues.connection.connectionID);
 
-	if (!commSocket.isOpen()) {
-	    commSocket = null;
-	    jsc.disconnectedMode();
-	    boolean end = false;
-	    while (!end) {
-		if (!reconnect()) {
-		    jsc.pn("###### Reconnecting failed.");
-		    try {
-			Thread.sleep(10000);
-		    } catch (InterruptedException e) {
-		    }
-		} else {
-		    end = true;
-		    jsc.pn("###### Reconnecting succeeded.");
-		    jsc.socketMode();
-		}
-	    }
+    if (!commSocket.isOpen()) {
+        commSocket = null;
+        jsc.disconnectedMode();
+        boolean end = false;
+        while (!end) {
+        if (!reconnect()) {
+            jsc.pn("###### Reconnecting failed.");
+            try {
+            Thread.sleep(10000);
+            } catch (InterruptedException e) {
+            }
+        } else {
+            end = true;
+            jsc.pn("###### Reconnecting succeeded.");
+            jsc.socketMode();
+        }
+        }
 
-	    jsc.pn("Send command:" + command);
+        jsc.pn("Send command:" + command);
 
-	    commSocket.sendCmd(command, DEViseGlobals.API_JAVA, jsc.jsValues.connection.connectionID);
-	    return;
-	}
+        commSocket.sendCmd(command, DEViseGlobals.API_JAVA, jsc.jsValues.connection.connectionID);
+        return;
+    }
     }
 
     //---------------------------------------------------------------------
@@ -2623,33 +2623,33 @@ public class DEViseCmdDispatcher implements Runnable
     // it does.
     boolean testCgi() {
         if (_debug) {
-	    System.out.println("DEViseCmdDispatcher.testCgi()");
-	}
+        System.out.println("DEViseCmdDispatcher.testCgi()");
+    }
 
-	boolean result = true;
+    boolean result = true;
 
-	try {
+    try {
             jsc.jsValues.connection.useCgi = true;
             String[] response = sendRcvCmd(DEViseCommands.CHECK_POP);
             jsc.jsValues.connection.useCgi = false;
             _commCgi = null;
-	    if (response == null || response.length != 1 ||
-	      !response[0].equals(DEViseCommands.DONE))
-	    {
-		String msg = "Received incorrect response from the jspop: ";
-		if (response != null) {
-	            for (int index = 0; index < response.length; index++) {
-	                msg += "<" + response[index] + "> ";
-	            }
-		}
-		throw new YException(msg);
-	    }
-	} catch (YException ex) {
-	    System.err.println("CGI connection not available: " +
-	      ex.getMessage());
-	    result = false;
-	}
+        if (response == null || response.length != 1 ||
+          !response[0].equals(DEViseCommands.DONE))
+        {
+        String msg = "Received incorrect response from the jspop: ";
+        if (response != null) {
+                for (int index = 0; index < response.length; index++) {
+                    msg += "<" + response[index] + "> ";
+                }
+        }
+        throw new YException(msg);
+        }
+    } catch (YException ex) {
+        System.err.println("CGI connection not available: " +
+          ex.getMessage());
+        result = false;
+    }
 
-	return result;
+    return result;
     }
 }

@@ -125,62 +125,62 @@ public class DEViseHeartbeat implements Runnable
     public DEViseHeartbeat(DEViseCmdDispatcher dispatcher) {
         _dispatcher = dispatcher;
 
-	_hbThread = new Thread(this);
-	_hbThread.setName("Heartbeat");
-	_hbThread.start();
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    DEViseUtils.printAllThreads("Starting thread " + _hbThread);
-	}
+    _hbThread = new Thread(this);
+    _hbThread.setName("Heartbeat");
+    _hbThread.start();
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("Starting thread " + _hbThread);
+    }
     }
 
     public void run()
     {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseHeartBeat.run()");
-	}
+    if (DEBUG >= 1) {
+        System.out.println("DEViseHeartBeat.run()");
+    }
 
         while (true) {
-	    try {
-	        Thread.sleep(HB_INTERVAL);
-	    } catch (InterruptedException ex) {
-	    }
+        try {
+            Thread.sleep(HB_INTERVAL);
+        } catch (InterruptedException ex) {
+        }
 
-	    if (DEBUG >= 1) {
-	        System.out.println("Sending heartbeat");
-	    }
-	    
-	    if (_dispatcher.jsc.specialID == -1) { // normal JS
-		_dispatcher.start(DEViseCommands.HEART_BEAT + " " +
-				  " " + _hbCount);
-	    } else {
-		//TEMP -- I don't like that we're bypassing the whole
-		// command dispatcher here.  RKW 2002-07-18.
-		try {
-		    _dispatcher.commSocket.sendCmd(new String[] 
-			{DEViseCommands.HEART_BEAT,
-			 Integer.toString(_hbCount)}, 
-			 DEViseGlobals.API_JAVA, 
-			 _dispatcher.jsc.jsValues.connection.connectionID);
-		    _dispatcher.jsc.pn("Sent Heartbeat to collaboration JS.");
-		} catch (YException e) {
-		    String errMsg = e.getMessage();
-		    _dispatcher.jsc.pn("Error in sending heartbeat: " +
-				       errMsg);
-		}
-	    }
-	    
-	    _hbCount++;
-	}
+        if (DEBUG >= 1) {
+            System.out.println("Sending heartbeat");
+        }
+
+        if (_dispatcher.jsc.specialID == -1) { // normal JS
+        _dispatcher.start(DEViseCommands.HEART_BEAT + " " +
+                  " " + _hbCount);
+        } else {
+        //TEMP -- I don't like that we're bypassing the whole
+        // command dispatcher here.  RKW 2002-07-18.
+        try {
+            _dispatcher.commSocket.sendCmd(new String[]
+            {DEViseCommands.HEART_BEAT,
+             Integer.toString(_hbCount)},
+             DEViseGlobals.API_JAVA,
+             _dispatcher.jsc.jsValues.connection.connectionID);
+            _dispatcher.jsc.pn("Sent Heartbeat to collaboration JS.");
+        } catch (YException e) {
+            String errMsg = e.getMessage();
+            _dispatcher.jsc.pn("Error in sending heartbeat: " +
+                       errMsg);
+        }
+        }
+
+        _hbCount++;
+    }
     }
 
     public void stop()
     {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseHeartBeat.stop()");
-	}
-	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    DEViseUtils.printAllThreads("Stopping thread " + _hbThread);
-	}
+    if (DEBUG >= 1) {
+        System.out.println("DEViseHeartBeat.stop()");
+    }
+    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+        DEViseUtils.printAllThreads("Stopping thread " + _hbThread);
+    }
         _hbThread.stop();
     }
 }

@@ -410,7 +410,7 @@ public class js extends JFrame
         }
 
         js frame = new js(jv);
-        frame.show();
+        frame.setVisible(true);
     }
 
     private static void checkArguments(String[] args, DEViseJSValues jsValues)

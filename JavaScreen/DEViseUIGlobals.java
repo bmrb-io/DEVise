@@ -163,32 +163,32 @@ public final class DEViseUIGlobals
         }
 
         // as of right now, I only recognize Courier (Monospaced), Times
-	// (Serif) and Helvetica (SansSerif).
+    // (Serif) and Helvetica (SansSerif).
         // Default is Courier.
         if (ff < 0 || ff >= DEViseFont.length) {
             ff = 1;
         }
 
         int minSize = 1, maxSize = 100, fontSize = 12;
-	Font okFont = null;
+    Font okFont = null;
 
-	if (maxPointSize > 1) maxSize = maxPointSize;
-	if (fontSize > maxSize) fontSize = maxSize;
+    if (maxPointSize > 1) maxSize = maxPointSize;
+    if (fontSize > maxSize) fontSize = maxSize;
 
         int fontstyle = ((fw == 0)?Font.PLAIN:Font.BOLD) +
-	  ((fs == 0)?Font.PLAIN:Font.ITALIC);
+      ((fs == 0)?Font.PLAIN:Font.ITALIC);
 
         Toolkit tk = Toolkit.getDefaultToolkit();
-	Font font = DEViseFonts.getFont(fontSize, ff, fw, fs);
+    Font font = DEViseFonts.getFont(fontSize, ff, fw, fs);
         FontMetrics fm = tk.getFontMetrics(font);
         int h = fm.getHeight(), w = fm.stringWidth(str);
 
         if (h > height || (checkWidth && w > width)) {
-	    // First guess is too big.
+        // First guess is too big.
 
             while (fontSize > minSize) {
                 fontSize--;
-		font = DEViseFonts.getFont(fontSize, ff, fw, fs);
+        font = DEViseFonts.getFont(fontSize, ff, fw, fs);
                 if (font == null) {
                     continue;
                 }
@@ -199,25 +199,25 @@ public final class DEViseUIGlobals
                     if (checkWidth) {
                         w = fm.stringWidth(str);
                         if (w < width) {
-			    // Current font is small enough.
-			    okFont = font;
+                // Current font is small enough.
+                okFont = font;
                             break;
                         }
                     } else {
-			// Current font is small enough.
-			okFont = font;
+            // Current font is small enough.
+            okFont = font;
                         break;
                     }
                 }
             }
         } else {
-	    // First guess is not too big.
+        // First guess is not too big.
 
-	    okFont = font;
+        okFont = font;
 
             while (fontSize < maxSize) {
                 fontSize++;
-		font = DEViseFonts.getFont(fontSize, ff, fw, fs);
+        font = DEViseFonts.getFont(fontSize, ff, fw, fs);
                 if (font == null) {
                     continue;
                 }
@@ -226,22 +226,22 @@ public final class DEViseUIGlobals
                 h = fm.getHeight();
 
                 if (h > height) {
-		    // Current font is too big.
+            // Current font is too big.
                     break;
                 } else {
                     if (checkWidth) {
                         w = fm.stringWidth(str);
                         if (w > width) {
-			    // Current font is too big.
+                // Current font is too big.
                             break;
                         }
                     }
 
-		    okFont = font;
+            okFont = font;
                 }
             }
         }
 
-	return okFont;
+    return okFont;
     }
 }

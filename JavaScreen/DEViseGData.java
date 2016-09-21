@@ -309,14 +309,14 @@ public class DEViseGData
     {
         jsc = panel;
 
-	jsc.jsValues.gdata._gdCount++;
-	if (_debug) {
+    jsc.jsValues.gdata._gdCount++;
+    if (_debug) {
             System.out.println("DEViseGData constructor " +
-	      jsc.jsValues.gdata._gdCount + "(" + gdata + ")");
+          jsc.jsValues.gdata._gdCount + "(" + gdata + ")");
             System.out.println("Free memory: " +
-	      Runtime.getRuntime().freeMemory() + "/" +
-	      Runtime.getRuntime().totalMemory());
-	}
+          Runtime.getRuntime().freeMemory() + "/" +
+          Runtime.getRuntime().totalMemory());
+    }
 
         parentView = view;
         if (parentView == null) {
@@ -324,73 +324,73 @@ public class DEViseGData
         }
 
         String[] data = DEViseGlobals.parseString(gdata, '{', '}', false);
-	if (_debug) {
+    if (_debug) {
             System.out.println("GData string = <" + gdata + ">");
-	    System.out.print("Parsed GData: ");
-	    for (int index = 0; index < data.length; index++) {
-	        System.out.print("<" + data[index] + "> ");
-	    }
-	    System.out.println("");
-	}
+        System.out.print("Parsed GData: ");
+        for (int index = 0; index < data.length; index++) {
+            System.out.print("<" + data[index] + "> ");
+        }
+        System.out.println("");
+    }
         if (data == null || data.length != 23) {
             throw new YException("Invalid GData: {" + gdata + "}");
-	}
+    }
         gdata = null;
 
         float size = 0;
         try {
-	    // ADD COMMENT about conversion here
+        // ADD COMMENT about conversion here
             x0 = (Float.valueOf(data[0])).floatValue();
             x = (int)(x0 * xm + xo);
             y0 = (Float.valueOf(data[1])).floatValue();
             y = (int)(y0 * ym + yo);
             z0 = (Float.valueOf(data[2])).floatValue();
-	    z = (int)z0;
+        z = (int)z0;
             size = (Float.valueOf(data[4])).floatValue();
             symbolType = Integer.parseInt(data[7]);
         } catch (NumberFormatException e) {
             throw new YException("Invalid GData: (" + gdata + ")");
         }
 
-	//TEMP -- perhaps this should be done when the symbol is
-	// drawn, instead of now
+    //TEMP -- perhaps this should be done when the symbol is
+    // drawn, instead of now
         if (symbolType == _symEmbeddedTk) { // check symbol type
-	    EmbeddedTk(data, size, xm, ym);
+        EmbeddedTk(data, size, xm, ym);
 
-	} else if (symbolType == _symText) {
-	    TextLabel(data, size, xm, ym);
+    } else if (symbolType == _symText) {
+        TextLabel(data, size, xm, ym);
 
         } else if (symbolType == _symFixedText) {
-	    FixedTextLabel(data, size);
+        FixedTextLabel(data, size);
 
         } else if (symbolType == _symOval) {
-	    if (view.getUseJmol() && view.viewDimension == 3) {
-	        JmolOval(data, size, xm, ym);
-	    } else {
-	    	Oval(data, size, xm, ym);
-	    }
+        if (view.getUseJmol() && view.viewDimension == 3) {
+            JmolOval(data, size, xm, ym);
+        } else {
+            Oval(data, size, xm, ym);
+        }
 
-	} else if (symbolType == _symSegment) {
-	    if (view.getUseJmol() && view.viewDimension == 3) {
-		JmolSegment(data, size, xm, ym);
-	    } else {
+    } else if (symbolType == _symSegment) {
+        if (view.getUseJmol() && view.viewDimension == 3) {
+        JmolSegment(data, size, xm, ym);
+        } else {
                 Segment(data, size, xm, ym);
-	    }
+        }
 
         } else {
-	    DefaultSymbol(data, size, xm, ym);
+        DefaultSymbol(data, size, xm, ym);
         }
 
         GDataLoc = new Rectangle(x, y, width, height);
     }
 
     protected void finalize() {
-	jsc.jsValues.gdata._gdCount--;
-	if (_debug) {
+    jsc.jsValues.gdata._gdCount--;
+    if (_debug) {
             System.out.println("DEViseGData.finalize() " + jsc.jsValues.gdata._gdCount);
             System.out.println("Free memory: " +
-	      Runtime.getRuntime().freeMemory() + "/" +
-	      Runtime.getRuntime().totalMemory());
+          Runtime.getRuntime().freeMemory() + "/" +
+          Runtime.getRuntime().totalMemory());
         }
     }
 
@@ -427,7 +427,7 @@ public class DEViseGData
         float w = 0.0f, h = 0.0f;
         int align, ff, fw, fs;
 
-	// Note: format is ignored for now.  RKW 1999-11-03.
+    // Note: format is ignored for now.  RKW 1999-11-03.
 
         // default font is courier, regular, nonitalic
         try {
@@ -474,10 +474,10 @@ public class DEViseGData
         height = (int)(h * size * ym);
         if (width < 0) {
             width = -width;
-	}
+    }
         if (height < 0) {
             height = -height;
-	}
+    }
 
         color = DEViseUIGlobals.convertColor(data[3]);
 
@@ -486,10 +486,10 @@ public class DEViseGData
         // if we needed different fonts for different symbols.
         // RKW 1999-11-02.
         if (w < 0.0f) {
-	    // Note: Z value in GData (if > 1) is max point size of font.
+        // Note: Z value in GData (if > 1) is max point size of font.
             font = DEViseUIGlobals.getFont(string, height, ff, fw, fs, (int)z0);
         } else {
-	    // Note: Z value in GData (if > 1) is max point size of font.
+        // Note: Z value in GData (if > 1) is max point size of font.
             font = DEViseUIGlobals.getFont(string, width, height, ff, fw, fs, (int)z0);
         }
 
@@ -498,7 +498,7 @@ public class DEViseGData
             return;
         }
 
-	AlignText(align);
+    AlignText(align);
 
         x = parentView.viewLocInCanvas.x + x;
         y = parentView.viewLocInCanvas.y + y;
@@ -567,7 +567,7 @@ public class DEViseGData
             return;
         }
 
-	AlignText(align);
+    AlignText(align);
 
         x = parentView.viewLocInCanvas.x + x;
         y = parentView.viewLocInCanvas.y + y;
@@ -581,10 +581,10 @@ public class DEViseGData
         height = (int)(size * ym);
         if (width < 0) {
             width = -width;
-	}
+    }
         if (height < 0) {
             height = -height;
-	}
+    }
 
         x = x - width / 2;
         y = y - height / 2;
@@ -596,11 +596,11 @@ public class DEViseGData
             y = 0;
         */
 
-	_buttonLabel = data[11];
-	_buttonCmd = data[10];
-	if (data[12].equals("bmrb_dynamics_movie") && !data[13].equals("")) {
-	    _buttonCmd = _buttonCmd.replace("<res>", data[13]);
-	}
+    _buttonLabel = data[11];
+    _buttonCmd = data[10];
+    if (data[12].equals("bmrb_dynamics_movie") && !data[13].equals("")) {
+        _buttonCmd = _buttonCmd.replace("<res>", data[13]);
+    }
         _menuType = data[21];
         _menuName = data[22];
     }
@@ -618,7 +618,7 @@ public class DEViseGData
 
         color = DEViseUIGlobals.convertColor(data[3]);
 
-	// ADD COMMENT -- is this the name of the element??
+    // ADD COMMENT -- is this the name of the element??
         string = data[10];
     }
 
@@ -635,22 +635,22 @@ public class DEViseGData
 
         color = DEViseUIGlobals.convertColor(data[3]);
 
-	atomNum = (Integer.valueOf(data[10])).intValue();
-	atomName = data[11];
-	residueLabel = data[14];
-	residueNum = (Integer.valueOf(data[13])).intValue();
-	atomType = data[15];
-	structType = data[16];
-	// Get Entity_assembly_ID (pre 11.4.0 versions of Peptide-CGI
-	// don't send that).
-	String entityAssemblyIDTmp = data[21];
-	if (entityAssemblyIDTmp.equals("")) {
-	    entityAssemblyID = 1;
-	} else {
-	    entityAssemblyID =
-	      (Integer.valueOf(entityAssemblyIDTmp)).intValue();
-	}
-	atomId = data[22];
+    atomNum = (Integer.valueOf(data[10])).intValue();
+    atomName = data[11];
+    residueLabel = data[14];
+    residueNum = (Integer.valueOf(data[13])).intValue();
+    atomType = data[15];
+    structType = data[16];
+    // Get Entity_assembly_ID (pre 11.4.0 versions of Peptide-CGI
+    // don't send that).
+    String entityAssemblyIDTmp = data[21];
+    if (entityAssemblyIDTmp.equals("")) {
+        entityAssemblyID = 1;
+    } else {
+        entityAssemblyID =
+          (Integer.valueOf(entityAssemblyIDTmp)).intValue();
+    }
+    atomId = data[22];
     }
 
     // This is a distance restraint...
@@ -658,10 +658,10 @@ public class DEViseGData
     {
         isJavaSymbol = false;
 
-	atom1Id = data[17].trim();
-	atom2Id = data[18].trim();
-	isViolated = data[19].trim().equals("Violated");
-	isAmbiguous = data[22].trim().equals("Ambiguous");
+    atom1Id = data[17].trim();
+    atom2Id = data[18].trim();
+    isViolated = data[19].trim().equals("Violated");
+    isAmbiguous = data[22].trim().equals("Ambiguous");
     }
 
     protected void Segment(String[] data, float size, float xm, float ym)
