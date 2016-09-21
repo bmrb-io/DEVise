@@ -23,10 +23,10 @@ include Makefile.config
 
 JAVAC = $(JAVA_BIN3)/javac -d . -source 1.7 -target 1.7
 
-all: setup js jsa
+all: set_it_up js jsa
 
-js: setup js.class
-jsa: setup jsa.class
+js: set_it_up js.class
+jsa: set_it_up jsa.class
 
 js.class: *.java utils client
 	$(JAVAC) js.java
@@ -68,6 +68,6 @@ clean:
 	-rm JavaScreen/*.class
 	-rm JavaScreen/UI/*.class
 
-setup:
-    ./setup
+set_it_up:
+	./setup
 	jar xf JmolApplet.jar
