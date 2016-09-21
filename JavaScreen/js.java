@@ -226,38 +226,38 @@ public class js extends JFrame
 {
     private static final String usage = new String(
         "Usage: java JavaScreen.js [options]\n" +
-	"  -host[string]: host the jspop is running on (default: localhost)\n" +
-	"  -cmdport[number]: port for command socket from jspop (default: " +
-	  DEViseGlobals.DEFAULTCMDPORT + ")\n" +
-	"  -user[string]: name of user (default: " + DEViseGlobals.DEFAULTUSER
-	  + ")\n" +
-	"  -pass[string]: password of user (default: " +
-	  DEViseGlobals.DEFAULTPASS + ")\n" +
-	"  -session[filename]: session to load at startup (default: none)\n" +
-	"  -fgcolor[number+number+number]: RGB for JavaScreen foreground\n" +
-	  "    (default: 0+0+0)\n" +
-	"  -bgcolor[number+number+number]: RGB for JavaScreen background\n" +
-	  "    (default: 247+246+220)\n" +
-	"  -sbgcolor[number+number+number]: RGB for JavaScreen screen background\n" +
-	  "    (default: 229+227+207)\n" +
-	"  -rubberbandlimit[widthxheight]: minimum size for rubberband to " +
-	  "have any effect\n    (default: 4x4)\n" +
-	"  -screensize[widthxheight]: window size in pixels\n" +
-	  "    (default: display width-80xdisplay height-120)\n" +
-	"  -log: turn on debug logging (default: off)\n" +
-	"  -usecgi: forces the JS to use CGI communication (default: off)\n" +
-	"  -cgiurl: URL for CGI communcation (default: none)\n" +
-	"  -debug[number]: set debug level (default: 0)\n" +
-	"  -clientlog[logfile]: specify log to play back (default: none)\n" +
-	"  -autoplayback: automatically start playing back client log file\n" +
-	  "    (default: false)\n" +
-	"  -playbackoriginal: play back client log file at original speed\n" +
-	  "    (default: false)\n" +
-	"  -playbackdisplayoff: turn off display during command log playback\n" +
-	"  -hidebmrbsess: hide BMRB session names if the vis type is recognized\n" + 
-	"  -showallbut: show optional buttions (for debugging)\n" +
-	"  -version: print the version and exit\n" +
-	"  -usage: print this message and exit");
+    "  -host[string]: host the jspop is running on (default: localhost)\n" +
+    "  -cmdport[number]: port for command socket from jspop (default: " +
+      DEViseGlobals.DEFAULTCMDPORT + ")\n" +
+    "  -user[string]: name of user (default: " + DEViseGlobals.DEFAULTUSER
+      + ")\n" +
+    "  -pass[string]: password of user (default: " +
+      DEViseGlobals.DEFAULTPASS + ")\n" +
+    "  -session[filename]: session to load at startup (default: none)\n" +
+    "  -fgcolor[number+number+number]: RGB for JavaScreen foreground\n" +
+      "    (default: 0+0+0)\n" +
+    "  -bgcolor[number+number+number]: RGB for JavaScreen background\n" +
+      "    (default: 247+246+220)\n" +
+    "  -sbgcolor[number+number+number]: RGB for JavaScreen screen background\n" +
+      "    (default: 229+227+207)\n" +
+    "  -rubberbandlimit[widthxheight]: minimum size for rubberband to " +
+      "have any effect\n    (default: 4x4)\n" +
+    "  -screensize[widthxheight]: window size in pixels\n" +
+      "    (default: display width-80xdisplay height-120)\n" +
+    "  -log: turn on debug logging (default: off)\n" +
+    "  -usecgi: forces the JS to use CGI communication (default: off)\n" +
+    "  -cgiurl: URL for CGI communcation (default: none)\n" +
+    "  -debug[number]: set debug level (default: 0)\n" +
+    "  -clientlog[logfile]: specify log to play back (default: none)\n" +
+    "  -autoplayback: automatically start playing back client log file\n" +
+      "    (default: false)\n" +
+    "  -playbackoriginal: play back client log file at original speed\n" +
+      "    (default: false)\n" +
+    "  -playbackdisplayoff: turn off display during command log playback\n" +
+    "  -hidebmrbsess: hide BMRB session names if the vis type is recognized\n" +
+    "  -showallbut: show optional buttions (for debugging)\n" +
+    "  -version: print the version and exit\n" +
+    "  -usage: print this message and exit");
 
     // -host[hostname]:
     //      hostname: The IP address of the machine where jspop or DEVise Server
@@ -316,9 +316,9 @@ public class js extends JFrame
 
     public js(DEViseJSValues jv)
     {
-	jsValues = jv;
+    jsValues = jv;
 
-       	Toolkit kit = Toolkit.getDefaultToolkit();
+        Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dim = kit.getScreenSize();
         jsValues.uiglobals.maxScreenSize.width = dim.width - 80;
         jsValues.uiglobals.maxScreenSize.height = dim.height - 120;
@@ -326,24 +326,24 @@ public class js extends JFrame
         jsValues.uiglobals.minScreenSize.height = 240;
 
         // get the animation symbol images
-	jsValues._imageLoadComp = this;
+    jsValues._imageLoadComp = this;
         Vector images = new Vector();
-	try {
+    try {
             for (int i = 0; i < 11; i++) {
-	        Image image = jsdevisec.loadImage("devise" + i + ".gif",
-		  jsValues);
+            Image image = jsdevisec.loadImage("devise" + i + ".gif",
+          jsValues);
                 images.addElement(image);
-	    }
-	} catch (Exception ex) {
-	    System.out.println("Error loading throbber images: " + ex);
-	}
+        }
+    } catch (Exception ex) {
+        System.out.println("Error loading throbber images: " + ex);
+    }
 
         // start JavaScreen
         jsc = new jsdevisec(null, this, images, jsValues, _showAllButtons);
         add(jsc);
         setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();
-	jsc.start();
+    jsc.start();
 
         // reposition JavaScreen so it is in the center of the screen
         Point loc = new Point(0, 0);
@@ -363,8 +363,8 @@ public class js extends JFrame
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 /*
         System.out.println("Memory: " +
-	    Runtime.getRuntime().freeMemory() + "/" +
-	    Runtime.getRuntime().totalMemory());
+        Runtime.getRuntime().freeMemory() + "/" +
+        Runtime.getRuntime().totalMemory());
 */
     }
 
@@ -383,30 +383,30 @@ public class js extends JFrame
         String version = System.getProperty("java.version");
         if (version.compareTo("1.1") < 0)  {
             System.out.println("Error: Java version 1.1 or greater " +
-	      "is needed to run this program\nThe version you used is " +
-	      version);
+          "is needed to run this program\nThe version you used is " +
+          version);
             System.exit(1);
         }
 
-	DEViseJSValues jv = new DEViseJSValues();
+    DEViseJSValues jv = new DEViseJSValues();
 
         checkArguments(args, jv);
 
         jv.uiglobals.isApplet = false;
-	jv.uiglobals.inBrowser = false;
+    jv.uiglobals.inBrowser = false;
         jv.connection.connectionID = DEViseGlobals.DEFAULTID;
 
         if (jv.connection.hostname == null) {
-	  jv.connection.hostname = DEViseGlobals.DEFAULTHOST;
+      jv.connection.hostname = DEViseGlobals.DEFAULTHOST;
         }
         if (jv.connection.username == null) {
-	   jv.connection.username = DEViseGlobals.DEFAULTUSER;
+       jv.connection.username = DEViseGlobals.DEFAULTUSER;
         }
         if (jv.connection.password == null) {
-	   jv.connection.password = DEViseGlobals.DEFAULTPASS;
+       jv.connection.password = DEViseGlobals.DEFAULTPASS;
         }
         if (jv.connection.cmdport < 1024) {
-	  jv.connection.cmdport = DEViseGlobals.DEFAULTCMDPORT;
+      jv.connection.cmdport = DEViseGlobals.DEFAULTCMDPORT;
         }
 
         js frame = new js(jv);
@@ -417,13 +417,13 @@ public class js extends JFrame
       throws YException
     {
         for (int i = 0; i < args.length; i++) {
-	    StringBuffer argValue = new StringBuffer();
+        StringBuffer argValue = new StringBuffer();
 
-	    if (DEViseGlobals.checkArgument(args[i], "-host", true, argValue)) {
-	        jsValues.connection.hostname = argValue.toString();
+        if (DEViseGlobals.checkArgument(args[i], "-host", true, argValue)) {
+            jsValues.connection.hostname = argValue.toString();
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-cmdport", true,
-	      argValue)) {
+        } else if (DEViseGlobals.checkArgument(args[i], "-cmdport", true,
+          argValue)) {
                 try {
                     int port = Integer.parseInt(argValue.toString());
                     if (port < 1024 || port > 65535) {
@@ -437,23 +437,23 @@ public class js extends JFrame
                         + " and smaller than 65536!\n");
                 }
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-bgcolor", true,
-	      argValue)) {
+        } else if (DEViseGlobals.checkArgument(args[i], "-bgcolor", true,
+          argValue)) {
                 try {
                     jsValues.uiglobals.bg = DEViseGlobals.str2Color(
-		      argValue.toString());
+              argValue.toString());
                 } catch (NumberFormatException e) {
-		    throw new YException("Invalid RGB values specified for"
+            throw new YException("Invalid RGB values specified for"
                         + " bgcolor \"" + argValue.toString() + "\"!\n"
                         + " Please use format \"R+G+B\" where R,G,B must"
                         + " be non-negative integer and smaller than 256!\n");
                 }
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-fgcolor",
-	      true, argValue)) {
+        } else if (DEViseGlobals.checkArgument(args[i], "-fgcolor",
+          true, argValue)) {
                 try {
                     jsValues.uiglobals.fg = DEViseGlobals.str2Color(
-		      argValue.toString());
+              argValue.toString());
                 } catch (NumberFormatException e) {
                     throw new YException("Invalid RGB values specified for"
                         + " fgcolor \"" + argValue.toString() + "\"!\n"
@@ -461,24 +461,24 @@ public class js extends JFrame
                         + " be non-negative integer and smaller than 256!\n");
                 }
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-sbgcolor", true,
-	      argValue)) {
+        } else if (DEViseGlobals.checkArgument(args[i], "-sbgcolor", true,
+          argValue)) {
                 try {
                     jsValues.uiglobals.screenBg = DEViseGlobals.str2Color(
-		      argValue.toString());
+              argValue.toString());
                 } catch (NumberFormatException e) {
-		    throw new YException("Invalid RGB values specified for"
+            throw new YException("Invalid RGB values specified for"
                         + " sbgcolor \"" + argValue.toString() + "\"!\n"
                         + " Please use format \"R+G+B\" where R,G,B must"
                         + " be non-negative integer and smaller than 256!\n");
                 }
 
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-rubberbandlimit",
-	      true, argValue)) {
+        } else if (DEViseGlobals.checkArgument(args[i], "-rubberbandlimit",
+          true, argValue)) {
                 try {
                     String[] str = DEViseGlobals.parseStr(
-		      argValue.toString(), "x");
+              argValue.toString(), "x");
                     if (str == null || str.length != 2) {
                         throw new NumberFormatException();
                     }
@@ -500,11 +500,11 @@ public class js extends JFrame
                         + " positive integer!\n");
                 }
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-screensize",
-	      true, argValue)) {
+        } else if (DEViseGlobals.checkArgument(args[i], "-screensize",
+          true, argValue)) {
                 try {
                     String[] str = DEViseGlobals.parseStr(
-		      argValue.toString(), "x");
+              argValue.toString(), "x");
                     if (str == null || str.length != 2) {
                         throw new NumberFormatException();
                     }
@@ -526,24 +526,24 @@ public class js extends JFrame
                         + " positive integer!\n");
                 }
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-user", true,
-	      argValue)) {
-	        jsValues.connection.username = argValue.toString();
+        } else if (DEViseGlobals.checkArgument(args[i], "-user", true,
+          argValue)) {
+            jsValues.connection.username = argValue.toString();
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-pass", true,
-	      argValue)) {
+        } else if (DEViseGlobals.checkArgument(args[i], "-pass", true,
+          argValue)) {
                 jsValues.connection.password = argValue.toString();
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-session", true,
-	      argValue)) {
+        } else if (DEViseGlobals.checkArgument(args[i], "-session", true,
+          argValue)) {
                 jsValues.session.defaultName = argValue.toString();
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-debug", false,
-	      argValue)) {
+        } else if (DEViseGlobals.checkArgument(args[i], "-debug", false,
+          argValue)) {
                 if (!argValue.toString().equals("")) {
                     try {
                         jsValues.debug._debugLevel = Integer.parseInt(
-			  argValue.toString());
+              argValue.toString());
                     } catch (NumberFormatException e) {
                         throw new YException("Invalid debug level \""
                             + argValue.toString() + "\" in arguments!\n");
@@ -552,70 +552,70 @@ public class js extends JFrame
                     jsValues.debug._debugLevel = 1;
                 }
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-usage", false,
-	      argValue)) {
+        } else if (DEViseGlobals.checkArgument(args[i], "-usage", false,
+          argValue)) {
                 System.out.println(usage);
                 System.exit(0);
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-version", false,
-	      argValue)) {
+        } else if (DEViseGlobals.checkArgument(args[i], "-version", false,
+          argValue)) {
                 System.out.println(DEViseGlobals.VERSION);
                 System.exit(0);
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-log", false,
-	      argValue)) {
-	        jsValues.debug._logEnabled = true;
+        } else if (DEViseGlobals.checkArgument(args[i], "-log", false,
+          argValue)) {
+            jsValues.debug._logEnabled = true;
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-usecgi", false,
-	      argValue)) {
-	        jsValues.connection.useCgi = true;
+        } else if (DEViseGlobals.checkArgument(args[i], "-usecgi", false,
+          argValue)) {
+            jsValues.connection.useCgi = true;
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-cgiurl", true,
-	      argValue)) {
-		jsValues.connection.cgiURL = argValue.toString();
+        } else if (DEViseGlobals.checkArgument(args[i], "-cgiurl", true,
+          argValue)) {
+        jsValues.connection.cgiURL = argValue.toString();
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-clientlog",
-	      true, argValue)) {
-		jsValues.session.clientLogName = argValue.toString();
+        } else if (DEViseGlobals.checkArgument(args[i], "-clientlog",
+          true, argValue)) {
+        jsValues.session.clientLogName = argValue.toString();
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-autoplayback",
-	      false, argValue)) {
-		jsValues.session.autoPlayback = true;
+        } else if (DEViseGlobals.checkArgument(args[i], "-autoplayback",
+          false, argValue)) {
+        jsValues.session.autoPlayback = true;
 
-	    } else if (DEViseGlobals.checkArgument(args[i],
-	      "-playbackoriginal", false, argValue)) {
-		jsValues.session.playbackOriginal = true;
+        } else if (DEViseGlobals.checkArgument(args[i],
+          "-playbackoriginal", false, argValue)) {
+        jsValues.session.playbackOriginal = true;
 
-	    } else if (DEViseGlobals.checkArgument(args[i],
-	      "-playbackdisplayoff", false, argValue)) {
-		jsValues.session.playbackDisplay = false;
+        } else if (DEViseGlobals.checkArgument(args[i],
+          "-playbackdisplayoff", false, argValue)) {
+        jsValues.session.playbackDisplay = false;
 
-	    } else if (DEViseGlobals.checkArgument(args[i],
-	      "-collableadername", true, argValue)) {
-		jsValues.session.collabLeaderName = argValue.toString();
+        } else if (DEViseGlobals.checkArgument(args[i],
+          "-collableadername", true, argValue)) {
+        jsValues.session.collabLeaderName = argValue.toString();
 
-	    } else if (DEViseGlobals.checkArgument(args[i],
-	      "-collableaderpass", true, argValue)) {
-		jsValues.session.collabLeaderPass = argValue.toString();
+        } else if (DEViseGlobals.checkArgument(args[i],
+          "-collableaderpass", true, argValue)) {
+        jsValues.session.collabLeaderPass = argValue.toString();
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-collabname",
-	      true, argValue)) {
-		jsValues.session.collabName = argValue.toString();
+        } else if (DEViseGlobals.checkArgument(args[i], "-collabname",
+          true, argValue)) {
+        jsValues.session.collabName = argValue.toString();
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-collabpass",
-	      true, argValue)) {
-		jsValues.session.collabPass = argValue.toString();
+        } else if (DEViseGlobals.checkArgument(args[i], "-collabpass",
+          true, argValue)) {
+        jsValues.session.collabPass = argValue.toString();
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-hidebmrbsess",
-	      false, argValue)) {
-	        jsValues.uiglobals._hideBmrbSessionNames = true;
+        } else if (DEViseGlobals.checkArgument(args[i], "-hidebmrbsess",
+          false, argValue)) {
+            jsValues.uiglobals._hideBmrbSessionNames = true;
 
-	    } else if (DEViseGlobals.checkArgument(args[i], "-showallbut",
-	      false, argValue)) {
-		_showAllButtons = true;
+        } else if (DEViseGlobals.checkArgument(args[i], "-showallbut",
+          false, argValue)) {
+        _showAllButtons = true;
 
             } else {
-		throw new YException("Invalid js option \"" + args[i]
+        throw new YException("Invalid js option \"" + args[i]
                     + "\" is given!\n" + usage);
             }
         }

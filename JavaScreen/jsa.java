@@ -197,7 +197,7 @@ import  java.awt.*;
 import  java.awt.event.*;
 import  java.io.*;
 import  java.util.*;
-import	javax.swing.*;
+import  javax.swing.*;
 
 public class jsa extends DEViseJSApplet
 {
@@ -213,11 +213,11 @@ public class jsa extends DEViseJSApplet
 
     public void init()
     {
-	super.init();
+    super.init();
 
         if (DEBUG >= 1) {
             System.out.println("jsa.init()");
-	}
+    }
 
         jsValues.uiglobals.inBrowser = false;
 
@@ -229,7 +229,7 @@ public class jsa extends DEViseJSApplet
             {
                 public void actionPerformed(ActionEvent event)
                 {
-		    startJS();
+            startJS();
                 }
             });
     }
@@ -238,54 +238,54 @@ public class jsa extends DEViseJSApplet
     {
         if (DEBUG >= 1) {
             System.out.println("jsa.start()");
-	}
+    }
 
-	if (started) {
+    if (started) {
             if (jsf != null && !jsf.isQuit()) {
                 jsf.displayMe(true);
-	    }
-	} else {
-	    loadImages();
+        }
+    } else {
+        loadImages();
 
             //startButton.setEnabled(true);
 
             //if (jsValues.session.defaultName != null) {
-	        startJS();
+            startJS();
             //}
 
-	    repaint();
+        repaint();
 
-	    started = true;
-	}
+        started = true;
+    }
 
-	super.start();
+    super.start();
     }
 
     public void stop()
     {
         if (DEBUG >= 1) {
             System.out.println("jsa.stop()");
-	}
+    }
 
         if (jsf != null) {
             jsf.destroy();
             jsf = null;
         }
 
-	super.stop();
+    super.stop();
     }
 
     public void destroy()
     {
         if (DEBUG >= 1) {
             System.out.println("jsa.destroy()");
-	}
+    }
 
         if (jsf != null) {
             jsf.destroy();
             jsf = null;
         }
-	startButton.setEnabled(false);
+    startButton.setEnabled(false);
 
         super.destroy();
     }
@@ -293,24 +293,24 @@ public class jsa extends DEViseJSApplet
     private void startJS()
     {
         if (DEBUG >= 1) {
-	    System.out.println("jsa.startJS()");
-	}
-	
-	if (jsf == null) {
-	    startInfo.append("Start Java Screen ...\n");
-	    jsf = new jscframe(this, images, jsValues);
-	    //startButton.setEnabled(false);
+        System.out.println("jsa.startJS()");
+    }
+
+    if (jsf == null) {
+        startInfo.append("Start Java Screen ...\n");
+        jsf = new jscframe(this, images, jsValues);
+        //startButton.setEnabled(false);
         } else {
-	    // Note: we get here if the user clicks the start
-	    // button when a JS already exists.  RKW 2001-01-05.
-	    if (jsf.isQuit()) {
-	        startInfo.append("Start new Java Screen ...\n");
-		jsf = null;
-		jsf = new jscframe(this, images, jsValues);
-		//startButton.setEnabled(false);
-	    } else {
-	        startInfo.append("Java Screen already started!\n");
-	    }
+        // Note: we get here if the user clicks the start
+        // button when a JS already exists.  RKW 2001-01-05.
+        if (jsf.isQuit()) {
+            startInfo.append("Start new Java Screen ...\n");
+        jsf = null;
+        jsf = new jscframe(this, images, jsValues);
+        //startButton.setEnabled(false);
+        } else {
+            startInfo.append("Java Screen already started!\n");
+        }
         }
     }
 
@@ -341,37 +341,37 @@ public class jsa extends DEViseJSApplet
     public void refreshAllData(boolean doHome)
     {
         if (DEBUG >= 1) {
-	    System.out.println("jsa.refreshAllData(" + doHome + ")");
-	}
+        System.out.println("jsa.refreshAllData(" + doHome + ")");
+    }
 
-	jsf.jsc.refreshAllData(doHome);
+    jsf.jsc.refreshAllData(doHome);
     }
 
     public void restartSession()
     {
         if (DEBUG >= 1) {
-	    System.out.println("jsa.restartSession()");
-	}
+        System.out.println("jsa.restartSession()");
+    }
 
-	jsf.jsc.restartSession();
+    jsf.jsc.restartSession();
     }
 
     public void closeSession()
     {
         if (DEBUG >= 1) {
-	    System.out.println("jsa.closeSession()");
-	}
+        System.out.println("jsa.closeSession()");
+    }
 
-	jsf.jsc.closeSession();
+    jsf.jsc.closeSession();
     }
 
     public void openSession(String fullSessionName)
     {
         if (DEBUG >= 1) {
-	    System.out.println("jsa.openSession(" + fullSessionName + ")");
-	}
+        System.out.println("jsa.openSession(" + fullSessionName + ")");
+    }
 
-	jsf.jsc.openSession(fullSessionName);
+    jsf.jsc.openSession(fullSessionName);
     }
 }
 
@@ -386,7 +386,7 @@ class jscframe extends JFrame
     {
         if (DEBUG >= 1) {
             System.out.println("jscframe constructor");
-	}
+    }
 
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dim = kit.getScreenSize();
@@ -399,7 +399,7 @@ class jscframe extends JFrame
         add(jsc);
         setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();
-	jsc.start();
+        jsc.start();
 
         Point loc = new Point(0, 0);
         Dimension size = getSize();
@@ -407,10 +407,10 @@ class jscframe extends JFrame
         loc.x = loc.x + dim.width / 2 - size.width / 2;
         if (loc.y < 0) {
             loc.y = 0;
-	}
+    }
         if (loc.x < 0) {
             loc.x = 0;
-	}
+    }
 
         setLocation(loc);
 
@@ -422,23 +422,23 @@ class jscframe extends JFrame
 
     public boolean isQuit()
     {
-	if (jsc == null) {
-	    return true;
-	} else {
+    if (jsc == null) {
+        return true;
+    } else {
             return jsc.getQuitStatus();
-	}
+    }
     }
 
     public void destroy()
     {
         if (DEBUG >= 1) {
-	    System.out.println("jscframe.destroy()");
-	}
+        System.out.println("jscframe.destroy()");
+    }
 
-	if (jsc != null) {
+    if (jsc != null) {
             jsc.destroy();
-	    jsc = null;
-	}
+        jsc = null;
+    }
     }
 
     protected void processEvent(AWTEvent event)
@@ -456,22 +456,22 @@ class jscframe extends JFrame
     {
         if (DEBUG >= 1) {
             System.out.println("jscframe.displayMe(" + isShow + ")");
-	}
+    }
 
         if (isShow) {
             if (!isShowing()) {
                 setVisible(true);
             }
-	    if (jsc != null) {
-	        jsc.showDebug();
-	    }
+        if (jsc != null) {
+            jsc.showDebug();
+        }
         } else {
             if (isShowing()) {
                 setVisible(false);
             }
-	    if (jsc != null) {
-	        jsc.hideDebug();
-	    }
+        if (jsc != null) {
+            jsc.hideDebug();
+        }
         }
     }
 }
