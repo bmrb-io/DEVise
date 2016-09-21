@@ -1289,8 +1289,7 @@ public class jsdevisec extends JPanel
         jmolButton = new DEViseJmolMenuButton(jsValues);
     buttonPanel.add(jmolButton);
     if (!showAllButtons) {
-        jmolButton.hide();
-        jmolButton.setVisible(false;)
+        jmolButton.setVisible(false);
     }
 
     sessionMenuButton = new DEViseSessionMenuButton(this);
@@ -1723,7 +1722,7 @@ public class jsdevisec extends JPanel
     }
         Runnable doHideJmol = new Runnable() {
         public void run() {
-                jmolButton.hide();
+            jmolButton.setVisible(false);
             toolBar.setJmolCanvas(null);
             validate();
         }

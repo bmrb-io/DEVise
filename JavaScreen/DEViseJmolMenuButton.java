@@ -465,7 +465,7 @@ public class DEViseJmolMenuButton extends DEViseButton
     public void show(DEViseCanvas3DJmol canvas)
     {
     jmolCanvas = canvas;
-        super.show();
+        super.setVisible(true);
     }
 
     //-------------------------------------------------------------------
