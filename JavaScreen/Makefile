@@ -64,10 +64,13 @@ appletclass: DEViseJSApplet.java
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
 
 clean:
-	-rm devise_js.jar
 	-rm JavaScreen/*.class
 	-rm JavaScreen/UI/*.class
 
 set_it_up:
+	#mkdir -p JavaScreen/UI
+	#ln -fs *gif resources html JavaScreen
+	#ln -fs UI/*.java JavaScreen/UI/
+	#ln -fs resources/toolbar_icons/*.default.* html
 	./setup
 	jar xf JmolApplet.jar
