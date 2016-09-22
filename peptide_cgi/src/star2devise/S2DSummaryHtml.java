@@ -146,22 +146,22 @@ public class S2DSummaryHtml {
     //-------------------------------------------------------------------
     public static String directory(String htmlDir, String name)
     {
-    	return htmlDir + File.separator + name;
+        return htmlDir + File.separator + name;
     }
 
     //-------------------------------------------------------------------
     public static String fileName(String htmlDir, String name,
       String fullName)
     {
-	return directory(htmlDir, name) + File.separator +
-	  fileNameShort(fullName);
+    return directory(htmlDir, name) + File.separator +
+      fileNameShort(fullName);
     }
 
     //-------------------------------------------------------------------
     public static String fileNameShort(String fullName)
     {
-	return fullName + S2DNames.SUMMARY_HTML_SUFFIX +
-	  S2DNames.HTML_SUFFIX;
+    return fullName + S2DNames.SUMMARY_HTML_SUFFIX +
+      S2DNames.HTML_SUFFIX;
     }
 
     //-------------------------------------------------------------------
@@ -179,16 +179,16 @@ public class S2DSummaryHtml {
       boolean restraintOnly) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
-	      name + ", " + masterId + ")");
-	}
+        System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
+          name + ", " + masterId + ")");
+    }
 
-	_htmlDir = htmlDir;
+    _htmlDir = htmlDir;
 
-	_normal = new S2DSummaryHtmlNormal(name, fullName, longName,
-	  masterId, localFiles, htmlDir, restraintOnly);
+    _normal = new S2DSummaryHtmlNormal(name, fullName, longName,
+      masterId, localFiles, htmlDir, restraintOnly);
 
-	_normal.initialize(systemName, frameTitle);
+    _normal.initialize(systemName, frameTitle);
     }
 
     //-------------------------------------------------------------------
@@ -201,16 +201,16 @@ public class S2DSummaryHtml {
       boolean restraintOnly) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
-	      name + ", " + masterId + ", " + extraId + ")");
-	}
+        System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
+          name + ", " + masterId + ", " + extraId + ")");
+    }
 
-	_htmlDir = htmlDir;
+    _htmlDir = htmlDir;
 
-	_normal = new S2DSummaryHtmlNormal(name, fullName, longName,
-	  masterId, extraId, localFiles, htmlDir, restraintOnly);
+    _normal = new S2DSummaryHtmlNormal(name, fullName, longName,
+      masterId, extraId, localFiles, htmlDir, restraintOnly);
 
-	_normal.initialize(systemName, frameTitle);
+    _normal.initialize(systemName, frameTitle);
     }
 
     //-------------------------------------------------------------------
@@ -218,8 +218,8 @@ public class S2DSummaryHtml {
     protected void finalize() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryHtml.finalize()");
-	}
+        System.out.println("S2DSummaryHtml.finalize()");
+    }
 
         close(null, null, "");
     }
@@ -233,10 +233,10 @@ public class S2DSummaryHtml {
       throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryHtml.close()");
-	}
+        System.out.println("S2DSummaryHtml.close()");
+    }
 
-	_normal.close(bmrbIds, pdbIds, starVersion);
+    _normal.close(bmrbIds, pdbIds, starVersion);
     }
 
     //-------------------------------------------------------------------
@@ -244,11 +244,11 @@ public class S2DSummaryHtml {
     public void startFrame(String frameDetails) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryHtml.startFrame(" +
-	      frameDetails + ")");
-	}
+        System.out.println("S2DSummaryHtml.startFrame(" +
+          frameDetails + ")");
+    }
 
-    	_normal.startFrame(frameDetails);
+        _normal.startFrame(frameDetails);
     }
 
     //-------------------------------------------------------------------
@@ -256,10 +256,10 @@ public class S2DSummaryHtml {
     public void endFrame() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryHtml.endFrame()");
-	}
+        System.out.println("S2DSummaryHtml.endFrame()");
+    }
 
-    	_normal.endFrame();
+        _normal.endFrame();
     }
 
     //-------------------------------------------------------------------
@@ -268,11 +268,11 @@ public class S2DSummaryHtml {
       int count, boolean isNucleicAcid) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeDeltashift()");
-	}
+        System.out.println("S2DSummaryHtml.writeDeltashift()");
+    }
 
-    	_normal.writeDeltashift(frameIndex, entityAssemblyID, count,
-	  isNucleicAcid);
+        _normal.writeDeltashift(frameIndex, entityAssemblyID, count,
+      isNucleicAcid);
     }
 
     //-------------------------------------------------------------------
@@ -280,12 +280,12 @@ public class S2DSummaryHtml {
     public void writeSpartaDeltashift(int entityAssemblyID,
       int frameIndex, int count) throws IOException
     {
-	if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeSpartaDeltashift()");
-	}
+    if (doDebugOutput(12)) {
+        System.out.println("S2DSummaryHtml.writeSpartaDeltashift()");
+    }
 
-    	_normal.writeSpartaDeltashift(entityAssemblyID, frameIndex,
-	  count);
+        _normal.writeSpartaDeltashift(entityAssemblyID, frameIndex,
+      count);
     }
 
     //-------------------------------------------------------------------
@@ -294,10 +294,10 @@ public class S2DSummaryHtml {
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeCSI()");
-	}
+        System.out.println("S2DSummaryHtml.writeCSI()");
+    }
 
-    	_normal.writeCSI(entityAssemblyID, frameIndex, count);
+        _normal.writeCSI(entityAssemblyID, frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -306,10 +306,10 @@ public class S2DSummaryHtml {
       int count) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writePctAssign()");
-	}
+        System.out.println("S2DSummaryHtml.writePctAssign()");
+    }
 
-    	_normal.writePctAssign(entityAssemblyID, frameIndex, count);
+        _normal.writePctAssign(entityAssemblyID, frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -318,10 +318,10 @@ public class S2DSummaryHtml {
       int count) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeCoupling()");
-	}
+        System.out.println("S2DSummaryHtml.writeCoupling()");
+    }
 
-	_normal.writeCoupling(frameIndex, entityAssemblyID, count);
+    _normal.writeCoupling(frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -331,11 +331,11 @@ public class S2DSummaryHtml {
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeRelax()");
-	}
+        System.out.println("S2DSummaryHtml.writeRelax()");
+    }
 
-	_normal.writeRelax(dataType, frequency, suffix, name,
-	  frameIndex, entityAssemblyID, count);
+    _normal.writeRelax(dataType, frequency, suffix, name,
+      frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -344,10 +344,10 @@ public class S2DSummaryHtml {
       int entityAssemblyID, int count) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeHetNOE()");
-	}
+        System.out.println("S2DSummaryHtml.writeHetNOE()");
+    }
 
-	_normal.writeHetNOE(name, frameIndex, entityAssemblyID, count);
+    _normal.writeHetNOE(name, frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -356,10 +356,10 @@ public class S2DSummaryHtml {
       int count) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeAllShifts()");
-	}
+        System.out.println("S2DSummaryHtml.writeAllShifts()");
+    }
 
-	_normal.writeAllShifts(entityAssemblyID, frameIndex, count);
+    _normal.writeAllShifts(entityAssemblyID, frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -368,10 +368,10 @@ public class S2DSummaryHtml {
       int count) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeHvsNShifts()");
-	}
+        System.out.println("S2DSummaryHtml.writeHvsNShifts()");
+    }
 
-	_normal.writeHvsNShifts(frameIndex, entityAssemblyID, count);
+    _normal.writeHvsNShifts(frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -380,10 +380,10 @@ public class S2DSummaryHtml {
       int count) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeHvsCShifts()");
-	}
+        System.out.println("S2DSummaryHtml.writeHvsCShifts()");
+    }
 
-	_normal.writeHvsCShifts(frameIndex, entityAssemblyID, count);
+    _normal.writeHvsCShifts(frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -392,10 +392,10 @@ public class S2DSummaryHtml {
       int resCount, int atomCount) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeAtomicCoords()");
-	}
+        System.out.println("S2DSummaryHtml.writeAtomicCoords()");
+    }
 
-	_normal.writeAtomicCoords(pdbId, frameIndex, resCount, atomCount);
+    _normal.writeAtomicCoords(pdbId, frameIndex, resCount, atomCount);
     }
 
     //-------------------------------------------------------------------
@@ -406,17 +406,17 @@ public class S2DSummaryHtml {
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeAtomicCoordsCGI()");
-	}
+        System.out.println("S2DSummaryHtml.writeAtomicCoordsCGI()");
+    }
 
-	_normal.writeAtomicCoordsCGI(pdbId, frameIndex);
+    _normal.writeAtomicCoordsCGI(pdbId, frameIndex);
     }
 
     //-------------------------------------------------------------------
     public void writeTooManyAtoms(int atomCount, int maxAtoms)
       throws IOException
     {
-	_normal.writeTooManyAtoms(atomCount, maxAtoms);
+    _normal.writeTooManyAtoms(atomCount, maxAtoms);
     }
 
     //-------------------------------------------------------------------
@@ -425,10 +425,10 @@ public class S2DSummaryHtml {
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeChemShiftRef()");
-	}
+        System.out.println("S2DSummaryHtml.writeChemShiftRef()");
+    }
 
-	_normal.writeChemShiftRef(pdbId, frameIndex);
+    _normal.writeChemShiftRef(pdbId, frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -439,10 +439,10 @@ public class S2DSummaryHtml {
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeChemShiftRefCGI()");
-	}
+        System.out.println("S2DSummaryHtml.writeChemShiftRefCGI()");
+    }
 
-	_normal.writeChemShiftRefCGI(pdbId, frameIndex);
+    _normal.writeChemShiftRefCGI(pdbId, frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -450,10 +450,10 @@ public class S2DSummaryHtml {
     public void writePistachio(int frameIndex) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writePistachio()");
-	}
+        System.out.println("S2DSummaryHtml.writePistachio()");
+    }
 
-	_normal.writePistachio(frameIndex);
+    _normal.writePistachio(frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -462,10 +462,10 @@ public class S2DSummaryHtml {
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeAmbiguity()");
-	}
+        System.out.println("S2DSummaryHtml.writeAmbiguity()");
+    }
 
-	_normal.writeAmbiguity(frameIndex, entityAssemblyID);
+    _normal.writeAmbiguity(frameIndex, entityAssemblyID);
     }
 
     //-------------------------------------------------------------------
@@ -474,10 +474,10 @@ public class S2DSummaryHtml {
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeLACS()");
-	}
+        System.out.println("S2DSummaryHtml.writeLACS()");
+    }
 
-	_normal.writeLACS(title, frameIndex);
+    _normal.writeLACS(title, frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -486,10 +486,10 @@ public class S2DSummaryHtml {
       int count) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeS2Order()");
-	}
+        System.out.println("S2DSummaryHtml.writeS2Order()");
+    }
 
-	_normal.writeS2Order(frameIndex, entityAssemblyID, count);
+    _normal.writeS2Order(frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -498,10 +498,10 @@ public class S2DSummaryHtml {
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeS2Pred()");
-	}
+        System.out.println("S2DSummaryHtml.writeS2Pred()");
+    }
 
-	_normal.writeS2Pred(pdbId, coordIndex, frameIndex);
+    _normal.writeS2Pred(pdbId, coordIndex, frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -512,10 +512,10 @@ public class S2DSummaryHtml {
       int frameIndex) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeS2PredCGI()");
-	}
+        System.out.println("S2DSummaryHtml.writeS2PredCGI()");
+    }
 
-	_normal.writeS2PredCGI(pdbId, coordIndex, frameIndex);
+    _normal.writeS2PredCGI(pdbId, coordIndex, frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -525,10 +525,10 @@ public class S2DSummaryHtml {
       boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeTorsionAngle()");
-	}
+        System.out.println("S2DSummaryHtml.writeTorsionAngle()");
+    }
 
-	_normal.writeTorsionAngle(pdbId, frameIndex, isRR);
+    _normal.writeTorsionAngle(pdbId, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------
@@ -538,10 +538,10 @@ public class S2DSummaryHtml {
       int frameIndex, boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeTorsionAngleCGI()");
-	}
+        System.out.println("S2DSummaryHtml.writeTorsionAngleCGI()");
+    }
 
-	_normal.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex, isRR);
+    _normal.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------
@@ -551,10 +551,10 @@ public class S2DSummaryHtml {
       boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeDistRestraint()");
-	}
+        System.out.println("S2DSummaryHtml.writeDistRestraint()");
+    }
 
-	_normal.writeDistRestraint(pdbId, frameIndex, isRR);
+    _normal.writeDistRestraint(pdbId, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------
@@ -565,10 +565,10 @@ public class S2DSummaryHtml {
       int frameIndex, boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.writeDistRestraintCGI()");
-	}
+        System.out.println("S2DSummaryHtml.writeDistRestraintCGI()");
+    }
 
-	_normal.writeDistRestraintCGI(pdbId, tarUrl, frameIndex, isRR);
+    _normal.writeDistRestraintCGI(pdbId, tarUrl, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------
@@ -578,11 +578,11 @@ public class S2DSummaryHtml {
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.write2EntHvsNShifts()");
-	}
+        System.out.println("S2DSummaryHtml.write2EntHvsNShifts()");
+    }
 
         _normal.write2EntHvsNShifts(frameIndex1, frameIndex2, eaId1,
-	  eaId2, peakCount1, peakCount2);
+      eaId2, peakCount1, peakCount2);
     }
 
     //-------------------------------------------------------------------
@@ -592,26 +592,26 @@ public class S2DSummaryHtml {
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtml.write2EntHvsCShifts()");
-	}
+        System.out.println("S2DSummaryHtml.write2EntHvsCShifts()");
+    }
 
         _normal.write2EntHvsCShifts(frameIndex1, frameIndex2, eaId1,
-	  eaId2, peakCount1, peakCount2);
+      eaId2, peakCount1, peakCount2);
     }
 
     //-------------------------------------------------------------------
     // Write a message to the summary html file.
     public void writeMessage(String msg, boolean horRule)
     {
-	_normal.writeMessage(msg, horRule);
+    _normal.writeMessage(msg, horRule);
     }
 
     //-------------------------------------------------------------------
     // Information about data sets.
     public static class DatasetInfo {
         int _entityAssemblyId;
-	int _frameIndex;
-	int _peakCount;
+    int _frameIndex;
+    int _peakCount;
     }
 
     //-------------------------------------------------------------------
@@ -621,59 +621,59 @@ public class S2DSummaryHtml {
     public static Vector getInfo(String htmlDir, String name,
       int dataType)
     {
-	if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryHtml.getInfo(" + htmlDir +
-	      ", " + name + ", " + dataType + ")");
-	}
+    if (doDebugOutput(11)) {
+        System.out.println("S2DSummaryHtml.getInfo(" + htmlDir +
+          ", " + name + ", " + dataType + ")");
+    }
 
-    	Vector result = new Vector();
+        Vector result = new Vector();
 
-	try {
-	    String infoTag = "";
+    try {
+        String infoTag = "";
 
-	    switch (dataType) {
-	    case S2DUtils.TYPE_HVSN_CHEM_SHIFTS:
-	        infoTag = "Info_HvsN";
-	        break;
+        switch (dataType) {
+        case S2DUtils.TYPE_HVSN_CHEM_SHIFTS:
+            infoTag = "Info_HvsN";
+            break;
 
-	    case S2DUtils.TYPE_HVSC_CHEM_SHIFTS:
-	        infoTag = "Info_HvsC";
-	        break;
+        case S2DUtils.TYPE_HVSC_CHEM_SHIFTS:
+            infoTag = "Info_HvsC";
+            break;
 
-	    default:
-		throw new S2DError("Unsupported data type: " + dataType);
-	    }
+        default:
+        throw new S2DError("Unsupported data type: " + dataType);
+        }
 
-	    String fn = fileName(htmlDir, name, name);
+        String fn = fileName(htmlDir, name, name);
 
-	    BufferedReader reader = new BufferedReader(new FileReader(fn));
+        BufferedReader reader = new BufferedReader(new FileReader(fn));
 
-	    String line;
-	    while ((line = reader.readLine()) != null) {
-		if (line.indexOf(infoTag) >= 0) {
-		    DatasetInfo info = new DatasetInfo();
+        String line;
+        while ((line = reader.readLine()) != null) {
+        if (line.indexOf(infoTag) >= 0) {
+            DatasetInfo info = new DatasetInfo();
                     info._entityAssemblyId = getIntValue(line, "eaId");
-	            info._frameIndex = getIntValue(line, "frameIndex");
-	            info._peakCount = getIntValue(line, "peakCount");
-		    result.addElement(info);
-		}
-	    }
+                info._frameIndex = getIntValue(line, "frameIndex");
+                info._peakCount = getIntValue(line, "peakCount");
+            result.addElement(info);
+        }
+        }
 
             reader.close();
-	} catch (Exception ex) {
-	    System.err.println("Error (" + ex.toString() +
-	      ") getting data set info for " + name);
-	}
+    } catch (Exception ex) {
+        System.err.println("Error (" + ex.toString() +
+          ") getting data set info for " + name);
+    }
 
-	if (doDebugOutput(12)) {
-	    for (int index = 0; index < result.size(); index++) {
-		DatasetInfo info = (DatasetInfo)result.elementAt(index);
-	        System.out.println("  " + info._entityAssemblyId + ", " +
-		  info._frameIndex + ", " + info._peakCount);
-	    }
-	}
+    if (doDebugOutput(12)) {
+        for (int index = 0; index < result.size(); index++) {
+        DatasetInfo info = (DatasetInfo)result.elementAt(index);
+            System.out.println("  " + info._entityAssemblyId + ", " +
+          info._frameIndex + ", " + info._peakCount);
+        }
+    }
 
-	return result;
+    return result;
     }
 
     //===================================================================
@@ -685,22 +685,22 @@ public class S2DSummaryHtml {
     private static int getIntValue(String line, String valueTag)
       throws S2DException
     {
-	valueTag += ":";
+    valueTag += ":";
         int index1 = line.indexOf(valueTag);
-	if (index1 < 0) {
-	    throw new S2DError("No " + valueTag + " tag found in " + line);
-	}
-	String str1 = line.substring(index1 + valueTag.length());
-	int index2 = str1.indexOf(" ");
-	String str2;
-	if ( index1 < 0) {
-	    str2 = str1;
-	} else {
-	    str2 = str1.substring(0, index2);
-	}
+    if (index1 < 0) {
+        throw new S2DError("No " + valueTag + " tag found in " + line);
+    }
+    String str1 = line.substring(index1 + valueTag.length());
+    int index2 = str1.indexOf(" ");
+    String str2;
+    if ( index1 < 0) {
+        str2 = str1;
+    } else {
+        str2 = str1.substring(0, index2);
+    }
         int result = S2DUtils.string2Int(str2);
 
-	return result;
+    return result;
     }
 
     //-------------------------------------------------------------------
@@ -708,12 +708,12 @@ public class S2DSummaryHtml {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+        if (level > 0) System.out.print("DEBUG " + level + ": ");
+        return true;
+    }
 
-	return false;
+    return false;
     }
 }
 
