@@ -53,31 +53,35 @@ public abstract class S2DException extends Exception
 
     protected static String _name = "noname";
 
-    public static void setDebugLvl(int debugLvl) { _debug = debugLvl; }
+    public static void setDebugLvl(int debugLvl) {
+        _debug = debugLvl;
+    }
 
-    public static int getDebugLvl() { return _debug; }
+    public static int getDebugLvl() {
+        return _debug;
+    }
 
     public S2DException(String msg)
     {
         super(msg);
 
-	if (getDebugLvl() >= 3) {
-	    printStackTrace();
-	}
+        if (getDebugLvl() >= 3) {
+            printStackTrace();
+        }
     }
 
     public static void setName(String name)
     {
         _name = name;
-	S2DError.removeLogFile();
-	S2DWarning.removeLogFile();
+        S2DError.removeLogFile();
+        S2DWarning.removeLogFile();
     }
 
     public static void clear()
     {
-    	_name = "noname";
-	S2DError.clear();
-	S2DWarning.clear();
+        _name = "noname";
+        S2DError.clear();
+        S2DWarning.clear();
     }
 }
 

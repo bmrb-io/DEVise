@@ -128,7 +128,7 @@ public class S2DSpecificHtml {
     private static final String searchString5 = "DUMMY_DETAILS";
     private static final String searchString6 = "ENTRY_IDy";
     private static final String searchString7 =
-      "\"cmdport\" value=\"6666\"";
+        "\"cmdport\" value=\"6666\"";
     private static final String searchString8 = "CGI_URL";
     private static final String searchString9 = "EXAMPLE_ID";
 
@@ -152,50 +152,50 @@ public class S2DSpecificHtml {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DSpecificHtml(String htmlDir, int dataType, String name,
-      int frameIndex, String title, String frameDetails) throws S2DError
+                           int frameIndex, String title, String frameDetails) throws S2DError
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSpecificHtml.S2DSpecificHtml(" +
-	      htmlDir + ", " + dataType + ", " + name + ", " +
-	      frameIndex + ")");
-	}
+            System.out.println("S2DSpecificHtml.S2DSpecificHtml(" +
+                               htmlDir + ", " + dataType + ", " + name + ", " +
+                               frameIndex + ")");
+        }
 
-	init(htmlDir, dataType, name, name, frameIndex, 0, title,
-	  frameDetails);
+        init(htmlDir, dataType, name, name, frameIndex, 0, title,
+             frameDetails);
     }
-    
+
     //-------------------------------------------------------------------
     // Constructor (for two-entry files).
     public S2DSpecificHtml(String htmlDir, int dataType, String name,
-      String fullName, int frameIndex1, int frameIndex2, String title,
-      String frameDetails) throws S2DError
+                           String fullName, int frameIndex1, int frameIndex2, String title,
+                           String frameDetails) throws S2DError
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSpecificHtml.S2DSpecificHtml(" +
-	      htmlDir + ", " + dataType + ", " + name + ", " +
-	      fullName + ", " + frameIndex1 + ", " + frameIndex2 + ")");
-	}
+            System.out.println("S2DSpecificHtml.S2DSpecificHtml(" +
+                               htmlDir + ", " + dataType + ", " + name + ", " +
+                               fullName + ", " + frameIndex1 + ", " + frameIndex2 + ")");
+        }
 
-	_multiEntry = true;
+        _multiEntry = true;
 
-	init(htmlDir, dataType, name, fullName, frameIndex1,
-	  frameIndex2, title, frameDetails);
+        init(htmlDir, dataType, name, fullName, frameIndex1,
+             frameIndex2, title, frameDetails);
     }
 
     //-------------------------------------------------------------------
     // Constructor (for s2predict).
     public S2DSpecificHtml(String htmlDir, int dataType, String name,
-      int coordIndex, int frameIndex, String title,
-      String frameDetails) throws S2DError
+                           int coordIndex, int frameIndex, String title,
+                           String frameDetails) throws S2DError
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSpecificHtml.S2DSpecificHtml(" +
-	      htmlDir + ", " + dataType + ", " + name + ", " +
-	      coordIndex + ", " + frameIndex + ")");
-	}
+            System.out.println("S2DSpecificHtml.S2DSpecificHtml(" +
+                               htmlDir + ", " + dataType + ", " + name + ", " +
+                               coordIndex + ", " + frameIndex + ")");
+        }
 
-	init(htmlDir, dataType, name, name, coordIndex,
-	  frameIndex, title, frameDetails);
+        init(htmlDir, dataType, name, name, coordIndex,
+             frameIndex, title, frameDetails);
     }
 
     //-------------------------------------------------------------------
@@ -209,11 +209,11 @@ public class S2DSpecificHtml {
     public void write() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSpecificHtml.write(");
-	}
+            System.out.println("S2DSpecificHtml.write(");
+        }
 
-	// Write the "normal size" file.
-	String templateFile = TemplateFileName();
+        // Write the "normal size" file.
+        String templateFile = TemplateFileName();
         writeOne(templateFile);
     }
 
@@ -224,16 +224,16 @@ public class S2DSpecificHtml {
     // Get the template file name.
     protected String TemplateFileName()
     {
-	_isJmol = (_dataType == S2DUtils.TYPE_ATOMIC_COORDS) ||
-	  (_dataType == S2DUtils.TYPE_TORSION_ANGLE) ||
-	  (_dataType == S2DUtils.TYPE_RRTORSION_ANGLE) ||
-	  (_dataType == S2DUtils.TYPE_DIST_RESTR) ||
-	  (_dataType == S2DUtils.TYPE_RRDIST_RESTR);
+        _isJmol = (_dataType == S2DUtils.TYPE_ATOMIC_COORDS) ||
+                  (_dataType == S2DUtils.TYPE_TORSION_ANGLE) ||
+                  (_dataType == S2DUtils.TYPE_RRTORSION_ANGLE) ||
+                  (_dataType == S2DUtils.TYPE_DIST_RESTR) ||
+                  (_dataType == S2DUtils.TYPE_RRDIST_RESTR);
 
-	String templateFile = "html_templates" + File.separator;
+        String templateFile = "html_templates" + File.separator;
         templateFile += "specific_html_jmol.base";
 
-	return templateFile;
+        return templateFile;
     }
 
     //-------------------------------------------------------------------
@@ -241,9 +241,9 @@ public class S2DSpecificHtml {
     protected String OutFileName() throws S2DError
     {
         String outFileName = _htmlDir + File.separator + _name +
-	  File.separator + _fullName + _dataSuffix + _frameIndexStr +
-	  S2DNames.HTML_SUFFIX;
-    	return outFileName;
+                             File.separator + _fullName + _dataSuffix + _frameIndexStr +
+                             S2DNames.HTML_SUFFIX;
+        return outFileName;
     }
 
     //-------------------------------------------------------------------
@@ -251,34 +251,34 @@ public class S2DSpecificHtml {
     // into a line to be output.
     protected String FilterLine(String inLine)
     {
-	String line = inLine;
-	line = S2DUtils.replace(line, searchString1,
-	  _replaceString1);
-	line = S2DUtils.replace(line, searchString1b,
-	  _replaceString1b);
-	line = S2DUtils.replace(line, searchString2,
-	  _replaceString2);
-	line = S2DUtils.replace(line, searchString3,
-	  _replaceString3);
-	line = S2DUtils.replace(line, searchString4,
-	  _replaceString4);
-	line = S2DUtils.replace(line, searchString5,
-	  _replaceString5);
-	line = S2DUtils.replace(line, searchString6,
-	  _replaceString6);
-	line = S2DUtils.replace(line, searchString7,
-	  _replaceString7);
-	line = S2DUtils.replace(line, searchString8,
-	  _replaceString8);
-	line = S2DUtils.replace(line, searchString9,
-	  _replaceString9);
-	if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS ||
-	  _dataType == S2DUtils.TYPE_PISTACHIO ||
-	  _dataType == S2DUtils.TYPE_AMBIGUITY) {
-	    // Change JS background color so gaps between views
-	    // show up.
-	    line = S2DUtils.replace(line, "0+0+0", "64+96+0");
-	}
+        String line = inLine;
+        line = S2DUtils.replace(line, searchString1,
+                                _replaceString1);
+        line = S2DUtils.replace(line, searchString1b,
+                                _replaceString1b);
+        line = S2DUtils.replace(line, searchString2,
+                                _replaceString2);
+        line = S2DUtils.replace(line, searchString3,
+                                _replaceString3);
+        line = S2DUtils.replace(line, searchString4,
+                                _replaceString4);
+        line = S2DUtils.replace(line, searchString5,
+                                _replaceString5);
+        line = S2DUtils.replace(line, searchString6,
+                                _replaceString6);
+        line = S2DUtils.replace(line, searchString7,
+                                _replaceString7);
+        line = S2DUtils.replace(line, searchString8,
+                                _replaceString8);
+        line = S2DUtils.replace(line, searchString9,
+                                _replaceString9);
+        if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS ||
+                _dataType == S2DUtils.TYPE_PISTACHIO ||
+                _dataType == S2DUtils.TYPE_AMBIGUITY) {
+            // Change JS background color so gaps between views
+            // show up.
+            line = S2DUtils.replace(line, "0+0+0", "64+96+0");
+        }
 
         return line;
     }
@@ -291,96 +291,96 @@ public class S2DSpecificHtml {
     // so that we don't have lots of duplicate code between the single-
     // and two-entry constructors.
     public void init(String htmlDir, int dataType, String name,
-      String fullName, int frameIndex1, int frameIndex2, String title,
-      String frameDetails) throws S2DError
+                     String fullName, int frameIndex1, int frameIndex2, String title,
+                     String frameDetails) throws S2DError
     {
-	_htmlDir = htmlDir;
-	_dataType = dataType;
-	_name = name;
-	_fullName = fullName;
-	_frameIndexStr = "" + frameIndex1;
-	if (frameIndex2 > 0) {
-	    if (dataType != S2DUtils.TYPE_S2PRED) {
-	        _frameIndexStr += "+" + frameIndex2;
-	    } else {
-	        _frameIndexStr += "-" + frameIndex2;
-	    }
-	}
-	_title = title;
+        _htmlDir = htmlDir;
+        _dataType = dataType;
+        _name = name;
+        _fullName = fullName;
+        _frameIndexStr = "" + frameIndex1;
+        if (frameIndex2 > 0) {
+            if (dataType != S2DUtils.TYPE_S2PRED) {
+                _frameIndexStr += "+" + frameIndex2;
+            } else {
+                _frameIndexStr += "-" + frameIndex2;
+            }
+        }
+        _title = title;
 
-	_dataSuffix = S2DUtils.dataType2Suffix(_dataType);
+        _dataSuffix = S2DUtils.dataType2Suffix(_dataType);
         _replaceString1 = _name + File.separator + _fullName + _dataSuffix +
-	  _frameIndexStr + S2DNames.SESSION_SUFFIX;
+                          _frameIndexStr + S2DNames.SESSION_SUFFIX;
         _replaceString1b =  _fullName + _dataSuffix +
-	  _frameIndexStr + S2DNames.HTML_SUFFIX;
+                            _frameIndexStr + S2DNames.HTML_SUFFIX;
 
         _replaceString2 = _fullName;
-	String helpSuffix = _dataSuffix;
-	if (dataType == S2DUtils.TYPE_DNA_DELTASHIFT ||
-	  dataType == S2DUtils.TYPE_RNA_DELTASHIFT) {
-	    helpSuffix += "_na";
-	}
-	if (_multiEntry) {
-	    helpSuffix += "2";
-	}
+        String helpSuffix = _dataSuffix;
+        if (dataType == S2DUtils.TYPE_DNA_DELTASHIFT ||
+                dataType == S2DUtils.TYPE_RNA_DELTASHIFT) {
+            helpSuffix += "_na";
+        }
+        if (_multiEntry) {
+            helpSuffix += "2";
+        }
         _replaceString3 = "../help_" + helpSuffix + S2DNames.HTML_SUFFIX;
         _replaceString4 = _title;
-	if (frameDetails != null && !frameDetails.equals("")) {
-	    _replaceString5 = "Frame details: " + frameDetails;
+        if (frameDetails != null && !frameDetails.equals("")) {
+            _replaceString5 = "Frame details: " + frameDetails;
         } else {
-	    _replaceString5 = "";
-	}
+            _replaceString5 = "";
+        }
 
-	_replaceString6 = name + S2DNames.SUMMARY_HTML_SUFFIX;
-	_replaceString7 = "\"cmdport\" value=\"" +
-	  S2DNames.JS_CMD_PORT + "\"";
-	_replaceString8 = S2DNames.CGI_URL;
+        _replaceString6 = name + S2DNames.SUMMARY_HTML_SUFFIX;
+        _replaceString7 = "\"cmdport\" value=\"" +
+                          S2DNames.JS_CMD_PORT + "\"";
+        _replaceString8 = S2DNames.CGI_URL;
 
-	_replaceString9 = _isUvd ? S2DMain.DEFAULT_ACCESSION_NUM : name;
+        _replaceString9 = _isUvd ? S2DMain.DEFAULT_ACCESSION_NUM : name;
     }
 
     //-------------------------------------------------------------------
     private void writeOne(String templateFile)
-      throws S2DException
+    throws S2DException
     {
-	try {
+        try {
             FileWriter writer = S2DFileWriter.create(
-	      OutFileName());
-	    BufferedReader reader = new BufferedReader(
-	      new FileReader(templateFile));
+                                    OutFileName());
+            BufferedReader reader = new BufferedReader(
+                new FileReader(templateFile));
 
             String inLine;
-	    while ((inLine = reader.readLine()) != null) {
+            while ((inLine = reader.readLine()) != null) {
 
-	        // Filter out Jmol line if necessary.
-		if (!_isJmol) {
-		    if (inLine.indexOf("3D rendering by") >= 0) {
-		        continue;
-		    }
-		}
+                // Filter out Jmol line if necessary.
+                if (!_isJmol) {
+                    if (inLine.indexOf("3D rendering by") >= 0) {
+                        continue;
+                    }
+                }
 
-		String outLine = FilterLine(inLine);
+                String outLine = FilterLine(inLine);
 
-		outLine = S2DUtils.replace(outLine, "COMMENT_EMAIL",
-		  S2DNames.COMMENT_EMAIL);
+                outLine = S2DUtils.replace(outLine, "COMMENT_EMAIL",
+                                           S2DNames.COMMENT_EMAIL);
 
-		if (_isUvd) {
-		    outLine = S2DUtils.replace(outLine, "../..", "../../..");
-		    outLine = S2DUtils.replace(outLine, "../js_videos.html",
-		      "../../js_videos.html");
-		    outLine = S2DUtils.replace(outLine, "dynamic_sessions",
-		      "dynamic_sessions/.uvd");
-		}
-	        writer.write(outLine + "\n");
-	    }
+                if (_isUvd) {
+                    outLine = S2DUtils.replace(outLine, "../..", "../../..");
+                    outLine = S2DUtils.replace(outLine, "../js_videos.html",
+                                               "../../js_videos.html");
+                    outLine = S2DUtils.replace(outLine, "dynamic_sessions",
+                                               "dynamic_sessions/.uvd");
+                }
+                writer.write(outLine + "\n");
+            }
 
-	    reader.close();
-	    writer.close();
+            reader.close();
+            writer.close();
         } catch(IOException ex) {
-	    System.err.println("IOException: " +
-	      ex.toString() + " writing specific html file");
-	    throw new S2DError("Can't write specific html file");
-	}
+            System.err.println("IOException: " +
+                               ex.toString() + " writing specific html file");
+            throw new S2DError("Can't write specific html file");
+        }
     }
 
     //-------------------------------------------------------------------
@@ -388,12 +388,12 @@ public class S2DSpecificHtml {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

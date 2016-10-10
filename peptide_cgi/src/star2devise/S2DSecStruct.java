@@ -47,8 +47,8 @@ public class S2DSecStruct {
     private String _dataDir;
 
     private class ResidueData {
-	public String _residueSeqCode;
-	public String _structCode;
+        public String _residueSeqCode;
+        public String _structCode;
     }
     private Vector _residueData = new Vector();
 
@@ -58,42 +58,42 @@ public class S2DSecStruct {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DSecStruct(String name, String pdbId,
-      int coordIndex, int s2FrameIndex, String dataDir) throws S2DException
+                        int coordIndex, int s2FrameIndex, String dataDir) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSecStruct.S2DSecStruct(" + name + ", " +
-	      pdbId + ", " + coordIndex + ", " + s2FrameIndex + ")");
-	}
+            System.out.println("S2DSecStruct.S2DSecStruct(" + name + ", " +
+                               pdbId + ", " + coordIndex + ", " + s2FrameIndex + ")");
+        }
 
-	_name = name;
-	_pdbId = pdbId;
-	_coordIndex = coordIndex;
-	_frameIndex = s2FrameIndex;
-	_dataDir = dataDir;
+        _name = name;
+        _pdbId = pdbId;
+        _coordIndex = coordIndex;
+        _frameIndex = s2FrameIndex;
+        _dataDir = dataDir;
 
-	try {
-	    String urlName = getUrlName(_pdbId);
-	    URL url = new URL(urlName);
-	    InputStream is = url.openStream();
-	    BufferedReader reader =
-	      new BufferedReader(new InputStreamReader(is));
+        try {
+            String urlName = getUrlName(_pdbId);
+            URL url = new URL(urlName);
+            InputStream is = url.openStream();
+            BufferedReader reader =
+                new BufferedReader(new InputStreamReader(is));
 
-	    boolean foundSS = false;
+            boolean foundSS = false;
             String line;
-	    while ((line = reader.readLine()) != null) {
-	        if (foundSS) {
-		    ResidueData rd = new ResidueData();
-		    rd._residueSeqCode = line.substring(0, 5).trim();
-		    rd._structCode = line.substring(16, 17);
-		    _residueData.addElement(rd);
+            while ((line = reader.readLine()) != null) {
+                if (foundSS) {
+                    ResidueData rd = new ResidueData();
+                    rd._residueSeqCode = line.substring(0, 5).trim();
+                    rd._structCode = line.substring(16, 17);
+                    _residueData.addElement(rd);
                 }
-		if (line.startsWith("  #  RESIDUE")) foundSS = true;
-	    }
+                if (line.startsWith("  #  RESIDUE")) foundSS = true;
+            }
 
-	} catch (IOException ex) {
-	    throw new S2DError("Error (" + ex.toString() +
-	      ") reading DSSP output");
-	}
+        } catch (IOException ex) {
+            throw new S2DError("Error (" + ex.toString() +
+                               ") reading DSSP output");
+        }
 
     }
 
@@ -102,42 +102,42 @@ public class S2DSecStruct {
     public void writeSecStruct() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DS2Pred.writeS2Pred()");
-	}
+            System.out.println("S2DS2Pred.writeS2Pred()");
+        }
 
-	try {
-	    //
-	    // Write the experimental and predicted S2 values to the data
-	    // file.
-	    //
-	    FileWriter writer = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + S2DNames.SEC_STRUCT_SUFFIX +
-	      _coordIndex + "-" + _frameIndex + S2DNames.DAT_SUFFIX);
+        try {
+            //
+            // Write the experimental and predicted S2 values to the data
+            // file.
+            //
+            FileWriter writer = S2DFileWriter.create(_dataDir +
+                                File.separator + _name + S2DNames.SEC_STRUCT_SUFFIX +
+                                _coordIndex + "-" + _frameIndex + S2DNames.DAT_SUFFIX);
 
-	    writer.write("# Data: secondary structure values for " +
-	      _name + "\n");
-	    writer.write("# Schema: bmrb-sec_struct\n");
-	    writer.write("# Attributes: Residue_seq_code; " +
-	      "Sec_structure\n");
-	    writer.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
-	    writer.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    writer.write("#\n");
+            writer.write("# Data: secondary structure values for " +
+                         _name + "\n");
+            writer.write("# Schema: bmrb-sec_struct\n");
+            writer.write("# Attributes: Residue_seq_code; " +
+                         "Sec_structure\n");
+            writer.write("# Peptide-CGI version: " +
+                         S2DMain.PEP_CGI_VERSION + "\n");
+            writer.write("# Generation date: " +
+                         S2DMain.getTimestamp() + "\n");
+            writer.write("#\n");
 
-	    for (int index = 0; index < _residueData.size(); index++) {
-		ResidueData rd = (ResidueData)_residueData.elementAt(index);
-	        writer.write(rd._residueSeqCode + "\t");
-	        writer.write(getStructName(rd._structCode) + "\n");
-	    }
+            for (int index = 0; index < _residueData.size(); index++) {
+                ResidueData rd = (ResidueData)_residueData.elementAt(index);
+                writer.write(rd._residueSeqCode + "\t");
+                writer.write(getStructName(rd._structCode) + "\n");
+            }
 
-	    writer.close();
+            writer.close();
 
-	} catch(IOException ex) {
-	    System.err.println("IOException writing s2pred data: " +
-	      ex.toString());
-	    throw new S2DError("Can't write s2pred data");
-	}
+        } catch(IOException ex) {
+            System.err.println("IOException writing s2pred data: " +
+                               ex.toString());
+            throw new S2DError("Can't write s2pred data");
+        }
 
     }
 
@@ -149,7 +149,7 @@ public class S2DSecStruct {
     private static String getUrlName(String pdbId)
     {
         String name = S2DNames.DSSP_FILE_URL + "/" +
-	  pdbId.toLowerCase() + ".dssp";
+                      pdbId.toLowerCase() + ".dssp";
         return name;
     }
 
@@ -158,40 +158,40 @@ public class S2DSecStruct {
     // http://swift.cmbi.ru.nl/gv/dssp/ -- "Output short").
     private static String getStructName(String structCode)
     {
-	String result = "";
+        String result = "";
 
         if (structCode.equals("")) {
-	    result = "-";
+            result = "-";
 
         } else if (structCode.equals("H")) {
-	    result = "alpha helix";
+            result = "alpha helix";
 
         } else if (structCode.equals("B")) {
-	    result = "beta-bridge";
+            result = "beta-bridge";
 
         } else if (structCode.equals("E")) {
-	    result = "extended strand";
+            result = "extended strand";
 
         } else if (structCode.equals("G")) {
-	    result = "3-helix";
+            result = "3-helix";
 
         } else if (structCode.equals("I")) {
-	    result = "5-helix";
+            result = "5-helix";
 
         } else if (structCode.equals("T")) {
-	    result = "turn";
+            result = "turn";
 
         } else if (structCode.equals("S")) {
-	    result = "bend";
+            result = "bend";
 
-	} else {
-	    System.err.println(
-	      "Warning: unexpected secondary structure code (" +
-	        structCode + ")");
-	    result = "-";
-	}
+        } else {
+            System.err.println(
+                "Warning: unexpected secondary structure code (" +
+                structCode + ")");
+            result = "-";
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -199,12 +199,12 @@ public class S2DSecStruct {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

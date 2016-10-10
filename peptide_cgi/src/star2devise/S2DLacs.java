@@ -133,27 +133,27 @@ public class S2DLacs {
         public XYPair _center;
         public XYPair _size;
 
-	public Line()
-	{
-	    _point1 = new XYPair();
-	    _point2 = new XYPair();
-	    _center = new XYPair();
-	    _size = new XYPair();
-	}
+        public Line()
+        {
+            _point1 = new XYPair();
+            _point2 = new XYPair();
+            _center = new XYPair();
+            _size = new XYPair();
+        }
 
-	public void findCenterSize()
-	{
-	    _center._x = (_point1._x + _point2._x) / 2;
-	    _center._y = (_point1._y + _point2._y) / 2;
-	    _size._x = _point2._x - _point1._x;
-	    _size._y = _point2._y - _point1._y;
-	}
+        public void findCenterSize()
+        {
+            _center._x = (_point1._x + _point2._x) / 2;
+            _center._y = (_point1._y + _point2._y) / 2;
+            _size._x = _point2._x - _point1._x;
+            _size._y = _point2._y - _point1._y;
+        }
 
-	public String toString()
-	{
-	    return _center._x + " " + _center._y + " " + _size._x + " " +
-	      _size._y;
-	}
+        public String toString()
+        {
+            return _center._x + " " + _center._y + " " + _size._x + " " +
+                   _size._y;
+        }
     }
 
     public Line _line1;
@@ -177,80 +177,80 @@ public class S2DLacs {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DLacs(String name, String longName, S2DStarIfc star,
-      SaveFrameNode frame, String dataDir, String sessionDir,
-      S2DSummaryHtml summary) throws S2DException
+                   SaveFrameNode frame, String dataDir, String sessionDir,
+                   S2DSummaryHtml summary) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DLacs.S2DLacs(" + name + ")");
-	}
+            System.out.println("S2DLacs.S2DLacs(" + name + ")");
+        }
         _name = name;
         _longName = longName;
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
-	_frameDetails = star.getFrameDetails(frame);
-	_starVersion = star.version();
+        _frameDetails = star.getFrameDetails(frame);
+        _starVersion = star.version();
 
-	_line1 = new Line();
-	_line2 = new Line();
-	_lineIntersect = new XYPair();
-	_lineIntersectValid = false;
+        _line1 = new Line();
+        _line2 = new Line();
+        _lineIntersect = new XYPair();
+        _lineIntersectValid = false;
 
         //
         // Get the values we need from the Star file.
         //
-	_xCoordName = star.getTagValue(frame, star.LACS_X_NAME);
-	_yCoordName = star.getTagValue(frame, star.LACS_Y_NAME);
+        _xCoordName = star.getTagValue(frame, star.LACS_X_NAME);
+        _yCoordName = star.getTagValue(frame, star.LACS_Y_NAME);
 
-	//TEMP -- catch NumberFormatExceptions here and report details?
-	_line1._point1._x = S2DUtils.string2Double(star.getTagValue(frame,
-	  star.LACS_LINE1_X1));
-	_line1._point1._y = S2DUtils.string2Double(star.getTagValue(frame,
-	  star.LACS_LINE1_Y1));
-	_line1._point2._x = S2DUtils.string2Double(star.getTagValue(frame,
-	  star.LACS_LINE1_X2));
-	_line1._point2._y = S2DUtils.string2Double(star.getTagValue(frame,
-	  star.LACS_LINE1_Y2));
+        //TEMP -- catch NumberFormatExceptions here and report details?
+        _line1._point1._x = S2DUtils.string2Double(star.getTagValue(frame,
+                            star.LACS_LINE1_X1));
+        _line1._point1._y = S2DUtils.string2Double(star.getTagValue(frame,
+                            star.LACS_LINE1_Y1));
+        _line1._point2._x = S2DUtils.string2Double(star.getTagValue(frame,
+                            star.LACS_LINE1_X2));
+        _line1._point2._y = S2DUtils.string2Double(star.getTagValue(frame,
+                            star.LACS_LINE1_Y2));
 
-	_line2._point1._x = S2DUtils.string2Double(star.getTagValue(frame,
-	  star.LACS_LINE2_X1));
-	_line2._point1._y = S2DUtils.string2Double(star.getTagValue(frame,
-	  star.LACS_LINE2_Y1));
-	_line2._point2._x = S2DUtils.string2Double(star.getTagValue(frame,
-	  star.LACS_LINE2_X2));
-	_line2._point2._y = S2DUtils.string2Double(star.getTagValue(frame,
-	  star.LACS_LINE2_Y2));
+        _line2._point1._x = S2DUtils.string2Double(star.getTagValue(frame,
+                            star.LACS_LINE2_X1));
+        _line2._point1._y = S2DUtils.string2Double(star.getTagValue(frame,
+                            star.LACS_LINE2_Y1));
+        _line2._point2._x = S2DUtils.string2Double(star.getTagValue(frame,
+                            star.LACS_LINE2_X2));
+        _line2._point2._y = S2DUtils.string2Double(star.getTagValue(frame,
+                            star.LACS_LINE2_Y2));
 
-	_yOffset = S2DUtils.string2Double(star.getTagValue(frame,
-	  star.LACS_Y_OFFSET));
+        _yOffset = S2DUtils.string2Double(star.getTagValue(frame,
+                                          star.LACS_Y_OFFSET));
 
-	calculateLines();
+        calculateLines();
 
         String[] resSeqCodesTmp = star.getFrameValues(frame,
-          star.LACS_RES_NUM, star.LACS_RES_NUM);
-	_resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
-	  star.LACS_RES_NUM);
-	resSeqCodesTmp = null;
+                                  star.LACS_RES_NUM, star.LACS_RES_NUM);
+        _resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+                                             star.LACS_RES_NUM);
+        resSeqCodesTmp = null;
 
         _resLabels = star.getFrameValues(frame,
-          star.LACS_RES_NUM, star.LACS_RES_LABEL);
+                                         star.LACS_RES_NUM, star.LACS_RES_LABEL);
 
         String[] xCoordsTmp = star.getFrameValues(frame,
-	  star.LACS_RES_NUM, star.LACS_X_VALUE);
-	_xCoords = S2DUtils.arrayStr2Double(xCoordsTmp,
-	  star.LACS_X_VALUE);
-	xCoordsTmp = null;
+                              star.LACS_RES_NUM, star.LACS_X_VALUE);
+        _xCoords = S2DUtils.arrayStr2Double(xCoordsTmp,
+                                            star.LACS_X_VALUE);
+        xCoordsTmp = null;
 
         String[] yCoordsTmp = star.getFrameValues(frame,
-	  star.LACS_RES_NUM, star.LACS_Y_VALUE);
-	_yCoords = S2DUtils.arrayStr2Double(yCoordsTmp,
-	  star.LACS_Y_VALUE);
-	yCoordsTmp = null;
+                              star.LACS_RES_NUM, star.LACS_Y_VALUE);
+        _yCoords = S2DUtils.arrayStr2Double(yCoordsTmp,
+                                            star.LACS_Y_VALUE);
+        yCoordsTmp = null;
 
         String[] desigsTmp = star.getFrameValues(frame,
-	  star.LACS_RES_NUM, star.LACS_DESIGNATOR);
-	_desigs = S2DUtils.arrayStr2Int(desigsTmp, star.LACS_DESIGNATOR);
-	desigsTmp = null;
+                             star.LACS_RES_NUM, star.LACS_DESIGNATOR);
+        _desigs = S2DUtils.arrayStr2Int(desigsTmp, star.LACS_DESIGNATOR);
+        desigsTmp = null;
     }
 
     //-------------------------------------------------------------------
@@ -259,11 +259,11 @@ public class S2DLacs {
     public void calculateLines()
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DLacs.calculateLines()");
-	}
+            System.out.println("S2DLacs.calculateLines()");
+        }
 
-	_line1.findCenterSize();
-	_line2.findCenterSize();
+        _line1.findCenterSize();
+        _line2.findCenterSize();
     }
 
     //-------------------------------------------------------------------
@@ -271,126 +271,126 @@ public class S2DLacs {
     public void writeLACS(int frameIndex) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DLacs.writeLACS()");
-	}
+            System.out.println("S2DLacs.writeLACS()");
+        }
 
-	try {
-	    _title = _yCoordName + " vs. " + _xCoordName;
-
-	    //
-	    // Write the LACS line values to the line data file.
-	    //
-            FileWriter lacsWriter = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + S2DNames.LACS_LINE_SUFFIX +
-	      frameIndex + S2DNames.DAT_SUFFIX);
-
-	    // Write header.
-	    lacsWriter.write("# Data: LACS for " + _name + "\n");
-	    lacsWriter.write("# Schema: bmrb-lacs_line\n");
-	    lacsWriter.write("# Attributes: center_x; " +
-	      "center_y; size_x; size_y; line_type\n");
-	    lacsWriter.write("# (Line_type: 0 = line fitted to data; " +
-	      "1 = reference lines)\n");
-            lacsWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
-            lacsWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    lacsWriter.write("#\n");
-
-	    lacsWriter.write(_line1 + " 0\n");
-	    lacsWriter.write(_line2 + " 0\n");
-
-	    // Write horizontal line at Y = -_yOffset;
-	    double lineY = -_yOffset;
-	    lacsWriter.write("0.0 " + lineY + " 100.0 0.0 1\n");
-	    // Note: the lines below are to give us some margin if we really
-	    // zoom in; we can get rid of this once we transition to
-	    // DEVise 1.7.19.  (See bugs 902, 916.)
-	    lacsWriter.write("0.0 " + lineY + " 1.0 0.0 1\n");
-	    lacsWriter.write("0.0 " + lineY + " 0.1 0.0 1\n");
-	    lacsWriter.write("0.0 " + lineY + " 0.01 0.0 1\n");
-
-	    // Write vertical line at X = 0;
-	    lacsWriter.write("0.0 0.0 0.0 100.0 1\n");
-	    // Note: the lines below are to give us some margin if we really
-	    // zoom in; we can get rid of this once we transition to
-	    // DEVise 1.7.19.  (See bugs 902, 916.)
-	    lacsWriter.write("0.0 0.0 0.0 1.0 1\n");
-	    lacsWriter.write("0.0 0.0 0.0 0.1 1\n");
-	    lacsWriter.write("0.0 0.0 0.0 0.01 1\n");
-
-	    lacsWriter.close();
-
-	    //
-	    // Write the LACS point values to the point data file.
-	    //
-            lacsWriter = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + S2DNames.LACS_POINT_SUFFIX +
-	      frameIndex + S2DNames.DAT_SUFFIX);
-
-	    // Write header.
-	    lacsWriter.write("# Data: LACS for " + _name + "\n");
-	    lacsWriter.write("# Schema: bmrb-lacs_point\n");
-	    lacsWriter.write("# Attributes: Comp_index_ID; " +
-	      "Comp_ID; X_coord_val; Y_coord_val; Designator\n");
-            lacsWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
-            lacsWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    lacsWriter.write("#\n");
-
-	    // Write points.
-	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        lacsWriter.write(_resSeqCodes[index] + " " +
-		  _resLabels[index] + " " + _xCoords[index] + " " +
-		  _yCoords[index] + " " + _desigs[index] + "\n");
-	    }
-
-	    lacsWriter.close();
-
-	    //
-	    // Write the LACS coordinate names to the coordinate data file.
-	    //
-            lacsWriter = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + S2DNames.LACS_COORD_SUFFIX +
-	      frameIndex + S2DNames.DAT_SUFFIX);
-
-	    // Write header.
-	    lacsWriter.write("# Data: LACS for " + _name + "\n");
-	    lacsWriter.write("# Schema: bmrb-lacs_coord\n");
-	    lacsWriter.write("# Attributes: x_coord_name; y_coord_name\n");
-
-	    // Write actual coordinate names.
-	    lacsWriter.write(_xCoordName + " " + _yCoordName + "\n");
-
-	    lacsWriter.close();
+        try {
+            _title = _yCoordName + " vs. " + _xCoordName;
 
             //
-	    // Write the session file.
-	    //
-	    String info = "Visualization of " + _longName;
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_LACS,
-	      _name, frameIndex, info, _title, true, _starVersion, "");
+            // Write the LACS line values to the line data file.
+            //
+            FileWriter lacsWriter = S2DFileWriter.create(_dataDir +
+                                    File.separator + _name + S2DNames.LACS_LINE_SUFFIX +
+                                    frameIndex + S2DNames.DAT_SUFFIX);
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(), S2DUtils.TYPE_LACS,
-	      _name, frameIndex, _title, _frameDetails);
-	    specHtml.write();
+            // Write header.
+            lacsWriter.write("# Data: LACS for " + _name + "\n");
+            lacsWriter.write("# Schema: bmrb-lacs_line\n");
+            lacsWriter.write("# Attributes: center_x; " +
+                             "center_y; size_x; size_y; line_type\n");
+            lacsWriter.write("# (Line_type: 0 = line fitted to data; " +
+                             "1 = reference lines)\n");
+            lacsWriter.write("# Peptide-CGI version: " +
+                             S2DMain.PEP_CGI_VERSION + "\n");
+            lacsWriter.write("# Generation date: " +
+                             S2DMain.getTimestamp() + "\n");
+            lacsWriter.write("#\n");
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeLACS(_title, frameIndex);
+            lacsWriter.write(_line1 + " 0\n");
+            lacsWriter.write(_line2 + " 0\n");
+
+            // Write horizontal line at Y = -_yOffset;
+            double lineY = -_yOffset;
+            lacsWriter.write("0.0 " + lineY + " 100.0 0.0 1\n");
+            // Note: the lines below are to give us some margin if we really
+            // zoom in; we can get rid of this once we transition to
+            // DEVise 1.7.19.  (See bugs 902, 916.)
+            lacsWriter.write("0.0 " + lineY + " 1.0 0.0 1\n");
+            lacsWriter.write("0.0 " + lineY + " 0.1 0.0 1\n");
+            lacsWriter.write("0.0 " + lineY + " 0.01 0.0 1\n");
+
+            // Write vertical line at X = 0;
+            lacsWriter.write("0.0 0.0 0.0 100.0 1\n");
+            // Note: the lines below are to give us some margin if we really
+            // zoom in; we can get rid of this once we transition to
+            // DEVise 1.7.19.  (See bugs 902, 916.)
+            lacsWriter.write("0.0 0.0 0.0 1.0 1\n");
+            lacsWriter.write("0.0 0.0 0.0 0.1 1\n");
+            lacsWriter.write("0.0 0.0 0.0 0.01 1\n");
+
+            lacsWriter.close();
+
+            //
+            // Write the LACS point values to the point data file.
+            //
+            lacsWriter = S2DFileWriter.create(_dataDir +
+                                              File.separator + _name + S2DNames.LACS_POINT_SUFFIX +
+                                              frameIndex + S2DNames.DAT_SUFFIX);
+
+            // Write header.
+            lacsWriter.write("# Data: LACS for " + _name + "\n");
+            lacsWriter.write("# Schema: bmrb-lacs_point\n");
+            lacsWriter.write("# Attributes: Comp_index_ID; " +
+                             "Comp_ID; X_coord_val; Y_coord_val; Designator\n");
+            lacsWriter.write("# Peptide-CGI version: " +
+                             S2DMain.PEP_CGI_VERSION + "\n");
+            lacsWriter.write("# Generation date: " +
+                             S2DMain.getTimestamp() + "\n");
+            lacsWriter.write("#\n");
+
+            // Write points.
+            for (int index = 0; index < _resSeqCodes.length; index++) {
+                lacsWriter.write(_resSeqCodes[index] + " " +
+                                 _resLabels[index] + " " + _xCoords[index] + " " +
+                                 _yCoords[index] + " " + _desigs[index] + "\n");
+            }
+
+            lacsWriter.close();
+
+            //
+            // Write the LACS coordinate names to the coordinate data file.
+            //
+            lacsWriter = S2DFileWriter.create(_dataDir +
+                                              File.separator + _name + S2DNames.LACS_COORD_SUFFIX +
+                                              frameIndex + S2DNames.DAT_SUFFIX);
+
+            // Write header.
+            lacsWriter.write("# Data: LACS for " + _name + "\n");
+            lacsWriter.write("# Schema: bmrb-lacs_coord\n");
+            lacsWriter.write("# Attributes: x_coord_name; y_coord_name\n");
+
+            // Write actual coordinate names.
+            lacsWriter.write(_xCoordName + " " + _yCoordName + "\n");
+
+            lacsWriter.close();
+
+            //
+            // Write the session file.
+            //
+            String info = "Visualization of " + _longName;
+            S2DSession.write(_sessionDir, S2DUtils.TYPE_LACS,
+                             _name, frameIndex, info, _title, true, _starVersion, "");
+
+            //
+            // Write the session-specific html file.
+            //
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(), S2DUtils.TYPE_LACS,
+                _name, frameIndex, _title, _frameDetails);
+            specHtml.write();
+
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writeLACS(_title, frameIndex);
 
         } catch(IOException ex) {
-	    System.err.println(
-	      "IOException writing LACS values: " +
-	      ex.toString());
-	    throw new S2DError("Can't write LACS values");
-	}
+            System.err.println(
+                "IOException writing LACS values: " +
+                ex.toString());
+            throw new S2DError("Can't write LACS values");
+        }
     }
 
     //===================================================================
@@ -401,12 +401,12 @@ public class S2DLacs {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

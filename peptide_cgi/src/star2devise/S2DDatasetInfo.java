@@ -118,86 +118,106 @@ public class S2DDatasetInfo
     //-------------------------------------------------------------------
     // Constructor.
     public S2DDatasetInfo(String name, String details,
-      String sample, String sampleConditions, String dataSourceName,
-      String yAttribute, String schemaFile, String schemaType,
-        int entityAssemblyID, int polymerType)
+                          String sample, String sampleConditions, String dataSourceName,
+                          String yAttribute, String schemaFile, String schemaType,
+                          int entityAssemblyID, int polymerType)
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DDatasetInfo.S2DDatasetInfo(" + name +
-	      ", " + dataSourceName + ", " + yAttribute);
+            System.out.println("S2DDatasetInfo.S2DDatasetInfo(" + name +
+                               ", " + dataSourceName + ", " + yAttribute);
         }
 
-	// Note: we might want to eventually collapse multiple consecutive
-	// spaces to a single space in these fields.  wenger 2010-10-28
-	_name = name;
-	_details = details;
-	if (_details != null) {
-	    _details = _details.replace("\n", " ");
-	    _details = _details.replace("\t", " ");
-	    if (_details.length() > MAX_LENGTH) {
-	        _details = _details.substring(0, MAX_LENGTH-3) + "...";
-	    }
-	}
+        // Note: we might want to eventually collapse multiple consecutive
+        // spaces to a single space in these fields.  wenger 2010-10-28
+        _name = name;
+        _details = details;
+        if (_details != null) {
+            _details = _details.replace("\n", " ");
+            _details = _details.replace("\t", " ");
+            if (_details.length() > MAX_LENGTH) {
+                _details = _details.substring(0, MAX_LENGTH-3) + "...";
+            }
+        }
 
-	_sample = sample;
-	if (_sample != null) {
-	    _sample = _sample.replace("\n", " ");
-	    _sample = _sample.replace("\t", " ");
-	    if (_sample.length() > MAX_LENGTH) {
-	        _sample = _sample.substring(0, MAX_LENGTH-3) + "...";
-	    }
-	}
+        _sample = sample;
+        if (_sample != null) {
+            _sample = _sample.replace("\n", " ");
+            _sample = _sample.replace("\t", " ");
+            if (_sample.length() > MAX_LENGTH) {
+                _sample = _sample.substring(0, MAX_LENGTH-3) + "...";
+            }
+        }
 
-	_sampleConditions = sampleConditions;
-	if (_sampleConditions != null) {
-	    _sampleConditions= _sampleConditions.replace("\n", " ");
-	    _sampleConditions = _sampleConditions.replace("\t", " ");
-	    if (_sampleConditions.length() > MAX_LENGTH) {
-	        _sampleConditions =
-		  _sampleConditions.substring(0, MAX_LENGTH-3) + "...";
-	    }
-	}
+        _sampleConditions = sampleConditions;
+        if (_sampleConditions != null) {
+            _sampleConditions= _sampleConditions.replace("\n", " ");
+            _sampleConditions = _sampleConditions.replace("\t", " ");
+            if (_sampleConditions.length() > MAX_LENGTH) {
+                _sampleConditions =
+                    _sampleConditions.substring(0, MAX_LENGTH-3) + "...";
+            }
+        }
 
-	_dataSourceName = dataSourceName;
-	_yAttribute = yAttribute;
-	_schemaFile = schemaFile;
-	_schemaType = schemaType;
-	String polymerTypeName = 
-	  S2DResidues.getPolymerTypeName(polymerType);
-	_entityAssemblyName = "EA " + entityAssemblyID + " (" +
-	  polymerTypeName + ")";
-	_entityAssemblyID = entityAssemblyID;
+        _dataSourceName = dataSourceName;
+        _yAttribute = yAttribute;
+        _schemaFile = schemaFile;
+        _schemaType = schemaType;
+        String polymerTypeName =
+            S2DResidues.getPolymerTypeName(polymerType);
+        _entityAssemblyName = "EA " + entityAssemblyID + " (" +
+                              polymerTypeName + ")";
+        _entityAssemblyID = entityAssemblyID;
     }
 
     //-------------------------------------------------------------------
-    public String getName() { return _name; }
+    public String getName() {
+        return _name;
+    }
 
     //-------------------------------------------------------------------
-    public String getDetails() { return _details; }
+    public String getDetails() {
+        return _details;
+    }
 
     //-------------------------------------------------------------------
-    public String getSample() { return _sample; }
+    public String getSample() {
+        return _sample;
+    }
 
     //-------------------------------------------------------------------
-    public String getSampleConditions() { return _sampleConditions; }
+    public String getSampleConditions() {
+        return _sampleConditions;
+    }
 
     //-------------------------------------------------------------------
-    public String getDataSourceName() { return _dataSourceName; }
+    public String getDataSourceName() {
+        return _dataSourceName;
+    }
 
     //-------------------------------------------------------------------
-    public String getYAttribute() { return _yAttribute; }
+    public String getYAttribute() {
+        return _yAttribute;
+    }
 
     //-------------------------------------------------------------------
-    public String getSchemaFile() { return _schemaFile; }
+    public String getSchemaFile() {
+        return _schemaFile;
+    }
 
     //-------------------------------------------------------------------
-    public String getSchemaType() { return _schemaType; }
+    public String getSchemaType() {
+        return _schemaType;
+    }
 
     //-------------------------------------------------------------------
-    public String getEntityAssemblyName() { return _entityAssemblyName; }
+    public String getEntityAssemblyName() {
+        return _entityAssemblyName;
+    }
 
     //-------------------------------------------------------------------
-    public int getEntityAssemblyID() { return _entityAssemblyID; }
+    public int getEntityAssemblyID() {
+        return _entityAssemblyID;
+    }
 
     //===================================================================
     // PRIVATE METHODS
@@ -207,12 +227,12 @@ public class S2DDatasetInfo
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

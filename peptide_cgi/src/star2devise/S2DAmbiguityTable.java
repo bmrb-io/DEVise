@@ -62,29 +62,29 @@ public class S2DAmbiguityTable implements S2DAtomDataTable {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DAmbiguityTable(int[] resSeqCodes, String[] atomNames,
-      int[] ambiguityVals) throws S2DException
+                             int[] ambiguityVals) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DAmbiguityTable.S2DAmbiguityTable()");
-	}
+            System.out.println("S2DAmbiguityTable.S2DAmbiguityTable()");
+        }
 
-	_residues = new Hashtable();
+        _residues = new Hashtable();
 
         for (int index = 0; index < resSeqCodes.length; index++) {
-	    int resNum = resSeqCodes[index];
-	    Integer key = new Integer(resNum);
-	    Hashtable resHash = (Hashtable)_residues.get(key);
-	    if (resHash == null) {
-	        resHash = new Hashtable();
-		_residues.put(key, resHash);
-	    }
-	    Integer val = new Integer(ambiguityVals[index]);
-	    if (resHash.put(atomNames[index], val) != null) {
-		// Note: this is *not* thrown, just created to log the warning.
-	        new S2DWarning("Warning: duplicate ambiguity values " +
-		  "entries for " + atomNames[index]);
-	    }
-	}
+            int resNum = resSeqCodes[index];
+            Integer key = new Integer(resNum);
+            Hashtable resHash = (Hashtable)_residues.get(key);
+            if (resHash == null) {
+                resHash = new Hashtable();
+                _residues.put(key, resHash);
+            }
+            Integer val = new Integer(ambiguityVals[index]);
+            if (resHash.put(atomNames[index], val) != null) {
+                // Note: this is *not* thrown, just created to log the warning.
+                new S2DWarning("Warning: duplicate ambiguity values " +
+                               "entries for " + atomNames[index]);
+            }
+        }
     }
 
     //-------------------------------------------------------------------
@@ -108,9 +108,9 @@ public class S2DAmbiguityTable implements S2DAtomDataTable {
     public String getCoordDataStr(int residueNum, String atomName)
     {
         int amVal = getAmbiguityVal(residueNum, atomName);
-	String amStr = getAmbiguityStr(amVal);
+        String amStr = getAmbiguityStr(amVal);
 
-	return amStr + " " + amVal;
+        return amStr + " " + amVal;
     }
 
     //===================================================================
@@ -121,22 +121,22 @@ public class S2DAmbiguityTable implements S2DAtomDataTable {
     // Returns -1 if data is not available.
     private int getAmbiguityVal(int residueNum, String atomName)
     {
-	int result = -1; // no data
-	Integer key = new Integer(residueNum);
+        int result = -1; // no data
+        Integer key = new Integer(residueNum);
         Hashtable resHash = (Hashtable)_residues.get(key);
         if (resHash != null) {
             Integer val = (Integer)resHash.get(atomName);
             if (val != null) {
-                 result = val.intValue();
+                result = val.intValue();
             }
         }
 
-	if (doDebugOutput(15)) {
-	    System.out.println("S2DAmbiguityTable.getAmbiguityVal(" +
-	      key + ", " + atomName + ") returns " + result);
-	}
+        if (doDebugOutput(15)) {
+            System.out.println("S2DAmbiguityTable.getAmbiguityVal(" +
+                               key + ", " + atomName + ") returns " + result);
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -145,39 +145,39 @@ public class S2DAmbiguityTable implements S2DAtomDataTable {
     // in the DEVise Pistachio visualization.)
     private static String getAmbiguityStr(int val)
     {
-	String result;
+        String result;
 
-	switch (val) {
-	case 1:
-	    result = "AM1";
-	    break;
+        switch (val) {
+        case 1:
+            result = "AM1";
+            break;
 
-	case 2:
-	    result = "AM2";
-	    break;
+        case 2:
+            result = "AM2";
+            break;
 
-	case 3:
-	    result = "AMX";
-	    break;
+        case 3:
+            result = "AMX";
+            break;
 
-	case 4:
-	    result = "AM4";
-	    break;
+        case 4:
+            result = "AM4";
+            break;
 
-	case 5:
-	    result = "AM5";
-	    break;
+        case 5:
+            result = "AM5";
+            break;
 
-	case 9:
-	    result = "AM9";
-	    break;
+        case 9:
+            result = "AM9";
+            break;
 
-	default:
-	    result = "AMU"; // unknown/unassigned
-	    break;
-	}
+        default:
+            result = "AMU"; // unknown/unassigned
+            break;
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -185,12 +185,12 @@ public class S2DAmbiguityTable implements S2DAtomDataTable {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

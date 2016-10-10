@@ -52,58 +52,58 @@ public abstract class S2DFileData
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
-    /** 
+    /**
      * Get the data from the given file.
      * @param The name of the file from which to get the data.
      * @return True iff the data was gotten successfully.
      */
     public boolean getData(String filename)
     {
-    	if (doDebugOutput(11)) {
-	    System.out.println("S2DFileData.getData(" + filename + ")");
-	}
+        if (doDebugOutput(11)) {
+            System.out.println("S2DFileData.getData(" + filename + ")");
+        }
 
-	boolean result = true;
+        boolean result = true;
 
-	BufferedReader bReader = null;
+        BufferedReader bReader = null;
 
-	try {
-	    FileReader fReader = new FileReader(filename);
-	    bReader = new BufferedReader(fReader);
+        try {
+            FileReader fReader = new FileReader(filename);
+            bReader = new BufferedReader(fReader);
 
-	    String line;
-	    while ((line = bReader.readLine()) != null) {
+            String line;
+            while ((line = bReader.readLine()) != null) {
                 GetDataFromLine(line);
-	    }
+            }
 
-	} catch (FileNotFoundException ex) {
-	    if (doDebugOutput(2)) {
-	        System.out.println(
-		  "File not found in S2DFileData.getData()" + ex);
-	    }
-	    result = false;
+        } catch (FileNotFoundException ex) {
+            if (doDebugOutput(2)) {
+                System.out.println(
+                    "File not found in S2DFileData.getData()" + ex);
+            }
+            result = false;
 
-	} catch (ParseException ex) {
-	    System.err.println(
-	      "ParseException in S2DFileData.getData(): " + ex);
-	    result = false;
+        } catch (ParseException ex) {
+            System.err.println(
+                "ParseException in S2DFileData.getData(): " + ex);
+            result = false;
 
-	} catch (IOException ex) {
-	    System.err.println(
-	      "IOException in S2DFileData.getData(): " + ex);
-	    result = false;
+        } catch (IOException ex) {
+            System.err.println(
+                "IOException in S2DFileData.getData(): " + ex);
+            result = false;
 
-	} finally {
-	    try {
-	        if (bReader != null) bReader.close();
-	    } catch (IOException ex) {
-	        System.err.println(
-		  "IOException in S2DFileData.getData(): " + ex.toString());
-	        result = false;
-	    }
-	}
+        } finally {
+            try {
+                if (bReader != null) bReader.close();
+            } catch (IOException ex) {
+                System.err.println(
+                    "IOException in S2DFileData.getData(): " + ex.toString());
+                result = false;
+            }
+        }
 
-	return result;
+        return result;
     }
 
     //===================================================================
@@ -117,7 +117,7 @@ public abstract class S2DFileData
      * @param The line of the file to process.
      */
     protected abstract void GetDataFromLine(String line)
-      throws ParseException;
+    throws ParseException;
 
     //-------------------------------------------------------------------
     /**
@@ -131,16 +131,16 @@ public abstract class S2DFileData
      */
     protected static String getLabeledValue(String line, String label)
     {
-	String value = null;
+        String value = null;
 
-	int index;
+        int index;
         if ((index = line.indexOf(label)) != -1) {
-	    int index1 = line.indexOf("{", index);
-	    int index2 = line.indexOf("}", index1);
-	    if (index1 != -1 && index2 != -1) {
-	        value = line.substring(index1 + 1, index2);
-	    }
-	}
+            int index1 = line.indexOf("{", index);
+            int index2 = line.indexOf("}", index1);
+            if (index1 != -1 && index2 != -1) {
+                value = line.substring(index1 + 1, index2);
+            }
+        }
 
         return value;
     }
@@ -153,12 +153,12 @@ public abstract class S2DFileData
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

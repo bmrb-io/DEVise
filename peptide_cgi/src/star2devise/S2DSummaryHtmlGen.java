@@ -243,7 +243,7 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (doDebugOutput(11)) {
             System.out.println("S2DSummaryHtmlGen.S2DSummaryHtmlGen(" +
-            name + ", " + fullName + ", " + masterId + ")");
+                               name + ", " + fullName + ", " + masterId + ")");
         }
 
         _name = name;
@@ -266,8 +266,8 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (doDebugOutput(11)) {
             System.out.println("S2DSummaryHtmlGen.S2DSummaryHtmlGen(" +
-            name + ", " + fullName + ", " + longName + ", " +
-            masterId + ", " + extraId + ")");
+                               name + ", " + fullName + ", " + longName + ", " +
+                               masterId + ", " + extraId + ")");
         }
 
         _name = name;
@@ -327,10 +327,10 @@ public abstract class S2DSummaryHtmlGen {
 
             _writer.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n");
             _writer.write("<html>\n<head>\n" +
-            "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\n" +
-            "<title>Summary for " + _longName + "</title>\n" +
-            "<link href=\"../visualization.css\" rel=\"stylesheet\" type=\"text/css\" media=\"all\">\n" +
-            "</head>\n\n");
+                          "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\n" +
+                          "<title>Summary for " + _longName + "</title>\n" +
+                          "<link href=\"../visualization.css\" rel=\"stylesheet\" type=\"text/css\" media=\"all\">\n" +
+                          "</head>\n\n");
 
             _writer.write("<body>\n");
             _writer.write("<div class=\"header\">\n");
@@ -355,7 +355,7 @@ public abstract class S2DSummaryHtmlGen {
 
             _writer.write("<br>\n");
             _writer.write("<center><h3>DEVise plots for " +
-            _longName + ":\n");
+                          _longName + ":\n");
             _writer.write(systemName + "</h3></center>\n");
             if (!entryTitle.equals("")) {
                 _writer.write("<p>\n");
@@ -367,8 +367,8 @@ public abstract class S2DSummaryHtmlGen {
             // Note about selecting from menus.
             //
             _writer.write("<h3 style=\"text-align: center\">" +
-            "<font color=\"red\">" +
-            "Select from menus below to see visualizations</font></h3>\n");
+                          "<font color=\"red\">" +
+                          "Select from menus below to see visualizations</font></h3>\n");
 
             //
             // Tutorial video and main entry page links.
@@ -379,7 +379,7 @@ public abstract class S2DSummaryHtmlGen {
             _writer.write("<h3 style=\"text-align:center;\">\n");
             String videoDir = _isUvd ? "../.." : "..";
             _writer.write("<a target= \"js_videos\" href=\"" + videoDir +
-            "/js_videos.html\">DEVise tutorial videos</a>\n");
+                          "/js_videos.html\">DEVise tutorial videos</a>\n");
             _writer.write("</h3>\n");
             _writer.write("</div>\n");
 
@@ -389,8 +389,8 @@ public abstract class S2DSummaryHtmlGen {
                 _writer.write("<div style=\"width:24%; float: left;\">\n");
                 _writer.write("<h3 style=\"text-align:center;\">\n");
                 _writer.write("<a href=\"../../../../data_library/" +
-                "generate_summary.php?bmrbId=" + _name +
-                "&amp;chooseAccOrDep=useAcc\">Main entry page</a>\n");
+                              "generate_summary.php?bmrbId=" + _name +
+                              "&amp;chooseAccOrDep=useAcc\">Main entry page</a>\n");
                 _writer.write("</h3>\n");
                 _writer.write("</div>\n");
             }
@@ -415,16 +415,16 @@ public abstract class S2DSummaryHtmlGen {
             _writer.write("</div>\n");
 
             String defaultAccessionNum = _isUvd ?
-            S2DMain.DEFAULT_ACCESSION_NUM : _name;
+                                         S2DMain.DEFAULT_ACCESSION_NUM : _name;
             _writer.write("<p style=\"clear: both\"></p>\n");
             _writer.write("<hr>\n");
             _writer.write("<form method=\"get\" name=\"get_by_bmrb\" action=\"" + S2DNames.CGI_URL + "\">\n");
             _writer.write("<label for=\"number\">Enter a BMRB accession number (e.g., " +
-            defaultAccessionNum + ")\n");
+                          defaultAccessionNum + ")\n");
             _writer.write("to generate visualizations for that entry <b><font color=\"red\">(for released entries only)</font></b></label>\n");
             _writer.write("<p>\n");
             _writer.write("<input type=\"text\" name=\"number\" id=\"number\" size=\"5\" value=\"" +
-            defaultAccessionNum + "\">\n");
+                          defaultAccessionNum + "\">\n");
             _writer.write("<input type=\"submit\" value=\"View data\">\n");
             _writer.write("</p>\n");
             _writer.write("</form>\n");
@@ -432,7 +432,7 @@ public abstract class S2DSummaryHtmlGen {
 
         } catch(IOException ex) {
             System.err.println("IOException opening or writing to summary " +
-            "html file: " + ex.toString());
+                               "html file: " + ex.toString());
             throw new S2DError("Cannot create summary html file");
         }
     }
@@ -706,7 +706,7 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (doDebugOutput(11)) {
             System.out.println("S2DSummaryHtmlGen.startFrame(" +
-            frameDetails + ")");
+                               frameDetails + ")");
         }
 
         _saveFrameDetails.add(frameDetails);
@@ -761,9 +761,9 @@ public abstract class S2DSummaryHtmlGen {
 
         String resNuc = isNucleicAcid ? "nucleotides" : "residues";
         value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.DELTASHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-        "\">Chemical shift delta (" + residueCount + " " + resNuc +
-        ") (EA " + entityAssemblyID + ")</option>";
+                S2DNames.DELTASHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+                "\">Chemical shift delta (" + residueCount + " " + resNuc +
+                ") (EA " + entityAssemblyID + ")</option>";
         _deltaShiftInfo.put(frameIndex, value);
     }
 
@@ -780,16 +780,16 @@ public abstract class S2DSummaryHtmlGen {
         }
 
         _maxSpartaFrameIndex = Math.max(_maxSpartaFrameIndex,
-        frameIndex);
+                                        frameIndex);
 
         String value = "" + entityAssemblyID;
 
         String resNuc = "residues";
         value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.SPARTA_DELTASHIFT_SUFFIX + frameIndex +
-        S2DNames.HTML_SUFFIX +
-        "\">(" + residueCount + " " + resNuc +
-        ") (EA " + entityAssemblyID + ")</option>";
+                S2DNames.SPARTA_DELTASHIFT_SUFFIX + frameIndex +
+                S2DNames.HTML_SUFFIX +
+                "\">(" + residueCount + " " + resNuc +
+                ") (EA " + entityAssemblyID + ")</option>";
         _spartaDeltaShiftInfo.put(frameIndex, value);
     }
 
@@ -806,9 +806,9 @@ public abstract class S2DSummaryHtmlGen {
 
         String resNuc = "residues";
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.CSI_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-        "\">Chemical shift index (" + residueCount + " " + resNuc +
-        ") (EA " + entityAssemblyID + ")</option>";
+                       S2DNames.CSI_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+                       "\">Chemical shift index (" + residueCount + " " + resNuc +
+                       ") (EA " + entityAssemblyID + ")</option>";
         _csiInfo.put(frameIndex, value);
     }
 
@@ -825,9 +825,9 @@ public abstract class S2DSummaryHtmlGen {
 
         String resNuc = "residues";
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-        "\">Percent assigned atoms (" + residueCount + " " + resNuc +
-        ") (EA " + entityAssemblyID + ")</option>";
+                       S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+                       "\">Percent assigned atoms (" + residueCount + " " + resNuc +
+                       ") (EA " + entityAssemblyID + ")</option>";
         _pctAssignInfo.put(frameIndex, value);
     }
 
@@ -845,9 +845,9 @@ public abstract class S2DSummaryHtmlGen {
         _maxCouplingFrame = Math.max(_maxCouplingFrame, frameIndex);
 
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.COUPLING_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-        "\">" + valueCount + " values (EA " + entityAssemblyID +
-        ")</option>";
+                       S2DNames.COUPLING_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+                       "\">" + valueCount + " values (EA " + entityAssemblyID +
+                       ")</option>";
         _couplingInfo.put(frameIndex, value);
     }
 
@@ -860,15 +860,15 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (doDebugOutput(12)) {
             System.out.println("S2DSummaryHtmlGen.writeRelax(" +
-            dataType + ", " + frequency + ", " + suffix + ")");
+                               dataType + ", " + frequency + ", " + suffix + ")");
         }
 
         _maxRelaxFrame = Math.max(_maxRelaxFrame, frameIndex);
 
         String value = "<option value=\"" + _name + "/" + _name +
-        suffix + frameIndex + S2DNames.HTML_SUFFIX +
-        "\">" + suffix.toUpperCase() + ", " + frequency + "MHz (" +
-        valueCount + " values) (EA " + entityAssemblyID + ")</option>";
+                       suffix + frameIndex + S2DNames.HTML_SUFFIX +
+                       "\">" + suffix.toUpperCase() + ", " + frequency + "MHz (" +
+                       valueCount + " values) (EA " + entityAssemblyID + ")</option>";
 
         switch (dataType) {
         case S2DUtils.TYPE_T1_RELAX:
@@ -881,7 +881,7 @@ public abstract class S2DSummaryHtmlGen {
 
         default:
             System.err.println(new S2DError("Illegal dataType value: " +
-            dataType));
+                                            dataType));
         }
 
         //TEMP? _wroteLink = true;
@@ -894,16 +894,16 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (doDebugOutput(12)) {
             System.out.println("S2DSummaryHtmlGen.writeHetNOE(" +
-            name + ", " + frameIndex + ", " + entityAssemblyID + ")");
+                               name + ", " + frameIndex + ", " + entityAssemblyID + ")");
         }
 
         _maxHetNOEFrame = Math.max(_maxHetNOEFrame, frameIndex);
 
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex +
-        S2DNames.HTML_SUFFIX + "\">" + name + " (" +
-        valueCount + " values ) (EA " +
-        entityAssemblyID + ")</option>";
+                       S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex +
+                       S2DNames.HTML_SUFFIX + "\">" + name + " (" +
+                       valueCount + " values ) (EA " +
+                       entityAssemblyID + ")</option>";
         _hetNOEInfo.put(frameIndex, value);
 
         //TEMP? _wroteLink = true;
@@ -921,9 +921,9 @@ public abstract class S2DSummaryHtmlGen {
         _maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-        "\">Chemical shift dist by AA/nucleotide (" + shiftCount +
-        " shifts) (EA " + entityAssemblyID + ")</option>";
+                       S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+                       "\">Chemical shift dist by AA/nucleotide (" + shiftCount +
+                       " shifts) (EA " + entityAssemblyID + ")</option>";
         _allShiftsInfo.put(frameIndex, value);
     }
 
@@ -937,15 +937,15 @@ public abstract class S2DSummaryHtmlGen {
         }
 
         _writer.write("<!-- Info_HvsN eaId:" + entityAssemblyID +
-        " frameIndex:" + frameIndex + " peakCount:" + peakCount + " -->\n");
+                      " frameIndex:" + frameIndex + " peakCount:" + peakCount + " -->\n");
 
         _maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex +
-        S2DNames.HTML_SUFFIX +
-        "\">Simulated 1H-15N backbone HSQC spectrum (" + peakCount +
-        " peaks) (EA " + entityAssemblyID + ")</option>";
+                       S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex +
+                       S2DNames.HTML_SUFFIX +
+                       "\">Simulated 1H-15N backbone HSQC spectrum (" + peakCount +
+                       " peaks) (EA " + entityAssemblyID + ")</option>";
         _hVsNInfo.put(frameIndex, value);
     }
 
@@ -959,15 +959,15 @@ public abstract class S2DSummaryHtmlGen {
         }
 
         _writer.write("<!-- Info_HvsC eaId:" + entityAssemblyID +
-        " frameIndex:" + frameIndex + " peakCount:" + peakCount + " -->\n");
+                      " frameIndex:" + frameIndex + " peakCount:" + peakCount + " -->\n");
 
         _maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.HVSC_CHEM_SHIFT_SUFFIX + frameIndex +
-        S2DNames.HTML_SUFFIX +
-        "\">Simulated 1H-13C HSQC spectrum (" + peakCount + " peaks" +
-        ") (EA " + entityAssemblyID + ")</option>";
+                       S2DNames.HVSC_CHEM_SHIFT_SUFFIX + frameIndex +
+                       S2DNames.HTML_SUFFIX +
+                       "\">Simulated 1H-13C HSQC spectrum (" + peakCount + " peaks" +
+                       ") (EA " + entityAssemblyID + ")</option>";
         _hVsCInfo.put(frameIndex, value);
     }
 
@@ -988,8 +988,8 @@ public abstract class S2DSummaryHtmlGen {
         _maxCoordFrame = Math.max(_maxCoordFrame, frameIndex);
 
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.ATOMIC_COORD_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-        "\">" + linkStr + "</option>";
+                       S2DNames.ATOMIC_COORD_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+                       "\">" + linkStr + "</option>";
         _coordInfo.put(frameIndex, value);
     }
 
@@ -1017,13 +1017,13 @@ public abstract class S2DSummaryHtmlGen {
         String value = "<option value=\"" + path + "?pdbid=" + pdbId;
         if (_isUvd) {
             value += "&amp;file=" + (String)_localFiles.elementAt(0) +
-            "&amp;name=" + _name;
+                     "&amp;name=" + _name;
         } else {
             value += "&amp;number=" + _name;
         }
         value += "&amp;do_pdb=" + S2DMain.PDB_LEVEL_PROCESS +
-        "&amp;coord_index=" + frameIndex + "&amp;size_str=" +
-        "\">" + linkStr + "</option>";
+                 "&amp;coord_index=" + frameIndex + "&amp;size_str=" +
+                 "\">" + linkStr + "</option>";
         _coordInfo.put(frameIndex, value);
     }
 
@@ -1032,8 +1032,8 @@ public abstract class S2DSummaryHtmlGen {
     throws IOException
     {
         _writer.write("<li>Structure has too many atoms (" + atomCount +
-        ") for the software to handle at the present time (maximum is " +
-        maxAtoms + ")\n");
+                      ") for the software to handle at the present time (maximum is " +
+                      maxAtoms + ")\n");
     }
 
     //TEMP -- what about entity assembly ID here?
@@ -1051,21 +1051,21 @@ public abstract class S2DSummaryHtmlGen {
         _csrPdbIdInfo.put(frameIndex, pdbId);
 
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.CSR1_SUFFIX +
-        frameIndex + S2DNames.HTML_SUFFIX + "\">" + pdbId +
-        " (difference histograms)</option>";
+                       S2DNames.CSR1_SUFFIX +
+                       frameIndex + S2DNames.HTML_SUFFIX + "\">" + pdbId +
+                       " (difference histograms)</option>";
         _csrHistogramInfo.put(frameIndex, value);
 
         value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.CSR2_SUFFIX +
-        frameIndex + S2DNames.HTML_SUFFIX + "\">" + pdbId +
-        " (differences by residue)</option>";
+                S2DNames.CSR2_SUFFIX +
+                frameIndex + S2DNames.HTML_SUFFIX + "\">" + pdbId +
+                " (differences by residue)</option>";
         _csrDiffsInfo.put(frameIndex, value);
 
         value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.CSR3_SUFFIX +
-        frameIndex + S2DNames.HTML_SUFFIX + "\">" + pdbId +
-        " (observed vs. calculated chemical shift values)</option>";
+                S2DNames.CSR3_SUFFIX +
+                frameIndex + S2DNames.HTML_SUFFIX + "\">" + pdbId +
+                " (observed vs. calculated chemical shift values)</option>";
         _csrScatterInfo.put(frameIndex, value);
     }
 
@@ -1086,7 +1086,7 @@ public abstract class S2DSummaryHtmlGen {
         String dataId;
         if (_isUvd) {
             dataId = "&amp;file=" + (String)_localFiles.elementAt(0) +
-            "&amp;name=" + _name;
+                     "&amp;name=" + _name;
         } else {
             dataId = "&amp;number=" + _name;
         }
@@ -1096,22 +1096,22 @@ public abstract class S2DSummaryHtmlGen {
         _csrPdbIdInfo.put(frameIndex, pdbId);
 
         String value = "<option value=\"" + path + "?pdbid=" + pdbId + dataId +
-        "&amp;do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&amp;coord_index=" +
-        frameIndex + "&amp;csr_index=1" + "&amp;size_str=" +
-        "\">" + pdbId + " (difference histograms)</option>";
+                       "&amp;do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&amp;coord_index=" +
+                       frameIndex + "&amp;csr_index=1" + "&amp;size_str=" +
+                       "\">" + pdbId + " (difference histograms)</option>";
         _csrHistogramInfo.put(frameIndex, value);
 
         value = "<option value=\"" + path + "?pdbid=" + pdbId + dataId +
-        "&amp;do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&amp;coord_index=" +
-        frameIndex + "&amp;csr_index=2" + "&amp;size_str=" +
-        "\">" + pdbId + " (differences by residue)</option>";
+                "&amp;do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&amp;coord_index=" +
+                frameIndex + "&amp;csr_index=2" + "&amp;size_str=" +
+                "\">" + pdbId + " (differences by residue)</option>";
         _csrDiffsInfo.put(frameIndex, value);
 
         value = "<option value=\"" + path + "?pdbid=" + pdbId + dataId +
-        "&amp;do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&amp;coord_index=" +
-        frameIndex + "&amp;csr_index=3" + "&amp;size_str=" +
-        "\">" + pdbId +
-        " (observed vs. calculated chemical shift values)</option>";
+                "&amp;do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&amp;coord_index=" +
+                frameIndex + "&amp;csr_index=3" + "&amp;size_str=" +
+                "\">" + pdbId +
+                " (observed vs. calculated chemical shift values)</option>";
         _csrScatterInfo.put(frameIndex, value);
     }
 
@@ -1121,12 +1121,12 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (doDebugOutput(12)) {
             System.out.println("S2DSummaryHtmlGen.writePistachio(" +
-            frameIndex + ")");
+                               frameIndex + ")");
         }
 
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.PISTACHIO_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-        "\">Assignment figure of merit data</option>";
+                       S2DNames.PISTACHIO_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+                       "\">Assignment figure of merit data</option>";
         _pistachioInfo.put(frameIndex, value);
 
         //TEMP? _wroteLink = true;
@@ -1144,9 +1144,9 @@ public abstract class S2DSummaryHtmlGen {
         _maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.AMBIGUITY_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-        "\">Assigned chemical shift ambiguity code data (EA " +
-        entityAssemblyID + ")</option>";
+                       S2DNames.AMBIGUITY_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+                       "\">Assigned chemical shift ambiguity code data (EA " +
+                       entityAssemblyID + ")</option>";
         _ambiguityInfo.put(frameIndex, value);
     }
 
@@ -1157,14 +1157,14 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (doDebugOutput(12)) {
             System.out.println("S2DSummaryHtmlGen.writeLACS(" +
-            title + ")");
+                               title + ")");
         }
 
         _maxLacsFrame = Math.max(_maxLacsFrame, frameIndex);
 
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.LACS_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-        "\">" + title + "</option>";
+                       S2DNames.LACS_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+                       "\">" + title + "</option>";
         _lacsInfo.put(frameIndex, value);
     }
 
@@ -1182,9 +1182,9 @@ public abstract class S2DSummaryHtmlGen {
         _maxS2OrderFrame = Math.max(_maxS2OrderFrame, frameIndex);
 
         String value = "<option value=\"" + _name + "/" + _name +
-        S2DNames.ORDER_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-        "\">" + valueCount + " values (EA " + entityAssemblyID +
-        ")</option>";
+                       S2DNames.ORDER_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+                       "\">" + valueCount + " values (EA " + entityAssemblyID +
+                       ")</option>";
         _s2OrderInfo.put(frameIndex, value);
     }
 
@@ -1241,18 +1241,18 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (doDebugOutput(12)) {
             System.out.println("S2DSummaryHtmlGen.writeDistRestr(" +
-            pdbId + ", " + frameIndex + ", " + isRR + ")");
+                               pdbId + ", " + frameIndex + ", " + isRR + ")");
         }
 
         if (pdbId != null) {
             String linkStr = pdbId + (isRR ?
-            " (from remediated restraints)" : " (from restraints grid)");
+                                      " (from remediated restraints)" : " (from restraints grid)");
 
             String suffix = null;
             IntKeyHashtable info = null;
             if (isRR) {
                 _maxRRDistRestrFrame = Math.max(_maxRRDistRestrFrame,
-                frameIndex);
+                                                frameIndex);
                 suffix = S2DNames.RRDISTR_SUFFIX;
                 info = _rrDistRestrInfo;
             } else {
@@ -1279,12 +1279,12 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (doDebugOutput(12)) {
             System.out.println("S2DSummaryHtmlGen.writeDistRestrCGI(" +
-            pdbId + ", " + frameIndex + ", " + isRR + ")");
+                               pdbId + ", " + frameIndex + ", " + isRR + ")");
         }
 
         if (pdbId != null) {
             String linkStr = pdbId + (isRR ?
-            " (from remediated restraints)" : " (from restraints grid)");
+                                      " (from remediated restraints)" : " (from restraints grid)");
 
             String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 
@@ -1292,7 +1292,7 @@ public abstract class S2DSummaryHtmlGen {
             IntKeyHashtable info = null;
             if (isRR) {
                 _maxRRDistRestrFrame = Math.max(_maxRRDistRestrFrame,
-                frameIndex);
+                                                frameIndex);
                 doStr = "&amp;do_rrdist=" + S2DMain.RRDISTR_LEVEL_PROCESS;
                 info = _rrDistRestrInfo;
             } else {
@@ -1338,13 +1338,13 @@ public abstract class S2DSummaryHtmlGen {
 
         if (pdbId != null) {
             String linkStr = pdbId + (isRR ?
-            " (from remediated restraints)" : " (from restraints grid)");
+                                      " (from remediated restraints)" : " (from restraints grid)");
 
             String suffix = null;
             IntKeyHashtable info = null;
             if (isRR) {
                 _maxRRTorsionAngleFrame = Math.max(_maxRRTorsionAngleFrame,
-                frameIndex);
+                                                   frameIndex);
                 suffix = S2DNames.RRTAR_SUFFIX;
                 info = _rrTorsionAngleInfo;
             } else {
@@ -1375,7 +1375,7 @@ public abstract class S2DSummaryHtmlGen {
 
         if (pdbId != null) {
             String linkStr = pdbId + (isRR ?
-            " (from remediated restraints)" : " (from restraints grid)");
+                                      " (from remediated restraints)" : " (from restraints grid)");
 
             String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 
@@ -1383,7 +1383,7 @@ public abstract class S2DSummaryHtmlGen {
             IntKeyHashtable info = null;
             if (isRR) {
                 _maxRRTorsionAngleFrame = Math.max(_maxRRTorsionAngleFrame,
-                frameIndex);
+                                                   frameIndex);
                 doStr = "&amp;do_rrtar=" + S2DMain.RRTAR_LEVEL_PROCESS;
                 info = _rrTorsionAngleInfo;
             } else {
@@ -1431,7 +1431,7 @@ public abstract class S2DSummaryHtmlGen {
         _maxEntry2Frame = Math.max(_maxEntry2Frame, frameIndex2);
 
         TwoEntInfo info = (TwoEntInfo)_twoEntInfo.get(frameIndex1,
-        frameIndex2);
+                          frameIndex2);
         if (info == null) {
             info = new TwoEntInfo();
             _twoEntInfo.put(frameIndex1, frameIndex2, info);
@@ -1440,16 +1440,16 @@ public abstract class S2DSummaryHtmlGen {
         } else {
             if (info._eaId1 != eaId1 || info._eaId2 != eaId2) {
                 System.err.println("Warning: entity assembly ID mismatch: "
-                + info._eaId1 + "/" + eaId1 + " or " + info._eaId2 +
-                "/" + eaId2);
+                                   + info._eaId1 + "/" + eaId1 + " or " + info._eaId2 +
+                                   "/" + eaId2);
             }
         }
 
         info._hNLink = "<option value=\"" + _name + "/" + _name +
-        "+" + _extraId + "hn" + frameIndex1 + "+" + frameIndex2 +
-        ".html\">Simulated 1H-15N backbone HSQC spectrum (" +
-        peakCount1 + "/" + peakCount2 + " peaks) (" + _name +
-        " EA " + eaId1 + "/" + _extraId + " EA "+ eaId2 + ")</option>";
+                       "+" + _extraId + "hn" + frameIndex1 + "+" + frameIndex2 +
+                       ".html\">Simulated 1H-15N backbone HSQC spectrum (" +
+                       peakCount1 + "/" + peakCount2 + " peaks) (" + _name +
+                       " EA " + eaId1 + "/" + _extraId + " EA "+ eaId2 + ")</option>";
     }
 
     //-------------------------------------------------------------------
@@ -1466,7 +1466,7 @@ public abstract class S2DSummaryHtmlGen {
         _maxEntry2Frame = Math.max(_maxEntry2Frame, frameIndex2);
 
         TwoEntInfo info = (TwoEntInfo)_twoEntInfo.get(frameIndex1,
-        frameIndex2);
+                          frameIndex2);
         if (info == null) {
             info = new TwoEntInfo();
             _twoEntInfo.put(frameIndex1, frameIndex2, info);
@@ -1475,16 +1475,16 @@ public abstract class S2DSummaryHtmlGen {
         } else {
             if (info._eaId1 != eaId1 || info._eaId2 != eaId2) {
                 System.err.println("Warning: entity assembly ID mismatch: "
-                + info._eaId1 + "/" + eaId1 + " or " + info._eaId2 +
-                "/" + eaId2);
+                                   + info._eaId1 + "/" + eaId1 + " or " + info._eaId2 +
+                                   "/" + eaId2);
             }
         }
 
         info._hCLink = "<option value=\"" + _name + "/" + _name +
-        "+" + _extraId + "hc" + frameIndex1 + "+" + frameIndex2 +
-        ".html\">Simulated 1H-13C HSQC spectrum (" +
-        peakCount1 + "/" + peakCount2 + " peaks) (" + _name +
-        " EA " + eaId1 + "/" + _extraId + "EA " + eaId2 + ")</option>";
+                       "+" + _extraId + "hc" + frameIndex1 + "+" + frameIndex2 +
+                       ".html\">Simulated 1H-13C HSQC spectrum (" +
+                       peakCount1 + "/" + peakCount2 + " peaks) (" + _name +
+                       " EA " + eaId1 + "/" + _extraId + "EA " + eaId2 + ")</option>";
     }
 
     //-------------------------------------------------------------------
@@ -1506,7 +1506,7 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (_maxChemShiftFrame > 0 && !writeNoData) {
             writeDataTableStart("Chemical shift data", "", "cs_dist.png",
-            "cs_dist_thumb.png");
+                                "cs_dist_thumb.png");
             writeFormStart("select_chem_shift_visualization");
 
             for (int index = 1; index <= _maxChemShiftFrame; index++ ) {
@@ -1553,7 +1553,7 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (_maxSpartaFrameIndex > 0 && !writeNoData) {
             writeDataTableStart("SPARTA back calculated chemical shift " +
-            "deltas", "", "sparta.png", "sparta_thumb.png");
+                                "deltas", "", "sparta.png", "sparta_thumb.png");
             writeFormStart("select_sparta_visualization");
 
             for (int index = 1; index <= _maxSpartaFrameIndex; index++ ) {
@@ -1583,7 +1583,7 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (_maxRelaxFrame > 0 && !writeNoData) {
             writeDataTableStart("T1/T2 relaxation", "", "t1.png",
-            "t1_thumb.png");
+                                "t1_thumb.png");
             writeFormStart("select_relax_visualization");
 
             Object[] t1Freqs = _t1RelaxInfo.keySet().toArray();
@@ -1593,7 +1593,7 @@ public abstract class S2DSummaryHtmlGen {
                 Vector values = (Vector)_t1RelaxInfo.get(frequency.intValue());
                 for (int row = 0; row < values.size(); row++) {
                     _writer.write("    " + (String)values.elementAt(row) +
-                    "\n");
+                                  "\n");
                 }
             }
 
@@ -1624,7 +1624,7 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (_maxHetNOEFrame > 0 && !writeNoData) {
             writeDataTableStart("Heteronuclear NOE", "", "het_noe.png",
-            "het_noe_thumb.png");
+                                "het_noe_thumb.png");
             writeFormStart("select_chem_hetnoe_visualization");
 
             for (int index = 1; index <= _maxHetNOEFrame; index++ ) {
@@ -1647,7 +1647,7 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (_maxCouplingFrame > 0 && !writeNoData) {
             writeDataTableStart("Coupling constants", "", "coupling.png",
-            "coupling_thumb.png");
+                                "coupling_thumb.png");
             writeFormStart("select_chem_coupling_visualization");
 
             for (int index = 1; index <= _maxCouplingFrame; index++ ) {
@@ -1670,10 +1670,10 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (_maxCoordFrame > 0 && !writeNoData) {
             writeDataTableStart("NMR experimental data plots linked to " +
-            "Jmol 3D structure visualization",
-            "NMR experimental data plots linked to Jmol 3D structure " +
-            "visualization <font color=\"red\">(note: processing may " +
-            "take several minutes)</font>", "3d.png", "3d_thumb.png");
+                                "Jmol 3D structure visualization",
+                                "NMR experimental data plots linked to Jmol 3D structure " +
+                                "visualization <font color=\"red\">(note: processing may " +
+                                "take several minutes)</font>", "3d.png", "3d_thumb.png");
             writeFormStart("select_coord_shift_visualization");
 
             for (int index = 1; index <= _maxCoordFrame; index++ ) {
@@ -1697,10 +1697,10 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (_maxChemShiftRefFrame > 0 && !writeNoData) {
             writeDataTableStart("Chemical shift referencing " +
-            "visualizations ",
-            "Chemical shift referencing visualizations " +
-            "<font color=\"red\">(note: processing may take several " +
-            "minutes)</font>", "csr3.png", "csr3_thumb.png");
+                                "visualizations ",
+                                "Chemical shift referencing visualizations " +
+                                "<font color=\"red\">(note: processing may take several " +
+                                "minutes)</font>", "csr3.png", "csr3_thumb.png");
             writeFormStart("select_chemshiftref_visualization");
 
             for (int index = 1; index <= _maxChemShiftRefFrame; index++ ) {
@@ -1725,10 +1725,10 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (_maxLacsFrame > 0 && !writeNoData) {
             writeDataTableStart("Linear Analysis of Chemical Shifts",
-            "<a target=\"lacs_ref\" " +
-            "href=\"http://www.ncbi.nlm.nih.gov/pubmed/16041479\">" +
-            "Linear Analysis of Chemical Shifts</a>",
-            "lacs.png", "lacs_thumb.png");
+                                "<a target=\"lacs_ref\" " +
+                                "href=\"http://www.ncbi.nlm.nih.gov/pubmed/16041479\">" +
+                                "Linear Analysis of Chemical Shifts</a>",
+                                "lacs.png", "lacs_thumb.png");
             writeFormStart("select_lacs_visualization");
 
             for (int index = 1; index <= _maxLacsFrame; index++ ) {
@@ -1754,7 +1754,7 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (_s2PredCount > 0 && !writeNoData) {
             writeDataTableStart("S2 predicted vs. experimental",
-            "", "s2pred.png", "s2pred_thumb.png");
+                                "", "s2pred.png", "s2pred_thumb.png");
             writeFormStart("select_s2pred_visualization");
 
             for (int index = 1; index <= _s2PredCount; index++ ) {
@@ -1777,7 +1777,7 @@ public abstract class S2DSummaryHtmlGen {
     {
         if (_maxS2OrderFrame > 0 && !writeNoData) {
             writeDataTableStart("S2 order parameters", "", "s2.png",
-            "s2_thumb.png");
+                                "s2_thumb.png");
             writeFormStart("select_s2_visualization");
 
             for (int index = 1; index <= _maxS2OrderFrame; index++ ) {
@@ -1800,25 +1800,25 @@ public abstract class S2DSummaryHtmlGen {
     throws IOException
     {
         if ((_maxDistRestrFrame > 0 || _maxRRDistRestrFrame > 0) &&
-        !writeNoData) {
+                !writeNoData) {
             writeDataTableStart("Distance restraints ",
-            "Distance restraints <font color=\"red\">(note: " +
-            "processing may take several minutes)</font>",
-            "distance_restraint.png", "distance_restraint_thumb.png");
+                                "Distance restraints <font color=\"red\">(note: " +
+                                "processing may take several minutes)</font>",
+                                "distance_restraint.png", "distance_restraint_thumb.png");
             writeFormStart("select_distance_restraint_visualization");
 
             writeDistRestrTable(_maxDistRestrFrame,
-            _distRestrInfo, false);
+                                _distRestrInfo, false);
             writeDistRestrTable(_maxRRDistRestrFrame,
-            _rrDistRestrInfo, true);
+                                _rrDistRestrInfo, true);
 
             writeFormEnd();
             writeDataTableEnd();
 
         } else if (_maxDistRestrFrame < 1 && _maxRRDistRestrFrame < 1 &&
-        writeNoData) {
+                   writeNoData) {
             _writer.write("  <tr><th align=\"left\">No distance restraint data available " +
-            "for this entry</th></tr>\n");
+                          "for this entry</th></tr>\n");
         }
     }
 
@@ -1839,25 +1839,25 @@ public abstract class S2DSummaryHtmlGen {
     throws IOException
     {
         if ((_maxTorsionAngleFrame > 0 || _maxRRTorsionAngleFrame > 0) &&
-        !writeNoData) {
+                !writeNoData) {
             writeDataTableStart("Torsion angle restraints ",
-            "Torsion angle restraints <font color=\"red\">(note: " +
-            "processing may take several minutes)</font>",
-            "torsion_angle.png", "torsion_angle_thumb.png");
+                                "Torsion angle restraints <font color=\"red\">(note: " +
+                                "processing may take several minutes)</font>",
+                                "torsion_angle.png", "torsion_angle_thumb.png");
             writeFormStart("select_torsion_angle_restraint_visualization");
 
             writeTorsionAngleTable(_maxTorsionAngleFrame,
-            _torsionAngleInfo, false);
+                                   _torsionAngleInfo, false);
             writeTorsionAngleTable(_maxRRTorsionAngleFrame,
-            _rrTorsionAngleInfo, true);
+                                   _rrTorsionAngleInfo, true);
 
             writeFormEnd();
             writeDataTableEnd();
 
         } else if (_maxTorsionAngleFrame < 1 &&
-        _maxRRTorsionAngleFrame < 1 && writeNoData) {
+                   _maxRRTorsionAngleFrame < 1 && writeNoData) {
             _writer.write("  <tr><th align=\"left\">No torsion angle data available for " +
-            "this entry</th></tr>\n");
+                          "this entry</th></tr>\n");
 
         }
     }
@@ -1878,7 +1878,7 @@ public abstract class S2DSummaryHtmlGen {
     {
         if ((_maxEntry1Frame > 0 || _maxEntry2Frame > 0) &&!writeNoData) {
             writeDataTableStart("Chemical shift data", "",
-            "multi_entry_nh.png", "multi_entry_nh_thumb.png");
+                                "multi_entry_nh.png", "multi_entry_nh_thumb.png");
 
             writeFormStart("select_multi-entry_visualization");
 
@@ -1990,8 +1990,8 @@ public abstract class S2DSummaryHtmlGen {
         _writer.write("  <tr>\n");
         _writer.write("    <td align=\"left\" rowspan=\"2\" width=\"120\">\n");
         _writer.write("      <a class=\"thumbnail\">" +
-        "<img src=\"" + figuresDir + thumbnail +
-        "\" alt=\"" + imgName + "\"></a>\n");
+                      "<img src=\"" + figuresDir + thumbnail +
+                      "\" alt=\"" + imgName + "\"></a>\n");
         _writer.write("    </td>\n");
         _writer.write("    <th align=\"center\">\n");
 
@@ -2026,12 +2026,12 @@ public abstract class S2DSummaryHtmlGen {
     {
         String action = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
         _writer.write("<form name=\"" + formName + "\" action=\"" +
-        action + "\" " + "method=\"get\">\n");
+                      action + "\" " + "method=\"get\">\n");
         _writer.write(
             "  <select name=\"url\" onchange='this.form.submit()'>\n");
         _writer.write("    <option selected=\"selected\" value=\"" +
-        _name + "/" + _name + S2DNames.SUMMARY_HTML_SUFFIX +
-        S2DNames.HTML_SUFFIX + "\">Select visualization</option>\n");
+                      _name + "/" + _name + S2DNames.SUMMARY_HTML_SUFFIX +
+                      S2DNames.HTML_SUFFIX + "\">Select visualization</option>\n");
     }
 
     //-------------------------------------------------------------------

@@ -118,78 +118,78 @@ public class S2DRestraint {
      * @return The name of the temporary file created.
      */
     public static String filterUrlToTempFile(String urlName, String pdbId)
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DRestraint.filterUrlToTempFile(" +
-	      urlName + ")");
-	}
+            System.out.println("S2DRestraint.filterUrlToTempFile(" +
+                               urlName + ")");
+        }
 
-    	File tmpFile;
-	try {
-    	    tmpFile = File.createTempFile("tar_", ".str", new File("tmp"));
-	    tmpFile.deleteOnExit();
+        File tmpFile;
+        try {
+            tmpFile = File.createTempFile("tar_", ".str", new File("tmp"));
+            tmpFile.deleteOnExit();
 
-	    FileWriter writer = new FileWriter(tmpFile);
+            FileWriter writer = new FileWriter(tmpFile);
 
-	    URL url = new URL(urlName);
-	    InputStream is = url.openStream();
-	    InputStreamReader isr = new InputStreamReader(is);
-	    BufferedReader reader = new BufferedReader(isr);
+            URL url = new URL(urlName);
+            InputStream is = url.openStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader reader = new BufferedReader(isr);
 
-	    // Extract the NMR-STAR file embedded within the html page.
-	    boolean foundStart = false;
-	    String startString = "data_" + pdbId.toLowerCase();
-	    String line;
-	    while ((line = reader.readLine()) != null) {
-		// Do case-insensitive searches.
-		String searchLine = line.toLowerCase();
+            // Extract the NMR-STAR file embedded within the html page.
+            boolean foundStart = false;
+            String startString = "data_" + pdbId.toLowerCase();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Do case-insensitive searches.
+                String searchLine = line.toLowerCase();
 
-		if (!foundStart) {
-		    int begin = searchLine.indexOf(startString);
-		    if (begin >= 0) {
-		        foundStart = true;
-			writer.write(
-			  line.substring(begin) + "\n");
-		    }
-		} else {
-		    if (searchLine.indexOf("</pre>") >= 0) {
-		        // Hit the end of the actual STAR file part.
-			break;
-		    }
-	            writer.write(line + "\n");
-		}
-	    }
+                if (!foundStart) {
+                    int begin = searchLine.indexOf(startString);
+                    if (begin >= 0) {
+                        foundStart = true;
+                        writer.write(
+                            line.substring(begin) + "\n");
+                    }
+                } else {
+                    if (searchLine.indexOf("</pre>") >= 0) {
+                        // Hit the end of the actual STAR file part.
+                        break;
+                    }
+                    writer.write(line + "\n");
+                }
+            }
 
-	    reader.close();
-	    writer.close();
+            reader.close();
+            writer.close();
 
         } catch (IOException ex) {
-	    throw new S2DError("Error creating temp file for restraint " +
-	      "data: " + ex.toString());
-	}
+            throw new S2DError("Error creating temp file for restraint " +
+                               "data: " + ex.toString());
+        }
 
-    	return tmpFile.getPath();
+        return tmpFile.getPath();
     }
 
     //-------------------------------------------------------------------
     // Constructor.
     public S2DRestraint(String name, String longName, S2DNmrStarIfc star,
-      String dataDir, String sessionDir, S2DSummaryHtml summary,
-      String pdbId) throws S2DException
+                        String dataDir, String sessionDir, S2DSummaryHtml summary,
+                        String pdbId) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DRestraint.S2DRestraint(" + name + ")");
-	}
+            System.out.println("S2DRestraint.S2DRestraint(" + name + ")");
+        }
         _name = name;
         _longName = longName;
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
 
-	_pdbId = pdbId;
+        _pdbId = pdbId;
 
-	_starVersion = star.version();
+        _starVersion = star.version();
     }
 
     //===================================================================
@@ -204,85 +204,85 @@ public class S2DRestraint {
      *   angle violations.
      */
     protected static String getViolationUrl(String pdbId, boolean isAngle)
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DRestraint.getViolationUrl(" + pdbId +
-	      ", " + isAngle + ")");
-	}
+            System.out.println("S2DRestraint.getViolationUrl(" + pdbId +
+                               ", " + isAngle + ")");
+        }
 
-	String restraintGridTemplate = S2DNames.RESTRAINT_GRID_ROOT +
-	  S2DNames.TORSION_ANGLE_SEARCH_TEMPLATE;
-	String requestUrlName = S2DUtils.replace(restraintGridTemplate,
-	  "*", pdbId);
+        String restraintGridTemplate = S2DNames.RESTRAINT_GRID_ROOT +
+                                       S2DNames.TORSION_ANGLE_SEARCH_TEMPLATE;
+        String requestUrlName = S2DUtils.replace(restraintGridTemplate,
+                                "*", pdbId);
 
         if (doDebugOutput(12)) {
-	    System.out.println("  requestUrlName: " + requestUrlName);
-	}
+            System.out.println("  requestUrlName: " + requestUrlName);
+        }
 
-	try {
-	    URL url = new URL(requestUrlName);
-	    InputStream is = url.openStream();
-	    InputStreamReader isr = new InputStreamReader(is);
-	    BufferedReader reader = new BufferedReader(isr);
+        try {
+            URL url = new URL(requestUrlName);
+            InputStream is = url.openStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader reader = new BufferedReader(isr);
 
-	    String violationUrlName = null;
+            String violationUrlName = null;
 
-	    String typeString = isAngle ? "dihedral angle" : "distance";
+            String typeString = isAngle ? "dihedral angle" : "distance";
 
-	    boolean foundViolation = false;
-	    boolean foundTypeString = false;
-	    String line;
-	    while ((line = reader.readLine()) != null) {
-	        // Do case-insensitive searches.
-	        String searchLine = line.toLowerCase();
+            boolean foundViolation = false;
+            boolean foundTypeString = false;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Do case-insensitive searches.
+                String searchLine = line.toLowerCase();
 
-	        // Need to find "violation", "distance" or "dihedral angle",
-		// and "href" in the same table row.
-	        if (searchLine.indexOf("</tr>") >= 0) {
-	            foundViolation = false;
-		    foundTypeString = false;
-	        } else if (!foundViolation) {
-	            if (searchLine.indexOf("violation") >= 0) {
-		        foundViolation = true;
-		    }
-	        } else if (!foundTypeString) {
-	            if (searchLine.indexOf(typeString) >= 0) {
-		        foundTypeString = true;
-		    }
-	        } else if (searchLine.indexOf("href") >= 0) {
+                // Need to find "violation", "distance" or "dihedral angle",
+                // and "href" in the same table row.
+                if (searchLine.indexOf("</tr>") >= 0) {
+                    foundViolation = false;
+                    foundTypeString = false;
+                } else if (!foundViolation) {
+                    if (searchLine.indexOf("violation") >= 0) {
+                        foundViolation = true;
+                    }
+                } else if (!foundTypeString) {
+                    if (searchLine.indexOf(typeString) >= 0) {
+                        foundTypeString = true;
+                    }
+                } else if (searchLine.indexOf("href") >= 0) {
                     if (doDebugOutput(15)) {
                         System.out.println("  line: <" + line + ">");
-	            }
-	            violationUrlName = line.substring(line.indexOf('"') + 1);
-		    violationUrlName = violationUrlName.substring(0,
-		      violationUrlName.indexOf('"'));
+                    }
+                    violationUrlName = line.substring(line.indexOf('"') + 1);
+                    violationUrlName = violationUrlName.substring(0,
+                                       violationUrlName.indexOf('"'));
                     if (doDebugOutput(12)) {
-	                System.out.println("  violationUrlName: " +
-		          violationUrlName);
-	            }
-		    break;
-	        }
-	    }
+                        System.out.println("  violationUrlName: " +
+                                           violationUrlName);
+                    }
+                    break;
+                }
+            }
 
-	    reader.close();
+            reader.close();
 
-	    if (violationUrlName == null) {
-		S2DMain._noMail = true;
-	        throw new S2DError("No " + typeString +
-		  " violation URL found for PDB " +
-	          pdbId + " (in " + requestUrlName + ")");
-	    }
+            if (violationUrlName == null) {
+                S2DMain._noMail = true;
+                throw new S2DError("No " + typeString +
+                                   " violation URL found for PDB " +
+                                   pdbId + " (in " + requestUrlName + ")");
+            }
 
-	    violationUrlName = S2DNames.RESTRAINT_GRID_ROOT +
-	      violationUrlName;
+            violationUrlName = S2DNames.RESTRAINT_GRID_ROOT +
+                               violationUrlName;
 
-	    return violationUrlName;
+            return violationUrlName;
 
-	} catch (Exception ex) {
-	    throw new S2DError("Error (" + ex.toString() +
-	      ") getting violation URL for PDB " + pdbId);
-	}
+        } catch (Exception ex) {
+            throw new S2DError("Error (" + ex.toString() +
+                               ") getting violation URL for PDB " + pdbId);
+        }
     }
 
     //-------------------------------------------------------------------
@@ -294,66 +294,66 @@ public class S2DRestraint {
      * @return The MR Block ID (URL).
      */
     protected static String getMrBlockId(String violationUrlName,
-      String pdbId) throws S2DException
+                                         String pdbId) throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DRestraint.getMrBlockId(" +
-	      violationUrlName + ")");
-	}
+            System.out.println("S2DRestraint.getMrBlockId(" +
+                               violationUrlName + ")");
+        }
 
-	try {
-	    URL violationUrl = new URL(violationUrlName);
-	    InputStream is = violationUrl.openStream();
-	    InputStreamReader isr = new InputStreamReader(is);
-	    BufferedReader reader = new BufferedReader(isr);
+        try {
+            URL violationUrl = new URL(violationUrlName);
+            InputStream is = violationUrl.openStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader reader = new BufferedReader(isr);
 
-	    String mrBlockIdName = null;
+            String mrBlockIdName = null;
 
-	    boolean foundMrBlockId = false;
-	    boolean foundFirstHref = false;
-	    String line;
-	    while ((line = reader.readLine()) != null) {
-	        // Do case-insensitive searches.
-	        String searchLine = line.toLowerCase();
+            boolean foundMrBlockId = false;
+            boolean foundFirstHref = false;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Do case-insensitive searches.
+                String searchLine = line.toLowerCase();
 
-		// Find the second href after mrblock_id.
-		if (!foundMrBlockId) {
-	            if (searchLine.indexOf("mrblock_id") >= 0) {
-		        foundMrBlockId = true;
-		    }
-		} else if (!foundFirstHref) {
-		    if (searchLine.indexOf("href") >= 0) {
-		        foundFirstHref = true;
-		    }
-		} else if (searchLine.indexOf("href") >= 0) {
+                // Find the second href after mrblock_id.
+                if (!foundMrBlockId) {
+                    if (searchLine.indexOf("mrblock_id") >= 0) {
+                        foundMrBlockId = true;
+                    }
+                } else if (!foundFirstHref) {
+                    if (searchLine.indexOf("href") >= 0) {
+                        foundFirstHref = true;
+                    }
+                } else if (searchLine.indexOf("href") >= 0) {
                     if (doDebugOutput(15)) {
                         System.out.println("  line: <" + line + ">");
-	            }
-	            mrBlockIdName = line.substring(line.indexOf('"') + 1);
-		    mrBlockIdName = mrBlockIdName.substring(0,
-		      mrBlockIdName.indexOf('"'));
+                    }
+                    mrBlockIdName = line.substring(line.indexOf('"') + 1);
+                    mrBlockIdName = mrBlockIdName.substring(0,
+                                                            mrBlockIdName.indexOf('"'));
                     if (doDebugOutput(12)) {
-	                System.out.println("  mrBlockIdName: " +
-		          mrBlockIdName);
-	            }
-		    break;
-		}
+                        System.out.println("  mrBlockIdName: " +
+                                           mrBlockIdName);
+                    }
+                    break;
+                }
             }
 
-	    if (mrBlockIdName == null) {
-	        throw new S2DError("No MR Block ID found for PDB " +
-	          pdbId);
-	    }
+            if (mrBlockIdName == null) {
+                throw new S2DError("No MR Block ID found for PDB " +
+                                   pdbId);
+            }
 
-	    mrBlockIdName = S2DNames.RESTRAINT_GRID_ROOT +
-	      mrBlockIdName;
+            mrBlockIdName = S2DNames.RESTRAINT_GRID_ROOT +
+                            mrBlockIdName;
 
-	    return mrBlockIdName;
+            return mrBlockIdName;
 
         } catch (Exception ex) {
-	    throw new S2DError("Error (" + ex.toString() +
-	      " getting MR block ID for PDB " + pdbId);
-	}
+            throw new S2DError("Error (" + ex.toString() +
+                               " getting MR block ID for PDB " + pdbId);
+        }
     }
 
     //-------------------------------------------------------------------
@@ -361,12 +361,12 @@ public class S2DRestraint {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

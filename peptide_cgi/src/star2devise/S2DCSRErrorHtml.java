@@ -65,21 +65,21 @@ public class S2DCSRErrorHtml extends S2DSpecificHtml {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DCSRErrorHtml(String htmlDir, int dataType, String name,
-      int frameIndex, String title, String bmrbId, String pdbId,
-      boolean timedOut, String frameDetails)
-      throws S2DError
+                           int frameIndex, String title, String bmrbId, String pdbId,
+                           boolean timedOut, String frameDetails)
+    throws S2DError
     {
-	super(htmlDir, dataType, name, frameIndex, title, frameDetails);
+        super(htmlDir, dataType, name, frameIndex, title, frameDetails);
 
         if (doDebugOutput(11)) {
             System.out.println("S2DCSRErrorHtml.S2DCSRErrorHtml(" +
-	      htmlDir + ", " + dataType + ", " + name + ", " +
-	      frameIndex + ")");
+                               htmlDir + ", " + dataType + ", " + name + ", " +
+                               frameIndex + ")");
         }
-	
-	_bmrbId = bmrbId;
-	_pdbId = pdbId;
-	_timedOut = timedOut;
+
+        _bmrbId = bmrbId;
+        _pdbId = pdbId;
+        _timedOut = timedOut;
     }
 
     //===================================================================
@@ -89,12 +89,12 @@ public class S2DCSRErrorHtml extends S2DSpecificHtml {
     // Get the template file name.
     protected String TemplateFileName()
     {
-	String templateFile = "html_templates" + File.separator;
-	if (_timedOut) {
-	    templateFile += "csr_timeout.base";
-	} else {
-	    templateFile += "csr_error.base";
-	}
+        String templateFile = "html_templates" + File.separator;
+        if (_timedOut) {
+            templateFile += "csr_timeout.base";
+        } else {
+            templateFile += "csr_error.base";
+        }
 
         return templateFile;
     }
@@ -104,11 +104,11 @@ public class S2DCSRErrorHtml extends S2DSpecificHtml {
     // into a line to be output.
     protected String FilterLine(String inLine)
     {
-	String line = inLine;
-	line = S2DUtils.replace(line, "BMRBID", _bmrbId);
-	line = S2DUtils.replace(line, "PDBID", _pdbId);
+        String line = inLine;
+        line = S2DUtils.replace(line, "BMRBID", _bmrbId);
+        line = S2DUtils.replace(line, "PDBID", _pdbId);
 
-	return line;
+        return line;
     }
 
     //===================================================================
@@ -119,11 +119,11 @@ public class S2DCSRErrorHtml extends S2DSpecificHtml {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }

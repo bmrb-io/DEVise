@@ -100,29 +100,29 @@ public class S2DmmCifIfc extends S2DStarIfc {
     //-------------------------------------------------------------------
     public static String getFileName(String pdbId)
     {
-	if (pdbId.startsWith("file:")) {
+        if (pdbId.startsWith("file:")) {
             return pdbId;
-	} else {
+        } else {
             return pdbId.toLowerCase() + ".cif.gz";
-	}
+        }
     }
 
     //-------------------------------------------------------------------
     public static String getURLName(String fileName) throws S2DException
     {
-	String urlName;
-	if (fileName.startsWith("file:")) {
+        String urlName;
+        if (fileName.startsWith("file:")) {
             urlName = fileName;
-	} else {
-	    urlName = S2DUtils.replace(S2DNames.MMCIF_TEMPLATE, "*",
-	      fileName);
-	    // This is so we can use the "divided" directory...
-	    String id2 = fileName.substring(1, 3);
-	    urlName = S2DUtils.replace(urlName, "@", id2);
-	}
-	S2DUtils.tryUrl(urlName);
+        } else {
+            urlName = S2DUtils.replace(S2DNames.MMCIF_TEMPLATE, "*",
+                                       fileName);
+            // This is so we can use the "divided" directory...
+            String id2 = fileName.substring(1, 3);
+            urlName = S2DUtils.replace(urlName, "@", id2);
+        }
+        S2DUtils.tryUrl(urlName);
 
-	return urlName;
+        return urlName;
     }
 
     //-------------------------------------------------------------------
@@ -131,88 +131,88 @@ public class S2DmmCifIfc extends S2DStarIfc {
     // timestamp of 0.  RKW 2002-08-06.
     public static Date getModDate(String pdbId)
     {
-	Date date = null;
-	try {
-	    URL starfile = new URL(getURLName(getFileName(pdbId)));
-	    URLConnection connection = starfile.openConnection();
+        Date date = null;
+        try {
+            URL starfile = new URL(getURLName(getFileName(pdbId)));
+            URLConnection connection = starfile.openConnection();
 
-	    long timestamp = connection.getLastModified();
-	    date = new Date(timestamp);
+            long timestamp = connection.getLastModified();
+            date = new Date(timestamp);
         } catch (Exception ex) {
-	    System.err.println("Exception: " + ex.toString());
-	}
+            System.err.println("Exception: " + ex.toString());
+        }
 
-	return date;
+        return date;
     }
 
     //-------------------------------------------------------------------
     // Constructor.  Opens and parses the (gzipped) mmCIF file associated
     // with the given PDB ID.
     public S2DmmCifIfc(String pdbId, boolean useLocalFile,
-      String bmrbResListFile) throws S2DException
+                       String bmrbResListFile) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DmmCifIfc.S2DmmCifIfc(" + pdbId + ", " +
-	      useLocalFile + ", " + bmrbResListFile + ")");
-	}
+            System.out.println("S2DmmCifIfc.S2DmmCifIfc(" + pdbId + ", " +
+                               useLocalFile + ", " + bmrbResListFile + ")");
+        }
 
-	setStarNames();
+        setStarNames();
 
-	S2DStarUtil.initialize();
+        S2DStarUtil.initialize();
 
-	_fileName = getFileName(pdbId);
-	_useLocalFile = useLocalFile;
-	_bmrbResListFile = bmrbResListFile;
+        _fileName = getFileName(pdbId);
+        _useLocalFile = useLocalFile;
+        _bmrbResListFile = bmrbResListFile;
 
         if (doDebugOutput(11)) {
-	    System.out.println("mmCIF file is: " + _fileName);
-	}
+            System.out.println("mmCIF file is: " + _fileName);
+        }
 
         try {
-	    InputStream is = null;
-	    InputStream tmpIs = null;
-	    if (_useLocalFile) {
-		System.out.println("Note: using local copy of star file");
-		tmpIs = new FileInputStream(_fileName);
-	    } else {
-		String urlName = getURLName(_fileName);
+            InputStream is = null;
+            InputStream tmpIs = null;
+            if (_useLocalFile) {
+                System.out.println("Note: using local copy of star file");
+                tmpIs = new FileInputStream(_fileName);
+            } else {
+                String urlName = getURLName(_fileName);
                 if (doDebugOutput(11)) {
-	            System.out.println("mmCIF URL is: " + urlName);
-	        }
-		URL url = new URL(urlName);
-		URLConnection connection = url.openConnection();
-		tmpIs = connection.getInputStream();
-	    }
+                    System.out.println("mmCIF URL is: " + urlName);
+                }
+                URL url = new URL(urlName);
+                URLConnection connection = url.openConnection();
+                tmpIs = connection.getInputStream();
+            }
 
-	    if (_fileName.endsWith(".gz")) {
-	        is = new GZIPInputStream(tmpIs);
-	    } else {
-	        is = tmpIs;
-	    }
-	    _starTree = parseStar(is);
-	    is.close();
+            if (_fileName.endsWith(".gz")) {
+                is = new GZIPInputStream(tmpIs);
+            } else {
+                is = tmpIs;
+            }
+            _starTree = parseStar(is);
+            is.close();
 
-	    //
-	    // Skip matching against BMRB residues for PDB-only processing.
-	    // TEMP -- can we rely on the restraint grid residue numbering
-	    // matching the coordinates files?
-	    //
-	    if (_bmrbResListFile != null) {
-	        matchResidueLists();
-	    }
+            //
+            // Skip matching against BMRB residues for PDB-only processing.
+            // TEMP -- can we rely on the restraint grid residue numbering
+            // matching the coordinates files?
+            //
+            if (_bmrbResListFile != null) {
+                matchResidueLists();
+            }
 
         } catch(java.io.IOException ex) {
             System.err.println("Unable to open or read " + ex.toString());
             ex.printStackTrace();
             throw new S2DError("Unable to get data in star file " +
-              _fileName);
-	} catch (Exception ex) {
-	    System.err.println("Exception (" + ex.toString() +
-	      ") parsing mmCIF file");
-	    String errMsg = "Unable to get data in star file " + _fileName;
-	    System.err.println(errMsg);
-	    throw new S2DError(errMsg);
-	}
+                               _fileName);
+        } catch (Exception ex) {
+            System.err.println("Exception (" + ex.toString() +
+                               ") parsing mmCIF file");
+            String errMsg = "Unable to get data in star file " + _fileName;
+            System.err.println(errMsg);
+            throw new S2DError(errMsg);
+        }
     }
 
     //-------------------------------------------------------------------
@@ -221,43 +221,43 @@ public class S2DmmCifIfc extends S2DStarIfc {
     public S2DmmCifIfc(String filename) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DmmCifIfc.S2DmmCifIfc(" + filename + ")");
-	}
+            System.out.println("S2DmmCifIfc.S2DmmCifIfc(" + filename + ")");
+        }
 
-	_fileName = filename;
+        _fileName = filename;
 
-	setStarNames();
+        setStarNames();
 
-	S2DStarUtil.initialize();
+        S2DStarUtil.initialize();
 
         try {
-	    InputStream is = new FileInputStream(filename);
-	    _starTree = parseStar(is);
-	    is.close();
+            InputStream is = new FileInputStream(filename);
+            _starTree = parseStar(is);
+            is.close();
 
         } catch(java.io.IOException ex) {
             System.err.println("Unable to open or read " + ex.toString());
             ex.printStackTrace();
             throw new S2DError("Unable to get data in star file " +
-              _fileName);
-	} catch (Exception ex) {
-	    System.err.println("Exception (" + ex.toString() +
-	      ") parsing mmCIF file");
-	    String errMsg = "Unable to get data in star file " + _fileName;
-	    System.err.println(errMsg);
-	    throw new S2DError(errMsg);
-	}
+                               _fileName);
+        } catch (Exception ex) {
+            System.err.println("Exception (" + ex.toString() +
+                               ") parsing mmCIF file");
+            String errMsg = "Unable to get data in star file " + _fileName;
+            System.err.println(errMsg);
+            throw new S2DError(errMsg);
+        }
     }
 
     // ----------------------------------------------------------------------
     // Translate the given atom names from the native nomenclature of this
     // file to the BMRB nomenclature.
     public String[] translateAtomNomenclature(String[] resLabels,
-      String[] atomNames) throws S2DException
+            String[] atomNames) throws S2DException
     {
-	if (_translator == null) {
-	    _translator = new Pdb2Bmrb();
-	}
+        if (_translator == null) {
+            _translator = new Pdb2Bmrb();
+        }
 
         return _translator.translate(resLabels, atomNames);
     }
@@ -269,17 +269,17 @@ public class S2DmmCifIfc extends S2DStarIfc {
      * @return an array of the entity assembly IDs
      */
     public int[] getCoordEntityAssemblyIDs(SaveFrameNode frame)
-      throws S2DException
+    throws S2DException
     {
-	String[] chainVals = getFrameValues(frame, ATOM_COORD_X,
-	  ATOM_COORD_ASYM_ID);
-	int[] entityAssemblyIDs = new int[chainVals.length];
+        String[] chainVals = getFrameValues(frame, ATOM_COORD_X,
+                                            ATOM_COORD_ASYM_ID);
+        int[] entityAssemblyIDs = new int[chainVals.length];
 
         for (int index = 0; index < chainVals.length; index++) {
-	    entityAssemblyIDs[index] = chain2EntAssemID(chainVals[index]);
-	}
+            entityAssemblyIDs[index] = chain2EntAssemID(chainVals[index]);
+        }
 
-    	return entityAssemblyIDs;
+        return entityAssemblyIDs;
     }
 
     /** -----------------------------------------------------------------
@@ -287,23 +287,23 @@ public class S2DmmCifIfc extends S2DStarIfc {
      * @param The chain value.
      * @return The entity assembly ID.
      */
-   //TEMP -- this should deal with entity assembly IDs > 26 (chain can
-   //TEMP be more than one character)
+    //TEMP -- this should deal with entity assembly IDs > 26 (chain can
+    //TEMP be more than one character)
     public int chain2EntAssemID(String chain) throws S2DException
     {
-	int result = chain.charAt(0) - 'A' + 1;
+        int result = chain.charAt(0) - 'A' + 1;
 
-	if (_chainHash != null) {
-	    Integer entityAssemblyID = (Integer)_chainHash.get(chain);
-	    if (entityAssemblyID != null) {
-	        result = entityAssemblyID.intValue();
-	    } else {
-	        result = 0;
-		//TEMP? result = -result;
-	    }
-	}
+        if (_chainHash != null) {
+            Integer entityAssemblyID = (Integer)_chainHash.get(chain);
+            if (entityAssemblyID != null) {
+                result = entityAssemblyID.intValue();
+            } else {
+                result = 0;
+                //TEMP? result = -result;
+            }
+        }
 
-	return result;
+        return result;
     }
 
     //===================================================================
@@ -313,21 +313,21 @@ public class S2DmmCifIfc extends S2DStarIfc {
     // Set the tag names and values to work for mmCIF files.
     private void setStarNames()
     {
-	ATOM_COORD_ASYM_ID = "_atom_site.label_asym_id";
-	ATOM_COORD_ATOM_NAME = "_atom_site.label_atom_id";
-	ATOM_COORD_ATOM_TYPE = "_atom_site.type_symbol";
-	ATOM_COORD_MODEL_NUM = "_atom_site.pdbx_PDB_model_num";
-	ATOM_COORD_RES_LABEL = "_atom_site.label_comp_id";
-	ATOM_COORD_RES_SEQ_CODE = "_atom_site.label_seq_id";
+        ATOM_COORD_ASYM_ID = "_atom_site.label_asym_id";
+        ATOM_COORD_ATOM_NAME = "_atom_site.label_atom_id";
+        ATOM_COORD_ATOM_TYPE = "_atom_site.type_symbol";
+        ATOM_COORD_MODEL_NUM = "_atom_site.pdbx_PDB_model_num";
+        ATOM_COORD_RES_LABEL = "_atom_site.label_comp_id";
+        ATOM_COORD_RES_SEQ_CODE = "_atom_site.label_seq_id";
         ATOM_COORD_X = "_atom_site.Cartn_x";
-	ATOM_COORD_Y = "_atom_site.Cartn_y";
-	ATOM_COORD_Z = "_atom_site.Cartn_z";
+        ATOM_COORD_Y = "_atom_site.Cartn_y";
+        ATOM_COORD_Z = "_atom_site.Cartn_z";
 
-	DNA = "polydeoxyribonucleotide";
+        DNA = "polydeoxyribonucleotide";
 
-	POLYPEPTIDE = "polypeptide";
+        POLYPEPTIDE = "polypeptide";
 
-	RNA = "polyribonucleotide";
+        RNA = "polyribonucleotide";
     }
 
     /** -----------------------------------------------------------------
@@ -341,124 +341,124 @@ public class S2DmmCifIfc extends S2DStarIfc {
     private void matchResidueLists() throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DmmCifIfc.matchResidueLists()");
-	}
+            System.out.println("S2DmmCifIfc.matchResidueLists()");
+        }
 
-	Vector bmrbResLists = getBmrbResLists();
-	boolean [] bmrbMatched = new boolean[bmrbResLists.size()];
-	for (int index = 0; index < bmrbMatched.length; index++) {
-	    bmrbMatched[index] = false;
-	}
+        Vector bmrbResLists = getBmrbResLists();
+        boolean [] bmrbMatched = new boolean[bmrbResLists.size()];
+        for (int index = 0; index < bmrbMatched.length; index++) {
+            bmrbMatched[index] = false;
+        }
 
-	// _chainHash holds the PDB chain->BMRB entity assembly ID matches.
-	_chainHash = new Hashtable();
+        // _chainHash holds the PDB chain->BMRB entity assembly ID matches.
+        _chainHash = new Hashtable();
 
-	//TEMP -- make this into a method? (to make the code clearer)
-	//
-	// Get chain/entity matches from this file.
-	//
-    	String[] chainIDList = getFrameValues(null, STRUCT_CHAIN_ID,
-	  STRUCT_CHAIN_ID);
+        //TEMP -- make this into a method? (to make the code clearer)
+        //
+        // Get chain/entity matches from this file.
+        //
+        String[] chainIDList = getFrameValues(null, STRUCT_CHAIN_ID,
+                                              STRUCT_CHAIN_ID);
         if (doDebugOutput(31)) {
-	    System.out.println("chainIDList:");
-	    for (int index = 0; index < chainIDList.length; index++) {
-	        System.out.println("  " + chainIDList[index]);
-	    }
-	}
+            System.out.println("chainIDList:");
+            for (int index = 0; index < chainIDList.length; index++) {
+                System.out.println("  " + chainIDList[index]);
+            }
+        }
 
-    	String[] entityIDList = getFrameValues(null, STRUCT_CHAIN_ID,
-	  STRUCT_ENTITY_ID);
+        String[] entityIDList = getFrameValues(null, STRUCT_CHAIN_ID,
+                                               STRUCT_ENTITY_ID);
         if (doDebugOutput(31)) {
-	    System.out.println("entityIDList:");
-	    for (int index = 0; index < entityIDList.length; index++) {
-	        System.out.println("  " + entityIDList[index]);
-	    }
-	}
+            System.out.println("entityIDList:");
+            for (int index = 0; index < entityIDList.length; index++) {
+                System.out.println("  " + entityIDList[index]);
+            }
+        }
 
-	//
-	// Special case: if there is only one PDB chain and one BMRB entity
-	// assembly, we assume they always match.
-	//
-	if (bmrbResLists.size() == 1 && chainIDList.length == 1) {
+        //
+        // Special case: if there is only one PDB chain and one BMRB entity
+        // assembly, we assume they always match.
+        //
+        if (bmrbResLists.size() == 1 && chainIDList.length == 1) {
             if (doDebugOutput(31)) {
-	        System.out.println("Only one PDB chain and one BMRB " +
-		  "entity assembly -- assuming they match");
-	    }
-	    _chainHash.put(chainIDList[0], new Integer(1));
-	    return;
-	}
+                System.out.println("Only one PDB chain and one BMRB " +
+                                   "entity assembly -- assuming they match");
+            }
+            _chainHash.put(chainIDList[0], new Integer(1));
+            return;
+        }
 
-	// Now get the entity IDs from the residue list, so we can use them
-	// to filter the residues.
+        // Now get the entity IDs from the residue list, so we can use them
+        // to filter the residues.
         String[] entityIDs = getFrameValues(null, RES_LIST_ENTITY_ID,
-	  RES_LIST_ENTITY_ID);
+                                            RES_LIST_ENTITY_ID);
 
-	for (int chainIndex = 0; chainIndex < chainIDList.length;
-	  chainIndex++) {
-	    String chain = chainIDList[chainIndex];
-	    boolean chainMatched = false;
+        for (int chainIndex = 0; chainIndex < chainIDList.length;
+                chainIndex++) {
+            String chain = chainIDList[chainIndex];
+            boolean chainMatched = false;
             //TEMP -- make this into a method? (to make the code clearer)
             //TEMP -- get residues for chain -- returns S2DResidues?
-	    String entityID = entityIDList[chainIndex];
+            String entityID = entityIDList[chainIndex];
             if (doDebugOutput(31)) {
                 System.out.println("Getting residues for chain: " +
-		  chain + "; entityID: " + entityID);
-	    }
+                                   chain + "; entityID: " + entityID);
+            }
 
-	    int polymerType = getPolymerType(entityID);
+            int polymerType = getPolymerType(entityID);
 
-	    //
-	    // Get the residue numbers and types, filtered by entity ID.
-	    //
+            //
+            // Get the residue numbers and types, filtered by entity ID.
+            //
             String[] resSeqCodesTmp = getAndFilterFrameValues(null,
-	      RES_LIST_ENTITY_ID, RES_LIST_RES_NUM,
-	      entityID, entityIDs);
-	    int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
-	      RES_LIST_RES_NUM);
+                                      RES_LIST_ENTITY_ID, RES_LIST_RES_NUM,
+                                      entityID, entityIDs);
+            int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+                                RES_LIST_RES_NUM);
 
-	    String[] resLabels = getAndFilterFrameValues(null,
-	      RES_LIST_ENTITY_ID, RES_LIST_RES_LABEL, entityID, entityIDs);
+            String[] resLabels = getAndFilterFrameValues(null,
+                                 RES_LIST_ENTITY_ID, RES_LIST_RES_LABEL, entityID, entityIDs);
 
-	    //
-	    // Create a residue list for this entity to match against
-	    // the BMRB ones.
-	    // Now try to match the sequence for this chain against
-	    // the sequences of the BMRB entity assemblies.
-	    //
-	    if (resSeqCodes.length > 0) {
-	        // Create a residue list for this entity to match against
-	        // the BMRB ones.
-	        S2DResidues pdbResidues = new S2DResidues(resSeqCodes,
-		  resLabels, polymerType, 0, chain);
+            //
+            // Create a residue list for this entity to match against
+            // the BMRB ones.
+            // Now try to match the sequence for this chain against
+            // the sequences of the BMRB entity assemblies.
+            //
+            if (resSeqCodes.length > 0) {
+                // Create a residue list for this entity to match against
+                // the BMRB ones.
+                S2DResidues pdbResidues = new S2DResidues(resSeqCodes,
+                        resLabels, polymerType, 0, chain);
 
-		// Now compare this chain against all unmatched BMRB
-		// entity assemblies.
-		for (int entityAssemblyID = 1;
-		  entityAssemblyID <= bmrbResLists.size() && !chainMatched;
-		  entityAssemblyID++) {
-		    if (!bmrbMatched[entityAssemblyID-1]) {
+                // Now compare this chain against all unmatched BMRB
+                // entity assemblies.
+                for (int entityAssemblyID = 1;
+                        entityAssemblyID <= bmrbResLists.size() && !chainMatched;
+                        entityAssemblyID++) {
+                    if (!bmrbMatched[entityAssemblyID-1]) {
                         if (doDebugOutput(21)) {
                             System.out.println("Compare PDB chain " + chain +
-		              " to BMRB entity assembly " + entityAssemblyID);
-		        }
-	                if (pdbResidues.matches((S2DResidues)bmrbResLists.
-		          elementAt(entityAssemblyID-1))) {
+                                               " to BMRB entity assembly " + entityAssemblyID);
+                        }
+                        if (pdbResidues.matches((S2DResidues)bmrbResLists.
+                                                elementAt(entityAssemblyID-1))) {
                             if (doDebugOutput(21)) {
-		                System.out.println("Sequences match");
-		            }
-		            _chainHash.put(chain,
-			      new Integer(entityAssemblyID));
-			    bmrbMatched[entityAssemblyID-1] = true;
-			    chainMatched = true;
-		        } else {
+                                System.out.println("Sequences match");
+                            }
+                            _chainHash.put(chain,
+                                           new Integer(entityAssemblyID));
+                            bmrbMatched[entityAssemblyID-1] = true;
+                            chainMatched = true;
+                        } else {
                             if (doDebugOutput(21)) {
-		                System.out.println("Sequences don't match");
-		            }
-		        }
-		    }
-		}
-	    }
-	}
+                                System.out.println("Sequences don't match");
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /** -----------------------------------------------------------------
@@ -466,43 +466,43 @@ public class S2DmmCifIfc extends S2DStarIfc {
      * @param The entity ID of the entity
      * @return The polymer type
      */
-    private int getPolymerType(String entityID) 
+    private int getPolymerType(String entityID)
     {
-	// If we don't find the appropriate values at all, we want
-	// this to stay UNKNOWN.
-	int polymerType = S2DResidues.POLYMER_TYPE_UNKNOWN;
+        // If we don't find the appropriate values at all, we want
+        // this to stay UNKNOWN.
+        int polymerType = S2DResidues.POLYMER_TYPE_UNKNOWN;
 
-	try {
+        try {
             String[] entityIDs = getFrameValues(null, ENTITY_ENTITY_ID,
-	      ENTITY_ENTITY_ID);
+                                                ENTITY_ENTITY_ID);
             String[] polymerTypeNames = getFrameValues(null, ENTITY_POLY_TYPE,
-	      ENTITY_POLY_TYPE);
+                                        ENTITY_POLY_TYPE);
 
-	    String polymerTypeName = "";
-	    for (int index = 0; index < entityIDs.length; index++) {
-	        if (entityID.equals(entityIDs[index])) {
-	            polymerTypeName = polymerTypeNames[index];
-		    break;
-	        }
-	    }
+            String polymerTypeName = "";
+            for (int index = 0; index < entityIDs.length; index++) {
+                if (entityID.equals(entityIDs[index])) {
+                    polymerTypeName = polymerTypeNames[index];
+                    break;
+                }
+            }
 
-	    if (polymerTypeName.indexOf(POLYPEPTIDE) != -1) {
-	        polymerType = S2DResidues.POLYMER_TYPE_PROTEIN;
+            if (polymerTypeName.indexOf(POLYPEPTIDE) != -1) {
+                polymerType = S2DResidues.POLYMER_TYPE_PROTEIN;
 
-	    } else if (polymerTypeName.indexOf(DNA) != -1) {
-	        polymerType = S2DResidues.POLYMER_TYPE_DNA;
+            } else if (polymerTypeName.indexOf(DNA) != -1) {
+                polymerType = S2DResidues.POLYMER_TYPE_DNA;
 
-	    } else if (polymerTypeName.indexOf(RNA) != -1) {
-	        polymerType = S2DResidues.POLYMER_TYPE_RNA;
+            } else if (polymerTypeName.indexOf(RNA) != -1) {
+                polymerType = S2DResidues.POLYMER_TYPE_RNA;
 
-	    } else {
-	        polymerType = S2DResidues.POLYMER_TYPE_NONE;
-	    }
+            } else {
+                polymerType = S2DResidues.POLYMER_TYPE_NONE;
+            }
 
-	} catch (S2DException ex) {
-	    System.err.println("Error (" + ex.toString() +
-	      " getting polymer type for entity " + entityID);
-	}
+        } catch (S2DException ex) {
+            System.err.println("Error (" + ex.toString() +
+                               " getting polymer type for entity " + entityID);
+        }
 
         return polymerType;
     }
@@ -521,266 +521,266 @@ public class S2DmmCifIfc extends S2DStarIfc {
     private Vector getBmrbResLists() throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DmmCifIfc.getBmrbResLists()");
-	    System.out.println("  rl file is " + _bmrbResListFile);
-	}
+            System.out.println("S2DmmCifIfc.getBmrbResLists()");
+            System.out.println("  rl file is " + _bmrbResListFile);
+        }
 
-	Vector residueLists = new Vector();
+        Vector residueLists = new Vector();
 
-	// All data from the file (one element in the vector for each
-	// residue in each entity assembly).
-	class ResListRecord {
-	    public int entityAssemblyID;
-	    public int resNum;
-	    public String resLabel;
-	    public int polymerType;
-	};
-	Vector resListInfo = new Vector();
+        // All data from the file (one element in the vector for each
+        // residue in each entity assembly).
+        class ResListRecord {
+            public int entityAssemblyID;
+            public int resNum;
+            public String resLabel;
+            public int polymerType;
+        };
+        Vector resListInfo = new Vector();
 
-	// Number of residues for each entity assembly.
-	Vector residueCounts = new Vector();
+        // Number of residues for each entity assembly.
+        Vector residueCounts = new Vector();
 
-	//
-	// Go thru the residue list file and get all data, separating
-	// by entity assembly ID.
-	//
-	//TEMP -- hmm -- do we need a check here that entity assembly IDs
-	// are 1, 2, 3, ...?
-	try {
+        //
+        // Go thru the residue list file and get all data, separating
+        // by entity assembly ID.
+        //
+        //TEMP -- hmm -- do we need a check here that entity assembly IDs
+        // are 1, 2, 3, ...?
+        try {
             StreamTokenizer st = new StreamTokenizer(new FileReader(
-	      _bmrbResListFile));
-	    st.commentChar('#');
+                        _bmrbResListFile));
+            st.commentChar('#');
             st.parseNumbers();
-	    st.eolIsSignificant(true);
-	    st.wordChars('_', '_');
-	    st.wordChars('+', '+');
+            st.eolIsSignificant(true);
+            st.wordChars('_', '_');
+            st.wordChars('+', '+');
 
-	    int currentEntityAssemblyID = -1;
-	    int currentResidueCount = 0;
-    	    while (st.nextToken() != st.TT_EOF) {
-		if (st.ttype != st.TT_EOL) {
-		    // Not a comment line.
+            int currentEntityAssemblyID = -1;
+            int currentResidueCount = 0;
+            while (st.nextToken() != st.TT_EOF) {
+                if (st.ttype != st.TT_EOL) {
+                    // Not a comment line.
 
-		    ResListRecord rlr = new ResListRecord();
+                    ResListRecord rlr = new ResListRecord();
 
-	            rlr.entityAssemblyID = (int)st.nval;
-    
-		    st.nextToken();
-	            rlr.resNum = (int)st.nval;
-    
-		    st.nextToken();
-	            rlr.resLabel = st.sval;
+                    rlr.entityAssemblyID = (int)st.nval;
 
-		    st.nextToken(); // skip single-letter residue code
-		    st.nextToken();
-		    rlr.polymerType = (int)st.nval;
+                    st.nextToken();
+                    rlr.resNum = (int)st.nval;
 
-		    // Consume any other junk in this line.
-		    while (st.nextToken() != st.TT_EOL) {
-		        if (st.ttype == st.TT_EOF) break;
-		    }
+                    st.nextToken();
+                    rlr.resLabel = st.sval;
 
-		    if (rlr.entityAssemblyID != currentEntityAssemblyID) {
-		         if (currentResidueCount > 0) {
-		             residueCounts.add(
-			       new Integer(currentResidueCount));
-		         }
-		         currentResidueCount = 0;
-		         currentEntityAssemblyID = rlr.entityAssemblyID;
-		    }
+                    st.nextToken(); // skip single-letter residue code
+                    st.nextToken();
+                    rlr.polymerType = (int)st.nval;
 
-		    resListInfo.add(rlr);
-		    currentResidueCount++;
+                    // Consume any other junk in this line.
+                    while (st.nextToken() != st.TT_EOL) {
+                        if (st.ttype == st.TT_EOF) break;
+                    }
+
+                    if (rlr.entityAssemblyID != currentEntityAssemblyID) {
+                        if (currentResidueCount > 0) {
+                            residueCounts.add(
+                                new Integer(currentResidueCount));
+                        }
+                        currentResidueCount = 0;
+                        currentEntityAssemblyID = rlr.entityAssemblyID;
+                    }
+
+                    resListInfo.add(rlr);
+                    currentResidueCount++;
                     if (doDebugOutput(41)) {
                         System.out.println("rlr: " + rlr.entityAssemblyID +
-		          " " + rlr.resNum + " " + rlr.resLabel);
-	            }
-		}
-	    }
+                                           " " + rlr.resNum + " " + rlr.resLabel);
+                    }
+                }
+            }
 
-	    if (currentResidueCount > 0) {
-	        residueCounts.add(new Integer(currentResidueCount));
-	    }
+            if (currentResidueCount > 0) {
+                residueCounts.add(new Integer(currentResidueCount));
+            }
 
         } catch (IOException ex) {
-	    throw new S2DError("Unable to get BMRB residue lists: " +
-	      ex.toString());
-	}
+            throw new S2DError("Unable to get BMRB residue lists: " +
+                               ex.toString());
+        }
 
-	//
-	// Now create an S2DResidues object for each entity assembly.
-	//
-	int resInfoIndex = 0;
-	for (int entityAssemblyID = 1;
-	  entityAssemblyID <= residueCounts.size(); entityAssemblyID++) {
+        //
+        // Now create an S2DResidues object for each entity assembly.
+        //
+        int resInfoIndex = 0;
+        for (int entityAssemblyID = 1;
+                entityAssemblyID <= residueCounts.size(); entityAssemblyID++) {
             if (doDebugOutput(41)) {
                 System.out.println("Entity assembly " + entityAssemblyID);
-	    }
-	    int resCount =
-	      ((Integer)residueCounts.elementAt(entityAssemblyID-1)).intValue();
+            }
+            int resCount =
+                ((Integer)residueCounts.elementAt(entityAssemblyID-1)).intValue();
             if (doDebugOutput(41)) {
                 System.out.println("Residue count: " + resCount);
-	    }
-	    int polymerType = ((ResListRecord)resListInfo.
-	      elementAt(resInfoIndex)).polymerType;
+            }
+            int polymerType = ((ResListRecord)resListInfo.
+                               elementAt(resInfoIndex)).polymerType;
             if (doDebugOutput(41)) {
                 System.out.println("Polymer type: " + polymerType);
-	    }
+            }
 
-	    int [] resNums = new int[resCount];
-	    String [] resLabels = new String[resCount];
-	    for (int resIndex = 0; resIndex < resCount; resIndex++) {
-	        resNums[resIndex] = ((ResListRecord)resListInfo.
-		  elementAt(resInfoIndex)).resNum;
-	        resLabels[resIndex] = ((ResListRecord)resListInfo.
-		  elementAt(resInfoIndex)).resLabel;
-		resInfoIndex++;
+            int [] resNums = new int[resCount];
+            String [] resLabels = new String[resCount];
+            for (int resIndex = 0; resIndex < resCount; resIndex++) {
+                resNums[resIndex] = ((ResListRecord)resListInfo.
+                                     elementAt(resInfoIndex)).resNum;
+                resLabels[resIndex] = ((ResListRecord)resListInfo.
+                                       elementAt(resInfoIndex)).resLabel;
+                resInfoIndex++;
                 if (doDebugOutput(41)) {
                     System.out.println("  " + resNums[resIndex] + " " +
-		      resLabels[resIndex]);
-	        }
-	    }
+                                       resLabels[resIndex]);
+                }
+            }
 
-	    S2DResidues resList = new S2DResidues(resNums, resLabels,
-	      polymerType, entityAssemblyID, "");
-	    residueLists.add(resList);
-	}
+            S2DResidues resList = new S2DResidues(resNums, resLabels,
+                                                  polymerType, entityAssemblyID, "");
+            residueLists.add(resList);
+        }
 
-	return residueLists;
+        return residueLists;
     }
 
     // ----------------------------------------------------------------------
     // Translate PDB atom nomenclature to BMRB atom nomenclature.
     class Pdb2Bmrb
     {
-	private final String TABLE_FILE = "chem_info" + File.separator +
-	  "pdb2bmrb";
+        private final String TABLE_FILE = "chem_info" + File.separator +
+                                          "pdb2bmrb";
 
-	// 22 actual amino acids plus one for terminals (X).
-	private static final int AMINO_ACID_COUNT = 23;
-	private Hashtable _acids = null;
+        // 22 actual amino acids plus one for terminals (X).
+        private static final int AMINO_ACID_COUNT = 23;
+        private Hashtable _acids = null;
 
         // ------------------------------------------------------------------
-	// Constructor.
+        // Constructor.
         public Pdb2Bmrb() throws S2DException
-	{
-	    if (doDebugOutput(12)) {
-	        System.out.println("S2DmmCifIfc.Pdb2Bmrb.Pdb2Bmrb()");
-	    }
+        {
+            if (doDebugOutput(12)) {
+                System.out.println("S2DmmCifIfc.Pdb2Bmrb.Pdb2Bmrb()");
+            }
 
-	    _acids = new Hashtable(AMINO_ACID_COUNT);
+            _acids = new Hashtable(AMINO_ACID_COUNT);
 
-	    //
-	    // Read and parse the file containing the translation from
-	    // PDB nomenclature to BMRB nomenclature; put the translation
-	    // into hash tables.
-	    //
-	    try {
-	        BufferedReader reader = new BufferedReader(new FileReader(
-		  TABLE_FILE));
+            //
+            // Read and parse the file containing the translation from
+            // PDB nomenclature to BMRB nomenclature; put the translation
+            // into hash tables.
+            //
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(
+                            TABLE_FILE));
 
-		String line;
-		while ((line = reader.readLine()) != null) {
+                String line;
+                while ((line = reader.readLine()) != null) {
 
-	            // Check for comments and blank lines.
-		    if (!line.equals("") && (line.charAt(0) != '#')) {
-		        StringTokenizer strTok = new StringTokenizer(
-			  line, "\t");
-		        if (strTok.countTokens() < 3) {
-			    // Note: this is *not* thrown, just created to
-			    // log the warning.
-			    new S2DWarning("Warning: too few tokens in line <"
-			      + line + ">");
-		        } else {
-		            String acidName = strTok.nextToken();
-			    String bmrbAtomName = strTok.nextToken();
-			    String pdbAtomName = strTok.nextToken();
+                    // Check for comments and blank lines.
+                    if (!line.equals("") && (line.charAt(0) != '#')) {
+                        StringTokenizer strTok = new StringTokenizer(
+                            line, "\t");
+                        if (strTok.countTokens() < 3) {
+                            // Note: this is *not* thrown, just created to
+                            // log the warning.
+                            new S2DWarning("Warning: too few tokens in line <"
+                                           + line + ">");
+                        } else {
+                            String acidName = strTok.nextToken();
+                            String bmrbAtomName = strTok.nextToken();
+                            String pdbAtomName = strTok.nextToken();
 
-			    addEntry(acidName, bmrbAtomName, pdbAtomName);
-		        }
-		    }
-		}
+                            addEntry(acidName, bmrbAtomName, pdbAtomName);
+                        }
+                    }
+                }
 
-	    } catch (IOException ex) {
-	        System.err.println("IOException: " + ex.toString());
-		throw new S2DError("Can't read PDB-to-BMRB translation table");
-	    }
-	}
+            } catch (IOException ex) {
+                System.err.println("IOException: " + ex.toString());
+                throw new S2DError("Can't read PDB-to-BMRB translation table");
+            }
+        }
 
         // ------------------------------------------------------------------
-	// Translate the given atom names from PDB nomenclature to BMRB
-	// nomenclature (note -- residue labels are needed for the
-	// translation).
+        // Translate the given atom names from PDB nomenclature to BMRB
+        // nomenclature (note -- residue labels are needed for the
+        // translation).
         public String[] translate(String[] resLabels, String[] atomNames)
-	{
-	    if (doDebugOutput(12)) {
-	        System.out.println("S2DmmCifIfc.Pdb2Bmrb.translate()");
-	    }
+        {
+            if (doDebugOutput(12)) {
+                System.out.println("S2DmmCifIfc.Pdb2Bmrb.translate()");
+            }
 
-	    int count = atomNames.length;
+            int count = atomNames.length;
 
-	    String[] newAtomNames = new String[count];
+            String[] newAtomNames = new String[count];
 
-	    for (int index = 0; index < count; index++) {
-	        String acidName = resLabels[index];
-		String pdbAtomName = atomNames[index];
-		String bmrbAtomName = lookUpEntry(acidName, pdbAtomName);
+            for (int index = 0; index < count; index++) {
+                String acidName = resLabels[index];
+                String pdbAtomName = atomNames[index];
+                String bmrbAtomName = lookUpEntry(acidName, pdbAtomName);
 
-		if (bmrbAtomName != null) {
-		    newAtomNames[index] = bmrbAtomName;
-		} else {
-		    if (doDebugOutput(11)) {
-		        System.err.println("Warning: no translation " +
-			  "available for atom " + pdbAtomName +
-			  " in amino acid " + acidName);
-		    }
-		    newAtomNames[index] = pdbAtomName;
-		}
-	    }
+                if (bmrbAtomName != null) {
+                    newAtomNames[index] = bmrbAtomName;
+                } else {
+                    if (doDebugOutput(11)) {
+                        System.err.println("Warning: no translation " +
+                                           "available for atom " + pdbAtomName +
+                                           " in amino acid " + acidName);
+                    }
+                    newAtomNames[index] = pdbAtomName;
+                }
+            }
 
-	    return newAtomNames;
-	}
-
-        // ------------------------------------------------------------------
-	private void addEntry(String acidName, String bmrbAtomName,
-	  String pdbAtomName)
-	{
-	    if (doDebugOutput(13)) {
-	        System.out.println("S2DmmCifIfc.Pdb2Bmrb.addEntry(" +
-		  acidName + ", " + bmrbAtomName + ", " + pdbAtomName + ")");
-	    }
-
-	    Hashtable acid = (Hashtable)_acids.get(acidName);
-	    if (acid == null) {
-	        acid = new Hashtable();
-		_acids.put(acidName, acid);
-	    }
-
-	    if (acid.get(pdbAtomName) != null) {
-		System.err.println("Error: duplicate entries for " +
-		  acidName + ", " + pdbAtomName + " in translation table");
-	    }
-
-	    acid.put(pdbAtomName, bmrbAtomName);
-	}
+            return newAtomNames;
+        }
 
         // ------------------------------------------------------------------
-	// Returns the BMRB atom name for a given residue and PDB atom name.
-	private String lookUpEntry(String acidName, String pdbAtomName)
-	{
-	    if (doDebugOutput(15)) {
-	        System.out.println("S2DmmCifIfc.Pdb2Bmrb.lookUpEntry(" +
-		  acidName + ", " + pdbAtomName + ")");
-	    }
+        private void addEntry(String acidName, String bmrbAtomName,
+                              String pdbAtomName)
+        {
+            if (doDebugOutput(13)) {
+                System.out.println("S2DmmCifIfc.Pdb2Bmrb.addEntry(" +
+                                   acidName + ", " + bmrbAtomName + ", " + pdbAtomName + ")");
+            }
 
-	    String bmrbAtomName = null;
-	    Hashtable acid = (Hashtable)_acids.get(acidName);
-	    if (acid != null) {
-	        bmrbAtomName = (String)acid.get(pdbAtomName);
-	    }
+            Hashtable acid = (Hashtable)_acids.get(acidName);
+            if (acid == null) {
+                acid = new Hashtable();
+                _acids.put(acidName, acid);
+            }
 
-	    return bmrbAtomName;
-	}
+            if (acid.get(pdbAtomName) != null) {
+                System.err.println("Error: duplicate entries for " +
+                                   acidName + ", " + pdbAtomName + " in translation table");
+            }
+
+            acid.put(pdbAtomName, bmrbAtomName);
+        }
+
+        // ------------------------------------------------------------------
+        // Returns the BMRB atom name for a given residue and PDB atom name.
+        private String lookUpEntry(String acidName, String pdbAtomName)
+        {
+            if (doDebugOutput(15)) {
+                System.out.println("S2DmmCifIfc.Pdb2Bmrb.lookUpEntry(" +
+                                   acidName + ", " + pdbAtomName + ")");
+            }
+
+            String bmrbAtomName = null;
+            Hashtable acid = (Hashtable)_acids.get(acidName);
+            if (acid != null) {
+                bmrbAtomName = (String)acid.get(pdbAtomName);
+            }
+
+            return bmrbAtomName;
+        }
     }
 
     //-------------------------------------------------------------------
@@ -788,12 +788,12 @@ public class S2DmmCifIfc extends S2DStarIfc {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

@@ -56,19 +56,19 @@ public class S2DNmrStarLacsIfcFactory extends S2DNmrStarIfcFactory {
     //-------------------------------------------------------------------
     public String getFileName(String bmrbId)
     {
-	String name = S2DUtils.replace(S2DNames.LACS_NAME_TEMPLATE, "*",
-	  bmrbId);
+        String name = S2DUtils.replace(S2DNames.LACS_NAME_TEMPLATE, "*",
+                                       bmrbId);
 
-	return name;
+        return name;
     }
 
     //-------------------------------------------------------------------
     public String getURLName(String fileName) throws S2DException
     {
-	String url = S2DNames.LACS_URL + fileName;
-	S2DUtils.tryUrl(url);
+        String url = S2DNames.LACS_URL + fileName;
+        S2DUtils.tryUrl(url);
 
-	return url;
+        return url;
     }
 
     //===================================================================
@@ -81,14 +81,14 @@ public class S2DNmrStarLacsIfcFactory extends S2DNmrStarIfcFactory {
     protected S2DNmrStarIfc create(InputStream is) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarLacsIfcFactory.create()");
-	}
+            System.out.println("S2DNmrStarLacsIfcFactory.create()");
+        }
 
-	StarNode starTree = S2DStarIfc.parseStar(is);
+        StarNode starTree = S2DStarIfc.parseStar(is);
 
-	S2DNmrStarIfc ifc = new S2DNmrStarLacsIfc(starTree);
+        S2DNmrStarIfc ifc = new S2DNmrStarLacsIfc(starTree);
 
-	return ifc;
+        return ifc;
     }
 
     //===================================================================
@@ -99,12 +99,12 @@ public class S2DNmrStarLacsIfcFactory extends S2DNmrStarIfcFactory {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

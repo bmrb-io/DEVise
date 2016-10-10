@@ -89,64 +89,64 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     // NMR-STAR 2.1 file.
     public boolean isNmrStar21()
     {
-	boolean result = false;
+        boolean result = false;
 
-	try {
-	    SaveFrameNode frame = getOneDataFrameByCat(ENTRY_INFO);
+        try {
+            SaveFrameNode frame = getOneDataFrameByCat(ENTRY_INFO);
 
-	    _versionStr = getTagValue(frame, NMR_STAR_VERSION);
+            _versionStr = getTagValue(frame, NMR_STAR_VERSION);
 
-	    if (_versionStr.startsWith("2.1")) {
-	        result = true;
-	    }
-	} catch(S2DException ex) {
-	    System.err.println("Warning: S2DException in isNmrStar21: " +
-	      ex.toString());
-	}
+            if (_versionStr.startsWith("2.1")) {
+                result = true;
+            }
+        } catch(S2DException ex) {
+            System.err.println("Warning: S2DException in isNmrStar21: " +
+                               ex.toString());
+        }
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarIfc.isNmrStar21() returns " + result);
-	}
+            System.out.println("S2DNmrStarIfc.isNmrStar21() returns " + result);
+        }
 
-    	return result;
+        return result;
     }
 
     // ----------------------------------------------------------------------
     /** Get a Vector of the entity frames corresponding to each entity
         assembly ID (note that if we have homodimers, the same entity
-	frame will be in the Vector more than once).
-	@return: the Vector of entity save frames
+    frame will be in the Vector more than once).
+    @return: the Vector of entity save frames
     */
     public Vector getAllEntityAssemblyFrames() throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("  S2DNmrStar21Ifc.getAllEntityAssemblyFrames()");
-	}
+            System.out.println("  S2DNmrStar21Ifc.getAllEntityAssemblyFrames()");
+        }
 
-	Vector result = new Vector();
+        Vector result = new Vector();
 
-	try {
-	    SaveFrameNode molSysFrame = getOneDataFrameByCat(
-	      MOL_SYSTEM_SF_CAT, MOL_SYSTEM);
+        try {
+            SaveFrameNode molSysFrame = getOneDataFrameByCat(
+                                            MOL_SYSTEM_SF_CAT, MOL_SYSTEM);
 
-	    String[] entityLabels = getFrameValues(molSysFrame, MOL_LABEL,
-	      MOL_LABEL);
-	    for (int frameNum = 0; frameNum < entityLabels.length; frameNum++) {
-	        String frameName = SAVE_FRAME_PREFIX + entityLabels[frameNum];
-	        SaveFrameNode frame = getFrameByName(frameName);
-	        result.addElement(frame);
-	    }
-	} catch (S2DException ex) {
-	    // We probably get here if there is no molecular_system save
-	    // frame (e.g., some visualization server uploads).
-	    System.err.println(
-	      "Warning in S2DNmrStar21Ifc.getAllEntityAssemblyFrames(): " +
-	      ex.toString());
-	    Enumeration tmpList = getAllEntityFrames();
-	    while (tmpList.hasMoreElements()) {
-	        result.addElement(tmpList.nextElement());
-	    }
-	}
+            String[] entityLabels = getFrameValues(molSysFrame, MOL_LABEL,
+                                                   MOL_LABEL);
+            for (int frameNum = 0; frameNum < entityLabels.length; frameNum++) {
+                String frameName = SAVE_FRAME_PREFIX + entityLabels[frameNum];
+                SaveFrameNode frame = getFrameByName(frameName);
+                result.addElement(frame);
+            }
+        } catch (S2DException ex) {
+            // We probably get here if there is no molecular_system save
+            // frame (e.g., some visualization server uploads).
+            System.err.println(
+                "Warning in S2DNmrStar21Ifc.getAllEntityAssemblyFrames(): " +
+                ex.toString());
+            Enumeration tmpList = getAllEntityFrames();
+            while (tmpList.hasMoreElements()) {
+                result.addElement(tmpList.nextElement());
+            }
+        }
 
         return result;
     }
@@ -155,55 +155,55 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     // Get the sample info (sample and sample conditions) save frames
     // associated with the given save frame.
     public Vector getSampleInfoSaveFrames(SaveFrameNode frame,
-      int type)
+                                          int type)
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStar21Ifc.getSampleInfoSaveFrames(" +
-	      getFrameName(frame) + ", " + type + ")");
-	}
-	Vector result = new Vector();
+            System.out.println("S2DNmrStar21Ifc.getSampleInfoSaveFrames(" +
+                               getFrameName(frame) + ", " + type + ")");
+        }
+        Vector result = new Vector();
 
-	String tagName = null;
+        String tagName = null;
 
-	switch (type) {
-	case TYPE_SAMPLE:
-	    tagName = SAMPLE_LABEL;
-	    break;
+        switch (type) {
+        case TYPE_SAMPLE:
+            tagName = SAMPLE_LABEL;
+            break;
 
-	case TYPE_SAMPLE_COND:
-	    tagName = SAMPLE_CONDITIONS_LABEL;
-	    break;
+        case TYPE_SAMPLE_COND:
+            tagName = SAMPLE_CONDITIONS_LABEL;
+            break;
 
-	default:
-	    System.err.println("Illegal sample info type: " + type);
-	    break;
-	}
+        default:
+            System.err.println("Illegal sample info type: " + type);
+            break;
+        }
 
-	Vector frameNames = new Vector();
+        Vector frameNames = new Vector();
 
-	if (tagName != null) {
-	    frameNames = getSingleOrLoopValue(frame, tagName);
-	}
+        if (tagName != null) {
+            frameNames = getSingleOrLoopValue(frame, tagName);
+        }
 
-	// Find the actual save frame objects corresponding to the names
-	// we have.
-	for (int index = 0; index < frameNames.size(); index++) {
-	    String tmpName = (String)frameNames.elementAt(index);
-	    if (!tmpName.equals(".")) {
-	        if (tmpName.charAt(0) == '$') {
-		    tmpName = tmpName.substring(1);
-		}
-	        try {
-		    String frameName = "save_" + tmpName;
-	            result.addElement(getFrameByName(frameName));
-	        } catch (S2DException ex) {
-	            System.err.println("Error getting save frame: " +
-		  ex.toString());
-	        }
-	    }
-	}
+        // Find the actual save frame objects corresponding to the names
+        // we have.
+        for (int index = 0; index < frameNames.size(); index++) {
+            String tmpName = (String)frameNames.elementAt(index);
+            if (!tmpName.equals(".")) {
+                if (tmpName.charAt(0) == '$') {
+                    tmpName = tmpName.substring(1);
+                }
+                try {
+                    String frameName = "save_" + tmpName;
+                    result.addElement(getFrameByName(frameName));
+                } catch (S2DException ex) {
+                    System.err.println("Error getting save frame: " +
+                                       ex.toString());
+                }
+            }
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -228,24 +228,24 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     {
         if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStar21Ifc.refersToProtein(" +
-	      frame.getLabel() + " (" + entityID + "))");
+                               frame.getLabel() + " (" + entityID + "))");
         }
 
         boolean result = false;
 
-	//TEMP -- check that _Saveframe_category is assigned_chemical_shifts?
+        //TEMP -- check that _Saveframe_category is assigned_chemical_shifts?
 
-	try {
+        try {
             SaveFrameNode compFrame = getEntityFrame(frame, entityID);
             result = isAProtein(compFrame);
 
-	} catch (S2DException ex) {
-	    if (doDebugOutput(11)) {
-	        System.err.println("S2DException checking for protein: " +
-	          ex.toString());
-	    }
-	    result = false;
-	}
+        } catch (S2DException ex) {
+            if (doDebugOutput(11)) {
+                System.err.println("S2DException checking for protein: " +
+                                   ex.toString());
+            }
+            result = false;
+        }
 
         return result;
     }
@@ -260,30 +260,30 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     {
         if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStar21Ifc.refersToPolymer(" +
-	      frame.getLabel() + " (" + entityID + "))");
+                               frame.getLabel() + " (" + entityID + "))");
         }
 
         boolean result = false;
 
-	//TEMP -- check that _Saveframe_category is assigned_chemical_shifts?
+        //TEMP -- check that _Saveframe_category is assigned_chemical_shifts?
 
-	try {
+        try {
             SaveFrameNode compFrame = getEntityFrame(frame, entityID);
-	    result = (getPolymerType(compFrame) !=
-	      S2DResidues.POLYMER_TYPE_NONE);
+            result = (getPolymerType(compFrame) !=
+                      S2DResidues.POLYMER_TYPE_NONE);
 
-	} catch (S2DException ex) {
-	    if (doDebugOutput(11)) {
-	        System.err.println("S2DException checking for polymer: " +
-	          ex.toString());
-	    }
-	    // If we're not sure, treat it as a polymer.
-	    result = true;
-	}
+        } catch (S2DException ex) {
+            if (doDebugOutput(11)) {
+                System.err.println("S2DException checking for polymer: " +
+                                   ex.toString());
+            }
+            // If we're not sure, treat it as a polymer.
+            result = true;
+        }
 
         if (doDebugOutput(12)) {
             System.out.println(
-	      "  S2DNmrStar21Ifc.refersToPolymer() returns " + result);
+                "  S2DNmrStar21Ifc.refersToPolymer() returns " + result);
         }
 
         return result;
@@ -299,39 +299,39 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     {
         if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStar21Ifc.getPolymerType(" +
-	      entityFrame.getLabel() + ")");
+                               entityFrame.getLabel() + ")");
         }
 
-    	int result = S2DResidues.POLYMER_TYPE_UNKNOWN;
+        int result = S2DResidues.POLYMER_TYPE_UNKNOWN;
 
-	String type = getOneFrameValueOrNull(entityFrame, ENTITY_TYPE);
+        String type = getOneFrameValueOrNull(entityFrame, ENTITY_TYPE);
         if (doDebugOutput(13)) {
-	    System.out.println("Entity type: " + type);
-	}
-	if (type == null) {
-	    result = S2DResidues.POLYMER_TYPE_UNKNOWN;
-	} else if (type.equalsIgnoreCase(POLYMER) ||
-	  type.equalsIgnoreCase(MONOMERIC_POLYMER)) {
-	    String polymerType = getMolPolymerClass(entityFrame);
-	    if (S2DNames.PROTEIN.equalsIgnoreCase(polymerType)) {
-	    	result = S2DResidues.POLYMER_TYPE_PROTEIN;
-	    }
-	    else if (DNA.equalsIgnoreCase(polymerType)) {
-	    	result = S2DResidues.POLYMER_TYPE_DNA;
-	    }
-	    else if (RNA.equalsIgnoreCase(polymerType)) {
-	    	result = S2DResidues.POLYMER_TYPE_RNA;
-	    }
-	} else {
-	    result = S2DResidues.POLYMER_TYPE_NONE;
-	}
+            System.out.println("Entity type: " + type);
+        }
+        if (type == null) {
+            result = S2DResidues.POLYMER_TYPE_UNKNOWN;
+        } else if (type.equalsIgnoreCase(POLYMER) ||
+                   type.equalsIgnoreCase(MONOMERIC_POLYMER)) {
+            String polymerType = getMolPolymerClass(entityFrame);
+            if (S2DNames.PROTEIN.equalsIgnoreCase(polymerType)) {
+                result = S2DResidues.POLYMER_TYPE_PROTEIN;
+            }
+            else if (DNA.equalsIgnoreCase(polymerType)) {
+                result = S2DResidues.POLYMER_TYPE_DNA;
+            }
+            else if (RNA.equalsIgnoreCase(polymerType)) {
+                result = S2DResidues.POLYMER_TYPE_RNA;
+            }
+        } else {
+            result = S2DResidues.POLYMER_TYPE_NONE;
+        }
 
         if (doDebugOutput(12)) {
             System.out.println(
-	      "    S2DNmrStar21Ifc.getPolymerType() result: " + result);
+                "    S2DNmrStar21Ifc.getPolymerType() result: " + result);
         }
 
-	return result;
+        return result;
     }
 
     // ----------------------------------------------------------------------
@@ -341,18 +341,18 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
      * @return an array of the entity assembly IDs
      */
     public int[] getCoordEntityAssemblyIDs(SaveFrameNode frame)
-      throws S2DException
+    throws S2DException
     {
         String[] sysCompNames = getFrameValues(frame, ATOM_COORD_X,
-	  MOL_SYS_COMP_NAME);
+                                               MOL_SYS_COMP_NAME);
 
         int[] entityAssemblyIDs = new int[sysCompNames.length];
-	for (int index = 0; index < entityAssemblyIDs.length; index++) {
-	    entityAssemblyIDs[index] =
-	      molSysComp2EntAssemID(sysCompNames[index]);
-	}
+        for (int index = 0; index < entityAssemblyIDs.length; index++) {
+            entityAssemblyIDs[index] =
+                molSysComp2EntAssemID(sysCompNames[index]);
+        }
 
-	return entityAssemblyIDs;
+        return entityAssemblyIDs;
     }
 
     // ----------------------------------------------------------------------
@@ -360,53 +360,53 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     // save frame.  (The entity save frame has the residue count, residue
     // sequence list, etc).
     public SaveFrameNode getEntityFrame(SaveFrameNode frame, String entityID)
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStar21Ifc.getEntityFrame(" +
-	      getFrameName(frame) + " (" + entityID + "))");
+                               getFrameName(frame) + " (" + entityID + "))");
         }
 
         SaveFrameNode result = null;
 
-	//
-	// Get the _Mol_system_component_name value in the given save frame.
-	//
-	String molSysComp = getMolSysComp(frame);
-
-	//
-	// Find the molecular_system save frame.
-	//
-	SaveFrameNode molSys = getOneDataFrameByCat(
-	  DEFAULT_SAVEFRAME_CATEGORY, MOL_SYSTEM);
-
-	//
-	// Now find the _Mol_system_component_name value (that we got up
-	// above) in the appropriate loop of this save frame, and save
-	// the corresponding _Mol_label value.
-	//
-	String[] molSysComps = getFrameValues(molSys, MOL_SYS_COMP_NAME,
-	  MOL_SYS_COMP_NAME);
-	String[] molLabels = getFrameValues(molSys, MOL_SYS_COMP_NAME,
-	  MOL_LABEL);
-
-        String molLabel = null;
-	for (int index = 0; index < molSysComps.length; ++index) {
-	    if (molSysComps[index].equalsIgnoreCase(molSysComp)) {
-	        molLabel = molLabels[index];
-	    }
-	}
+        //
+        // Get the _Mol_system_component_name value in the given save frame.
+        //
+        String molSysComp = getMolSysComp(frame);
 
         //
-	// Get the corresponding save frame.
-	//
-	String frameName = SAVE_FRAME_PREFIX + molLabel;
-	result = getFrameByName(frameName);
+        // Find the molecular_system save frame.
+        //
+        SaveFrameNode molSys = getOneDataFrameByCat(
+                                   DEFAULT_SAVEFRAME_CATEGORY, MOL_SYSTEM);
+
+        //
+        // Now find the _Mol_system_component_name value (that we got up
+        // above) in the appropriate loop of this save frame, and save
+        // the corresponding _Mol_label value.
+        //
+        String[] molSysComps = getFrameValues(molSys, MOL_SYS_COMP_NAME,
+                                              MOL_SYS_COMP_NAME);
+        String[] molLabels = getFrameValues(molSys, MOL_SYS_COMP_NAME,
+                                            MOL_LABEL);
+
+        String molLabel = null;
+        for (int index = 0; index < molSysComps.length; ++index) {
+            if (molSysComps[index].equalsIgnoreCase(molSysComp)) {
+                molLabel = molLabels[index];
+            }
+        }
+
+        //
+        // Get the corresponding save frame.
+        //
+        String frameName = SAVE_FRAME_PREFIX + molLabel;
+        result = getFrameByName(frameName);
 
         if (doDebugOutput(12)) {
             System.out.println(
-	      "  S2DNmrStar21Ifc.getEntityFrame() returns " +
-	      result.getLabel());
+                "  S2DNmrStar21Ifc.getEntityFrame() returns " +
+                result.getLabel());
         }
 
         return result;
@@ -423,11 +423,11 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
      * @return A vector of unique values (as Strings)
      */
     public Vector getUniqueTagValues(SaveFrameNode frame,
-      String tagName) throws S2DException
+                                     String tagName) throws S2DException
     {
         Vector result = new Vector();
-	result.add("");
-	return result;
+        result.add("");
+        return result;
     }
 
     // ----------------------------------------------------------------------
@@ -440,32 +440,32 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
      * @return The entity assembly ID (int)
      */
     public int getEntityAssemblyID(SaveFrameNode frame, String entAssemIDStr)
-      throws S2DException
+    throws S2DException
     {
-	int entityAssemblyID = 0;
+        int entityAssemblyID = 0;
 
-	try {
-	    //
-	    // Get the _Mol_system_component_name value in the given
-	    // save frame.
-	    //
-	    String molSysComp = getMolSysComp(frame);
+        try {
+            //
+            // Get the _Mol_system_component_name value in the given
+            // save frame.
+            //
+            String molSysComp = getMolSysComp(frame);
 
-	    // 
-	    // Now translate the molecular system component name to
-	    // an entity assembly ID.
-	    //
+            //
+            // Now translate the molecular system component name to
+            // an entity assembly ID.
+            //
             entityAssemblyID = molSysComp2EntAssemID(molSysComp);
 
-	} catch (S2DException ex) {
-	    // We probably get here if there is no
-	    // _Mol_system_component_Name tag in the chemical shifts
-	    // save frame(s) (e.g., some visualization server uploads).
-	    System.out.println(
-	      "Warning in S2DNmrStar21Ifc.getEntityAssemblyID(): " +
-	        ex.toString() + "; assuming default value of 1");
-	    entityAssemblyID = 1;
-	}
+        } catch (S2DException ex) {
+            // We probably get here if there is no
+            // _Mol_system_component_Name tag in the chemical shifts
+            // save frame(s) (e.g., some visualization server uploads).
+            System.out.println(
+                "Warning in S2DNmrStar21Ifc.getEntityAssemblyID(): " +
+                ex.toString() + "; assuming default value of 1");
+            entityAssemblyID = 1;
+        }
 
         return entityAssemblyID;
     }
@@ -478,37 +478,37 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
      */
     int molSysComp2EntAssemID(String molSysComp) throws S2DException
     {
-	int entityAssemblyID = 0;
+        int entityAssemblyID = 0;
 
         try {
-	    //
-	    // Find the molecular_system save frame.
-	    //
-	    SaveFrameNode molSys = getOneDataFrameByCat(
-	      DEFAULT_SAVEFRAME_CATEGORY, MOL_SYSTEM);
+            //
+            // Find the molecular_system save frame.
+            //
+            SaveFrameNode molSys = getOneDataFrameByCat(
+                                       DEFAULT_SAVEFRAME_CATEGORY, MOL_SYSTEM);
 
-	    //
-	    // Now find the _Mol_system_component_name value (that we got up
-	    // above) in the appropriate loop of this save frame.
-	    //
-	    String[] molSysComps = getFrameValues(molSys, MOL_SYS_COMP_NAME,
-	      MOL_SYS_COMP_NAME);
+            //
+            // Now find the _Mol_system_component_name value (that we got up
+            // above) in the appropriate loop of this save frame.
+            //
+            String[] molSysComps = getFrameValues(molSys, MOL_SYS_COMP_NAME,
+                                                  MOL_SYS_COMP_NAME);
 
-	    for (int index = 0; index < molSysComps.length; ++index) {
-	        if (molSysComps[index].equalsIgnoreCase(molSysComp)) {
-	            entityAssemblyID = index + 1;
-	        }
+            for (int index = 0; index < molSysComps.length; ++index) {
+                if (molSysComps[index].equalsIgnoreCase(molSysComp)) {
+                    entityAssemblyID = index + 1;
+                }
             }
 
-	    if (entityAssemblyID == 0) {
-	    	throw new S2DError("Molecular system component " +
-		  molSysComp + " not found");
-	    }
+            if (entityAssemblyID == 0) {
+                throw new S2DError("Molecular system component " +
+                                   molSysComp + " not found");
+            }
         } catch (S2DException ex) {
-	    System.err.println(ex.toString());
-	    throw new S2DError("Error translating " + molSysComp +
-	      " to entity assembly ID");
-	}
+            System.err.println(ex.toString());
+            throw new S2DError("Error translating " + molSysComp +
+                               " to entity assembly ID");
+        }
 
         return entityAssemblyID;
     }
@@ -521,7 +521,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
      */
     public String entAssemID2entID(String entityAssemblyID)
     {
-    	return "";
+        return "";
     }
 
     // ----------------------------------------------------------------------
@@ -532,7 +532,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
      */
     public String entID2entAssemID(String entityID)
     {
-    	return "";
+        return "";
     }
 
     //===================================================================
@@ -543,37 +543,37 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     // the STAR file represented by starTree.
     protected S2DNmrStar21Ifc(StarNode starTree) throws S2DException
     {
-	super(starTree);
+        super(starTree);
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStar21Ifc.S2DNmrStar21Ifc()");
-	}
+            System.out.println("S2DNmrStar21Ifc.S2DNmrStar21Ifc()");
+        }
 
-	setStarNames();
+        setStarNames();
 
-    	//TEMP
+        //TEMP
     }
 
     //-------------------------------------------------------------------
-    // Get either the _Mol_system_component_name or 
+    // Get either the _Mol_system_component_name or
     // _Delta_CS_Mol_system_component_name value from the given save frame.
     protected String getMolSysComp(SaveFrameNode frame) throws S2DError
     {
-	String molSysComp;
+        String molSysComp;
         try {
-	    molSysComp = getOneFrameValueStrict(frame, MOL_SYS_COMP_NAME);
-	} catch (Exception ex) {
-	    try {
-	        molSysComp = getOneFrameValueStrict(frame,
-		  DELTA_SHIFT_MOL_SYS_COMP_NAME);
-	    } catch(Exception ex2) {
-	        throw new S2DError("Unable to get one value for either " +
-	          MOL_SYS_COMP_NAME + " or " + DELTA_SHIFT_MOL_SYS_COMP_NAME +
-	          " in save frame " + getFrameName(frame));
-	    }
-	}
+            molSysComp = getOneFrameValueStrict(frame, MOL_SYS_COMP_NAME);
+        } catch (Exception ex) {
+            try {
+                molSysComp = getOneFrameValueStrict(frame,
+                                                    DELTA_SHIFT_MOL_SYS_COMP_NAME);
+            } catch(Exception ex2) {
+                throw new S2DError("Unable to get one value for either " +
+                                   MOL_SYS_COMP_NAME + " or " + DELTA_SHIFT_MOL_SYS_COMP_NAME +
+                                   " in save frame " + getFrameName(frame));
+            }
+        }
 
-	return molSysComp;
+        return molSysComp;
     }
 
     //-------------------------------------------------------------------
@@ -586,30 +586,30 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
      */
     public SaveFrameNode getSpartaFrame(boolean isAvg)
     {
-	String categoryName = null;
-	if (isAvg) {
-	    categoryName = DELTA_CHEM_SHIFTS_AVG;
-	} else {
-	    categoryName = DELTA_CHEM_SHIFTS;
-	}
-
-	SaveFrameNode spartaFrame = null;
-
-	Enumeration frameList = getDataFramesByCat(DELTA_SHIFT_SF_CAT,
-	  categoryName);
-
-	while (frameList.hasMoreElements()) {
-	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    if (spartaFrame != null) {
-		String type = isAvg ? "average" : "single";
-		System.err.println(new S2DWarning("More than one SPARTA ("
-		  + type + ") save frame found; only using first one"));
-	    } else {
-	        spartaFrame = frame;
-	    }
+        String categoryName = null;
+        if (isAvg) {
+            categoryName = DELTA_CHEM_SHIFTS_AVG;
+        } else {
+            categoryName = DELTA_CHEM_SHIFTS;
         }
 
-	return spartaFrame;
+        SaveFrameNode spartaFrame = null;
+
+        Enumeration frameList = getDataFramesByCat(DELTA_SHIFT_SF_CAT,
+                                categoryName);
+
+        while (frameList.hasMoreElements()) {
+            SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+            if (spartaFrame != null) {
+                String type = isAvg ? "average" : "single";
+                System.err.println(new S2DWarning("More than one SPARTA ("
+                                                  + type + ") save frame found; only using first one"));
+            } else {
+                spartaFrame = frame;
+            }
+        }
+
+        return spartaFrame;
     }
 
     //===================================================================
@@ -619,20 +619,20 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     // Set the tag names and values to work for NMR-Star files.
     private void setStarNames()
     {
-	ABBREV_COMMON = "_Abbreviation_common";
-	ASSEMBLY_DB_ACC_CODE = "_Database_accession_code";
-	ASSEMBLY_DB_NAME = "_Database_name";
+        ABBREV_COMMON = "_Abbreviation_common";
+        ASSEMBLY_DB_ACC_CODE = "_Database_accession_code";
+        ASSEMBLY_DB_NAME = "_Database_name";
         ATOM_COORD_ATOM_NAME = "_Atom_name";
         ATOM_COORD_ATOM_TYPE = "_Atom_type";
         ATOM_COORD_RES_LABEL = "_Residue_label";
         ATOM_COORD_RES_SEQ_CODE = "_Residue_seq_code";
         ATOM_COORD_SAVE_FRAME = "representative_structure";//TEMP?
-	ATOM_COORD_SF_CAT = "_Saveframe_category";
+        ATOM_COORD_SF_CAT = "_Saveframe_category";
         ATOM_COORD_X = "_Atom_coord_x";
         ATOM_COORD_Y = "_Atom_coord_y";
         ATOM_COORD_Z = "_Atom_coord_z";
 
-	CHEM_SHIFT_AMBIG_CODE = "_Chem_shift_ambiguity_code";
+        CHEM_SHIFT_AMBIG_CODE = "_Chem_shift_ambiguity_code";
         CHEM_SHIFT_ATOM_NAME = "_Atom_name";
         CHEM_SHIFT_ATOM_TYPE = "_Atom_type";
         CHEM_SHIFT_RES_LABEL = "_Residue_label";
@@ -640,8 +640,8 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
         CHEM_SHIFT_SF_CAT = "_Saveframe_category";
         CHEM_SHIFT_VALUE = "_Chem_shift_value";
 
-	CONCENTRATION_UNITS = "_Concentration_value_units";
-	CONCENTRATION_VALUE = "_Concentration_value";
+        CONCENTRATION_UNITS = "_Concentration_value_units";
+        CONCENTRATION_VALUE = "_Concentration_value";
 
         COUPLING_ATOM_NAME_1 = "_Atom_one_name";
         COUPLING_ATOM_NAME_2 = "_Atom_two_name";
@@ -654,68 +654,68 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
         COUPLING_RES_SEQ_CODE_2 = "_Atom_two_residue_seq_code";
         COUPLING_SF_CAT = "_Saveframe_category";
 
-	DEFAULT_SAVEFRAME_CATEGORY = "_Saveframe_category";
-	DELTA_CHEM_SHIFTS = "delta_chem_shifts";
-	DELTA_CHEM_SHIFTS_AVG = "delta_chem_shifts_average";
-	DELTA_SHIFT_SF_CAT = "_Saveframe_category";
-	DELTA_SHIFT_ATOM_NAME = "_Delta_CS_Atom_name";
-	DELTA_SHIFT_ATOM_TYPE = "_Delta_CS_Atom_type";
-	DELTA_SHIFT_MODEL_NUM = "_Delta_CS_Conformer_ID";
-	DELTA_SHIFT_MOL_SYS_COMP_NAME = "_Delta_CS_Mol_system_component_name";
-	DELTA_SHIFT_RES_LABEL = "_Delta_CS_Residue_label";
-	DELTA_SHIFT_RES_SEQ_CODE = "_Delta_CS_Residue_seq_code";
-	DELTA_SHIFT_VALUE = "_Delta_CS_Delta_CS_value";
-	DNA = "DNA";
+        DEFAULT_SAVEFRAME_CATEGORY = "_Saveframe_category";
+        DELTA_CHEM_SHIFTS = "delta_chem_shifts";
+        DELTA_CHEM_SHIFTS_AVG = "delta_chem_shifts_average";
+        DELTA_SHIFT_SF_CAT = "_Saveframe_category";
+        DELTA_SHIFT_ATOM_NAME = "_Delta_CS_Atom_name";
+        DELTA_SHIFT_ATOM_TYPE = "_Delta_CS_Atom_type";
+        DELTA_SHIFT_MODEL_NUM = "_Delta_CS_Conformer_ID";
+        DELTA_SHIFT_MOL_SYS_COMP_NAME = "_Delta_CS_Mol_system_component_name";
+        DELTA_SHIFT_RES_LABEL = "_Delta_CS_Residue_label";
+        DELTA_SHIFT_RES_SEQ_CODE = "_Delta_CS_Residue_seq_code";
+        DELTA_SHIFT_VALUE = "_Delta_CS_Delta_CS_value";
+        DNA = "DNA";
 
-	ENTITY_DB_ACC_CODE = "_Database_accession_code";
-	ENTITY_DB_NAME = "_Database_name";
-	ENTITY_POLYMER_TYPE = "_Mol_polymer_class";
-	ENTITY_RESIDUE_COUNT = "_Residue_count";
-	ENTITY_SEQ_1LETTER = "_Mol_residue_sequence";
-	ENTITY_RES_SEQ_CODE = "_Residue_seq_code";
-	ENTITY_RES_LABEL = "_Residue_label";
-	ENTITY_TYPE = "_Mol_type";
-	ENTRY_SF_CAT = "_Saveframe_category";
-	ENTRY_TITLE = "_Entry_title";
+        ENTITY_DB_ACC_CODE = "_Database_accession_code";
+        ENTITY_DB_NAME = "_Database_name";
+        ENTITY_POLYMER_TYPE = "_Mol_polymer_class";
+        ENTITY_RESIDUE_COUNT = "_Residue_count";
+        ENTITY_SEQ_1LETTER = "_Mol_residue_sequence";
+        ENTITY_RES_SEQ_CODE = "_Residue_seq_code";
+        ENTITY_RES_LABEL = "_Residue_label";
+        ENTITY_TYPE = "_Mol_type";
+        ENTRY_SF_CAT = "_Saveframe_category";
+        ENTRY_TITLE = "_Entry_title";
 
-	HETERONUCLEAR_NOE = "heteronuclear_NOE";
-	HET_NOE_ATOM_1_ATOM_NAME = "_Atom_one_atom_name";
-	HET_NOE_ATOM_2_ATOM_NAME = "_Atom_two_atom_name";
-	HET_NOE_RES_LABEL = "_Residue_label";
-	HET_NOE_RES_SEQ_CODE = "_Residue_seq_code";
+        HETERONUCLEAR_NOE = "heteronuclear_NOE";
+        HET_NOE_ATOM_1_ATOM_NAME = "_Atom_one_atom_name";
+        HET_NOE_ATOM_2_ATOM_NAME = "_Atom_two_atom_name";
+        HET_NOE_RES_LABEL = "_Residue_label";
+        HET_NOE_RES_SEQ_CODE = "_Residue_seq_code";
         HET_NOE_SF_CAT = "_Saveframe_category";
-	HET_NOE_SPEC_FREQ_1H = "_Spectrometer_frequency_1H";
+        HET_NOE_SPEC_FREQ_1H = "_Spectrometer_frequency_1H";
         HET_NOE_VALUE = "_Heteronuclear_NOE_value";
         HET_NOE_VALUE_ERR = "_Heteronuclear_NOE_value_error";
 
-	MOL_LABEL = "_Mol_label";
-	MOL_SYSTEM = "molecular_system";
-	MOL_SYSTEM_NAME = "_Mol_system_name";
-	MOL_SYSTEM_SF_CAT = "_Saveframe_category";
-	MOL_SYS_COMP_NAME = "_Mol_system_component_name";
-	MONOMERIC_POLYMER_SF_CAT = "_Saveframe_category";
-	MONOMERIC_POLYMER = "monomeric_polymer";
+        MOL_LABEL = "_Mol_label";
+        MOL_SYSTEM = "molecular_system";
+        MOL_SYSTEM_NAME = "_Mol_system_name";
+        MOL_SYSTEM_SF_CAT = "_Saveframe_category";
+        MOL_SYS_COMP_NAME = "_Mol_system_component_name";
+        MONOMERIC_POLYMER_SF_CAT = "_Saveframe_category";
+        MONOMERIC_POLYMER = "monomeric_polymer";
 
         NMR_STAR_VERSION = "_NMR_STAR_version";
 
-	//TEMPTEMP -- make sure that all of these are correct.
-	ORDER_ATOM_NAME = "_Atom_name";
-	ORDER_PARAMETERS = "S2_parameters";
-	ORDER_RES_LABEL = "_Residue_label";
-	ORDER_RES_SEQ_CODE = "_Residue_seq_code";
-	ORDER_SF_CAT = "_Saveframe_category";
-	ORDER_VALUE = "_S2_value";
-	ORDER_VALUE_ERR = "_S2_value_fit_error";
+        //TEMPTEMP -- make sure that all of these are correct.
+        ORDER_ATOM_NAME = "_Atom_name";
+        ORDER_PARAMETERS = "S2_parameters";
+        ORDER_RES_LABEL = "_Residue_label";
+        ORDER_RES_SEQ_CODE = "_Residue_seq_code";
+        ORDER_SF_CAT = "_Saveframe_category";
+        ORDER_VALUE = "_S2_value";
+        ORDER_VALUE_ERR = "_S2_value_fit_error";
 
-	PEAK_LIST = "spectral_peak_list";
-	PEAK_LIST_SF_CAT = "_Saveframe_category";
-	PEAK_LIST_TEXT = "_Text_data";
+        PEAK_LIST = "spectral_peak_list";
+        PEAK_LIST_SF_CAT = "_Saveframe_category";
+        PEAK_LIST_TEXT = "_Text_data";
 
-	RNA = "RNA";
+        RNA = "RNA";
 
-	SAMPLE_CONDITIONS_LABEL = "_Sample_conditions_label";
-	SAMPLE_DETAILS = "_Details";
-	SAMPLE_LABEL = "_Sample_label";
+        SAMPLE_CONDITIONS_LABEL = "_Sample_conditions_label";
+        SAMPLE_DETAILS = "_Details";
+        SAMPLE_LABEL = "_Sample_label";
 
         SEQ_SUBJ_LENGTH = "_Sequence_subject_length";
         SEQ_IDENTITY = "_Sequence_identity";
@@ -725,7 +725,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
         T1_RELAX_SF_CAT = "_Saveframe_category";
         T1_RES_LABEL = "_Residue_label";
         T1_RES_SEQ_CODE = "_Residue_seq_code";
-	T1_SPEC_FREQ_1H = "_Spectrometer_frequency_1H";
+        T1_SPEC_FREQ_1H = "_Spectrometer_frequency_1H";
         T1_VALUE = "_T1_value";
         T1_VALUE_ERR = "_T1_value_error";
 
@@ -734,13 +734,13 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
         T2_RELAX_SF_CAT = "_Saveframe_category";
         T2_RES_LABEL = "_Residue_label";
         T2_RES_SEQ_CODE = "_Residue_seq_code";
-	T2_SPEC_FREQ_1H = "_Spectrometer_frequency_1H";
+        T2_SPEC_FREQ_1H = "_Spectrometer_frequency_1H";
         T2_VALUE = "_T2_value";
         T2_VALUE_ERR = "_T2_value_error";
 
-	VARIABLE_TYPE = "_Variable_type";
-	VARIABLE_UNITS = "_Variable_value_units";
-	VARIABLE_VALUE = "_Variable_value";
+        VARIABLE_TYPE = "_Variable_type";
+        VARIABLE_UNITS = "_Variable_value_units";
+        VARIABLE_VALUE = "_Variable_value";
     }
 
     //-------------------------------------------------------------------
@@ -748,12 +748,12 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

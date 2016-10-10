@@ -87,17 +87,17 @@ public class S2DNmrStarRRIfcFactory extends S2DNmrStarIfcFactory {
     //-------------------------------------------------------------------
     public String getFileName(String pdbId)
     {
-	//TEMP -- is this what we want here??
-	return pdbId;
+        //TEMP -- is this what we want here??
+        return pdbId;
     }
 
     //-------------------------------------------------------------------
     public String getURLName(String fileName) throws S2DException
     {
-	String url = pdbIdToUrl(fileName);
-	S2DUtils.tryUrl(url);
+        String url = pdbIdToUrl(fileName);
+        S2DUtils.tryUrl(url);
 
-	return url;
+        return url;
     }
 
     //-------------------------------------------------------------------
@@ -109,49 +109,49 @@ public class S2DNmrStarRRIfcFactory extends S2DNmrStarIfcFactory {
      *   remediated restraints data.
      */
     protected static String pdbIdToUrl(String pdbId)
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarRRIfcFactory.pdbIdToUrl(" +
-	      pdbId + ")");
-	}
+            System.out.println("S2DNmrStarRRIfcFactory.pdbIdToUrl(" +
+                               pdbId + ")");
+        }
 
-	pdbId = pdbId.toLowerCase();
+        pdbId = pdbId.toLowerCase();
 
         String url = S2DUtils.replace(
-	  S2DNames.REMEDIATED_RESTRAINTS_TEMPLATE, "*", pdbId);
-	// This is so we can use the "divided" directory...
+                         S2DNames.REMEDIATED_RESTRAINTS_TEMPLATE, "*", pdbId);
+        // This is so we can use the "divided" directory...
         String id2 = pdbId.substring(1, 3);
         url = S2DUtils.replace(url, "@", id2);
 
-	// Throw an exception if the URL doesn't exist.
-	try {
-	    InputStream is = (new URL(url)).openStream(); 
-	    is.close();
-	} catch(IOException ex) {
-	    S2DMain._noMail = true;
-	    throw new S2DError("URL " + url + " doesn't exist (" +
-	      ex.toString() + ")");
-	}
+        // Throw an exception if the URL doesn't exist.
+        try {
+            InputStream is = (new URL(url)).openStream();
+            is.close();
+        } catch(IOException ex) {
+            S2DMain._noMail = true;
+            throw new S2DError("URL " + url + " doesn't exist (" +
+                               ex.toString() + ")");
+        }
 
         if (doDebugOutput(11)) {
-	    System.out.println("URL: " + url);
-	}
+            System.out.println("URL: " + url);
+        }
 
-	return url;
+        return url;
     }
 
     //-------------------------------------------------------------------
     // Factory method to create an S2DNmrStarRRIfc object based on
     // PDB ID.
     public S2DNmrStarRRIfc createFromId(String pdbId)
-      throws S2DException
+    throws S2DException
     {
         String urlName = getURLName(getFileName(pdbId));
 
         S2DNmrStarRRIfc ifc = createFromUrl(urlName);
 
-	return ifc;
+        return ifc;
     }
 
     //-------------------------------------------------------------------
@@ -160,28 +160,28 @@ public class S2DNmrStarRRIfcFactory extends S2DNmrStarIfcFactory {
     public S2DNmrStarRRIfc createFromUrl(String urlName) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarRRIfcFactory.createFromUrl(" +
-	      urlName + ")");
-	}
-	System.out.println("Using remediated restraints file " + urlName);
+            System.out.println("S2DNmrStarRRIfcFactory.createFromUrl(" +
+                               urlName + ")");
+        }
+        System.out.println("Using remediated restraints file " + urlName);
 
-	S2DNmrStarRRIfc ifc;
+        S2DNmrStarRRIfc ifc;
 
         try {
-	    URL url = new URL(urlName);
-	    InputStream is = url.openStream();
-	    
-	    ifc = (S2DNmrStarRRIfc)create(is);
+            URL url = new URL(urlName);
+            InputStream is = url.openStream();
 
-	} catch(Exception ex) {
-	    System.err.println("Exception (" + ex.toString() +
-	      ") parsing NMR-STAR file");
-	    String errMsg = "Unable to get data in star file " + urlName;
-	    System.err.println(errMsg);
+            ifc = (S2DNmrStarRRIfc)create(is);
+
+        } catch(Exception ex) {
+            System.err.println("Exception (" + ex.toString() +
+                               ") parsing NMR-STAR file");
+            String errMsg = "Unable to get data in star file " + urlName;
+            System.err.println(errMsg);
             throw new S2DError(errMsg);
-	}
+        }
 
-	return ifc;
+        return ifc;
     }
 
     //===================================================================
@@ -194,14 +194,14 @@ public class S2DNmrStarRRIfcFactory extends S2DNmrStarIfcFactory {
     protected S2DNmrStarIfc create(InputStream is) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarRRIfcFactory.create()");
-	}
+            System.out.println("S2DNmrStarRRIfcFactory.create()");
+        }
 
-	StarNode starTree = S2DStarIfc.parseStar(is);
+        StarNode starTree = S2DStarIfc.parseStar(is);
 
-	S2DNmrStarIfc ifc = new S2DNmrStarRRIfc(starTree);
+        S2DNmrStarIfc ifc = new S2DNmrStarRRIfc(starTree);
 
-	return ifc;
+        return ifc;
     }
 
     //===================================================================
@@ -212,12 +212,12 @@ public class S2DNmrStarRRIfcFactory extends S2DNmrStarIfcFactory {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

@@ -72,7 +72,7 @@ public class S2DNmrStarLacsIfc extends S2DNmrStarIfc {
      */
     public String version()
     {
-    	return "LACS";
+        return "LACS";
     }
 
     //-------------------------------------------------------------------
@@ -84,10 +84,10 @@ public class S2DNmrStarLacsIfc extends S2DNmrStarIfc {
         super(starTree);
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarLacsIfc.S2DNmrStarLacsIfc()");
-	}
+            System.out.println("S2DNmrStarLacsIfc.S2DNmrStarLacsIfc()");
+        }
 
-	setStarNames();
+        setStarNames();
     }
 
     //===================================================================
@@ -122,12 +122,12 @@ public class S2DNmrStarLacsIfc extends S2DNmrStarIfc {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

@@ -229,123 +229,123 @@ public class S2DProteinChemShift extends S2DChemShift {
     //-------------------------------------------------------------------
     // Constructor (for experimental chemical shifts).
     public S2DProteinChemShift(String name, String longName,
-      S2DNmrStarIfc star, SaveFrameNode frame, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, String entityAssemblyID,
-      S2DResidues residues) throws S2DException
+                               S2DNmrStarIfc star, SaveFrameNode frame, String dataDir,
+                               String sessionDir, S2DSummaryHtml summary, String entityAssemblyID,
+                               S2DResidues residues) throws S2DException
     {
         super(name, longName, star, frame, dataDir, sessionDir, summary,
-	  entityAssemblyID);
+              entityAssemblyID);
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DProteinChemShift.S2DProteinChemShift(" +
-	      name + ")");
-	}
+            System.out.println("S2DProteinChemShift.S2DProteinChemShift(" +
+                               name + ")");
+        }
 
-	getExperimentalValues(star, frame, entityAssemblyID, residues);
-	_resLabelsSh = residues.generateShortLabels(_residueLabels,
-	  residues.GetPolymerType());
+        getExperimentalValues(star, frame, entityAssemblyID, residues);
+        _resLabelsSh = residues.generateShortLabels(_residueLabels,
+                       residues.GetPolymerType());
 
-	CHEMSHIFT_FILE += "chemshift.txt";
+        CHEMSHIFT_FILE += "chemshift.txt";
         _refTable = new ShiftDataManager(CHEMSHIFT_FILE);
 
-	calculateDeltaShifts();
+        calculateDeltaShifts();
     }
 
     //-------------------------------------------------------------------
     // Write the deltashifts for this data.
     public void writeDeltashifts(int frameIndex, boolean append)
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DProteinChemShift.writeDeltashifts()");
-	}
+            System.out.println("S2DProteinChemShift.writeDeltashifts()");
+        }
 
-	if (append) {
-	    throw new S2DError("append should never be true for " +
-	      "S2DProteinChemShift.writeDeltashifts()!");
-	}
+        if (append) {
+            throw new S2DError("append should never be true for " +
+                               "S2DProteinChemShift.writeDeltashifts()!");
+        }
 
-	//
-	// Write the deltashift values to the appropriate data file.
-	//
+        //
+        // Write the deltashift values to the appropriate data file.
+        //
         FileWriter deltashiftWriter = null;
-	try {
-	    String fileName = _dataDir + File.separator + _name +
-	      S2DNames.DELTASHIFT_SUFFIX + frameIndex + S2DNames.DAT_SUFFIX;
+        try {
+            String fileName = _dataDir + File.separator + _name +
+                              S2DNames.DELTASHIFT_SUFFIX + frameIndex + S2DNames.DAT_SUFFIX;
             deltashiftWriter = S2DFileWriter.create(fileName);
 
-	    deltashiftWriter.write("# Data: delta shift values for " +
-	      _name + "\n");
-	    deltashiftWriter.write("# Schema: bmrb-DeltaShift\n");
+            deltashiftWriter.write("# Data: delta shift values for " +
+                                   _name + "\n");
+            deltashiftWriter.write("# Schema: bmrb-DeltaShift\n");
 
-	    deltashiftWriter.write("# Attributes: HA_DeltaShift; " +
-	      "C_DeltaShift; CA_DeltaShift; CB_DeltaShift; " +
-	      "Residue_seq_code; Residue_label; Entity_assembly_ID\n");
+            deltashiftWriter.write("# Attributes: HA_DeltaShift; " +
+                                   "C_DeltaShift; CA_DeltaShift; CB_DeltaShift; " +
+                                   "Residue_seq_code; Residue_label; Entity_assembly_ID\n");
 
             deltashiftWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                                   S2DMain.PEP_CGI_VERSION + "\n");
             deltashiftWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    deltashiftWriter.write("#\n");
+                                   S2DMain.getTimestamp() + "\n");
+            deltashiftWriter.write("#\n");
 
         } catch(IOException ex) {
-	    System.err.println("IOException writing deltashifts: " +
-	      ex.toString());
-	    throw new S2DError("Can't write deltashifts");
-	}
+            System.err.println("IOException writing deltashifts: " +
+                               ex.toString());
+            throw new S2DError("Can't write deltashifts");
+        }
 
-	try {
-	    int dsCount = 0;
+        try {
+            int dsCount = 0;
             for (int index = 0; index < _deltaShiftResLabels.length; ++index) {
-	        if (!_deltaShiftResLabels[index].equals("")) {
-		    dsCount++;
-		    deltashiftWriter.write(_haDeltaShifts[index] + " " +
-		      _cDeltaShifts[index] + " " +
-		      _caDeltaShifts[index] + " " +
-		      _cbDeltaShifts[index] + " " +
-		      index + " " +
-		      _deltaShiftResLabels[index] + " " +
-		      _entityAssemblyID + "\n");
-	        }
-	    }
+                if (!_deltaShiftResLabels[index].equals("")) {
+                    dsCount++;
+                    deltashiftWriter.write(_haDeltaShifts[index] + " " +
+                                           _cDeltaShifts[index] + " " +
+                                           _caDeltaShifts[index] + " " +
+                                           _cbDeltaShifts[index] + " " +
+                                           index + " " +
+                                           _deltaShiftResLabels[index] + " " +
+                                           _entityAssemblyID + "\n");
+                }
+            }
 
-	    int sessionType = S2DUtils.TYPE_DELTASHIFT;
+            int sessionType = S2DUtils.TYPE_DELTASHIFT;
 
-	    //
-	    // Write the session file
-	    //
-	    S2DSession.write(_sessionDir, sessionType, _name, frameIndex,
-	      _info, null, _hasRealCBShifts, _starVersion, "");
+            //
+            // Write the session file
+            //
+            S2DSession.write(_sessionDir, sessionType, _name, frameIndex,
+                             _info, null, _hasRealCBShifts, _starVersion, "");
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    String title = "Chemical Shift Delta (entity assembly " +
-	      _entityAssemblyID + ")";
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(),
-	      sessionType, _name, frameIndex,
-	      title, _frameDetails);
-	    specHtml.write();
+            //
+            // Write the session-specific html file.
+            //
+            String title = "Chemical Shift Delta (entity assembly " +
+                           _entityAssemblyID + ")";
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(),
+                sessionType, _name, frameIndex,
+                title, _frameDetails);
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeDeltashift(frameIndex, _entityAssemblyID,
-	      dsCount, false);
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writeDeltashift(frameIndex, _entityAssemblyID,
+                                     dsCount, false);
 
-	} catch (IOException ex) {
-	    System.err.println("IOException writing deltashift data: " +
-	      ex.toString());
-	    throw new S2DError("Unable to write deltashift data for " +
-	      frameIndex);
-	} finally {
-	    try {
-	        deltashiftWriter.close();
-	    } catch (IOException ex) {
-	        System.err.println("IOException: " + ex.toString());
-	    }
-	}
+        } catch (IOException ex) {
+            System.err.println("IOException writing deltashift data: " +
+                               ex.toString());
+            throw new S2DError("Unable to write deltashift data for " +
+                               frameIndex);
+        } finally {
+            try {
+                deltashiftWriter.close();
+            } catch (IOException ex) {
+                System.err.println("IOException: " + ex.toString());
+            }
+        }
     }
 
     //-------------------------------------------------------------------
@@ -353,260 +353,260 @@ public class S2DProteinChemShift extends S2DChemShift {
     public void writeCSI(int frameIndex) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DProteinChemShift.writeCSI()");
-	}
+            System.out.println("S2DProteinChemShift.writeCSI()");
+        }
 
-	//
-	// Calculate the CSI values and write them to the data file.
-	//
+        //
+        // Calculate the CSI values and write them to the data file.
+        //
         FileWriter csiWriter = null;
-	try {
+        try {
             csiWriter = S2DFileWriter.create(_dataDir + File.separator +
-	      _name + S2DNames.CSI_SUFFIX + frameIndex +
-	      S2DNames.DAT_SUFFIX);
-	    csiWriter.write("# Data: chemical shift index values for " +
-	      _name + "\n");
-	    csiWriter.write("# Schema: bmrb-Csi\n");
-	    csiWriter.write("# Attributes: HA_Csi; C_Csi; CA_Csi; CB_Csi; " +
-	      "Consensus_Csi; Residue_seq_code; Residue_label; " +
-	      "Entity_assembly_ID\n");
+                                             _name + S2DNames.CSI_SUFFIX + frameIndex +
+                                             S2DNames.DAT_SUFFIX);
+            csiWriter.write("# Data: chemical shift index values for " +
+                            _name + "\n");
+            csiWriter.write("# Schema: bmrb-Csi\n");
+            csiWriter.write("# Attributes: HA_Csi; C_Csi; CA_Csi; CB_Csi; " +
+                            "Consensus_Csi; Residue_seq_code; Residue_label; " +
+                            "Entity_assembly_ID\n");
             csiWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                            S2DMain.PEP_CGI_VERSION + "\n");
             csiWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    csiWriter.write("#\n");
+                            S2DMain.getTimestamp() + "\n");
+            csiWriter.write("#\n");
         } catch(IOException ex) {
-	    System.err.println("IOException writing CSI values: " +
-	      ex.toString());
-	    throw new S2DError("Can't write CSI values");
-	}
+            System.err.println("IOException writing CSI values: " +
+                               ex.toString());
+            throw new S2DError("Can't write CSI values");
+        }
 
-	int csiCount = 0;
+        int csiCount = 0;
 
-	try { //TEMP -- should the try be inside the loop?
+        try { //TEMP -- should the try be inside the loop?
             for (int index = 0; index < _deltaShiftResLabels.length; ++index) {
-		String resLabel = _deltaShiftResLabels[index];
-	        if (!resLabel.equals("")) {
+                String resLabel = _deltaShiftResLabels[index];
+                if (!resLabel.equals("")) {
 
-		    int haCsi;
-		    if (resLabel.equalsIgnoreCase(S2DNames.ACID_GLY)) {
-			// Note: _haDeltaShifts value has already been
-			// calculated appropriately.
-		        haCsi = calculateCSI(resLabel,
-		          S2DNames.ATOM_HA2, _haDeltaShifts[index]);
-		    } else {
-		        haCsi = calculateCSI(resLabel,
-		          S2DNames.ATOM_HA, _haDeltaShifts[index]);
-		    }
+                    int haCsi;
+                    if (resLabel.equalsIgnoreCase(S2DNames.ACID_GLY)) {
+                        // Note: _haDeltaShifts value has already been
+                        // calculated appropriately.
+                        haCsi = calculateCSI(resLabel,
+                                             S2DNames.ATOM_HA2, _haDeltaShifts[index]);
+                    } else {
+                        haCsi = calculateCSI(resLabel,
+                                             S2DNames.ATOM_HA, _haDeltaShifts[index]);
+                    }
 
-		    int cCsi = calculateCSI(resLabel,
-		      S2DNames.ATOM_C, _cDeltaShifts[index]);
+                    int cCsi = calculateCSI(resLabel,
+                                            S2DNames.ATOM_C, _cDeltaShifts[index]);
 
-		    int caCsi = calculateCSI(resLabel,
-		      S2DNames.ATOM_CA, _caDeltaShifts[index]);
+                    int caCsi = calculateCSI(resLabel,
+                                             S2DNames.ATOM_CA, _caDeltaShifts[index]);
 
-		    int cbCsi;
-		    if (resLabel.equalsIgnoreCase(S2DNames.ACID_GLY)) {
-			// Note: _cbDeltaShifts value has already been
-		        cbCsi = calculateCSI(resLabel, 
-			  S2DNames.ATOM_HA3, _cbDeltaShifts[index]);
-		    } else {
-		        cbCsi = calculateCSI(resLabel, 
-			  S2DNames.ATOM_CB, _cbDeltaShifts[index]);
-		    }
+                    int cbCsi;
+                    if (resLabel.equalsIgnoreCase(S2DNames.ACID_GLY)) {
+                        // Note: _cbDeltaShifts value has already been
+                        cbCsi = calculateCSI(resLabel,
+                                             S2DNames.ATOM_HA3, _cbDeltaShifts[index]);
+                    } else {
+                        cbCsi = calculateCSI(resLabel,
+                                             S2DNames.ATOM_CB, _cbDeltaShifts[index]);
+                    }
 
-		    int consCsi = haCsi - cCsi - caCsi;
-		    if (consCsi < 0) {
-		    	consCsi = -1;
-		    } else if (consCsi > 0) {
-		    	consCsi = 1;
-		    }
+                    int consCsi = haCsi - cCsi - caCsi;
+                    if (consCsi < 0) {
+                        consCsi = -1;
+                    } else if (consCsi > 0) {
+                        consCsi = 1;
+                    }
 
-		    csiWriter.write(haCsi + " " +
-		      cCsi + " " +
-		      caCsi + " " +
-		      cbCsi + " " +
-		      consCsi + " " +
-		      index + " " +
-		      resLabel + " " +
-		      _entityAssemblyID + "\n");
-		    csiCount++;
-		}
+                    csiWriter.write(haCsi + " " +
+                                    cCsi + " " +
+                                    caCsi + " " +
+                                    cbCsi + " " +
+                                    consCsi + " " +
+                                    index + " " +
+                                    resLabel + " " +
+                                    _entityAssemblyID + "\n");
+                    csiCount++;
+                }
             }
 
-	    //
-	    // Write the session file.
-	    //
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CSI, _name,
-	      frameIndex, _info, null, _hasRealCBShifts, _starVersion, "");
+            //
+            // Write the session file.
+            //
+            S2DSession.write(_sessionDir, S2DUtils.TYPE_CSI, _name,
+                             frameIndex, _info, null, _hasRealCBShifts, _starVersion, "");
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    String title = "Chemical Shift Index (entity assembly " +
-	      _entityAssemblyID + ")";
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(), S2DUtils.TYPE_CSI,
-	      _name, frameIndex, title, _frameDetails);
-	    specHtml.write();
+            //
+            // Write the session-specific html file.
+            //
+            String title = "Chemical Shift Index (entity assembly " +
+                           _entityAssemblyID + ")";
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(), S2DUtils.TYPE_CSI,
+                _name, frameIndex, title, _frameDetails);
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeCSI(_entityAssemblyID, frameIndex, csiCount);
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writeCSI(_entityAssemblyID, frameIndex, csiCount);
 
-	} catch (IOException ex) {
-	    System.err.println("IOException writing CSI data: " +
-	      ex.toString());
-	    throw new S2DError("Unable to write CSI data for " +
-	      frameIndex);
-	} finally {
-	    try {
-	        csiWriter.close();
-	    } catch (IOException ex) {
-	        System.err.println("IOException: " + ex.toString());
-	    }
-	}
+        } catch (IOException ex) {
+            System.err.println("IOException writing CSI data: " +
+                               ex.toString());
+            throw new S2DError("Unable to write CSI data for " +
+                               frameIndex);
+        } finally {
+            try {
+                csiWriter.close();
+            } catch (IOException ex) {
+                System.err.println("IOException: " + ex.toString());
+            }
+        }
     }
 
     //-------------------------------------------------------------------
     // Write the percent assignments for this data.
     public void writePctAssign(int frameIndex, boolean checkPctAssign,
-      String chemAssgFile)
-      throws S2DException
+                               String chemAssgFile)
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DProteinChemShift.writePctAssign()");
-	}
+            System.out.println("S2DProteinChemShift.writePctAssign()");
+        }
 
-	//
-	// Calculate the percent assignment values and write them to the
-	// data file.
-	//
+        //
+        // Calculate the percent assignment values and write them to the
+        // data file.
+        //
         FileWriter pctWriter = null;
-	AssgDataManager assgTable = null;
-	try {
+        AssgDataManager assgTable = null;
+        try {
             pctWriter = S2DFileWriter.create(_dataDir + File.separator +
-	      _name + S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex +
-	      S2DNames.DAT_SUFFIX);
-	    pctWriter.write("# Data: percent assignment values for " +
-	      _name + "\n");
-	    pctWriter.write("# Schema: bmrb-Percent\n");
-	    pctWriter.write("# Attributes: assigForH; assigForC; " +
-	      "assigForN Residue_seq_code; CurrResidueLabel; " +
-	      "Entity_assembly_ID;\n");
+                                             _name + S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex +
+                                             S2DNames.DAT_SUFFIX);
+            pctWriter.write("# Data: percent assignment values for " +
+                            _name + "\n");
+            pctWriter.write("# Schema: bmrb-Percent\n");
+            pctWriter.write("# Attributes: assigForH; assigForC; " +
+                            "assigForN Residue_seq_code; CurrResidueLabel; " +
+                            "Entity_assembly_ID;\n");
             pctWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                            S2DMain.PEP_CGI_VERSION + "\n");
             pctWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    pctWriter.write("#\n");
+                            S2DMain.getTimestamp() + "\n");
+            pctWriter.write("#\n");
 
-	    assgTable = new AssgDataManager(chemAssgFile);
+            assgTable = new AssgDataManager(chemAssgFile);
         } catch(Exception ex) {
-	    System.err.println(
-	      "Exception writing percent assignment values: " +
-	      ex.toString());
-	    throw new S2DError("Can't write percent assignment values");
-	}
+            System.err.println(
+                "Exception writing percent assignment values: " +
+                ex.toString());
+            throw new S2DError("Can't write percent assignment values");
+        }
 
-	int paCount = 0;
+        int paCount = 0;
 
         try {
-	    int index = 0;
-	    while (index < _resSeqCodes.length) {
-	        int resSeqCode = _resSeqCodes[index];
-	        String resLabel = _residueLabels[index];
+            int index = 0;
+            while (index < _resSeqCodes.length) {
+                int resSeqCode = _resSeqCodes[index];
+                String resLabel = _residueLabels[index];
 
-		try {
-		    AssgDataManager.AssgEntry assignments =
-		      assgTable.returnAssg(resLabel);
+                try {
+                    AssgDataManager.AssgEntry assignments =
+                        assgTable.returnAssg(resLabel);
 
-		    int starNumH = 0;
-		    int starNumC = 0;
-		    int starNumN = 0;
+                    int starNumH = 0;
+                    int starNumC = 0;
+                    int starNumN = 0;
 
-		    while (index < _resSeqCodes.length &&
-		      resLabel.equalsIgnoreCase(_residueLabels[index]) &&
-		      resSeqCode == _resSeqCodes[index]) {
-	                String atomType = _atomTypes[index];
-			if (atomType.equalsIgnoreCase(S2DNames.ATOM_H)) {
-			    starNumH++;
-			} else if (atomType.equalsIgnoreCase(
-			  S2DNames.ATOM_C)) {
-			    starNumC++;
-			} else if (atomType.equalsIgnoreCase(
-			  S2DNames.ATOM_N)) {
-			    starNumN++;
-			}
+                    while (index < _resSeqCodes.length &&
+                            resLabel.equalsIgnoreCase(_residueLabels[index]) &&
+                            resSeqCode == _resSeqCodes[index]) {
+                        String atomType = _atomTypes[index];
+                        if (atomType.equalsIgnoreCase(S2DNames.ATOM_H)) {
+                            starNumH++;
+                        } else if (atomType.equalsIgnoreCase(
+                                       S2DNames.ATOM_C)) {
+                            starNumC++;
+                        } else if (atomType.equalsIgnoreCase(
+                                       S2DNames.ATOM_N)) {
+                            starNumN++;
+                        }
 
-		        index++;
-		    }
+                        index++;
+                    }
 
-		    float pctH = 100 * (float)starNumH / assignments.numH;
-		    float pctC = 100 * (float)starNumC / assignments.numC;
-		    float pctN = 100 * (float)starNumN / assignments.numN;
+                    float pctH = 100 * (float)starNumH / assignments.numH;
+                    float pctC = 100 * (float)starNumC / assignments.numC;
+                    float pctN = 100 * (float)starNumN / assignments.numN;
 
-		    if (checkPctAssign) {
+                    if (checkPctAssign) {
                         if (pctH > 100.0 || pctC > 100.0 || pctN > 100.0) {
-		    	    System.err.println("FATAL ERROR!: percent " +
-			      "assignment greater than 100 for residue " +
-			      resSeqCode);
-			    System.exit(1);
-		        }
-		    }
+                            System.err.println("FATAL ERROR!: percent " +
+                                               "assignment greater than 100 for residue " +
+                                               resSeqCode);
+                            System.exit(1);
+                        }
+                    }
 
-		    pctWriter.write(pctH + " " +
-		      pctC + " " +
-		      pctN + " " +
-		      resSeqCode + " " +
-		      resLabel + " " +
-		      _entityAssemblyID + "\n");
-		    paCount++;
-		} catch (S2DWarning ex) {
-		    index++;
-		    if (doDebugOutput(11)) {
-		        System.err.println(ex.toString());
-		    }
-		} catch (S2DException ex) {
-		    index++;
-		    System.err.println(ex.toString());
-		}
-	    }
+                    pctWriter.write(pctH + " " +
+                                    pctC + " " +
+                                    pctN + " " +
+                                    resSeqCode + " " +
+                                    resLabel + " " +
+                                    _entityAssemblyID + "\n");
+                    paCount++;
+                } catch (S2DWarning ex) {
+                    index++;
+                    if (doDebugOutput(11)) {
+                        System.err.println(ex.toString());
+                    }
+                } catch (S2DException ex) {
+                    index++;
+                    System.err.println(ex.toString());
+                }
+            }
 
-	    //
-	    // Write the session file.
-	    //
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_PCT_ASSIGN,
-	      _name, frameIndex, _info, null, true, _starVersion, "");
+            //
+            // Write the session file.
+            //
+            S2DSession.write(_sessionDir, S2DUtils.TYPE_PCT_ASSIGN,
+                             _name, frameIndex, _info, null, true, _starVersion, "");
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    String title = "Percent Assigned Atoms (entity assembly " +
-	      _entityAssemblyID + ")";
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(),
-	      S2DUtils.TYPE_PCT_ASSIGN, _name, frameIndex,
-	      title, _frameDetails);
-	    specHtml.write();
+            //
+            // Write the session-specific html file.
+            //
+            String title = "Percent Assigned Atoms (entity assembly " +
+                           _entityAssemblyID + ")";
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(),
+                S2DUtils.TYPE_PCT_ASSIGN, _name, frameIndex,
+                title, _frameDetails);
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writePctAssign(_entityAssemblyID, frameIndex, paCount);
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writePctAssign(_entityAssemblyID, frameIndex, paCount);
 
-	} catch (IOException ex) {
-	    System.err.println("IOException writing percent assignment data: " +
-	      ex.toString());
-	    throw new S2DError("Unable to write percent assignment data for " +
-	      frameIndex);
-	} finally {
-	    try {
-	        pctWriter.close();
-	    } catch (IOException ex) {
-	        System.err.println("IOException: " + ex.toString());
-	    }
-	}
+        } catch (IOException ex) {
+            System.err.println("IOException writing percent assignment data: " +
+                               ex.toString());
+            throw new S2DError("Unable to write percent assignment data for " +
+                               frameIndex);
+        } finally {
+            try {
+                pctWriter.close();
+            } catch (IOException ex) {
+                System.err.println("IOException: " + ex.toString());
+            }
+        }
     }
 
     //-------------------------------------------------------------------
@@ -615,240 +615,240 @@ public class S2DProteinChemShift extends S2DChemShift {
     public void writeHvsNShifts(int frameIndex) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DProteinChemShift.writeHvsNShifts()");
-	}
+            System.out.println("S2DProteinChemShift.writeHvsNShifts()");
+        }
 
         FileWriter hnWriter = null;
-	try {
+        try {
             hnWriter = S2DFileWriter.create(_dataDir + File.separator +
-	      _name + S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex +
-	      S2DNames.DAT_SUFFIX);
-	    hnWriter.write("# Data: H vs. N chemical shifts for " +
-	      _name + "\n");
-	    hnWriter.write("# Schema: bmrb-HvsNp\n"/*TEMP*/);
-	    hnWriter.write("# Attributes: Hshift; Nshift; Hatom; Natom; " +
-	      "Residue_seq_code; AcidName; Entity_assembly_ID; Entry; " +
-	      "AcidName_1let\n");
+                                            _name + S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex +
+                                            S2DNames.DAT_SUFFIX);
+            hnWriter.write("# Data: H vs. N chemical shifts for " +
+                           _name + "\n");
+            hnWriter.write("# Schema: bmrb-HvsNp\n"/*TEMP*/);
+            hnWriter.write("# Attributes: Hshift; Nshift; Hatom; Natom; " +
+                           "Residue_seq_code; AcidName; Entity_assembly_ID; Entry; " +
+                           "AcidName_1let\n");
             hnWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                           S2DMain.PEP_CGI_VERSION + "\n");
             hnWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    hnWriter.write("#\n");
+                           S2DMain.getTimestamp() + "\n");
+            hnWriter.write("#\n");
         } catch(IOException ex) {
-	    System.err.println(
-	      "IOException writing H vs. N chem shift values: " +
-	      ex.toString());
-	    throw new S2DError("Can't write H vs. N chem shift values");
-	}
+            System.err.println(
+                "IOException writing H vs. N chem shift values: " +
+                ex.toString());
+            throw new S2DError("Can't write H vs. N chem shift values");
+        }
 
-	//
-	// Find the H and N chem shift values and write them out.
-	//
-	try {
-	    HvsNInfo hnInfo = new HvsNInfo();
-	    int hnCount = 0;
-	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        int currSeqCode = _resSeqCodes[index];
-	        String currResLabel = _residueLabels[index];
-		String currResLabelSh = _resLabelsSh[index];
+        //
+        // Find the H and N chem shift values and write them out.
+        //
+        try {
+            HvsNInfo hnInfo = new HvsNInfo();
+            int hnCount = 0;
+            for (int index = 0; index < _resSeqCodes.length; index++) {
+                int currSeqCode = _resSeqCodes[index];
+                String currResLabel = _residueLabels[index];
+                String currResLabelSh = _resLabelsSh[index];
 
-	        if (currSeqCode != hnInfo.prevSeqCode) {
+                if (currSeqCode != hnInfo.prevSeqCode) {
 
-		    // We just finished the previous residue.
-		    if (hnInfo.prevSeqCode != -1) {
-		        if (writeHvsNLine(hnWriter, hnInfo)) {
-		            hnCount++;
-			}
-		    }
+                    // We just finished the previous residue.
+                    if (hnInfo.prevSeqCode != -1) {
+                        if (writeHvsNLine(hnWriter, hnInfo)) {
+                            hnCount++;
+                        }
+                    }
 
-		    hnInfo.prevSeqCode = currSeqCode;
-		    hnInfo.prevResLabel = currResLabel;
-		    hnInfo.hasH = false;
-		    hnInfo.hasN = false;
-		    hnInfo.hasHE1 = false;
-		    hnInfo.hasNE1 = false;
-		    hnInfo.prevResLabelSh = currResLabelSh;
+                    hnInfo.prevSeqCode = currSeqCode;
+                    hnInfo.prevResLabel = currResLabel;
+                    hnInfo.hasH = false;
+                    hnInfo.hasN = false;
+                    hnInfo.hasHE1 = false;
+                    hnInfo.hasNE1 = false;
+                    hnInfo.prevResLabelSh = currResLabelSh;
                 }
 
-	        String atomName = _atomNames[index];
-	        double chemShift = _chemShiftVals[index];
+                String atomName = _atomNames[index];
+                double chemShift = _chemShiftVals[index];
 
-		if (atomName.equalsIgnoreCase(S2DNames.ATOM_H)) {
-		    if (hnInfo.hasH) {
-		        System.err.println("Multiple H entries in one " +
-			  "residue(" + currSeqCode + ")!");
-		    }
-		    hnInfo.hasH = true;
-		    hnInfo.hShift = chemShift;
-		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_N)) {
-		    if (hnInfo.hasN) {
-		        System.err.println("Multiple N entries in one " +
-			  "residue(" + currSeqCode + ")!");
-		    }
-		    hnInfo.hasN = true;
-		    hnInfo.nShift = chemShift;
-		} else if (_residueLabels[index].equals("TRP") &&
-		  atomName.equalsIgnoreCase(S2DNames.ATOM_HE1)) {
-		    if (hnInfo.hasHE1) {
-		        System.err.println("Multiple HE1 entries in one " +
-			  "residue(" + currSeqCode + ")!");
-		    }
-		    hnInfo.hasHE1 = true;
-		    hnInfo.he1Shift = chemShift;
-		} else if (_residueLabels[index].equals("TRP") &&
-		  atomName.equalsIgnoreCase(S2DNames.ATOM_NE1)) {
-		    if (hnInfo.hasNE1) {
-		        System.err.println("Multiple NE1 entries in one " +
-			  "residue(" + currSeqCode + ")!");
-		    }
-		    hnInfo.hasNE1 = true;
-		    hnInfo.ne1Shift = chemShift;
-	        }
+                if (atomName.equalsIgnoreCase(S2DNames.ATOM_H)) {
+                    if (hnInfo.hasH) {
+                        System.err.println("Multiple H entries in one " +
+                                           "residue(" + currSeqCode + ")!");
+                    }
+                    hnInfo.hasH = true;
+                    hnInfo.hShift = chemShift;
+                } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_N)) {
+                    if (hnInfo.hasN) {
+                        System.err.println("Multiple N entries in one " +
+                                           "residue(" + currSeqCode + ")!");
+                    }
+                    hnInfo.hasN = true;
+                    hnInfo.nShift = chemShift;
+                } else if (_residueLabels[index].equals("TRP") &&
+                           atomName.equalsIgnoreCase(S2DNames.ATOM_HE1)) {
+                    if (hnInfo.hasHE1) {
+                        System.err.println("Multiple HE1 entries in one " +
+                                           "residue(" + currSeqCode + ")!");
+                    }
+                    hnInfo.hasHE1 = true;
+                    hnInfo.he1Shift = chemShift;
+                } else if (_residueLabels[index].equals("TRP") &&
+                           atomName.equalsIgnoreCase(S2DNames.ATOM_NE1)) {
+                    if (hnInfo.hasNE1) {
+                        System.err.println("Multiple NE1 entries in one " +
+                                           "residue(" + currSeqCode + ")!");
+                    }
+                    hnInfo.hasNE1 = true;
+                    hnInfo.ne1Shift = chemShift;
+                }
             }
 
-	    // Write out the last residue.
+            // Write out the last residue.
             if (hnInfo.prevSeqCode != -1) {
-	        if (writeHvsNLine(hnWriter, hnInfo)) {
-	            hnCount++;
-	        }
-	    }
+                if (writeHvsNLine(hnWriter, hnInfo)) {
+                    hnCount++;
+                }
+            }
 
-	    if (hnCount > 0) {
-	        //
-	        // Write the session file.
-	        //
-	        S2DSession.write(_sessionDir, S2DUtils.TYPE_HVSN_CHEM_SHIFTS,
-	          _name, frameIndex, _info, null, true, _starVersion, "");
+            if (hnCount > 0) {
+                //
+                // Write the session file.
+                //
+                S2DSession.write(_sessionDir, S2DUtils.TYPE_HVSN_CHEM_SHIFTS,
+                                 _name, frameIndex, _info, null, true, _starVersion, "");
 
-	        //
-	        // Write the session-specific html file.
-	        //
-		String title = "Simulated 1H-15N backbone HSQC " +
-		  "spectrum (entity assembly " + _entityAssemblyID + ")";
-	        S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	          _summary.getHtmlDir(),
-		  S2DUtils.TYPE_HVSN_CHEM_SHIFTS, _name, frameIndex,
-		  title, _frameDetails);
-	        specHtml.write();
+                //
+                // Write the session-specific html file.
+                //
+                String title = "Simulated 1H-15N backbone HSQC " +
+                               "spectrum (entity assembly " + _entityAssemblyID + ")";
+                S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                    _summary.getHtmlDir(),
+                    S2DUtils.TYPE_HVSN_CHEM_SHIFTS, _name, frameIndex,
+                    title, _frameDetails);
+                specHtml.write();
 
-	        //
-	        // Write the link in the summary html file.
-	        //
-	        _summary.writeHvsNShifts(frameIndex, _entityAssemblyID,
-		  hnCount);
-	    }
+                //
+                // Write the link in the summary html file.
+                //
+                _summary.writeHvsNShifts(frameIndex, _entityAssemblyID,
+                                         hnCount);
+            }
 
-	} catch (IOException ex) {
-	    System.err.println("IOException writing all chem shifts: " +
-	      ex.toString());
-	    throw new S2DError("Unable to write all chem shifts for " +
-	      frameIndex);
-	} finally {
-	    try {
-	        hnWriter.close();
-	    } catch (IOException ex) {
-	        System.err.println("IOException: " + ex.toString());
-	    }
-	}
+        } catch (IOException ex) {
+            System.err.println("IOException writing all chem shifts: " +
+                               ex.toString());
+            throw new S2DError("Unable to write all chem shifts for " +
+                               frameIndex);
+        } finally {
+            try {
+                hnWriter.close();
+            } catch (IOException ex) {
+                System.err.println("IOException: " + ex.toString());
+            }
+        }
     }
 
     //-------------------------------------------------------------------
     // Write H vs. C chem shifts for this data.
     public void writeHvsCShifts(String connectionFile, int frameIndex)
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DProteinChemShift.writeHvsCShifts()");
-	}
+            System.out.println("S2DProteinChemShift.writeHvsCShifts()");
+        }
 
-	S2DConnections connections = new S2DConnections(connectionFile);
+        S2DConnections connections = new S2DConnections(connectionFile);
 
         FileWriter hcWriter = null;
-	try {
+        try {
             hcWriter = S2DFileWriter.create(_dataDir + File.separator +
-	      _name + S2DNames.HVSC_CHEM_SHIFT_SUFFIX + frameIndex +
-	      S2DNames.DAT_SUFFIX);
-	    hcWriter.write("# Data: H vs. C chemical shifts for " +
-	      _name + "\n");
-	    hcWriter.write("# Schema: bmrb-HvsCp\n"/*TEMP*/);
-	    hcWriter.write("# Attributes: Hshift; Nshift; Hatom; Natom; " +
-	      "Residue_seq_code; AcidName; Entity_assembly_ID; Entry; " +
-	      "AcidName_1let\n");
+                                            _name + S2DNames.HVSC_CHEM_SHIFT_SUFFIX + frameIndex +
+                                            S2DNames.DAT_SUFFIX);
+            hcWriter.write("# Data: H vs. C chemical shifts for " +
+                           _name + "\n");
+            hcWriter.write("# Schema: bmrb-HvsCp\n"/*TEMP*/);
+            hcWriter.write("# Attributes: Hshift; Nshift; Hatom; Natom; " +
+                           "Residue_seq_code; AcidName; Entity_assembly_ID; Entry; " +
+                           "AcidName_1let\n");
             hcWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                           S2DMain.PEP_CGI_VERSION + "\n");
             hcWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    hcWriter.write("#\n");
+                           S2DMain.getTimestamp() + "\n");
+            hcWriter.write("#\n");
 
-	    //
-	    // Here we go through all of the available chemical shifts;
-	    // for each residue we put all of the H* and C* values into
-	    // a structure; when we get to the end of data for a given
-	    // residue, we write out the appropriate data for that
-	    // residue.
-	    //
+            //
+            // Here we go through all of the available chemical shifts;
+            // for each residue we put all of the H* and C* values into
+            // a structure; when we get to the end of data for a given
+            // residue, we write out the appropriate data for that
+            // residue.
+            //
             HCResidueInfo hcInfo = null;
-	    int hcCount = 0;
-	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        if (hcInfo == null ||
-		  (_resSeqCodes[index] != hcInfo.residueSeqCode)) {
-		    // New residue
-	            if (hcInfo != null) {
-	                hcCount += writeHCResidueInfo(hcWriter, hcInfo);
-	            }
-		    hcInfo = new HCResidueInfo();
-		    hcInfo.residueSeqCode = _resSeqCodes[index];
-		    hcInfo.residueLabel = _residueLabels[index];
-		    hcInfo.residueLabelSh = _resLabelsSh[index];
-		    hcInfo.bonds = connections.getBonds(hcInfo.residueLabel);
-		}
+            int hcCount = 0;
+            for (int index = 0; index < _resSeqCodes.length; index++) {
+                if (hcInfo == null ||
+                        (_resSeqCodes[index] != hcInfo.residueSeqCode)) {
+                    // New residue
+                    if (hcInfo != null) {
+                        hcCount += writeHCResidueInfo(hcWriter, hcInfo);
+                    }
+                    hcInfo = new HCResidueInfo();
+                    hcInfo.residueSeqCode = _resSeqCodes[index];
+                    hcInfo.residueLabel = _residueLabels[index];
+                    hcInfo.residueLabelSh = _resLabelsSh[index];
+                    hcInfo.bonds = connections.getBonds(hcInfo.residueLabel);
+                }
 
-		if (_atomTypes[index].equals("H")) {
-		    hcInfo.hChemshifts.put(_atomNames[index],
-		      new Double(_chemShiftVals[index]));
-		}
-		if (_atomTypes[index].equals("C")) {
-		    hcInfo.cChemshifts.put(_atomNames[index],
-		      new Double(_chemShiftVals[index]));
-		}
-	    }
-	    if (hcInfo != null) {
-		// Make sure we write the last residue!
-	        hcCount += writeHCResidueInfo(hcWriter, hcInfo);
-	    }
+                if (_atomTypes[index].equals("H")) {
+                    hcInfo.hChemshifts.put(_atomNames[index],
+                                           new Double(_chemShiftVals[index]));
+                }
+                if (_atomTypes[index].equals("C")) {
+                    hcInfo.cChemshifts.put(_atomNames[index],
+                                           new Double(_chemShiftVals[index]));
+                }
+            }
+            if (hcInfo != null) {
+                // Make sure we write the last residue!
+                hcCount += writeHCResidueInfo(hcWriter, hcInfo);
+            }
 
-	    hcWriter.close();
+            hcWriter.close();
 
-	    if (hcCount > 0) {
-	        //
-	        // Write the session file.
-	        //
-	        S2DSession.write(_sessionDir, S2DUtils.TYPE_HVSC_CHEM_SHIFTS,
-	          _name, frameIndex, _info, null, true, _starVersion, "");
+            if (hcCount > 0) {
+                //
+                // Write the session file.
+                //
+                S2DSession.write(_sessionDir, S2DUtils.TYPE_HVSC_CHEM_SHIFTS,
+                                 _name, frameIndex, _info, null, true, _starVersion, "");
 
-	        //
-	        // Write the session-specific html file.
-	        //
-		String title = "Simulated 1H-13C HSQC " +
-		  "spectrum (entity assembly " + _entityAssemblyID + ")";
-	        S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	          _summary.getHtmlDir(),
-		  S2DUtils.TYPE_HVSC_CHEM_SHIFTS, _name, frameIndex,
-		  title, _frameDetails);
-	        specHtml.write();
+                //
+                // Write the session-specific html file.
+                //
+                String title = "Simulated 1H-13C HSQC " +
+                               "spectrum (entity assembly " + _entityAssemblyID + ")";
+                S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                    _summary.getHtmlDir(),
+                    S2DUtils.TYPE_HVSC_CHEM_SHIFTS, _name, frameIndex,
+                    title, _frameDetails);
+                specHtml.write();
 
-	        //
-	        // Write the link in the summary html file.
-	        //
-	        _summary.writeHvsCShifts(frameIndex, _entityAssemblyID,
-		  hcCount);
-	    }
+                //
+                // Write the link in the summary html file.
+                //
+                _summary.writeHvsCShifts(frameIndex, _entityAssemblyID,
+                                         hcCount);
+            }
         } catch(IOException ex) {
-	    System.err.println(
-	      "IOException writing H vs. c chem shift values: " +
-	      ex.toString());
-	    throw new S2DError("Can't write H vs. c chem shift values");
-	}
+            System.err.println(
+                "IOException writing H vs. c chem shift values: " +
+                ex.toString());
+            throw new S2DError("Can't write H vs. c chem shift values");
+        }
     }
 
     //-------------------------------------------------------------------
@@ -860,42 +860,42 @@ public class S2DProteinChemShift extends S2DChemShift {
     public void addCsiData(Vector dataSets, int frameIndex)
     {
         // Note: attribute names must match the bmrb-Csi schema.
-	String dataSource = _name + S2DNames.CSI_SUFFIX + frameIndex;
+        String dataSource = _name + S2DNames.CSI_SUFFIX + frameIndex;
 
-	String dataName;
-	if (_atomSet.contains("HA")) {
-	    dataName = "HA CSI [" + _entityAssemblyID + "]";
+        String dataName;
+        if (_atomSet.contains("HA")) {
+            dataName = "HA CSI [" + _entityAssemblyID + "]";
             dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	      _sample, _sampleConditions, dataSource, "HA_Csi", "bmrb-Csi",
-	      "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+                                                   _sample, _sampleConditions, dataSource, "HA_Csi", "bmrb-Csi",
+                                                   "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
-	if (_atomSet.contains("C")) {
-	    dataName = "C CSI [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	      _sample, _sampleConditions, dataSource, "C_Csi", "bmrb-Csi",
-	      "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+        if (_atomSet.contains("C")) {
+            dataName = "C CSI [" + _entityAssemblyID + "]";
+            dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                                   _sample, _sampleConditions, dataSource, "C_Csi", "bmrb-Csi",
+                                                   "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
-	if (_atomSet.contains("CA")) {
-	    dataName = "CA CSI [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	      _sample, _sampleConditions, dataSource, "CA_Csi", "bmrb-Csi",
-	      "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+        if (_atomSet.contains("CA")) {
+            dataName = "CA CSI [" + _entityAssemblyID + "]";
+            dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                                   _sample, _sampleConditions, dataSource, "CA_Csi", "bmrb-Csi",
+                                                   "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
-	if (_hasRealCBShifts) {
-	    dataName = "CB CSI [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	      _sample, _sampleConditions, dataSource, "CB_Csi", "bmrb-Csi",
-	      "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
-	}
+        if (_hasRealCBShifts) {
+            dataName = "CB CSI [" + _entityAssemblyID + "]";
+            dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                                   _sample, _sampleConditions, dataSource, "CB_Csi", "bmrb-Csi",
+                                                   "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+        }
 
-	dataName = "Consensus CSI [" + _entityAssemblyID + ']';
-	dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	  _sample, _sampleConditions, dataSource, "Consensus_Csi",
-	  "bmrb-Csi", "Csi", _entityAssemblyID,
-	  S2DResidues.POLYMER_TYPE_PROTEIN));
+        dataName = "Consensus CSI [" + _entityAssemblyID + ']';
+        dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                               _sample, _sampleConditions, dataSource, "Consensus_Csi",
+                                               "bmrb-Csi", "Csi", _entityAssemblyID,
+                                               S2DResidues.POLYMER_TYPE_PROTEIN));
     }
 
     //-------------------------------------------------------------------
@@ -907,124 +907,124 @@ public class S2DProteinChemShift extends S2DChemShift {
     public void addPctAssignData(Vector dataSets, int frameIndex)
     {
         // Note: attribute names must match the bmrb-Percent schema.
-	String dataSource = _name + S2DNames.PERCENT_ASSIGN_SUFFIX +
-	  frameIndex;
+        String dataSource = _name + S2DNames.PERCENT_ASSIGN_SUFFIX +
+                            frameIndex;
 
-	String dataName = "% 1H assign per res [" + _entityAssemblyID + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	  _sample, _sampleConditions, dataSource, "assigForH",
-	  "bmrb-Percent", "ChemShiftPercentage", _entityAssemblyID,
-	  S2DResidues.POLYMER_TYPE_PROTEIN));
+        String dataName = "% 1H assign per res [" + _entityAssemblyID + "]";
+        dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                               _sample, _sampleConditions, dataSource, "assigForH",
+                                               "bmrb-Percent", "ChemShiftPercentage", _entityAssemblyID,
+                                               S2DResidues.POLYMER_TYPE_PROTEIN));
 
-	dataName = "% 13C assign per res [" + _entityAssemblyID + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	  _sample, _sampleConditions, dataSource, "assigForC",
-	  "bmrb-Percent", "ChemShiftPercentage", _entityAssemblyID,
-	  S2DResidues.POLYMER_TYPE_PROTEIN));
+        dataName = "% 13C assign per res [" + _entityAssemblyID + "]";
+        dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                               _sample, _sampleConditions, dataSource, "assigForC",
+                                               "bmrb-Percent", "ChemShiftPercentage", _entityAssemblyID,
+                                               S2DResidues.POLYMER_TYPE_PROTEIN));
 
-	dataName = "% 15N assign per res [" + _entityAssemblyID + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName,  _frameDetails,
-	  _sample, _sampleConditions, dataSource, "assigForN",
-	  "bmrb-Percent", "ChemShiftPercentage", _entityAssemblyID,
-	  S2DResidues.POLYMER_TYPE_PROTEIN));
+        dataName = "% 15N assign per res [" + _entityAssemblyID + "]";
+        dataSets.addElement(new S2DDatasetInfo(dataName,  _frameDetails,
+                                               _sample, _sampleConditions, dataSource, "assigForN",
+                                               "bmrb-Percent", "ChemShiftPercentage", _entityAssemblyID,
+                                               S2DResidues.POLYMER_TYPE_PROTEIN));
     }
 
     //-------------------------------------------------------------------
     public static void writeMultiEntrySessions(String masterName,
-      String fullName, String extraId, String sessionDir, String htmlDir,
-      S2DSummaryHtml summary2)
+            String fullName, String extraId, String sessionDir, String htmlDir,
+            S2DSummaryHtml summary2)
     {
         if (doDebugOutput(11)) {
-	    System.out.println(
-	      "S2DProteinChemShift.writeMultiEntrySessions(" +
-	      masterName + ", " + extraId + ")");
-	}
+            System.out.println(
+                "S2DProteinChemShift.writeMultiEntrySessions(" +
+                masterName + ", " + extraId + ")");
+        }
 
-	String info = "Visualization of " + masterName + "/" + extraId;
+        String info = "Visualization of " + masterName + "/" + extraId;
 
-	//
-	// Write the H vs. C sessions.
-	//
-	Vector entry1InfoList = S2DSummaryHtml.getInfo(htmlDir, masterName,
-	  S2DUtils.TYPE_HVSC_CHEM_SHIFTS);
-	Vector entry2InfoList = S2DSummaryHtml.getInfo(htmlDir, extraId,
-	  S2DUtils.TYPE_HVSC_CHEM_SHIFTS);
+        //
+        // Write the H vs. C sessions.
+        //
+        Vector entry1InfoList = S2DSummaryHtml.getInfo(htmlDir, masterName,
+                                S2DUtils.TYPE_HVSC_CHEM_SHIFTS);
+        Vector entry2InfoList = S2DSummaryHtml.getInfo(htmlDir, extraId,
+                                S2DUtils.TYPE_HVSC_CHEM_SHIFTS);
 
-	for (int index1 = 0; index1 < entry1InfoList.size(); index1++) {
-	    S2DSummaryHtml.DatasetInfo entry1Info =
-	      ((S2DSummaryHtml.DatasetInfo)entry1InfoList.elementAt(index1));
-	    for (int index2 = 0; index2 < entry2InfoList.size(); index2++) {
-	        S2DSummaryHtml.DatasetInfo entry2Info =
-		  ((S2DSummaryHtml.DatasetInfo)entry2InfoList.elementAt(index2));
-		try {
+        for (int index1 = 0; index1 < entry1InfoList.size(); index1++) {
+            S2DSummaryHtml.DatasetInfo entry1Info =
+                ((S2DSummaryHtml.DatasetInfo)entry1InfoList.elementAt(index1));
+            for (int index2 = 0; index2 < entry2InfoList.size(); index2++) {
+                S2DSummaryHtml.DatasetInfo entry2Info =
+                    ((S2DSummaryHtml.DatasetInfo)entry2InfoList.elementAt(index2));
+                try {
                     String title = "Simulated 1H-13C HSQC spectra (" +
-		      masterName + " EA " + entry1Info._entityAssemblyId +
-		      "/" + extraId + " EA " +
-		      entry2Info._entityAssemblyId + ")";
-		    String starVersion = ""; //TEMP -- put real value here?
-	            S2DSession.write(sessionDir, S2DUtils.TYPE_HVSC_2_ENTRY,
-	              masterName, fullName,
-	              masterName, extraId, entry1Info._frameIndex,
-		      entry2Info._frameIndex, info, title, false,
-		      starVersion, "");
-		    String frameDetails = ""; //TEMP -- put real value here?
-	            S2DSpecificHtml specHtml = new S2DSpecificHtml(htmlDir,
-	              S2DUtils.TYPE_HVSC_2_ENTRY,
-	              masterName, fullName, entry1Info._frameIndex,
-		      entry2Info._frameIndex, title, frameDetails);
-	            specHtml.write();
-		    summary2.write2EntHvsCShifts(entry1Info._frameIndex,
-		      entry2Info._frameIndex, entry1Info._entityAssemblyId,
-		      entry2Info._entityAssemblyId, entry1Info._peakCount,
-		      entry2Info._peakCount);
+                                   masterName + " EA " + entry1Info._entityAssemblyId +
+                                   "/" + extraId + " EA " +
+                                   entry2Info._entityAssemblyId + ")";
+                    String starVersion = ""; //TEMP -- put real value here?
+                    S2DSession.write(sessionDir, S2DUtils.TYPE_HVSC_2_ENTRY,
+                                     masterName, fullName,
+                                     masterName, extraId, entry1Info._frameIndex,
+                                     entry2Info._frameIndex, info, title, false,
+                                     starVersion, "");
+                    String frameDetails = ""; //TEMP -- put real value here?
+                    S2DSpecificHtml specHtml = new S2DSpecificHtml(htmlDir,
+                            S2DUtils.TYPE_HVSC_2_ENTRY,
+                            masterName, fullName, entry1Info._frameIndex,
+                            entry2Info._frameIndex, title, frameDetails);
+                    specHtml.write();
+                    summary2.write2EntHvsCShifts(entry1Info._frameIndex,
+                                                 entry2Info._frameIndex, entry1Info._entityAssemblyId,
+                                                 entry2Info._entityAssemblyId, entry1Info._peakCount,
+                                                 entry2Info._peakCount);
                 } catch (Exception ex) {
-		    System.err.println("Error (" + ex.toString() +
-		      " writing multi-entry H vs. C sessions");
+                    System.err.println("Error (" + ex.toString() +
+                                       " writing multi-entry H vs. C sessions");
                 }
-	    }
-	}
+            }
+        }
 
-	//
-	// Write the H vs. N sessions.
-	//
-	entry1InfoList = S2DSummaryHtml.getInfo(htmlDir, masterName,
-	  S2DUtils.TYPE_HVSN_CHEM_SHIFTS);
-	entry2InfoList = S2DSummaryHtml.getInfo(htmlDir, extraId,
-	  S2DUtils.TYPE_HVSN_CHEM_SHIFTS);
+        //
+        // Write the H vs. N sessions.
+        //
+        entry1InfoList = S2DSummaryHtml.getInfo(htmlDir, masterName,
+                                                S2DUtils.TYPE_HVSN_CHEM_SHIFTS);
+        entry2InfoList = S2DSummaryHtml.getInfo(htmlDir, extraId,
+                                                S2DUtils.TYPE_HVSN_CHEM_SHIFTS);
 
-	for (int index1 = 0; index1 < entry1InfoList.size(); index1++) {
-	    S2DSummaryHtml.DatasetInfo entry1Info =
-	      ((S2DSummaryHtml.DatasetInfo)entry1InfoList.elementAt(index1));
-	    for (int index2 = 0; index2 < entry2InfoList.size(); index2++) {
-	        S2DSummaryHtml.DatasetInfo entry2Info =
-		  ((S2DSummaryHtml.DatasetInfo)entry2InfoList.elementAt(index2));
-		try {
+        for (int index1 = 0; index1 < entry1InfoList.size(); index1++) {
+            S2DSummaryHtml.DatasetInfo entry1Info =
+                ((S2DSummaryHtml.DatasetInfo)entry1InfoList.elementAt(index1));
+            for (int index2 = 0; index2 < entry2InfoList.size(); index2++) {
+                S2DSummaryHtml.DatasetInfo entry2Info =
+                    ((S2DSummaryHtml.DatasetInfo)entry2InfoList.elementAt(index2));
+                try {
                     String title = "Simulated 1H-15N backbone HSQC spectra (" +
-		      masterName + " EA " + entry1Info._entityAssemblyId +
-		      "/" + extraId + " EA " +
-		      entry2Info._entityAssemblyId + ")";
-		    String starVersion = ""; //TEMP -- put real value here?
-	            S2DSession.write(sessionDir, S2DUtils.TYPE_HVSN_2_ENTRY,
-	              masterName, fullName,
-	              masterName, extraId, entry1Info._frameIndex,
-		      entry2Info._frameIndex, info, title, false,
-		      starVersion, "");
-		    String frameDetails = ""; //TEMP -- put real value here?
-	            S2DSpecificHtml specHtml = new S2DSpecificHtml(htmlDir,
-	              S2DUtils.TYPE_HVSN_2_ENTRY,
-	              masterName, fullName, entry1Info._frameIndex,
-		      entry2Info._frameIndex, title, frameDetails);
-	            specHtml.write();
-		    summary2.write2EntHvsNShifts(entry1Info._frameIndex,
-		      entry2Info._frameIndex, entry1Info._entityAssemblyId,
-		      entry2Info._entityAssemblyId, entry1Info._peakCount,
-		      entry2Info._peakCount);
+                                   masterName + " EA " + entry1Info._entityAssemblyId +
+                                   "/" + extraId + " EA " +
+                                   entry2Info._entityAssemblyId + ")";
+                    String starVersion = ""; //TEMP -- put real value here?
+                    S2DSession.write(sessionDir, S2DUtils.TYPE_HVSN_2_ENTRY,
+                                     masterName, fullName,
+                                     masterName, extraId, entry1Info._frameIndex,
+                                     entry2Info._frameIndex, info, title, false,
+                                     starVersion, "");
+                    String frameDetails = ""; //TEMP -- put real value here?
+                    S2DSpecificHtml specHtml = new S2DSpecificHtml(htmlDir,
+                            S2DUtils.TYPE_HVSN_2_ENTRY,
+                            masterName, fullName, entry1Info._frameIndex,
+                            entry2Info._frameIndex, title, frameDetails);
+                    specHtml.write();
+                    summary2.write2EntHvsNShifts(entry1Info._frameIndex,
+                                                 entry2Info._frameIndex, entry1Info._entityAssemblyId,
+                                                 entry2Info._entityAssemblyId, entry1Info._peakCount,
+                                                 entry2Info._peakCount);
                 } catch (Exception ex) {
-		    System.err.println("Error (" + ex.toString() +
-		      " writing multi-entry H vs. N sessions");
+                    System.err.println("Error (" + ex.toString() +
+                                       " writing multi-entry H vs. N sessions");
                 }
-	    }
-	}
+            }
+        }
     }
 
     //===================================================================
@@ -1039,10 +1039,10 @@ public class S2DProteinChemShift extends S2DChemShift {
         public boolean hasN = false;
         public double hShift = 0.0;
         public double nShift = 0.0;
-	public String prevResLabelSh = null;
+        public String prevResLabelSh = null;
 
         // Special case -- show side-chain HE1/NE1 for TRP.
-	// 4267 residue 32 is an example of this.
+        // 4267 residue 32 is an example of this.
         public boolean hasHE1 = false;
         public boolean hasNE1 = false;
         public double he1Shift = 0.0;
@@ -1057,53 +1057,53 @@ public class S2DProteinChemShift extends S2DChemShift {
      * @return: true iff a line was written.
      */
     public boolean writeHvsNLine(FileWriter hnWriter, HvsNInfo hnInfo)
-      throws IOException
+    throws IOException
     {
-	boolean wroteLine = false;
+        boolean wroteLine = false;
 
         //TEMP -- combine these?
-	// Note: we can have H/N and HE1/NE1 for the same residue.
+        // Note: we can have H/N and HE1/NE1 for the same residue.
         if (hnInfo.hasH && hnInfo.hasN) {
-	    hnWriter.write(hnInfo.hShift + " " +
-	      hnInfo.nShift +
-	      " H N " +
-	      hnInfo.prevSeqCode + " " +
-	      hnInfo.prevResLabel + " " +
-	      _entityAssemblyID + " " +
-	      _name + " " +
-	      hnInfo.prevResLabelSh + "\n");
-	    wroteLine = true;
-	}
-
-	if (hnInfo.hasHE1 && hnInfo.hasNE1) {
-	    hnWriter.write(hnInfo.he1Shift + " " +
-	      hnInfo.ne1Shift +
-	      " HE1 NE1 " +
-	      hnInfo.prevSeqCode + " " +
-	      hnInfo.prevResLabel + " " +
-	      _entityAssemblyID + " " +
-	      _name + " " +
-	      hnInfo.prevResLabelSh + "\n");
-	    wroteLine = true;
+            hnWriter.write(hnInfo.hShift + " " +
+                           hnInfo.nShift +
+                           " H N " +
+                           hnInfo.prevSeqCode + " " +
+                           hnInfo.prevResLabel + " " +
+                           _entityAssemblyID + " " +
+                           _name + " " +
+                           hnInfo.prevResLabelSh + "\n");
+            wroteLine = true;
         }
 
-	return wroteLine;
+        if (hnInfo.hasHE1 && hnInfo.hasNE1) {
+            hnWriter.write(hnInfo.he1Shift + " " +
+                           hnInfo.ne1Shift +
+                           " HE1 NE1 " +
+                           hnInfo.prevSeqCode + " " +
+                           hnInfo.prevResLabel + " " +
+                           _entityAssemblyID + " " +
+                           _name + " " +
+                           hnInfo.prevResLabelSh + "\n");
+            wroteLine = true;
+        }
+
+        return wroteLine;
     }
 
     //-------------------------------------------------------------------
     // This class holds all info for a given residue related to
     // H vs C peaks.
     private class HCResidueInfo {
-	int residueSeqCode;
+        int residueSeqCode;
         String residueLabel;
         String residueLabelSh;
-	Vector bonds; // S2DConnections.Bond objects
+        Vector bonds; // S2DConnections.Bond objects
 
-	// String (atom name) -> Double (chemical shift)
-	Hashtable hChemshifts = new Hashtable();
+        // String (atom name) -> Double (chemical shift)
+        Hashtable hChemshifts = new Hashtable();
 
-	// String (atom name) -> Double (chemical shift)
-	Hashtable cChemshifts = new Hashtable();
+        // String (atom name) -> Double (chemical shift)
+        Hashtable cChemshifts = new Hashtable();
     };
 
     //-------------------------------------------------------------------
@@ -1114,49 +1114,49 @@ public class S2DProteinChemShift extends S2DChemShift {
      * @return The number of peaks written
      */
     private int writeHCResidueInfo(Writer writer, HCResidueInfo info)
-      throws IOException
+    throws IOException
     {
-	//
-	// We go through the list of hydrogens for this residue, 
-	// and find atoms that are bonded to the hydrogen (we index on
-	// the hydrogen list because only one atom will be bonded to a
-	// hydrogen, so we automatically eliminate the possibility of
-	// duplicates).
-	int peakCount = 0;
-	Enumeration hKeys = info.hChemshifts.keys();
-	while (hKeys.hasMoreElements()) {
-	    String hAtomName = (String)hKeys.nextElement();
-	        // At this point, cAtomName may actually be something
-		// other than a carbon, but non-carbons will be eliminated
-		// because they won't be found in the info.cChemshifts
-		// list.
-	    String cAtomName = findBondedAtom(hAtomName, info.bonds);
+        //
+        // We go through the list of hydrogens for this residue,
+        // and find atoms that are bonded to the hydrogen (we index on
+        // the hydrogen list because only one atom will be bonded to a
+        // hydrogen, so we automatically eliminate the possibility of
+        // duplicates).
+        int peakCount = 0;
+        Enumeration hKeys = info.hChemshifts.keys();
+        while (hKeys.hasMoreElements()) {
+            String hAtomName = (String)hKeys.nextElement();
+            // At this point, cAtomName may actually be something
+            // other than a carbon, but non-carbons will be eliminated
+            // because they won't be found in the info.cChemshifts
+            // list.
+            String cAtomName = findBondedAtom(hAtomName, info.bonds);
             if (cAtomName != null) {
-	        Double hChemshift = (Double) info.hChemshifts.get(hAtomName);
-	        Double cChemshift = (Double) info.cChemshifts.get(cAtomName);
-		if (hChemshift != null && cChemshift != null) {
+                Double hChemshift = (Double) info.hChemshifts.get(hAtomName);
+                Double cChemshift = (Double) info.cChemshifts.get(cAtomName);
+                if (hChemshift != null && cChemshift != null) {
                     writer.write(hChemshift + " " +
-		      cChemshift + " " +
-		      hAtomName + " " +
-		      cAtomName + " " +
-		      info.residueSeqCode + " " +
-		      info.residueLabel + " " +
-		      _entityAssemblyID + " " +
-		      _name + " " +
-		      info.residueLabelSh + "\n");
-		    peakCount++;
-		}
-	    } else {
-		S2DWarning warning = new S2DWarning("atom " +
-		  hAtomName + " not found in bonds list for residue " +
-		  info.residueSeqCode + "/" + info.residueLabel);
-	        if (doDebugOutput(1)) {
-	            System.err.println(warning);
-		}
-	    }
-	}
+                                 cChemshift + " " +
+                                 hAtomName + " " +
+                                 cAtomName + " " +
+                                 info.residueSeqCode + " " +
+                                 info.residueLabel + " " +
+                                 _entityAssemblyID + " " +
+                                 _name + " " +
+                                 info.residueLabelSh + "\n");
+                    peakCount++;
+                }
+            } else {
+                S2DWarning warning = new S2DWarning("atom " +
+                                                    hAtomName + " not found in bonds list for residue " +
+                                                    info.residueSeqCode + "/" + info.residueLabel);
+                if (doDebugOutput(1)) {
+                    System.err.println(warning);
+                }
+            }
+        }
 
-	return peakCount;
+        return peakCount;
     }
 
     //-------------------------------------------------------------------
@@ -1172,19 +1172,19 @@ public class S2DProteinChemShift extends S2DChemShift {
     {
         String result = null;
 
-	for (int index = 0; index < bonds.size(); index++) {
-	    S2DConnections.Bond bond =
-	      (S2DConnections.Bond)bonds.elementAt(index);
-	    if (bond._atom1.equals(atomName)) {
-	        result = bond._atom2;
-		break;
-	    } else if (bond._atom2.equals(atomName)) {
-	        result = bond._atom1;
-		break;
-	    }
-	}
+        for (int index = 0; index < bonds.size(); index++) {
+            S2DConnections.Bond bond =
+                (S2DConnections.Bond)bonds.elementAt(index);
+            if (bond._atom1.equals(atomName)) {
+                result = bond._atom2;
+                break;
+            } else if (bond._atom2.equals(atomName)) {
+                result = bond._atom1;
+                break;
+            }
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -1192,12 +1192,12 @@ public class S2DProteinChemShift extends S2DChemShift {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

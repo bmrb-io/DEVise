@@ -96,13 +96,13 @@ public class S2DSummaryHtml {
     {
         if (doDebugOutput(11)) {
             System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
-            name + ", " + masterId + ")");
+                               name + ", " + masterId + ")");
         }
 
         _htmlDir = htmlDir;
 
         _normal = new S2DSummaryHtmlNormal(name, fullName, longName,
-        masterId, localFiles, htmlDir, restraintOnly);
+                                           masterId, localFiles, htmlDir, restraintOnly);
 
         _normal.initialize(systemName, frameTitle);
     }
@@ -118,13 +118,13 @@ public class S2DSummaryHtml {
     {
         if (doDebugOutput(11)) {
             System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
-            name + ", " + masterId + ", " + extraId + ")");
+                               name + ", " + masterId + ", " + extraId + ")");
         }
 
         _htmlDir = htmlDir;
 
         _normal = new S2DSummaryHtmlNormal(name, fullName, longName,
-        masterId, extraId, localFiles, htmlDir, restraintOnly);
+                                           masterId, extraId, localFiles, htmlDir, restraintOnly);
 
         _normal.initialize(systemName, frameTitle);
     }
@@ -161,7 +161,7 @@ public class S2DSummaryHtml {
     {
         if (doDebugOutput(11)) {
             System.out.println("S2DSummaryHtml.startFrame(" +
-            frameDetails + ")");
+                               frameDetails + ")");
         }
 
         _normal.startFrame(frameDetails);
@@ -188,7 +188,7 @@ public class S2DSummaryHtml {
         }
 
         _normal.writeDeltashift(frameIndex, entityAssemblyID, count,
-        isNucleicAcid);
+                                isNucleicAcid);
     }
 
     //-------------------------------------------------------------------
@@ -201,7 +201,7 @@ public class S2DSummaryHtml {
         }
 
         _normal.writeSpartaDeltashift(entityAssemblyID, frameIndex,
-        count);
+                                      count);
     }
 
     //-------------------------------------------------------------------
@@ -251,7 +251,7 @@ public class S2DSummaryHtml {
         }
 
         _normal.writeRelax(dataType, frequency, suffix, name,
-        frameIndex, entityAssemblyID, count);
+                           frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -498,7 +498,7 @@ public class S2DSummaryHtml {
         }
 
         _normal.write2EntHvsNShifts(frameIndex1, frameIndex2, eaId1,
-        eaId2, peakCount1, peakCount2);
+                                    eaId2, peakCount1, peakCount2);
     }
 
     //-------------------------------------------------------------------
@@ -512,7 +512,7 @@ public class S2DSummaryHtml {
         }
 
         _normal.write2EntHvsCShifts(frameIndex1, frameIndex2, eaId1,
-        eaId2, peakCount1, peakCount2);
+                                    eaId2, peakCount1, peakCount2);
     }
 
     //-------------------------------------------------------------------

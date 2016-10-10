@@ -98,7 +98,7 @@ public class S2DConnections {
     private static final int DEBUG = 0;
 
     class AminoAcid {
-	public String _name;
+        public String _name;
         public Vector _bonds; // really, half-bonds (Bond objects)
     }
 
@@ -118,114 +118,114 @@ public class S2DConnections {
     // Constructor.
     public S2DConnections(String connectionsFile) throws S2DException
     {
-    	if (doDebugOutput(11)) {
-	    System.out.println("S2DConnections.S2DConnections(" +
-	      connectionsFile + ")");
-	}
+        if (doDebugOutput(11)) {
+            System.out.println("S2DConnections.S2DConnections(" +
+                               connectionsFile + ")");
+        }
 
-	_aminoAcids = new Hashtable();
+        _aminoAcids = new Hashtable();
 
-	try {
-	    //
-	    // Read the connections file and create a list of bonds for
-	    // each amino acid.
-	    //
-	    BufferedReader reader = new BufferedReader(new FileReader(
-	      connectionsFile));
+        try {
+            //
+            // Read the connections file and create a list of bonds for
+            // each amino acid.
+            //
+            BufferedReader reader = new BufferedReader(new FileReader(
+                        connectionsFile));
 
             String line;
-	    while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
 
-	        // Check for comments and blank lines.
-		if (!line.equals("") && (line.charAt(0) != '#')) {
-		    StringTokenizer strTok = new StringTokenizer(line, ",");
-		    if (strTok.countTokens() < 4) {
-			// Note: this is *not* thrown, just created to
-			// log the warning.
-			new S2DWarning("Warning: too few tokens in line <" +
-			  line + ">");
-		    } else {
-			// Skip one-character amino acid name.
-			strTok.nextToken();
+                // Check for comments and blank lines.
+                if (!line.equals("") && (line.charAt(0) != '#')) {
+                    StringTokenizer strTok = new StringTokenizer(line, ",");
+                    if (strTok.countTokens() < 4) {
+                        // Note: this is *not* thrown, just created to
+                        // log the warning.
+                        new S2DWarning("Warning: too few tokens in line <" +
+                                       line + ">");
+                    } else {
+                        // Skip one-character amino acid name.
+                        strTok.nextToken();
 
-			String acidName3 = strTok.nextToken();
-			String atom1 = strTok.nextToken();
+                        String acidName3 = strTok.nextToken();
+                        String atom1 = strTok.nextToken();
 
-			AminoAcid acid = (AminoAcid)_aminoAcids.get(acidName3);
-			if (acid == null) {
-			    acid = new AminoAcid();
-			    acid._name = acidName3;
-			    acid._bonds = new Vector();
-			    _aminoAcids.put(acidName3, acid);
-			}
+                        AminoAcid acid = (AminoAcid)_aminoAcids.get(acidName3);
+                        if (acid == null) {
+                            acid = new AminoAcid();
+                            acid._name = acidName3;
+                            acid._bonds = new Vector();
+                            _aminoAcids.put(acidName3, acid);
+                        }
 
-		        while (strTok.hasMoreTokens()) {
-			    String atom2 = strTok.nextToken();
-			    Bond bond = new Bond();
-			    bond._atom1 = atom1;
-			    bond._atom2 = atom2;
+                        while (strTok.hasMoreTokens()) {
+                            String atom2 = strTok.nextToken();
+                            Bond bond = new Bond();
+                            bond._atom1 = atom1;
+                            bond._atom2 = atom2;
 
-			    // Order of bonds list is not significant.
-			    acid._bonds.addElement(bond);
-		        }
-		    }
-		}
-	    }
+                            // Order of bonds list is not significant.
+                            acid._bonds.addElement(bond);
+                        }
+                    }
+                }
+            }
 
-	    reader.close();
+            reader.close();
 
 
         } catch (IOException ex) {
-	    System.err.println("IOException: " + ex.toString());
-	    throw new S2DError("Can't read connections file");
-	}
+            System.err.println("IOException: " + ex.toString());
+            throw new S2DError("Can't read connections file");
+        }
 
-	//
-	// Test the bonds lists for consistency.
-	//
-	Enumeration acidList = _aminoAcids.elements();
-	while (acidList.hasMoreElements()) {
-	    AminoAcid acid = (AminoAcid)acidList.nextElement();
+        //
+        // Test the bonds lists for consistency.
+        //
+        Enumeration acidList = _aminoAcids.elements();
+        while (acidList.hasMoreElements()) {
+            AminoAcid acid = (AminoAcid)acidList.nextElement();
 
-	    if (doDebugOutput(12)) {
-		System.out.println("Amino acid " + acid._name);
-	        for (int index = 0; index < acid._bonds.size(); index++) {
-		    Bond bond = (Bond)acid._bonds.elementAt(index);
-		    System.out.println("  bond: " + bond._atom1 + " " +
-		      bond._atom2);
-		}
-	    }
+            if (doDebugOutput(12)) {
+                System.out.println("Amino acid " + acid._name);
+                for (int index = 0; index < acid._bonds.size(); index++) {
+                    Bond bond = (Bond)acid._bonds.elementAt(index);
+                    System.out.println("  bond: " + bond._atom1 + " " +
+                                       bond._atom2);
+                }
+            }
 
-	    if ((acid._bonds.size() % 2) != 0) {
-	        System.err.println("Warning: amino acid " + acid._name +
-		  " has odd number of half-bonds");
-	    }
-	}
+            if ((acid._bonds.size() % 2) != 0) {
+                System.err.println("Warning: amino acid " + acid._name +
+                                   " has odd number of half-bonds");
+            }
+        }
 
-	//
-	// Set up the 1-letter to 3-letter code translation table.
-	//
-	_nameTrans = new Hashtable();
-	_nameTrans.put("A", "ALA");
-	_nameTrans.put("C", "CYS");
-	_nameTrans.put("D", "ASP");
-	_nameTrans.put("E", "GLU");
-	_nameTrans.put("F", "PHE");
-	_nameTrans.put("G", "GLY");
-	_nameTrans.put("H", "HIS");
-	_nameTrans.put("I", "ILE");
-	_nameTrans.put("K", "LYS");
-	_nameTrans.put("L", "LEU");
-	_nameTrans.put("M", "MET");
-	_nameTrans.put("N", "ASN");
-	_nameTrans.put("P", "PRO");
-	_nameTrans.put("Q", "GLN");
-	_nameTrans.put("R", "ARG");
-	_nameTrans.put("S", "SER");
-	_nameTrans.put("T", "THR");
-	_nameTrans.put("V", "VAL");
-	_nameTrans.put("W", "TRP");
-	_nameTrans.put("Y", "TYR");
+        //
+        // Set up the 1-letter to 3-letter code translation table.
+        //
+        _nameTrans = new Hashtable();
+        _nameTrans.put("A", "ALA");
+        _nameTrans.put("C", "CYS");
+        _nameTrans.put("D", "ASP");
+        _nameTrans.put("E", "GLU");
+        _nameTrans.put("F", "PHE");
+        _nameTrans.put("G", "GLY");
+        _nameTrans.put("H", "HIS");
+        _nameTrans.put("I", "ILE");
+        _nameTrans.put("K", "LYS");
+        _nameTrans.put("L", "LEU");
+        _nameTrans.put("M", "MET");
+        _nameTrans.put("N", "ASN");
+        _nameTrans.put("P", "PRO");
+        _nameTrans.put("Q", "GLN");
+        _nameTrans.put("R", "ARG");
+        _nameTrans.put("S", "SER");
+        _nameTrans.put("T", "THR");
+        _nameTrans.put("V", "VAL");
+        _nameTrans.put("W", "TRP");
+        _nameTrans.put("Y", "TYR");
     }
 
     //-------------------------------------------------------------------
@@ -237,29 +237,29 @@ public class S2DConnections {
      */
     public Vector getBonds(String acidName) throws S2DException
     {
-	if (doDebugOutput(12)) {
-	    System.out.println("S2DConnections.getBonds(" + acidName + ")");
-	}
+        if (doDebugOutput(12)) {
+            System.out.println("S2DConnections.getBonds(" + acidName + ")");
+        }
 
-	String acidName3Letter;
+        String acidName3Letter;
 
-	if (acidName.length() == 1) {
-	    acidName3Letter = (String)_nameTrans.get(acidName);
-	} else {
-	    acidName3Letter = acidName;
-	}
+        if (acidName.length() == 1) {
+            acidName3Letter = (String)_nameTrans.get(acidName);
+        } else {
+            acidName3Letter = acidName;
+        }
 
         AminoAcid acid = null;
-	if (acidName3Letter != null) {
+        if (acidName3Letter != null) {
             acid = (AminoAcid)_aminoAcids.get(acidName3Letter);
-	}
+        }
 
         if (acid == null) {
-	    throw new S2DError("Amino acid " + acidName +
-	      " not found in connections list");
-	}
+            throw new S2DError("Amino acid " + acidName +
+                               " not found in connections list");
+        }
 
-	return acid._bonds;
+        return acid._bonds;
     }
 
     //===================================================================
@@ -270,12 +270,12 @@ public class S2DConnections {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

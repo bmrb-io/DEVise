@@ -144,221 +144,221 @@ public class S2DChemShiftRef
     // PUBLIC METHODS
 
     public S2DChemShiftRef(String name, String longName, String dataDir,
-	  String csrDataDir, String sessionDir, String bmrbId,
-	  Vector localFiles, String pdbId, S2DSummaryHtml summary,
-	  int frameIndex, int timeout, String frameDetails,
-	  String starVersion)
+                           String csrDataDir, String sessionDir, String bmrbId,
+                           Vector localFiles, String pdbId, S2DSummaryHtml summary,
+                           int frameIndex, int timeout, String frameDetails,
+                           String starVersion)
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DChemShiftRef.S2DChemShiftRef(" + name +
-	    ", " + dataDir + ", " + csrDataDir + ", " + sessionDir + ", " +
-	    bmrbId + ", " + pdbId + ", " + frameIndex + ", " + timeout + ")");
-	}
+            System.out.println("S2DChemShiftRef.S2DChemShiftRef(" + name +
+                               ", " + dataDir + ", " + csrDataDir + ", " + sessionDir + ", " +
+                               bmrbId + ", " + pdbId + ", " + frameIndex + ", " + timeout + ")");
+        }
 
-	_name = name;
-	_longName = longName;
+        _name = name;
+        _longName = longName;
 
-	_s2dFileName = dataDir + File.separator + name +
-	  S2DNames.CSR_SUFFIX + frameIndex;
+        _s2dFileName = dataDir + File.separator + name +
+                       S2DNames.CSR_SUFFIX + frameIndex;
 
-	// Note: we're explicitly putting "/" rather than File.separator
-	// in the paths here because even if this is running on Windows,
-	// we're generating a command file that's used on Linux.  (At
-	// least for now.)  (Man, this multi-platform stuff is a pain...)
-	// wenger 2003-11-12.
-	_csFileName = csrDataDir + "/" + name + S2DNames.CSR_SUFFIX +
-	  frameIndex;
+        // Note: we're explicitly putting "/" rather than File.separator
+        // in the paths here because even if this is running on Windows,
+        // we're generating a command file that's used on Linux.  (At
+        // least for now.)  (Man, this multi-platform stuff is a pain...)
+        // wenger 2003-11-12.
+        _csFileName = csrDataDir + "/" + name + S2DNames.CSR_SUFFIX +
+                      frameIndex;
 
-	_dataDir = dataDir;
-	_csrDataDir = csrDataDir;
-	_sessionDir = sessionDir;
-	_bmrbId = bmrbId;
-	_localFiles = localFiles;
-	_pdbId = pdbId;
-	_summary = summary;
-	_frameDetails = frameDetails;
-	_frameIndex = frameIndex;
-	_timeout = timeout;
+        _dataDir = dataDir;
+        _csrDataDir = csrDataDir;
+        _sessionDir = sessionDir;
+        _bmrbId = bmrbId;
+        _localFiles = localFiles;
+        _pdbId = pdbId;
+        _summary = summary;
+        _frameDetails = frameDetails;
+        _frameIndex = frameIndex;
+        _timeout = timeout;
 
-	_starVersion = starVersion;
+        _starVersion = starVersion;
     }
 
     public void run() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DChemShiftRef.run()");
-	}
+            System.out.println("S2DChemShiftRef.run()");
+        }
 
-	// Make sure the error file doesn't already exist so we don't
-	// goof ourselves up.
-	_errorFile = new File(_s2dFileName + ".error");
-	if (_errorFile.exists()) {
-	    if (!_errorFile.delete()) {
-	        throw new S2DError("Unable to delete existing error file " +
-		  _errorFile);
-	    }
-	}
+        // Make sure the error file doesn't already exist so we don't
+        // goof ourselves up.
+        _errorFile = new File(_s2dFileName + ".error");
+        if (_errorFile.exists()) {
+            if (!_errorFile.delete()) {
+                throw new S2DError("Unable to delete existing error file " +
+                                   _errorFile);
+            }
+        }
 
-	_doneFile = new S2DWaitFile(_s2dFileName + ".done");
+        _doneFile = new S2DWaitFile(_s2dFileName + ".done");
 
-	try {
-	    //
-	    // Create the arguments for chemShift.
-	    //
-	    String csrInput = null; // file or BMRB ID for CSR
-	    String inputFile = null; // input file name, no directory info
-	    String inputPath = null; // full path of input file
-	    String localArg = null;
-	    if (!_bmrbId.equals("")) {
-	    	csrInput = _bmrbId;
-		localArg = "";
-	    } else if (_localFiles.size() > 0) {
-		inputPath = (String)_localFiles.elementAt(0);
-		inputFile = (new File(inputPath)).getName();
-		csrInput = _csrDataDir + "/" + inputFile;
-		localArg = "-l ";
-	    } else {
-		throw new S2DError("No NMR-STAR file specified");
-	    }
+        try {
+            //
+            // Create the arguments for chemShift.
+            //
+            String csrInput = null; // file or BMRB ID for CSR
+            String inputFile = null; // input file name, no directory info
+            String inputPath = null; // full path of input file
+            String localArg = null;
+            if (!_bmrbId.equals("")) {
+                csrInput = _bmrbId;
+                localArg = "";
+            } else if (_localFiles.size() > 0) {
+                inputPath = (String)_localFiles.elementAt(0);
+                inputFile = (new File(inputPath)).getName();
+                csrInput = _csrDataDir + "/" + inputFile;
+                localArg = "-l ";
+            } else {
+                throw new S2DError("No NMR-STAR file specified");
+            }
 
-	    // Note: we're explicitly putting "/" rather than File.separator
-	    // in the paths here because even if this is running on Windows,
-	    // we're generating a command file that's used on Linux.  (At
-	    // least for now.)  (Man, this multi-platform stuff is a pain...)
-	    // wenger 2003-11-12.
-	    _cmdStr = localArg + csrInput + " " + _pdbId + " " + _csFileName;
+            // Note: we're explicitly putting "/" rather than File.separator
+            // in the paths here because even if this is running on Windows,
+            // we're generating a command file that's used on Linux.  (At
+            // least for now.)  (Man, this multi-platform stuff is a pain...)
+            // wenger 2003-11-12.
+            _cmdStr = localArg + csrInput + " " + _pdbId + " " + _csFileName;
             if (doDebugOutput(12)) {
-	    	System.out.println("ChemShiftRef cmdStr = <" + _cmdStr + ">");
-	    }
+                System.out.println("ChemShiftRef cmdStr = <" + _cmdStr + ">");
+            }
 
-	    //
-	    // If local mode, copy input file into _data_dir.
-	    //
-	    if (_bmrbId.equals("")) {
-	    	S2DUtils.copyFile(inputPath, _dataDir + File.separator +
-		  inputFile);
-	    }
+            //
+            // If local mode, copy input file into _data_dir.
+            //
+            if (_bmrbId.equals("")) {
+                S2DUtils.copyFile(inputPath, _dataDir + File.separator +
+                                  inputFile);
+            }
 
-	    //
-	    // Dump the chemShift arguments into the run file.
-	    //
-	    String runFileName = _dataDir + File.separator + "csr.run";
-	    FileWriter writer = S2DFileWriter.create(runFileName);
-	    writer.write(_cmdStr);
-	    writer.close();
+            //
+            // Dump the chemShift arguments into the run file.
+            //
+            String runFileName = _dataDir + File.separator + "csr.run";
+            FileWriter writer = S2DFileWriter.create(runFileName);
+            writer.write(_cmdStr);
+            writer.close();
 
         } catch (Exception ex) {
-	    System.err.println("Exception running chem shift reference " +
-	      "calculation: " + ex.toString());
-	    throw new S2DError("Unable to run chemical shift reference " +
-	      "calculation");
-	}
+            System.err.println("Exception running chem shift reference " +
+                               "calculation: " + ex.toString());
+            throw new S2DError("Unable to run chemical shift reference " +
+                               "calculation");
+        }
     }
 
     public void postProcess(boolean doProteinCheck) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DChemShiftRef.postProcess()");
-	}
+            System.out.println("S2DChemShiftRef.postProcess()");
+        }
 
-	try {
+        try {
 
-	    //
-	    // Make sure the external process has finished successfully.
-	    //
-	    _doneFile.wait(1000, _timeout * 1000);
+            //
+            // Make sure the external process has finished successfully.
+            //
+            _doneFile.wait(1000, _timeout * 1000);
 
-	    _csrRan = true;
+            _csrRan = true;
 
-	    boolean failed = _errorFile.exists();
-	    if (failed) {
-		_ranButFailed = true;
-		throw new S2DError("Chem shift reference calculation failed!!");
-	    }
+            boolean failed = _errorFile.exists();
+            if (failed) {
+                _ranButFailed = true;
+                throw new S2DError("Chem shift reference calculation failed!!");
+            }
 
             checkFileVersions();
 
-	    //
-	    // Write the data file telling where the coordinates came from
-	    // (so we can show that in the visualization).
-	    //
-	    Writer srcWriter = S2DFileWriter.create(_s2dFileName + "src.dat");
-	    String bmrbMsg;
-	    if (!_bmrbId.equals("")) {
+            //
+            // Write the data file telling where the coordinates came from
+            // (so we can show that in the visualization).
+            //
+            Writer srcWriter = S2DFileWriter.create(_s2dFileName + "src.dat");
+            String bmrbMsg;
+            if (!_bmrbId.equals("")) {
                 bmrbMsg = "Observed chem shifts from BMRB accession " + _bmrbId;
-	    } else {
+            } else {
                 bmrbMsg = "Observed chem shifts from " + _longName;
-	    }
-	    srcWriter.write(bmrbMsg + "; calculated chem shifts from PDB ID " +
-	      _pdbId + "\n");
-	    srcWriter.close();
+            }
+            srcWriter.write(bmrbMsg + "; calculated chem shifts from PDB ID " +
+                            _pdbId + "\n");
+            srcWriter.close();
 
-	    //
-	    // Write the session files.
-	    //
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF1, _name,
-	      _frameIndex, "", null, true, _starVersion, "");
+            //
+            // Write the session files.
+            //
+            S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF1, _name,
+                             _frameIndex, "", null, true, _starVersion, "");
 
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF2, _name,
-	      _frameIndex, "", null, true, _starVersion, "");
+            S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF2, _name,
+                             _frameIndex, "", null, true, _starVersion, "");
 
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF3, _name,
-	      _frameIndex, "", null, true, _starVersion, "");
+            S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF3, _name,
+                             _frameIndex, "", null, true, _starVersion, "");
 
-	    //
-	    // Write the session-specific html files.
-	    //
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(),
-	      S2DUtils.TYPE_CHEM_SHIFT_REF1, _name, _frameIndex,
-	      "Chemical Shift Reference Difference Histograms", _frameDetails);
-	    specHtml.write();
+            //
+            // Write the session-specific html files.
+            //
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(),
+                S2DUtils.TYPE_CHEM_SHIFT_REF1, _name, _frameIndex,
+                "Chemical Shift Reference Difference Histograms", _frameDetails);
+            specHtml.write();
 
-	    specHtml = new S2DSpecificHtml(_summary.getHtmlDir(),
-	      S2DUtils.TYPE_CHEM_SHIFT_REF2, _name, _frameIndex,
-	      "Chemical Shift Differences by Residue", _frameDetails);
-	    specHtml.write();
+            specHtml = new S2DSpecificHtml(_summary.getHtmlDir(),
+                                           S2DUtils.TYPE_CHEM_SHIFT_REF2, _name, _frameIndex,
+                                           "Chemical Shift Differences by Residue", _frameDetails);
+            specHtml.write();
 
-	    specHtml = new S2DSpecificHtml(_summary.getHtmlDir(),
-	      S2DUtils.TYPE_CHEM_SHIFT_REF3, _name, _frameIndex,
-	      "Observed vs. Calculated Chemical Shift Values", _frameDetails);
-	    specHtml.write();
+            specHtml = new S2DSpecificHtml(_summary.getHtmlDir(),
+                                           S2DUtils.TYPE_CHEM_SHIFT_REF3, _name, _frameIndex,
+                                           "Observed vs. Calculated Chemical Shift Values", _frameDetails);
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.startFrame("Chemical Shift Referencing Visualizations" +
-	      " (calculated chem shifts from PDB " + _pdbId + ")");
-	    // We assume that if doProteinCheck is false, we're in Jafar mode.
-	    _summary.writeChemShiftRef(_pdbId, _frameIndex);
-	    _summary.endFrame();
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.startFrame("Chemical Shift Referencing Visualizations" +
+                                " (calculated chem shifts from PDB " + _pdbId + ")");
+            // We assume that if doProteinCheck is false, we're in Jafar mode.
+            _summary.writeChemShiftRef(_pdbId, _frameIndex);
+            _summary.endFrame();
 
-	} catch (Exception ex) {
-	    System.err.println("Exception in chem shift reference " +
-	      "postprocessing: " + ex.toString());
+        } catch (Exception ex) {
+            System.err.println("Exception in chem shift reference " +
+                               "postprocessing: " + ex.toString());
 
-	    // Write the "error" HTML pages.
-	    S2DCSRErrorHtml csrErrorHtml = new S2DCSRErrorHtml(
-	      _summary.getHtmlDir(), S2DUtils.TYPE_CHEM_SHIFT_REF1,
-	      _name, _frameIndex, "", _bmrbId, _pdbId, !_csrRan, _frameDetails);
-	    csrErrorHtml.write();
+            // Write the "error" HTML pages.
+            S2DCSRErrorHtml csrErrorHtml = new S2DCSRErrorHtml(
+                _summary.getHtmlDir(), S2DUtils.TYPE_CHEM_SHIFT_REF1,
+                _name, _frameIndex, "", _bmrbId, _pdbId, !_csrRan, _frameDetails);
+            csrErrorHtml.write();
 
-	    csrErrorHtml = new S2DCSRErrorHtml(_summary.getHtmlDir(),
-	      S2DUtils.TYPE_CHEM_SHIFT_REF2, _name, _frameIndex,
-	      "", _bmrbId, _pdbId, !_csrRan, _frameDetails);
-	    csrErrorHtml.write();
+            csrErrorHtml = new S2DCSRErrorHtml(_summary.getHtmlDir(),
+                                               S2DUtils.TYPE_CHEM_SHIFT_REF2, _name, _frameIndex,
+                                               "", _bmrbId, _pdbId, !_csrRan, _frameDetails);
+            csrErrorHtml.write();
 
-	    csrErrorHtml = new S2DCSRErrorHtml(_summary.getHtmlDir(),
-	      S2DUtils.TYPE_CHEM_SHIFT_REF3, _name, _frameIndex,
-	      "", _bmrbId, _pdbId, !_csrRan, _frameDetails);
-	    csrErrorHtml.write();
+            csrErrorHtml = new S2DCSRErrorHtml(_summary.getHtmlDir(),
+                                               S2DUtils.TYPE_CHEM_SHIFT_REF3, _name, _frameIndex,
+                                               "", _bmrbId, _pdbId, !_csrRan, _frameDetails);
+            csrErrorHtml.write();
 
-	    // Note: the S2DWarning object below is *not* supposed to be
-	    // thrown...
-	    System.err.println(new S2DWarning(
-	      "Unable to complete chem shift reference " +
-	      "post-processing for <" + _cmdStr + ">"));
-	}
+            // Note: the S2DWarning object below is *not* supposed to be
+            // thrown...
+            System.err.println(new S2DWarning(
+                                   "Unable to complete chem shift reference " +
+                                   "post-processing for <" + _cmdStr + ">"));
+        }
     }
 
     public boolean ran()
@@ -376,22 +376,22 @@ public class S2DChemShiftRef
     private void checkFileVersions() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DChemShiftRef.checkFileVersions()");
+            System.out.println("S2DChemShiftRef.checkFileVersions()");
         }
 
-	S2DCSRFileData csrData = new S2DCSRFileData();
-	for (int index = 1; index <= 5; ++index) {
-	    if (csrData.getCSRData(_name, _frameIndex, index, _dataDir)) {
-	        if (S2DUtils.compareVersions(csrData.fileVersion,
-	          MIN_CHEM_SHIFT_VERSION) < 0) {
-	            throw new S2DError("ChemShift version (" +
-	              csrData.fileVersion + ") is too old -- must " +
-	              "be at least " + MIN_CHEM_SHIFT_VERSION);
-	        }
-	    } else {
-	        throw new S2DError("Unable to get ChemShift version");
-	    }
-	}
+        S2DCSRFileData csrData = new S2DCSRFileData();
+        for (int index = 1; index <= 5; ++index) {
+            if (csrData.getCSRData(_name, _frameIndex, index, _dataDir)) {
+                if (S2DUtils.compareVersions(csrData.fileVersion,
+                                             MIN_CHEM_SHIFT_VERSION) < 0) {
+                    throw new S2DError("ChemShift version (" +
+                                       csrData.fileVersion + ") is too old -- must " +
+                                       "be at least " + MIN_CHEM_SHIFT_VERSION);
+                }
+            } else {
+                throw new S2DError("Unable to get ChemShift version");
+            }
+        }
     }
 
     //-------------------------------------------------------------------
@@ -399,12 +399,12 @@ public class S2DChemShiftRef
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

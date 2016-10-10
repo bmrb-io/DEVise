@@ -134,10 +134,10 @@ public abstract class S2DNmrStarRestIfc extends S2DNmrStarIfc {
         super(starTree);
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarRestIfc.S2DNmrStarRestIfc()");
-	}
+            System.out.println("S2DNmrStarRestIfc.S2DNmrStarRestIfc()");
+        }
 
-	setStarNames();
+        setStarNames();
     }
 
     //===================================================================
@@ -154,12 +154,12 @@ public abstract class S2DNmrStarRestIfc extends S2DNmrStarIfc {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

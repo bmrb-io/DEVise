@@ -355,7 +355,7 @@ public class S2DMain {
     {
         if (doDebugOutput(2)) {
             System.out.println("S2DMain.doProcessing(" + s2d._name +
-            ")");
+                               ")");
         }
 
         logLine("Processing " + s2d.getName() + "...");
@@ -556,47 +556,47 @@ public class S2DMain {
         Properties props = new Properties();
         try {
             props.load(new BufferedInputStream(
-                new FileInputStream("s2d.props")));
+                           new FileInputStream("s2d.props")));
         } catch (FileNotFoundException ex) {
             throw new S2DError("Can't find s2d properties file: " +
-            ex.toString());
+                               ex.toString());
         } catch (IOException ex) {
             throw new S2DError("Error reading s2d properties file: " +
-            ex.toString());
+                               ex.toString());
         }
 
         S2DNames.BMRB_STAR_URL = props.getProperty("bmrb_mirror.star_url");
         if (S2DNames.BMRB_STAR_URL == null) {
             throw new S2DError("Unable to get value for " +
-            "bmrb_mirror.star_url property");
+                               "bmrb_mirror.star_url property");
         }
 
         S2DNames.MMCIF_TEMPLATE = props.getProperty("bmrb_mirror.mmcif_template");
         if (S2DNames.MMCIF_TEMPLATE == null) {
             throw new S2DError("Unable to get value for " +
-            "bmrb_mirror.mmcif_template property");
+                               "bmrb_mirror.mmcif_template property");
         }
 
         S2DNames.BMRB_3D_URL = props.getProperty("bmrb_mirror.3d_url");
         if (S2DNames.BMRB_3D_URL == null) {
             throw new S2DError("Unable to get value for " +
-            "bmrb_mirror.3d_url property");
+                               "bmrb_mirror.3d_url property");
         }
 
         S2DNames.CGI_URL = props.getProperty("bmrb_mirror.cgi_url");
         if (S2DNames.CGI_URL == null) {
             throw new S2DError("Unable to get value for " +
-            "bmrb_mirror.cgi_url property");
+                               "bmrb_mirror.cgi_url property");
         }
 
         S2DNames.UVD_CGI_URL = props.getProperty("bmrb_mirror.uvd_cgi_url");
 
         S2DNames.STAR_NAME_TEMPLATE = props.getProperty(
-            "bmrb_mirror.star_name_template");
+                                          "bmrb_mirror.star_name_template");
         if (S2DNames.STAR_NAME_TEMPLATE == null) {
             if (doDebugOutput(2)) {
                 System.out.println("bmrb_mirror.star_name_template " +
-                "property value not defined; using default");
+                                   "property value not defined; using default");
             }
             S2DNames.STAR_NAME_TEMPLATE = "bmr*.str";
         }
@@ -627,45 +627,45 @@ public class S2DMain {
                 S2DException.setDebugLvl(Integer.parseInt(debugTmp));
             } catch(NumberFormatException ex) {
                 System.err.println(new S2DWarning("Error parsing " +
-                "debug_level value " + ex.toString() +
-                "; using default"));
+                                                  "debug_level value " + ex.toString() +
+                                                  "; using default"));
             }
         }
 
         String verbTmp = props.getProperty("bmrb_mirror.verbosity");
         if (verbTmp == null) {
             System.err.println(new S2DWarning("Unable to get value for " +
-            "bmrb_mirror.verbosity property"));
+                                              "bmrb_mirror.verbosity property"));
         } else {
             try {
                 _verbosity = Integer.parseInt(verbTmp);
             } catch(NumberFormatException ex) {
                 System.err.println(new S2DWarning("Error parsing " +
-                "verbosity value " + ex.toString() +
-                "; using default"));
+                                                  "verbosity value " + ex.toString() +
+                                                  "; using default"));
             }
         }
 
         String extraGCTmp = props.getProperty("bmrb_mirror.extra_gc");
         if (extraGCTmp == null) {
             System.err.println(new S2DWarning("Unable to get value for " +
-            "bmrb_mirror.extra_gc property"));
+                                              "bmrb_mirror.extra_gc property"));
         } else {
             try {
                 _extraGC = (Integer.parseInt(extraGCTmp) != 0);
             } catch (NumberFormatException ex) {
                 System.err.println(new S2DWarning("Error parsing " +
-                "extra_gc value " + ex.toString() +
-                "; using default"));
+                                                  "extra_gc value " + ex.toString() +
+                                                  "; using default"));
             }
         }
 
         S2DNames.SPARTA_NAME_TEMPLATE = props.getProperty(
-            "bmrb_mirror.sparta_name_template");
+                                            "bmrb_mirror.sparta_name_template");
         if (S2DNames.SPARTA_NAME_TEMPLATE == null) {
             if (doDebugOutput(2)) {
                 System.out.println("bmrb_mirror.sparta_name_template " +
-                "property value not defined; using default");
+                                   "property value not defined; using default");
             }
             S2DNames.SPARTA_NAME_TEMPLATE = "bmr*_sparta.str";
         }
@@ -742,35 +742,35 @@ public class S2DMain {
         String csrTmp = props.getProperty("bmrb_mirror.do_csr_default");
         if (csrTmp == null) {
             System.err.println(new S2DWarning("Unable to get value for " +
-            "bmrb_mirror.do_csr_default property"));
+                                              "bmrb_mirror.do_csr_default property"));
         } else {
             try {
                 _csrLevel = Integer.parseInt(csrTmp);
             } catch(NumberFormatException ex) {
                 System.err.println(new S2DWarning("Error parsing " +
-                "do_csr_default value " + ex.toString() +
-                "; using default"));
+                                                  "do_csr_default value " + ex.toString() +
+                                                  "; using default"));
             }
         }
 
         String lacsTmp = props.getProperty("bmrb_mirror.lacs_level_default");
         if (lacsTmp == null) {
             System.err.println(new S2DWarning("Unable to get value for " +
-            "bmrb_mirror.lacs_level_default property; using default"));
+                                              "bmrb_mirror.lacs_level_default property; using default"));
         } else {
             try {
                 _lacsLevel = Integer.parseInt(lacsTmp);
             } catch(NumberFormatException ex) {
                 System.err.println(new S2DWarning("Error parsing " +
-                "lacs_level_default value " + ex.toString() +
-                "; using default"));
+                                                  "lacs_level_default value " + ex.toString() +
+                                                  "; using default"));
             }
         }
 
         S2DNames.LACS_URL = props.getProperty("bmrb_mirror.lacs_url");
         if (S2DNames.LACS_URL == null) {
             S2DError err = new S2DError("Unable to get value for " +
-            "bmrb_mirror.lacs_url property");
+                                        "bmrb_mirror.lacs_url property");
             if (_lacsLevel > LACS_LEVEL_NONE) {
                 throw err;
             } else {
@@ -794,64 +794,64 @@ public class S2DMain {
                 _tarLevel = Integer.parseInt(tarTmp);
             } catch(NumberFormatException ex) {
                 System.err.println(new S2DWarning("Error parsing " +
-                "do_tar_default value " + ex.toString() +
-                "; using default"));
+                                                  "do_tar_default value " + ex.toString() +
+                                                  "; using default"));
             }
         }
 
         String rrTarTmp = props.getProperty("bmrb_mirror.do_rrtar_default");
         if (rrTarTmp == null) {
             System.err.println(new S2DWarning("Unable to get value for " +
-            "bmrb_mirror.do_rrtar_default property"));
+                                              "bmrb_mirror.do_rrtar_default property"));
         } else {
             try {
                 _rrTarLevel = Integer.parseInt(rrTarTmp);
             } catch(NumberFormatException ex) {
                 System.err.println(new S2DWarning("Error parsing " +
-                "do_rrtar_default value " + ex.toString() +
-                "; using default"));
+                                                  "do_rrtar_default value " + ex.toString() +
+                                                  "; using default"));
             }
         }
 
         String distTmp = props.getProperty("bmrb_mirror.do_dist_default");
         if (distTmp == null) {
             System.err.println(new S2DWarning("Unable to get value for " +
-            "bmrb_mirror.do_dist_default property"));
+                                              "bmrb_mirror.do_dist_default property"));
         } else {
             try {
                 _distRLevel = Integer.parseInt(distTmp);
             } catch(NumberFormatException ex) {
                 System.err.println(new S2DWarning("Error parsing " +
-                "do_dist_default value " + ex.toString() +
-                "; using default"));
+                                                  "do_dist_default value " + ex.toString() +
+                                                  "; using default"));
             }
         }
 
         String rrDistTmp = props.getProperty("bmrb_mirror.do_rrdist_default");
         if (rrDistTmp == null) {
             System.err.println(new S2DWarning("Unable to get value for " +
-            "bmrb_mirror.do_rrdist_default property"));
+                                              "bmrb_mirror.do_rrdist_default property"));
         } else {
             try {
                 _rrDistRLevel = Integer.parseInt(rrDistTmp);
             } catch(NumberFormatException ex) {
                 System.err.println(new S2DWarning("Error parsing " +
-                "do_rrdist_default value " + ex.toString() +
-                "; using default"));
+                                                  "do_rrdist_default value " + ex.toString() +
+                                                  "; using default"));
             }
         }
 
         String s2pTmp = props.getProperty("bmrb_mirror.do_s2p_default");
         if (s2pTmp == null) {
             System.err.println(new S2DWarning("Unable to get value for " +
-            "bmrb_mirror.do_s2p_default property"));
+                                              "bmrb_mirror.do_s2p_default property"));
         } else {
             try {
                 _s2PredLevel = Integer.parseInt(s2pTmp);
             } catch(NumberFormatException ex) {
                 System.err.println(new S2DWarning("Error parsing " +
-                "do_s2p_default value " + ex.toString() +
-                "; using default"));
+                                                  "do_s2p_default value " + ex.toString() +
+                                                  "; using default"));
             }
         }
     }
@@ -865,9 +865,9 @@ public class S2DMain {
         while (index < args.length) {
             if ("-dev_version".equals(args[index])) {
                 System.out.println("Peptide-CGI version " + PEP_CGI_VERSION +
-                " requires DEVise version " + DEVISE_MIN_VERSION +
-                " or higher and JavaScreen client version " +
-                JS_CLIENT_MIN_VERSION + " or higher");
+                                   " requires DEVise version " + DEVISE_MIN_VERSION +
+                                   " or higher and JavaScreen client version " +
+                                   JS_CLIENT_MIN_VERSION + " or higher");
                 throw new S2DCancel();
 
             } else if ("-version".equals(args[index])) {
@@ -1789,7 +1789,7 @@ public class S2DMain {
 
         boolean result = false;
 
-check:
+        check:
         if (!_force) {
             //
             // Get peptide-cgi version, generation timestamp, etc., from
@@ -2268,8 +2268,8 @@ check:
                                           masterStar.getEntryTitle(), _restraintOnly);
         } else {
             _summary = new S2DSummaryHtml(_name, _name, _longName,
-            "99999", _originalLocalFiles, _htmlDir, _name, ""/*TEMP?*/,
-            ""/*TEMP?*/, _restraintOnly);
+                                          "99999", _originalLocalFiles, _htmlDir, _name, ""/*TEMP?*/,
+                                          ""/*TEMP?*/, _restraintOnly);
         }
 
         //
@@ -2278,9 +2278,9 @@ check:
         S2DChemShiftRef csr = null;
         if (_csrPdbIds.size() != 0 && _csrLevel == CSR_LEVEL_PROCESS) {
             csr = new S2DChemShiftRef(_name, _longName, _dataDir, _csrDataDir,
-            _sessionDir, _masterBmrbId, _localFiles,
-            (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout, "",
-            "");
+                                      _sessionDir, _masterBmrbId, _localFiles,
+                                      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout, "",
+                                      "");
             csr.run();
         }
 
@@ -2318,11 +2318,11 @@ check:
         // processing, added more PDB IDs.)
         //
         if (csr == null && _csrPdbIds.size() != 0 &&
-        _csrLevel == CSR_LEVEL_PROCESS) {
+                _csrLevel == CSR_LEVEL_PROCESS) {
             csr = new S2DChemShiftRef(_name, _longName, _dataDir, _csrDataDir,
-            _sessionDir, _masterBmrbId, _localFiles,
-            (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout, "",
-            star.version());
+                                      _sessionDir, _masterBmrbId, _localFiles,
+                                      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout, "",
+                                      star.version());
             csr.run();
         }
 
@@ -2333,7 +2333,7 @@ check:
         // the 3D visualizations.
         //
         S2DSummaryData summDat = new S2DSummaryData(_name, _dataDir,
-        _dataSets);
+                _dataSets);
         summDat.writeSummaryData();
 
         if (_haveCoords) {
@@ -2364,12 +2364,12 @@ check:
                 //
                 boolean retry = true;
                 for (int csrIndex = 1; csrIndex < _csrPdbIds.size() && retry;
-                ++csrIndex) {
+                        ++csrIndex) {
                     String csrPdb = (String)_csrPdbIds.elementAt(csrIndex);
                     csr = new S2DChemShiftRef(_name, _longName, _dataDir,
-                    _csrDataDir, _sessionDir, _masterBmrbId, _localFiles,
-                    csrPdb, _summary, csrIndex + 1, _csrTimeout, "",
-                    star.version());
+                                              _csrDataDir, _sessionDir, _masterBmrbId, _localFiles,
+                                              csrPdb, _summary, csrIndex + 1, _csrTimeout, "",
+                                              star.version());
                     csr.run();
                     csr.postProcess(_doProteinCheck);
                     retry = csr.ranButFailed();
@@ -2458,7 +2458,7 @@ check:
 
         for (int index = 0; index < _localFiles.size(); index++) {
             star = (new S2DNmrStarStdIfcFactory()).createFromFile(
-                (String)_localFiles.elementAt(index));
+                       (String)_localFiles.elementAt(index));
 
             process1NmrStar(star);
         }
@@ -2673,7 +2673,7 @@ check:
                 S2DNmrStarIfc lacsStar;
                 if (_lacsFile != null) {
                     lacsStar = (new S2DNmrStarLacsIfcFactory()).
-                    createFromFile(_lacsFile);
+                               createFromFile(_lacsFile);
                 } else {
                     lacsStar = (new S2DNmrStarLacsIfcFactory()).
                                createFromId(_masterBmrbId, _useLocalFiles);
@@ -2841,16 +2841,16 @@ check:
         boolean wroteAtLeastOne = false;
         try {
             FileWriter resWriter = S2DFileWriter.create(_dataDir +
-            File.separator + _name + S2DNames.RES_LIST_SUFFIX +
-            S2DNames.DAT_SUFFIX);
+                                   File.separator + _name + S2DNames.RES_LIST_SUFFIX +
+                                   S2DNames.DAT_SUFFIX);
             resWriter.write("# Data: residue list for " + _name + "\n");
             resWriter.write("# Schema: bmrb-ResList\n");
             resWriter.write("# Attributes: Entity_assembly_ID; " +
-            "Residue_seq_code; ResLabel; ResLabelSh; PolymerType\n");
+                            "Residue_seq_code; ResLabel; ResLabelSh; PolymerType\n");
             resWriter.write("# Peptide-CGI version: " +
-            S2DMain.PEP_CGI_VERSION + "\n");
+                            S2DMain.PEP_CGI_VERSION + "\n");
             resWriter.write("# Generation date: " +
-            S2DMain.getTimestamp() + "\n");
+                            S2DMain.getTimestamp() + "\n");
             resWriter.write("#\n");
 
             int entityAssemblyId = 0;
@@ -2859,7 +2859,7 @@ check:
                 SaveFrameNode frame = (SaveFrameNode)frames.elementAt(frameNum);
                 if (doDebugOutput(5)) {
                     System.out.println("Writing residue list for save frame "
-                    + star.getFrameName(frame));
+                                       + star.getFrameName(frame));
                 }
 
                 // Don't do anything for non-polymers.
@@ -2918,17 +2918,17 @@ check:
         }
 
         Enumeration frameList = star.getDataFramesByCat(
-            star.CHEM_SHIFT_SF_CAT, star.ASSIGNED_CHEM_SHIFTS);
+                                    star.CHEM_SHIFT_SF_CAT, star.ASSIGNED_CHEM_SHIFTS);
 
         int frameIndex = 1;
         while (frameList.hasMoreElements()) {
             SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
 
             Vector entityAssemblyIDList = star.getUniqueTagValues(
-                frame, star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
+                                              frame, star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
             for (int index = 0; index < entityAssemblyIDList.size(); index++) {
                 String entityAssemblyID =
-                (String)entityAssemblyIDList.get(index);
+                    (String)entityAssemblyIDList.get(index);
                 String entityID = star.entAssemID2entID(entityAssemblyID);
 
                 // We only want to output chemical shifts corresponding to a
@@ -2936,8 +2936,8 @@ check:
                 if (!star.refersToPolymer(frame, entityID)) {
                     // if (doDebugOutput(2)) {
                     System.out.println("Chemical shifts not saved for " +
-                    "save frame " + frame.getLabel() + " (" +
-                    entityAssemblyID + ") because it is not a polymer");
+                                       "save frame " + frame.getLabel() + " (" +
+                                       entityAssemblyID + ") because it is not a polymer");
                     // }
                 } else {
                     //TEMP -- do I really want to catch the error here (and in
@@ -2981,10 +2981,10 @@ check:
             S2DNmrStarIfc spartaStar = null;
             if (_spartaFile != null) {
                 spartaStar = (new S2DNmrStarSpartaIfcFactory()).
-                createFromFile(_spartaFile);
+                             createFromFile(_spartaFile);
             } else {
                 spartaStar = (new S2DNmrStarSpartaIfcFactory()).
-                createFromId(_masterBmrbId, _useLocalFiles);
+                             createFromId(_masterBmrbId, _useLocalFiles);
             }
 
             // Note: average must be done first, because the
@@ -2994,7 +2994,7 @@ check:
             doSaveSpartaDeltaShifts(star, spartaStar, false);
         } catch (Exception ex) {
             System.err.println("Error processing SPARTA back calculated " +
-            "deltashifts: " + ex.toString());
+                               "deltashifts: " + ex.toString());
         }
         finally {
             _checkResList = checkResListTmp;
@@ -3011,7 +3011,7 @@ check:
     {
         if (doDebugOutput(3)) {
             System.out.println("  S2DMain.doSaveSpartaDeltaShifts(" +
-            isAvg + ")");
+                               isAvg + ")");
         }
 
         boolean append = !isAvg;
@@ -3024,34 +3024,34 @@ check:
         }
 
         Vector entityAssemblyIDList = spartaStar.getUniqueTagValues(
-            frame, spartaStar.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
+                                          frame, spartaStar.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
         Vector chemShiftListIDList = spartaStar.getUniqueTagValues(
-            frame, spartaStar.DELTA_CHEM_SHIFT_LIST_ID);
+                                         frame, spartaStar.DELTA_CHEM_SHIFT_LIST_ID);
 
         int frameIndex = 1;
         for (int index = 0; index < entityAssemblyIDList.size();
-        index++) {
+                index++) {
             String entityAssemblyID =
-            (String)entityAssemblyIDList.get(index);
+                (String)entityAssemblyIDList.get(index);
             String entityID = mainStar.entAssemID2entID(entityAssemblyID);
 
             // I'm pretty sure this will fail if the main STAR file
             // and the SPARTA star file are different versions.
             // wenger 2009-08-19
             S2DResidues residues = getFrameResCounts(mainStar, frame,
-            entityID, 0);
+                                   entityID, 0);
 
             for (int cslIndex = 0; cslIndex < chemShiftListIDList.size();
-            cslIndex++) {
+                    cslIndex++) {
                 String chemShiftListID =
-                (String)chemShiftListIDList.get(cslIndex);
+                    (String)chemShiftListIDList.get(cslIndex);
 
                 int minModelNum = 0;
                 int maxModelNum = 0;
                 if (!isAvg) {
                     minModelNum = 1;
                     maxModelNum = S2DSpartaChemShift.getSpartaMaxModelNum(
-                        spartaStar, frame, entityAssemblyID, chemShiftListID);
+                                      spartaStar, frame, entityAssemblyID, chemShiftListID);
                 }
                 for (int modelNum = minModelNum; modelNum <= maxModelNum;
                         modelNum++) {
@@ -3083,23 +3083,23 @@ check:
         }
 
         Enumeration frameList = star.getDataFramesByCat(star.T1_RELAX_SF_CAT,
-        star.T1_RELAX);
+                                star.T1_RELAX);
 
         int frameIndex = 1;
         while (frameList.hasMoreElements()) {
             SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
             Vector entityAssemblyIDList = star.getUniqueTagValues(
-                frame, star.T1_ENTITY_ASSEMBLY_ID);
+                                              frame, star.T1_ENTITY_ASSEMBLY_ID);
             for (int index = 0; index < entityAssemblyIDList.size(); index++) {
                 String entityAssemblyID =
-                (String)entityAssemblyIDList.get(index);
+                    (String)entityAssemblyIDList.get(index);
 
                 String entityID = star.entAssemID2entID(entityAssemblyID);
                 if (!star.refersToPolymer(frame, entityID)) {
                     if (doDebugOutput(2)) {
                         System.out.println("T1 relaxation not saved for " +
-                        "save frame " + frame.getLabel() + " (" +
-                        entityAssemblyID + ") because it is not a polymer");
+                                           "save frame " + frame.getLabel() + " (" +
+                                           entityAssemblyID + ") because it is not a polymer");
                     }
                     continue;
                 }
@@ -3128,23 +3128,23 @@ check:
         }
 
         Enumeration frameList = star.getDataFramesByCat(star.T2_RELAX_SF_CAT,
-        star.T2_RELAX);
+                                star.T2_RELAX);
 
         int frameIndex = 1;
         while (frameList.hasMoreElements()) {
             SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
             Vector entityAssemblyIDList = star.getUniqueTagValues(
-                frame, star.T2_ENTITY_ASSEMBLY_ID);
+                                              frame, star.T2_ENTITY_ASSEMBLY_ID);
             for (int index = 0; index < entityAssemblyIDList.size(); index++) {
                 String entityAssemblyID =
-                (String)entityAssemblyIDList.get(index);
+                    (String)entityAssemblyIDList.get(index);
 
                 String entityID = star.entAssemID2entID(entityAssemblyID);
                 if (!star.refersToPolymer(frame, entityID)) {
                     if (doDebugOutput(2)) {
                         System.out.println("T2 relaxation not saved for " +
-                        "save frame " + frame.getLabel() + " (" +
-                        entityAssemblyID + ") because it is not a polymer");
+                                           "save frame " + frame.getLabel() + " (" +
+                                           entityAssemblyID + ") because it is not a polymer");
                     }
                     continue;
                 }
@@ -3173,23 +3173,23 @@ check:
         }
 
         Enumeration frameList = star.getDataFramesByCat(star.HET_NOE_SF_CAT,
-        star.HETERONUCLEAR_NOE);
+                                star.HETERONUCLEAR_NOE);
 
         int frameIndex = 1;
         while (frameList.hasMoreElements()) {
             SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
             Vector entityAssemblyIDList = star.getUniqueTagValues(
-                frame, star.HET_NOE_ENTITY_ASSEMBLY_ID_1);
+                                              frame, star.HET_NOE_ENTITY_ASSEMBLY_ID_1);
             for (int index = 0; index < entityAssemblyIDList.size(); index++) {
                 String entityAssemblyID =
-                (String)entityAssemblyIDList.get(index);
+                    (String)entityAssemblyIDList.get(index);
 
                 String entityID = star.entAssemID2entID(entityAssemblyID);
                 if (!star.refersToPolymer(frame, entityID)) {
                     if (doDebugOutput(2)) {
                         System.out.println("Heteronuclear NOE not saved for " +
-                        "save frame " + frame.getLabel() + " (" +
-                        entityAssemblyID + ") because it is not a polymer");
+                                           "save frame " + frame.getLabel() + " (" +
+                                           entityAssemblyID + ") because it is not a polymer");
                     }
                     continue;
                 }
@@ -3228,23 +3228,23 @@ check:
         }
 
         Enumeration frameList = star.getDataFramesByCat(star.COUPLING_SF_CAT,
-        star.COUPLING_CONSTANTS);
+                                star.COUPLING_CONSTANTS);
 
         int frameIndex = 1;
         while (frameList.hasMoreElements()) {
             SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
             Vector entityAssemblyIDList = star.getUniqueTagValues(
-                frame, star.COUPLING_ENTITY_ASSEMBLY_ID_1);
+                                              frame, star.COUPLING_ENTITY_ASSEMBLY_ID_1);
             for (int index = 0; index < entityAssemblyIDList.size(); index++) {
                 String entityAssemblyID =
-                (String)entityAssemblyIDList.get(index);
+                    (String)entityAssemblyIDList.get(index);
 
                 String entityID = star.entAssemID2entID(entityAssemblyID);
                 if (!star.refersToPolymer(frame, entityID)) {
                     if (doDebugOutput(2)) {
                         System.out.println("Coupling constants not saved for " +
-                        "save frame " + frame.getLabel() + " (" +
-                        entityAssemblyID + ") because it is not a polymer");
+                                           "save frame " + frame.getLabel() + " (" +
+                                           entityAssemblyID + ") because it is not a polymer");
                     }
                     continue;
                 }
@@ -3282,23 +3282,23 @@ check:
         }
 
         Enumeration frameList = star.getDataFramesByCat(star.ORDER_SF_CAT,
-        star.ORDER_PARAMETERS);
+                                star.ORDER_PARAMETERS);
 
         int frameIndex = 1;
         while (frameList.hasMoreElements()) {
             SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
             Vector entityAssemblyIDList = star.getUniqueTagValues(
-                frame, star.ORDER_ENTITY_ASSEMBLY_ID);
+                                              frame, star.ORDER_ENTITY_ASSEMBLY_ID);
             for (int index = 0; index < entityAssemblyIDList.size(); index++) {
                 String entityAssemblyID =
-                (String)entityAssemblyIDList.get(index);
+                    (String)entityAssemblyIDList.get(index);
 
                 String entityID = star.entAssemID2entID(entityAssemblyID);
                 if (!star.refersToPolymer(frame, entityID)) {
                     if (doDebugOutput(2)) {
                         System.out.println("S2 order parameters not saved for " +
-                        "save frame " + frame.getLabel() + " (" +
-                        entityAssemblyID + ") because it is not a polymer");
+                                           "save frame " + frame.getLabel() + " (" +
+                                           entityAssemblyID + ") because it is not a polymer");
                     }
                     continue;
                 }
@@ -3326,7 +3326,7 @@ check:
         }
 
         Enumeration frameList = star.getDataFramesByCat(
-            star.PEAK_LIST_SF_CAT, star.PEAK_LIST);
+                                    star.PEAK_LIST_SF_CAT, star.PEAK_LIST);
 
         int frameIndex = 1;
         while (frameList.hasMoreElements()) {
@@ -3362,13 +3362,13 @@ check:
 
         try {
             Writer writer = S2DFileWriter.create(_sessionDir +
-            File.separator + _name + File.separator + _name +
-            S2DNames.ATOMIC_COORD_DATA_DEF);
+                                                 File.separator + _name + File.separator + _name +
+                                                 S2DNames.ATOMIC_COORD_DATA_DEF);
             S2DSession.write3DDataSources(writer, _dataSets);
             writer.close();
         } catch (IOException ex) {
             throw new S2DError("Unable to save 3D data sources: " +
-            ex.toString());
+                               ex.toString());
         }
     }
 
@@ -3407,7 +3407,7 @@ check:
         }
 
         Enumeration frameList = star.getDataFramesByCat(
-            star.LACS_PLOT_SF_CAT, star.LACS_OUTPUT);
+                                    star.LACS_PLOT_SF_CAT, star.LACS_OUTPUT);
 
         int frameIndex = 1;
         while (frameList.hasMoreElements()) {
@@ -3431,7 +3431,7 @@ check:
 
         if (_extraBmrbIdList.size() > 1) {
             throw new S2DError("Too many 'extra' BMRB IDs " +
-            "specified -- current max is 1");
+                               "specified -- current max is 1");
         }
 
         String extraId = (String)_extraBmrbIdList.elementAt(0);
@@ -3442,11 +3442,11 @@ check:
         String systemName = "";
         String frameTitle = "";
         S2DSummaryHtml summary2 = new S2DSummaryHtml(_masterName,
-        fullName, _fullLongName, _masterBmrbId, extraId,
-        _originalLocalFiles, _htmlDir, "", systemName, frameTitle, false);
+                fullName, _fullLongName, _masterBmrbId, extraId,
+                _originalLocalFiles, _htmlDir, "", systemName, frameTitle, false);
 
         S2DProteinChemShift.writeMultiEntrySessions(_masterName,
-        fullName, extraId, _sessionDir, _htmlDir, summary2);
+                fullName, extraId, _sessionDir, _htmlDir, summary2);
 
         //TEMP -- we may eventually want to pass something here for
         // related BMRB IDs...
@@ -3463,8 +3463,8 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.getFrameResCounts(" +
-            star.getFrameName(chemShiftFrame) + " (" + entityID +
-            "), " + frameIndex + ")");
+                               star.getFrameName(chemShiftFrame) + " (" + entityID +
+                               "), " + frameIndex + ")");
         }
 
         SaveFrameNode tmpFrame = null;
@@ -3477,7 +3477,7 @@ check:
         } catch (S2DException ex) {
             if (_doProteinCheck) {
                 System.err.println("Can't get entity frame for frame " +
-                star.getFrameName(chemShiftFrame));
+                                   star.getFrameName(chemShiftFrame));
                 throw ex;
             }
         }
@@ -3537,8 +3537,8 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveResList(" +
-            star.getFrameName(monoPolyFrame) + ", " + frameIndex +
-            ", " + entityId + ")");
+                               star.getFrameName(monoPolyFrame) + ", " + frameIndex +
+                               ", " + entityId + ")");
         }
 
         // Note: star.getEntityFrame() will throw an exception if there
@@ -3557,11 +3557,11 @@ check:
             entityAssemblyId = new Integer(entityAssemblyIdTmp).intValue();
         }
         S2DResidues residues = star.getResidues(monoPolyFrame,
-        entityAssemblyId);
+                                                entityAssemblyId);
 
         S2DResCount resCount = new S2DResCount(_name, _dataDir,
-        residues._resSeqCodes, residues._resLabels,
-        residues.getPolymerType());
+                                               residues._resSeqCodes, residues._resLabels,
+                                               residues.getPolymerType());
 
         // In case we want to get the residue list without writing it out.
         if (frameIndex > 0) {
@@ -3579,16 +3579,16 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFrameChemShifts(" +
-            star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
-            frameIndex + ")");
+                               star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+                               frameIndex + ")");
         }
 
         //
         // Create an S2DChemShift object.
         //
         S2DChemShift chemShift = S2DChemShift.create(
-            residues.getPolymerType(), _name, _longName, star, frame,
-            _dataDir, _sessionDir, _summary, entityAssemblyID, residues);
+                                     residues.getPolymerType(), _name, _longName, star, frame,
+                                     _dataDir, _sessionDir, _summary, entityAssemblyID, residues);
 
         //
         // Now go ahead and calculate and write out the chem shift values.
@@ -3619,8 +3619,8 @@ check:
         }
 
         if (residueCount < 0 ||
-        ((float)star.getHAChemShiftCount(frame) /
-        (float)residueCount >= 0.8)) {
+                ((float)star.getHAChemShiftCount(frame) /
+                 (float)residueCount >= 0.8)) {
             try {
                 chemShift.writeCSI(frameIndex);
                 chemShift.addCsiData(_dataSets, frameIndex);
@@ -3633,14 +3633,14 @@ check:
         } else {
             if (doDebugOutput(2)) {
                 System.out.println("CSI values not saved for " +
-                "save frame " + frame.getLabel() + " because HA " +
-                "chem shifts are not available for 80% of the residues");
+                                   "save frame " + frame.getLabel() + " because HA " +
+                                   "chem shifts are not available for 80% of the residues");
             }
         }
 
         try {
             chemShift.writePctAssign(frameIndex, _checkPctAssign,
-            star.CHEMASSG_FILE);
+                                     star.CHEMASSG_FILE);
             chemShift.addPctAssignData(_dataSets, frameIndex);
         } catch (S2DException ex) {
             // Don't throw a new exception here because we want to write as
@@ -3688,18 +3688,18 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFrameSpartaDeltaShifts(" +
-            star.getFrameName(frame) + " (<" + entityAssemblyID +
-            ">, <" + chemShiftListID + ">, " + modelNum + ", " +
-            frameIndex + "), " + append + ")");
+                               star.getFrameName(frame) + " (<" + entityAssemblyID +
+                               ">, <" + chemShiftListID + ">, " + modelNum + ", " +
+                               frameIndex + "), " + append + ")");
         }
 
         //
         // Create an S2DChemShift object.
         //
         S2DChemShift chemShift = S2DChemShift.createSparta(
-            residues.getPolymerType(), _name, _longName, star, frame,
-            _dataDir, _sessionDir, _summary, entityAssemblyID,
-            chemShiftListID, modelNum, residues);
+                                     residues.getPolymerType(), _name, _longName, star, frame,
+                                     _dataDir, _sessionDir, _summary, entityAssemblyID,
+                                     chemShiftListID, modelNum, residues);
 
         //
         // Now go ahead and write out the delta shift values.
@@ -3726,16 +3726,16 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFrameT1Relax(" +
-            star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
-            frameIndex + ")");
+                               star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+                               frameIndex + ")");
         }
 
         //
         // Create an S2DRelaxation object.
         //
         S2DRelaxation relaxation = new S2DRelaxation(_name, _longName,
-        star, frame, _dataDir, _sessionDir, _summary,
-        S2DUtils.TYPE_T1_RELAX, entityAssemblyID);
+                star, frame, _dataDir, _sessionDir, _summary,
+                S2DUtils.TYPE_T1_RELAX, entityAssemblyID);
 
         //
         // Now go ahead and calculate and write out the relaxation values.
@@ -3746,7 +3746,7 @@ check:
             relaxation.writeRelaxation(frameIndex);
             String entityID = star.entAssemID2entID(entityAssemblyID);
             relaxation.addRelaxationData(_dataSets, frameIndex,
-            star.getDataPolymerType(frame, entityID));
+                                         star.getDataPolymerType(frame, entityID));
         } finally {
             _summary.endFrame();
         }
@@ -3759,16 +3759,16 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFrameT2Relax(" +
-            star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
-            frameIndex + ")");
+                               star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+                               frameIndex + ")");
         }
 
         //
         // Create an S2DRelaxation object.
         //
         S2DRelaxation relaxation = new S2DRelaxation(_name, _longName,
-        star, frame, _dataDir, _sessionDir, _summary,
-        S2DUtils.TYPE_T2_RELAX, entityAssemblyID);
+                star, frame, _dataDir, _sessionDir, _summary,
+                S2DUtils.TYPE_T2_RELAX, entityAssemblyID);
 
         //
         // Now go ahead and calculate and write out the relaxation values.
@@ -3779,7 +3779,7 @@ check:
             relaxation.writeRelaxation(frameIndex);
             String entityID = star.entAssemID2entID(entityAssemblyID);
             relaxation.addRelaxationData(_dataSets, frameIndex,
-            star.getDataPolymerType(frame, entityID));
+                                         star.getDataPolymerType(frame, entityID));
         } finally {
             _summary.endFrame();
         }
@@ -3792,15 +3792,15 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFrameCoupling(" +
-            star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
-            frameIndex + ")");
+                               star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+                               frameIndex + ")");
         }
 
         //
         // Create an S2DCoupling object.
         //
         S2DCoupling coupling = new S2DCoupling(_name, _longName, star,
-        frame, _dataDir, _sessionDir, _summary, entityAssemblyID);
+                                               frame, _dataDir, _sessionDir, _summary, entityAssemblyID);
 
         //
         // Now go ahead and calculate and write out the coupling contants.
@@ -3811,7 +3811,7 @@ check:
             coupling.writeCoupling(frameIndex);
             String entityID = star.entAssemID2entID(entityAssemblyID);
             coupling.addCouplingData(_dataSets, frameIndex,
-            star.getDataPolymerType(frame, entityID));
+                                     star.getDataPolymerType(frame, entityID));
         } finally {
             _summary.endFrame();
         }
@@ -3824,15 +3824,15 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFrameHetNOE(" +
-            star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
-            frameIndex + ")");
+                               star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+                               frameIndex + ")");
         }
 
         //
         // Create an S2DHetNOE object.
         //
         S2DHetNOE hetNOE = new S2DHetNOE(_name, _longName, star, frame,
-        _dataDir, _sessionDir, _summary, entityAssemblyID);
+                                         _dataDir, _sessionDir, _summary, entityAssemblyID);
 
         //
         // Now go ahead and calculate and write out the heteronuclear NOE
@@ -3844,7 +3844,7 @@ check:
             hetNOE.writeHetNOE(frameIndex);
             String entityID = star.entAssemID2entID(entityAssemblyID);
             hetNOE.addHetNOEData(_dataSets, frameIndex,
-            star.getDataPolymerType(frame, entityID));
+                                 star.getDataPolymerType(frame, entityID));
         } finally {
             _summary.endFrame();
         }
@@ -3857,15 +3857,15 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFrameS2Params(" +
-            star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
-            frameIndex + ")");
+                               star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+                               frameIndex + ")");
         }
 
         //
         // Create an S2DS2Order object.
         //
         S2DS2Order s2Order = new S2DS2Order(_name, _longName, star,
-        frame, _dataDir, _sessionDir, _summary, entityAssemblyID);
+                                            frame, _dataDir, _sessionDir, _summary, entityAssemblyID);
 
         //
         // Now go ahead and calculate and write out the S2 order values.
@@ -3876,7 +3876,7 @@ check:
             s2Order.writeS2Order(frameIndex);
             String entityID = star.entAssemID2entID(entityAssemblyID);
             s2Order.addS2Order(_dataSets, frameIndex,
-            star.getDataPolymerType(frame, entityID));
+                               star.getDataPolymerType(frame, entityID));
         } finally {
             _summary.endFrame();
         }
@@ -3889,15 +3889,15 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFramePeakList(" +
-            star.getFrameName(frame) + ", " + frameIndex + ")");
+                               star.getFrameName(frame) + ", " + frameIndex + ")");
         }
 
         //
         // Create an S2DPeakList object.
         //
         S2DPeakList peakList = new S2DPeakList(_name, _longName, star,
-        frame, _dataDir, _sessionDir, _summary, _peakOnly,
-        _allowSDMismatch);
+                                               frame, _dataDir, _sessionDir, _summary, _peakOnly,
+                                               _allowSDMismatch);
 
         //
         // Now go ahead and calculate and write out the peak list values.
@@ -3922,14 +3922,14 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFrameAtomicCoords(" +
-            star.getFrameName(frame) + ", " + frameIndex + ")");
+                               star.getFrameName(frame) + ", " + frameIndex + ")");
         }
 
         // Create an S2DAtomicCoordinates object with the data
         // in the current save frame.
         S2DAtomicCoords atomicCoords = new S2DAtomicCoords(_name,
-        _longName, star, frame, _dataDir, _sessionDir, _summary,
-        _connectionFile, _dataSets, _currentPdbId);
+                _longName, star, frame, _dataDir, _sessionDir, _summary,
+                _connectionFile, _dataSets, _currentPdbId);
 
         // Don't write session file, summary file link, etc., if doing
         // coordinates from remediated restraints.
@@ -3962,8 +3962,8 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFramePistachio(" +
-            star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
-            frameIndex + ")");
+                               star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+                               frameIndex + ")");
         }
 
         try {
@@ -3971,7 +3971,7 @@ check:
             // Create an S2DPistachio object.
             //
             S2DPistachio pistachio = new S2DPistachio(_name, star, frame,
-            _dataDir, _sessionDir, _summary, entityAssemblyID, residues);
+                    _dataDir, _sessionDir, _summary, entityAssemblyID, residues);
 
             //
             // The S2DPistachioTable object holds the figures of merit for
@@ -3987,11 +3987,11 @@ check:
             // coordinates.
             //
             int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
-            entityAssemblyID);
+                                      entityAssemblyID);
             S2DDummyCoords dCoords = S2DDummyCoords.getInstance();
             String tmpFile = _dataDir + File.separator + _name + "pstmp";
             dCoords.writeCoords(residues, entityAssemblyIDVal, tmpFile,
-            PISTACHIO_WRAP_LENGTH);
+                                PISTACHIO_WRAP_LENGTH);
 
             S2DmmCifIfc cif = new S2DmmCifIfc(tmpFile);
             saveFrameAtomicCoords(cif, null, frameIndex, pt, true, false);
@@ -4000,7 +4000,7 @@ check:
                 S2DUtils.deleteFile(tmpFile);
             } catch (IOException ex) {
                 System.err.println("Warning: unable to delete temporary " +
-                "dummy mmCIF file: " + ex);
+                                   "dummy mmCIF file: " + ex);
             }
 
             //
@@ -4016,7 +4016,7 @@ check:
         } catch (S2DCancel cancel) {
             if (doDebugOutput(4)) {
                 System.out.println("Pistachio processing cancelled: " +
-                cancel.toString());
+                                   cancel.toString());
             }
         }
     }
@@ -4029,8 +4029,8 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFrameAmbiguity(" +
-            star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
-            frameIndex + ")");
+                               star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+                               frameIndex + ")");
         }
 
         // 2009-02-05: at least temporarily don't try to save ambiguity
@@ -4038,7 +4038,7 @@ check:
         if (!residues.treatAsProtein()) {
             if (doDebugOutput(2)) {
                 System.out.println("Not saving ambiguity data because " +
-                "structure is not a protein");
+                                   "structure is not a protein");
             }
             return;
         }
@@ -4048,7 +4048,7 @@ check:
             // Create an S2DAmbiguity object.
             //
             S2DAmbiguity ambiguity = new S2DAmbiguity(_name, star, frame,
-            _dataDir, _sessionDir, _summary, entityAssemblyID, residues);
+                    _dataDir, _sessionDir, _summary, entityAssemblyID, residues);
 
             //
             // The S2DAmbiguityTable object holds the ambiguity values for
@@ -4064,11 +4064,11 @@ check:
             // coordinates.
             //
             int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
-            entityAssemblyID);
+                                      entityAssemblyID);
             S2DDummyCoords dCoords = S2DDummyCoords.getInstance();
             String tmpFile = _dataDir + File.separator + _name + "pstmp";
             dCoords.writeCoords(residues, entityAssemblyIDVal, tmpFile,
-            AMBIGUITY_WRAP_LENGTH);
+                                AMBIGUITY_WRAP_LENGTH);
 
             S2DmmCifIfc cif = new S2DmmCifIfc(tmpFile);
             saveFrameAtomicCoords(cif, null, frameIndex, at, true, false);
@@ -4077,7 +4077,7 @@ check:
                 S2DUtils.deleteFile(tmpFile);
             } catch (IOException ex) {
                 System.err.println("Warning: unable to delete temporary " +
-                "dummy mmCIF file: " + ex);
+                                   "dummy mmCIF file: " + ex);
             }
 
             //
@@ -4093,7 +4093,7 @@ check:
         } catch (S2DCancel cancel) {
             if (doDebugOutput(4)) {
                 System.out.println("Ambiguity code processing cancelled: " +
-                cancel.toString());
+                                   cancel.toString());
             }
         }
     }
@@ -4105,14 +4105,14 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("    S2DMain.saveFrameLACS(" +
-            star.getFrameName(frame) + ", " + frameIndex + ")");
+                               star.getFrameName(frame) + ", " + frameIndex + ")");
         }
 
         //
         // Create an S2DLacs object.
         //
         S2DLacs lacs = new S2DLacs(_name, _longName, star, frame,
-        _dataDir, _sessionDir, _summary);
+                                   _dataDir, _sessionDir, _summary);
 
         //
         // Now go ahead and calculate and write out the LACS values.
@@ -4133,7 +4133,7 @@ check:
     {
         if (doDebugOutput(4)) {
             System.out.println("AtomicCoordSummaryPre(" + star + ", " +
-            frame + ")");
+                               frame + ")");
         }
 
         String details = star.getFrameDetails(frame);
@@ -4160,7 +4160,7 @@ check:
             AtomicCoordSummaryPre(star, null);
             try {
                 _summary.writeAtomicCoordsCGI(_currentPdbId,
-                _currentFrameIndex);
+                                              _currentFrameIndex);
             } catch(IOException ex) {
                 System.err.println(
                     "IOException writing atomic coordinates: " +
@@ -4198,10 +4198,10 @@ check:
         _currentPdbId = pdbId;
 
         if (_rrTarLevel == RRTAR_LEVEL_PROCESS ||
-        _rrDistRLevel == RRDISTR_LEVEL_PROCESS) {
+                _rrDistRLevel == RRDISTR_LEVEL_PROCESS) {
             String resListFile = _restraintOnly ? null :
-            _dataDir + File.separator + _name +
-            S2DNames.RES_LIST_SUFFIX + S2DNames.DAT_SUFFIX;
+                                 _dataDir + File.separator + _name +
+                                 S2DNames.RES_LIST_SUFFIX + S2DNames.DAT_SUFFIX;
 
             S2DNmrStarRRIfc rrStar;
             S2DNmrStarRRIfcFactory factory = new S2DNmrStarRRIfcFactory();
@@ -4224,20 +4224,20 @@ check:
     {
         if (doDebugOutput(2)) {
             System.out.println("process1TAR(" + tarFile + ", " +
-            tarUrl + ", " + pdbId + ")");
+                               tarUrl + ", " + pdbId + ")");
             System.out.println("_tarLevel: " + _tarLevel);
         }
 
         _currentPdbId = pdbId;
 
         if (_tarLevel == TAR_LEVEL_LINK_CHECK ||
-        _tarLevel == TAR_LEVEL_LINK) {
+                _tarLevel == TAR_LEVEL_LINK) {
             try {
                 if (_tarLevel == TAR_LEVEL_LINK_CHECK) {
                     // Note: this will throw an error if the relevant
                     // entry doesn't exist in the restraints grid.
                     tarUrl = (new S2DNmrStarRGIfcFactory(true)).
-                    pdbIdToUrl(pdbId);
+                             pdbIdToUrl(pdbId);
                 }
                 _summary.writeTorsionAngleCGI(_currentPdbId, tarUrl,
                                               _currentFrameIndex, false);
@@ -4284,21 +4284,21 @@ check:
     {
         if (doDebugOutput(2)) {
             System.out.println("process1RRTAR(" + rrFile + ", " +
-            pdbId + ")");
+                               pdbId + ")");
             System.out.println("_rrTarLevel: " + _rrTarLevel);
         }
 
         _currentPdbId = pdbId;
 
         if (_rrTarLevel == RRTAR_LEVEL_LINK_CHECK ||
-        _rrTarLevel == RRTAR_LEVEL_LINK) {
+                _rrTarLevel == RRTAR_LEVEL_LINK) {
             try {
                 String rrUrl = null;
                 if (_rrTarLevel == RRTAR_LEVEL_LINK_CHECK) {
                     // Note: this will throw an error if the relevant
                     // entry doesn't exist in the remediated restraints.
                     rrUrl = (new S2DNmrStarRRIfcFactory()).
-                    pdbIdToUrl(pdbId);
+                            pdbIdToUrl(pdbId);
                 }
                 _summary.writeTorsionAngleCGI(_currentPdbId, rrUrl,
                                               _currentFrameIndex, true);
@@ -4339,20 +4339,20 @@ check:
     {
         if (doDebugOutput(2)) {
             System.out.println("process1DistR(" + distRFile + ", " +
-            distRUrl + ", " + pdbId + ")");
+                               distRUrl + ", " + pdbId + ")");
             System.out.println("_distRLevel: " + _distRLevel);
         }
 
         _currentPdbId = pdbId;
 
         if (_distRLevel == DISTR_LEVEL_LINK_CHECK ||
-        _distRLevel == DISTR_LEVEL_LINK) {
+                _distRLevel == DISTR_LEVEL_LINK) {
             try {
                 if (_distRLevel == DISTR_LEVEL_LINK_CHECK) {
                     // Note: this will throw an error if the relevant
                     // entry doesn't exist in the restraints grid.
                     distRUrl = (new S2DNmrStarRGIfcFactory(false)).
-                    pdbIdToUrl(pdbId);
+                               pdbIdToUrl(pdbId);
                 }
                 _summary.writeDistRestraintCGI(_currentPdbId, distRUrl,
                                                _currentFrameIndex, false);
@@ -4397,21 +4397,21 @@ check:
     {
         if (doDebugOutput(2)) {
             System.out.println("process1RRDistR(" + rrFile + ", " +
-            pdbId + ")");
+                               pdbId + ")");
             System.out.println("_rrDistRLevel: " + _rrDistRLevel);
         }
 
         _currentPdbId = pdbId;
 
         if (_rrDistRLevel == RRDISTR_LEVEL_LINK_CHECK ||
-        _rrDistRLevel == RRDISTR_LEVEL_LINK) {
+                _rrDistRLevel == RRDISTR_LEVEL_LINK) {
             try {
                 String rrUrl = null;
                 if (_rrDistRLevel == RRDISTR_LEVEL_LINK_CHECK) {
                     // Note: this will throw an error if the relevant
                     // entry doesn't exist in the remediated restraints.
                     rrUrl = (new S2DNmrStarRRIfcFactory()).
-                    pdbIdToUrl(pdbId);
+                            pdbIdToUrl(pdbId);
                 }
                 _summary.writeDistRestraintCGI(_currentPdbId, rrUrl,
                                                _currentFrameIndex, true);
@@ -4440,7 +4440,7 @@ check:
             distR.writeRestraints(_currentFrameIndex, true);
         } else {
             throw new S2DError("Illegal _rrDistRLevel value: " +
-            _rrDistRLevel);
+                               _rrDistRLevel);
         }
 
         _currentPdbId = null;
@@ -4453,7 +4453,7 @@ check:
     {
         if (doDebugOutput(2)) {
             System.out.println("process1S2Pred(" + pdbId + ", " +
-            coordIndex + ", " + s2FrameIndex + ")");
+                               coordIndex + ", " + s2FrameIndex + ")");
             System.out.println("_s2PredLevel: " + _s2PredLevel);
         }
 
@@ -4488,7 +4488,7 @@ check:
 
         } else {
             throw new S2DError("Illegal _s2PredLevel value: " +
-            _s2PredLevel);
+                               _s2PredLevel);
         }
     }
 

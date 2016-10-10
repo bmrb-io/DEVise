@@ -64,26 +64,26 @@ public class S2DCSRFileData extends S2DFileData
      * @return True iff the data was gotten successfully.
      */
     public boolean getCSRData(String name, int frameIndex, int fileNum,
-      String dataDir)
+                              String dataDir)
     {
-    	if (doDebugOutput(11)) {
-	    System.out.println("S2DCSRFileData.getCSRData(" +
-	      name + ", " + frameIndex + ", " + fileNum + ", " + dataDir);
-	}
+        if (doDebugOutput(11)) {
+            System.out.println("S2DCSRFileData.getCSRData(" +
+                               name + ", " + frameIndex + ", " + fileNum + ", " + dataDir);
+        }
 
-	fileVersion = null;
+        fileVersion = null;
 
-	String filename = dataDir + File.separator + name +
-	  S2DNames.CSR_SUFFIX + frameIndex + "_" + fileNum +
-	  S2DNames.DAT_SUFFIX;
+        String filename = dataDir + File.separator + name +
+                          S2DNames.CSR_SUFFIX + frameIndex + "_" + fileNum +
+                          S2DNames.DAT_SUFFIX;
 
-	boolean result = getData(filename);
+        boolean result = getData(filename);
 
-	if (doDebugOutput(12)) {
-	    System.out.println("fileVersion: " + fileVersion);
-	}
+        if (doDebugOutput(12)) {
+            System.out.println("fileVersion: " + fileVersion);
+        }
 
-	return result;
+        return result;
     }
 
     //===================================================================
@@ -96,15 +96,15 @@ public class S2DCSRFileData extends S2DFileData
      */
     protected void GetDataFromLine(String line) throws ParseException
     {
-	// Get the version of ChemShift that created the
-	// coordinate chem shift reference file.
-	String tmpValue = getLabeledValue(line, CSR_VERSION_LABEL);
-	if (tmpValue != null) {
-	    fileVersion = tmpValue;
-	    if (doDebugOutput(13)) {
-	        System.out.println("File version: " + fileVersion);
-	    }
-	}
+        // Get the version of ChemShift that created the
+        // coordinate chem shift reference file.
+        String tmpValue = getLabeledValue(line, CSR_VERSION_LABEL);
+        if (tmpValue != null) {
+            fileVersion = tmpValue;
+            if (doDebugOutput(13)) {
+                System.out.println("File version: " + fileVersion);
+            }
+        }
     }
 
     //===================================================================
@@ -115,12 +115,12 @@ public class S2DCSRFileData extends S2DFileData
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

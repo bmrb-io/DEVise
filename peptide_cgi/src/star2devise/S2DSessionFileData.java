@@ -71,27 +71,27 @@ public class S2DSessionFileData extends S2DFileData
      * @return True iff the data was gotten successfully.
      */
     public boolean getSessionData(String name, String suffix,
-      String sessionDir)
+                                  String sessionDir)
     {
-    	if (doDebugOutput(11)) {
-	    System.out.println("S2DSessionFileData.getSessionData(" +
-	      name + ", " + suffix + ", " + sessionDir);
-	}
+        if (doDebugOutput(11)) {
+            System.out.println("S2DSessionFileData.getSessionData(" +
+                               name + ", " + suffix + ", " + sessionDir);
+        }
 
-	fileVersion = null;
-	fileDate = null;
+        fileVersion = null;
+        fileDate = null;
 
-	String filename = sessionDir + File.separator + name +
-	  File.separator + name + suffix + ".ds";
+        String filename = sessionDir + File.separator + name +
+                          File.separator + name + suffix + ".ds";
 
-	boolean result = getData(filename);
+        boolean result = getData(filename);
 
-	if (doDebugOutput(12)) {
-	    System.out.println("fileVersion: " + fileVersion);
-	    System.out.println("fileDate: " + fileDate);
-	}
+        if (doDebugOutput(12)) {
+            System.out.println("fileVersion: " + fileVersion);
+            System.out.println("fileDate: " + fileDate);
+        }
 
-	return result;
+        return result;
     }
 
     //===================================================================
@@ -104,27 +104,27 @@ public class S2DSessionFileData extends S2DFileData
      */
     protected void GetDataFromLine(String line) throws ParseException
     {
-	// Get the version of peptide-cgi that created the
-	// coordinate session file.
-	String tmpValue = getLabeledValue(line,
-	  S2DSummaryHtmlGen.VERSION_LABEL);
-	if (tmpValue != null) {
-	    fileVersion = tmpValue;
-	    if (doDebugOutput(13)) {
-	        System.out.println("File version: " + fileVersion);
-	    }
-	}
+        // Get the version of peptide-cgi that created the
+        // coordinate session file.
+        String tmpValue = getLabeledValue(line,
+                                          S2DSummaryHtmlGen.VERSION_LABEL);
+        if (tmpValue != null) {
+            fileVersion = tmpValue;
+            if (doDebugOutput(13)) {
+                System.out.println("File version: " + fileVersion);
+            }
+        }
 
-	// Get the creation time/date of the coordinate session file.
-	tmpValue = getLabeledValue(line,
-	  S2DSummaryHtmlGen.GEN_DATE_LABEL);
-	if (tmpValue != null) {
-	    fileDate = DateFormat.getDateTimeInstance().parse(tmpValue);
-	    if (doDebugOutput(13)) {
-	        System.out.println("Date string: " + tmpValue);
-	        System.out.println("File date: " + fileDate);
-	    }
-	}
+        // Get the creation time/date of the coordinate session file.
+        tmpValue = getLabeledValue(line,
+                                   S2DSummaryHtmlGen.GEN_DATE_LABEL);
+        if (tmpValue != null) {
+            fileDate = DateFormat.getDateTimeInstance().parse(tmpValue);
+            if (doDebugOutput(13)) {
+                System.out.println("Date string: " + tmpValue);
+                System.out.println("File date: " + fileDate);
+            }
+        }
     }
 
     //===================================================================
@@ -135,12 +135,12 @@ public class S2DSessionFileData extends S2DFileData
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

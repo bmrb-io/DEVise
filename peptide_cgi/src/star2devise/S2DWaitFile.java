@@ -67,17 +67,17 @@ public class S2DWaitFile implements Runnable
     // @param The name of the "done file" to wait on.
     public S2DWaitFile(String filename) throws S2DException
     {
-	if (doDebugOutput(11)) {
-	    System.out.println("S2DWaitFile.S2DWaitFile(" + filename + ")");
-	}
+        if (doDebugOutput(11)) {
+            System.out.println("S2DWaitFile.S2DWaitFile(" + filename + ")");
+        }
 
         _file = new File(filename);
-	if (_file.exists()) {
-	    if (!_file.delete()) {
-	        throw new S2DError("Unable to delete existing wait file " +
-		  filename);
-	    }
-	}
+        if (_file.exists()) {
+            if (!_file.delete()) {
+                throw new S2DError("Unable to delete existing wait file " +
+                                   filename);
+            }
+        }
     }
 
     //-------------------------------------------------------------------
@@ -88,67 +88,67 @@ public class S2DWaitFile implements Runnable
     // even if the "done file" doesn't exist.
     public void wait(int delay, int timeout) throws InterruptedException
     {
-	if (doDebugOutput(11)) {
+        if (doDebugOutput(11)) {
             System.out.println("S2DWaitFile(" + _file.getName() +
-	      ").wait(" + delay + ", " + timeout + ")");
+                               ").wait(" + delay + ", " + timeout + ")");
         }
 
-	_delay = delay;
+        _delay = delay;
 
-	_mainThread = Thread.currentThread();
-	_newThread = new Thread(this);
-	_newThread.start();
+        _mainThread = Thread.currentThread();
+        _newThread = new Thread(this);
+        _newThread.start();
 
-	try {
-	    Thread.sleep(timeout);
-	} catch (InterruptedException ex) {
-	    // No op -- we want to be interrupted here.
-	}
-	_done = true;
+        try {
+            Thread.sleep(timeout);
+        } catch (InterruptedException ex) {
+            // No op -- we want to be interrupted here.
+        }
+        _done = true;
 
-	if (!_found) {
-	    throw new InterruptedException(
-	      "Timed out waiting for done file " + _file.getName() +
-	      " (you may want to try again)");
-	}
+        if (!_found) {
+            throw new InterruptedException(
+                "Timed out waiting for done file " + _file.getName() +
+                " (you may want to try again)");
+        }
     }
 
     public void run()
     {
-	if (doDebugOutput(11)) {
+        if (doDebugOutput(11)) {
             System.out.println("S2DWaitFile(" + _file.getName() + ").run()");
         }
 
-	while (!_found && !_done) {
-	    try {
-	        Thread.sleep(_delay);
-	    } catch (InterruptedException ex) {
-	    	// No op.
-	    }
+        while (!_found && !_done) {
+            try {
+                Thread.sleep(_delay);
+            } catch (InterruptedException ex) {
+                // No op.
+            }
             if (doDebugOutput(12)) {
-	        System.out.println("Checking for done file");
-	    }
-	    _found = _file.exists();
-	}
+                System.out.println("Checking for done file");
+            }
+            _found = _file.exists();
+        }
 
         if (doDebugOutput(12)) {
-	    if (_found) {
-	        System.out.println("Done file " + _file.getName() +
-		  " was found");
-	    } else {
-	        System.out.println("Done file " + _file.getName() +
-		  " was NOT found");
-	    }
-	}
+            if (_found) {
+                System.out.println("Done file " + _file.getName() +
+                                   " was found");
+            } else {
+                System.out.println("Done file " + _file.getName() +
+                                   " was NOT found");
+            }
+        }
 
-	if (_found) {
-	    if (!_file.delete()) {
-	        System.err.println("Warning: file " + _file.getName() +
-	          " not deleted");
-	    }
-	}
+        if (_found) {
+            if (!_file.delete()) {
+                System.err.println("Warning: file " + _file.getName() +
+                                   " not deleted");
+            }
+        }
 
-	_mainThread.interrupt();
+        _mainThread.interrupt();
     }
 
     //===================================================================
@@ -159,12 +159,12 @@ public class S2DWaitFile implements Runnable
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

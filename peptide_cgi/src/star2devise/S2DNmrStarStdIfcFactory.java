@@ -72,37 +72,37 @@ public class S2DNmrStarStdIfcFactory extends S2DNmrStarIfcFactory {
     //-------------------------------------------------------------------
     public String getFileName(String bmrbId)
     {
-	String name = S2DUtils.replace(S2DNames.STAR_NAME_TEMPLATE, "*",
-	      bmrbId);
+        String name = S2DUtils.replace(S2DNames.STAR_NAME_TEMPLATE, "*",
+                                       bmrbId);
 
-	return name;
+        return name;
     }
 
     //-------------------------------------------------------------------
     public String getURLName(String fileName) throws S2DException
     {
-	if (_urlName == null) {
-	    StringTokenizer st =
-	      new StringTokenizer(S2DNames.BMRB_STAR_URL, ";", false);
-	    while (_urlName == null && st.hasMoreTokens()) {
-	        String tmpUrl = st.nextToken().trim() + fileName;
-		try {
-		    S2DUtils.tryUrl(tmpUrl);
-		    _urlName = tmpUrl;
-		} catch (Exception ex) {
-		    // Just continue to try the next one.
-		}
-	    }
-	}
+        if (_urlName == null) {
+            StringTokenizer st =
+                new StringTokenizer(S2DNames.BMRB_STAR_URL, ";", false);
+            while (_urlName == null && st.hasMoreTokens()) {
+                String tmpUrl = st.nextToken().trim() + fileName;
+                try {
+                    S2DUtils.tryUrl(tmpUrl);
+                    _urlName = tmpUrl;
+                } catch (Exception ex) {
+                    // Just continue to try the next one.
+                }
+            }
+        }
 
-	if (_urlName == null || _urlName.equals("")) {
-	    _urlName = "";
-	    S2DMain._noMail = true;
-	    throw new S2DError("Unable to find valid URL for " +
-	      fileName);
-	}
+        if (_urlName == null || _urlName.equals("")) {
+            _urlName = "";
+            S2DMain._noMail = true;
+            throw new S2DError("Unable to find valid URL for " +
+                               fileName);
+        }
 
-	return _urlName;
+        return _urlName;
     }
 
     //===================================================================
@@ -113,12 +113,12 @@ public class S2DNmrStarStdIfcFactory extends S2DNmrStarIfcFactory {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 
