@@ -152,64 +152,65 @@ public class S2DRNAChemShift extends S2DNAChemShift {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DRNAChemShift(String name, String longName,
-      S2DNmrStarIfc star, SaveFrameNode frame, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, String entityAssemblyID,
-      S2DResidues residues) throws S2DException
+                           S2DNmrStarIfc star, SaveFrameNode frame, String dataDir,
+                           String sessionDir, S2DSummaryHtml summary, String entityAssemblyID,
+                           S2DResidues residues) throws S2DException
     {
         super(name, longName, star, frame, dataDir, sessionDir, summary,
-	  entityAssemblyID, residues);
+              entityAssemblyID, residues);
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DRNAChemShift.S2DRNAChemShift(" + name +
-	      ")");
-	}
+            System.out.println("S2DRNAChemShift.S2DRNAChemShift(" + name +
+                               ")");
+        }
 
-	CHEMSHIFT_FILE += "statsel_rna.txt";
-	_refTable = new ShiftDataManager(CHEMSHIFT_FILE);
+        CHEMSHIFT_FILE += "statsel_rna.txt";
+        _refTable = new ShiftDataManager(CHEMSHIFT_FILE);
 
-	// Note: atoms here must match the schema (bmrb-RNADeltaShift).
-	atomNameList = new String[] { "C1'", "C2", "C2'", "C3'", "C4",
-	  "C4'", "C5", "C5'", "C6", "C8", "H1", "H1'", "H2", "H2'",
-	  "H21", "H22", "H3", "H3'", "H4'", "H41", "H42", "H5", "H5'",
-	  "H5''", "H6", "H61", "H62", "H8", "HO2'", "N1", "N2", "N3",
-	  "N4", "N6", "N7", "N9" };
+        // Note: atoms here must match the schema (bmrb-RNADeltaShift).
+        atomNameList = new String[] { "C1'", "C2", "C2'", "C3'", "C4",
+                                      "C4'", "C5", "C5'", "C6", "C8", "H1", "H1'", "H2", "H2'",
+                                      "H21", "H22", "H3", "H3'", "H4'", "H41", "H42", "H5", "H5'",
+                                      "H5''", "H6", "H61", "H62", "H8", "HO2'", "N1", "N2", "N3",
+                                      "N4", "N6", "N7", "N9"
+                                    };
 
-	calculateDeltaShifts();
+        calculateDeltaShifts();
     }
 
     //-------------------------------------------------------------------
     // Write the deltashifts for this data.
     public void writeDeltashifts(int frameIndex, boolean append)
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DRNAChemShift.writeDeltashifts()");
-	}
+            System.out.println("S2DRNAChemShift.writeDeltashifts()");
+        }
 
-	if (append) {
-	    throw new S2DError("append should never be true for " +
-	      "S2DRNAChemShift.writeDeltashifts()!");
-	}
+        if (append) {
+            throw new S2DError("append should never be true for " +
+                               "S2DRNAChemShift.writeDeltashifts()!");
+        }
 
-	String schemaName = "bmrb-RNADeltaShift";
-	// TEMP -- add nucleotide for drill-down?
-	String attributes =
-              "C1p_DeltaShift; C2_DeltaShift; C2p_DeltaShift; " +
-	      "C3p_DeltaShift; C4_DeltaShift; c4p_DeltaShift;  " +
-	      "C5_DeltaShift; C5p_DeltaShift; C6_DeltaShift;  " +
-	      "C8_DeltaShift; H1_DeltaShift; H1p_DeltaShift;  " +
-	      "H2_DeltaShift; H2p_DeltaShift; H21_DeltaShift;  " +
-	      "H22_DeltaShift; H3_DeltaShift; H3p_DeltaShift;  " +
-	      "H4p_DeltaShift; H41_DeltaShift; H42_DeltaShift;  " +
-	      "H5_DeltaShift; H5p_DeltaShift; H5pp_DeltaShift;  " +
-	      "H6_DeltaShift; H61_DeltaShift; H62_DeltaShift;  " +
-	      "H8_DeltaShift; HO2p_DeltaShift; N1_DeltaShift;  " +
-	      "N2_DeltaShift; N3_DeltaShift; N4_DeltaShift;  " +
-	      "N6_DeltaShift; N7_DeltaShift; N9_DeltaShift; " +
-	      "Residue_seq_code; Residue_label; Entity_assembly_ID";
+        String schemaName = "bmrb-RNADeltaShift";
+        // TEMP -- add nucleotide for drill-down?
+        String attributes =
+            "C1p_DeltaShift; C2_DeltaShift; C2p_DeltaShift; " +
+            "C3p_DeltaShift; C4_DeltaShift; c4p_DeltaShift;  " +
+            "C5_DeltaShift; C5p_DeltaShift; C6_DeltaShift;  " +
+            "C8_DeltaShift; H1_DeltaShift; H1p_DeltaShift;  " +
+            "H2_DeltaShift; H2p_DeltaShift; H21_DeltaShift;  " +
+            "H22_DeltaShift; H3_DeltaShift; H3p_DeltaShift;  " +
+            "H4p_DeltaShift; H41_DeltaShift; H42_DeltaShift;  " +
+            "H5_DeltaShift; H5p_DeltaShift; H5pp_DeltaShift;  " +
+            "H6_DeltaShift; H61_DeltaShift; H62_DeltaShift;  " +
+            "H8_DeltaShift; HO2p_DeltaShift; N1_DeltaShift;  " +
+            "N2_DeltaShift; N3_DeltaShift; N4_DeltaShift;  " +
+            "N6_DeltaShift; N7_DeltaShift; N9_DeltaShift; " +
+            "Residue_seq_code; Residue_label; Entity_assembly_ID";
 
-	super.writeDeltaShifts(frameIndex, schemaName, attributes,
-	  S2DUtils.TYPE_RNA_DELTASHIFT);
+        super.writeDeltaShifts(frameIndex, schemaName, attributes,
+                               S2DUtils.TYPE_RNA_DELTASHIFT);
     }
 
     //-------------------------------------------------------------------
@@ -222,69 +223,69 @@ public class S2DRNAChemShift extends S2DNAChemShift {
     {
         // Note: attribute names must match the bmrb-RNADeltaShift schema.
 
-	String dataSource = _name + S2DNames.DELTASHIFT_SUFFIX +
-	  frameIndex;
+        String dataSource = _name + S2DNames.DELTASHIFT_SUFFIX +
+                            frameIndex;
 
-	class DataSet {
-	    public String _dataName;
-	    public String _attribute;
+        class DataSet {
+            public String _dataName;
+            public String _attribute;
 
-	    public DataSet(String dataName, String attribute) {
-	        _dataName = dataName;
-	        _attribute = attribute;
-	    }
-	}
+            public DataSet(String dataName, String attribute) {
+                _dataName = dataName;
+                _attribute = attribute;
+            }
+        }
 
-	DataSet[] info = {
-	  new DataSet("C1'", "C1p_DeltaShift"),
-	  new DataSet("C2", "C2_DeltaShift"),
-	  new DataSet("C2'", "C2p_DeltaShift"),
-	  new DataSet("C3'", "C3p_DeltaShift"),
-	  new DataSet("C4", "C4_DeltaShift"),
-	  new DataSet("C4'", "c4p_DeltaShift"),
-	  new DataSet("C5", "C5_DeltaShift"),
-	  new DataSet("C5'", "C5p_DeltaShift"),
-	  new DataSet("C6", "C6_DeltaShift"),
-	  new DataSet("C8", "C8_DeltaShift"),
-	  new DataSet("H1", "H1_DeltaShift"),
-	  new DataSet("H1'", "H1p_DeltaShift"),
-	  new DataSet("H2", "H2_DeltaShift"),
-	  new DataSet("H2'", "H2p_DeltaShift"),
-	  new DataSet("H21", "H21_DeltaShift"),
-	  new DataSet("H22", "H22_DeltaShift"),
-	  new DataSet("H3", "H3_DeltaShift"),
-	  new DataSet("H3'", "H3p_DeltaShift"),
-	  new DataSet("H4'", "H4p_DeltaShift"),
-	  new DataSet("H41", "H41_DeltaShift"),
-	  new DataSet("H42", "H42_DeltaShift"),
-	  new DataSet("H5", "H5_DeltaShift"),
-	  new DataSet("H5'", "H5p_DeltaShift"),
-	  new DataSet("H5''", "H5pp_DeltaShift"),
-	  new DataSet("H6", "H6_DeltaShift"),
-	  new DataSet("H61", "H61_DeltaShift"),
-	  new DataSet("H62", "H62_DeltaShift"),
-	  new DataSet("H8", "H8_DeltaShift"),
-	  new DataSet("HO2'", "HO2p_DeltaShift"),
-	  new DataSet("N1", "N1_DeltaShift"),
-	  new DataSet("N2", "N2_DeltaShift"),
-	  new DataSet("N3", "N3_DeltaShift"),
-	  new DataSet("N4", "N4_DeltaShift"),
-	  new DataSet("N6", "N6_DeltaShift"),
-	  new DataSet("N7", "N7_DeltaShift"),
-	  new DataSet("N9", "N9_DeltaShift"),
-	};
+        DataSet[] info = {
+            new DataSet("C1'", "C1p_DeltaShift"),
+            new DataSet("C2", "C2_DeltaShift"),
+            new DataSet("C2'", "C2p_DeltaShift"),
+            new DataSet("C3'", "C3p_DeltaShift"),
+            new DataSet("C4", "C4_DeltaShift"),
+            new DataSet("C4'", "c4p_DeltaShift"),
+            new DataSet("C5", "C5_DeltaShift"),
+            new DataSet("C5'", "C5p_DeltaShift"),
+            new DataSet("C6", "C6_DeltaShift"),
+            new DataSet("C8", "C8_DeltaShift"),
+            new DataSet("H1", "H1_DeltaShift"),
+            new DataSet("H1'", "H1p_DeltaShift"),
+            new DataSet("H2", "H2_DeltaShift"),
+            new DataSet("H2'", "H2p_DeltaShift"),
+            new DataSet("H21", "H21_DeltaShift"),
+            new DataSet("H22", "H22_DeltaShift"),
+            new DataSet("H3", "H3_DeltaShift"),
+            new DataSet("H3'", "H3p_DeltaShift"),
+            new DataSet("H4'", "H4p_DeltaShift"),
+            new DataSet("H41", "H41_DeltaShift"),
+            new DataSet("H42", "H42_DeltaShift"),
+            new DataSet("H5", "H5_DeltaShift"),
+            new DataSet("H5'", "H5p_DeltaShift"),
+            new DataSet("H5''", "H5pp_DeltaShift"),
+            new DataSet("H6", "H6_DeltaShift"),
+            new DataSet("H61", "H61_DeltaShift"),
+            new DataSet("H62", "H62_DeltaShift"),
+            new DataSet("H8", "H8_DeltaShift"),
+            new DataSet("HO2'", "HO2p_DeltaShift"),
+            new DataSet("N1", "N1_DeltaShift"),
+            new DataSet("N2", "N2_DeltaShift"),
+            new DataSet("N3", "N3_DeltaShift"),
+            new DataSet("N4", "N4_DeltaShift"),
+            new DataSet("N6", "N6_DeltaShift"),
+            new DataSet("N7", "N7_DeltaShift"),
+            new DataSet("N9", "N9_DeltaShift"),
+        };
 
-	for (int index = 0; index < info.length; index++) {
-	    if (_atomSet.contains(info[index]._dataName)) {
-	        dataSets.addElement(new S2DDatasetInfo(
-	          info[index]._dataName +
-	            " delta chem shift [" + _entityAssemblyID + "]", 
-		  _frameDetails, _sample, _sampleConditions, dataSource,
-		  info[index]._attribute, "bmrb-RNADeltaShift",
-		  "bmrb-RNADeltaShift", _entityAssemblyID,
-	          S2DResidues.POLYMER_TYPE_RNA));
-	    }
-	}
+        for (int index = 0; index < info.length; index++) {
+            if (_atomSet.contains(info[index]._dataName)) {
+                dataSets.addElement(new S2DDatasetInfo(
+                                        info[index]._dataName +
+                                        " delta chem shift [" + _entityAssemblyID + "]",
+                                        _frameDetails, _sample, _sampleConditions, dataSource,
+                                        info[index]._attribute, "bmrb-RNADeltaShift",
+                                        "bmrb-RNADeltaShift", _entityAssemblyID,
+                                        S2DResidues.POLYMER_TYPE_RNA));
+            }
+        }
     }
 
     //===================================================================
@@ -295,12 +296,12 @@ public class S2DRNAChemShift extends S2DNAChemShift {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

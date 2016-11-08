@@ -161,62 +161,62 @@ public class S2DS2Order {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DS2Order(String name, String longName, S2DNmrStarIfc star,
-      SaveFrameNode frame, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
+                      SaveFrameNode frame, String dataDir, String sessionDir,
+                      S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DS2Order.S2DS2Order(" + name + ")");
-	}
+            System.out.println("S2DS2Order.S2DS2Order(" + name + ")");
+        }
 
         _name = name;
         _longName = longName;
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
-	_frameDetails = star.getFrameDetails(frame);
-	_sample = star.getFrameSample(frame);
-	_sampleConditions = star.getFrameSampleConditions(frame);
-	_starVersion = star.version();
+        _frameDetails = star.getFrameDetails(frame);
+        _sample = star.getFrameSample(frame);
+        _sampleConditions = star.getFrameSampleConditions(frame);
+        _starVersion = star.version();
 
-	//
-	// Get the values we need from the Star file.
-	//
+        //
+        // Get the values we need from the Star file.
+        //
 
-	// If a non-blank entityAssemblyID is specified, we need to filter
-	// the frame values to only take the ones corresponding to that
-	// entityAssemblyID.  To do that, we get the entityAssemblyID
-	// values in each row of the loop.  (entityAssemblyID will be blank
-	// when processing NMR-STAR 2.1 files -- they don't have data for
-	// more than one entity assembly in a single save frame).
-	String[] entityAssemblyIDs = null;
-	if (!entityAssemblyID.equals("")) {
-	    entityAssemblyIDs = star.getFrameValues(frame,
-	      star.ORDER_ENTITY_ASSEMBLY_ID,
-	      star.ORDER_ENTITY_ASSEMBLY_ID);
-	}
+        // If a non-blank entityAssemblyID is specified, we need to filter
+        // the frame values to only take the ones corresponding to that
+        // entityAssemblyID.  To do that, we get the entityAssemblyID
+        // values in each row of the loop.  (entityAssemblyID will be blank
+        // when processing NMR-STAR 2.1 files -- they don't have data for
+        // more than one entity assembly in a single save frame).
+        String[] entityAssemblyIDs = null;
+        if (!entityAssemblyID.equals("")) {
+            entityAssemblyIDs = star.getFrameValues(frame,
+                                                    star.ORDER_ENTITY_ASSEMBLY_ID,
+                                                    star.ORDER_ENTITY_ASSEMBLY_ID);
+        }
 
-	_resSeqCodes = star.getAndFilterFrameValues(frame,
-	  star.ORDER_VALUE, star.ORDER_RES_SEQ_CODE, entityAssemblyID,
-	  entityAssemblyIDs);
+        _resSeqCodes = star.getAndFilterFrameValues(frame,
+                       star.ORDER_VALUE, star.ORDER_RES_SEQ_CODE, entityAssemblyID,
+                       entityAssemblyIDs);
 
-	_resLabels = star.getAndFilterFrameValues(frame,
-	  star.ORDER_VALUE, star.ORDER_RES_LABEL, entityAssemblyID,
-	  entityAssemblyIDs);
+        _resLabels = star.getAndFilterFrameValues(frame,
+                     star.ORDER_VALUE, star.ORDER_RES_LABEL, entityAssemblyID,
+                     entityAssemblyIDs);
 
-	_atomNames = star.getAndFilterFrameValues(frame,
-	  star.ORDER_VALUE, star.ORDER_ATOM_NAME, entityAssemblyID,
-	  entityAssemblyIDs);
+        _atomNames = star.getAndFilterFrameValues(frame,
+                     star.ORDER_VALUE, star.ORDER_ATOM_NAME, entityAssemblyID,
+                     entityAssemblyIDs);
 
-	_s2OrderValues = star.getAndFilterFrameValues(frame,
-	  star.ORDER_VALUE, star.ORDER_VALUE, entityAssemblyID,
-	  entityAssemblyIDs);
+        _s2OrderValues = star.getAndFilterFrameValues(frame,
+                         star.ORDER_VALUE, star.ORDER_VALUE, entityAssemblyID,
+                         entityAssemblyIDs);
 
-	_s2OrderErrors = star.getAndFilterOptionalFrameValues(frame,
-	  star.ORDER_VALUE, star.ORDER_VALUE_ERR, entityAssemblyID,
-	  entityAssemblyIDs, _s2OrderValues.length, "0");
+        _s2OrderErrors = star.getAndFilterOptionalFrameValues(frame,
+                         star.ORDER_VALUE, star.ORDER_VALUE_ERR, entityAssemblyID,
+                         entityAssemblyIDs, _s2OrderValues.length, "0");
 
-	_entityAssemblyID = star.getEntityAssemblyID(frame,
-	  entityAssemblyID);
+        _entityAssemblyID = star.getEntityAssemblyID(frame,
+                            entityAssemblyID);
     }
 
     //-------------------------------------------------------------------
@@ -224,66 +224,66 @@ public class S2DS2Order {
     public void writeS2Order(int frameIndex) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DS2Order.writeS2Order()");
-	}
+            System.out.println("S2DS2Order.writeS2Order()");
+        }
 
-	try {
-	    //
-	    // Write the S2 order values to the data file.
-	    //
+        try {
+            //
+            // Write the S2 order values to the data file.
+            //
             FileWriter s2OrderWriter = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + S2DNames.ORDER_SUFFIX +
-	      frameIndex + S2DNames.DAT_SUFFIX);
+                                       File.separator + _name + S2DNames.ORDER_SUFFIX +
+                                       frameIndex + S2DNames.DAT_SUFFIX);
             s2OrderWriter.write("# Data: s2order values for " + _name + "\n");
             s2OrderWriter.write("# Schema: bmrb-s2\n");
             s2OrderWriter.write("# Attributes: s2order_value; " +
-	      "s2order_error; Atom_name; Residue_seq_code; " +
-	      "Residue_label; Entity_assembly_ID\n");
+                                "s2order_error; Atom_name; Residue_seq_code; " +
+                                "Residue_label; Entity_assembly_ID\n");
             s2OrderWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                                S2DMain.PEP_CGI_VERSION + "\n");
             s2OrderWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
+                                S2DMain.getTimestamp() + "\n");
             s2OrderWriter.write("#\n");
 
-	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        s2OrderWriter.write(_s2OrderValues[index] + " " +
-		  _s2OrderErrors[index] + " " +
-		  _atomNames[index] + " " +
-		  _resSeqCodes[index] + " " +
-		  _resLabels[index] + " " +
-		  _entityAssemblyID + "\n");
-	    }
+            for (int index = 0; index < _resSeqCodes.length; index++) {
+                s2OrderWriter.write(_s2OrderValues[index] + " " +
+                                    _s2OrderErrors[index] + " " +
+                                    _atomNames[index] + " " +
+                                    _resSeqCodes[index] + " " +
+                                    _resLabels[index] + " " +
+                                    _entityAssemblyID + "\n");
+            }
 
-	    s2OrderWriter.close();
+            s2OrderWriter.close();
 
-	    //
-	    // Write the session file.
-	    //
-	    String info = "Visualization of " + _longName;
-	    String title = "S2 Order Parameters (entity assembly " +
-	      _entityAssemblyID + ")";
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_ORDER,
-	      _name, frameIndex, info, title, true, _starVersion, "");
+            //
+            // Write the session file.
+            //
+            String info = "Visualization of " + _longName;
+            String title = "S2 Order Parameters (entity assembly " +
+                           _entityAssemblyID + ")";
+            S2DSession.write(_sessionDir, S2DUtils.TYPE_ORDER,
+                             _name, frameIndex, info, title, true, _starVersion, "");
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(), S2DUtils.TYPE_ORDER,
-	      _name, frameIndex, title, _frameDetails);
-	    specHtml.write();
+            //
+            // Write the session-specific html file.
+            //
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(), S2DUtils.TYPE_ORDER,
+                _name, frameIndex, title, _frameDetails);
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeS2Order(frameIndex, _entityAssemblyID,
-	      _resSeqCodes.length);
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writeS2Order(frameIndex, _entityAssemblyID,
+                                  _resSeqCodes.length);
 
         } catch(IOException ex) {
-	    System.err.println("IOException writing s2 order data: " +
-	      ex.toString());
-	    throw new S2DError("Can't write s2 order data");
-	}
+            System.err.println("IOException writing s2 order data: " +
+                               ex.toString());
+            throw new S2DError("Can't write s2 order data");
+        }
     }
 
     //-------------------------------------------------------------------
@@ -293,14 +293,14 @@ public class S2DS2Order {
      * @param The frame index.
      */
     public void addS2Order(Vector dataSets, int frameIndex,
-      int polymerType)
+                           int polymerType)
     {
         // Note: attribute names must match the bmrb-s2order schema.
-	String dataSource = _name + S2DNames.ORDER_SUFFIX + frameIndex;
-	String dataName = "S2 Order Parameters [" + _entityAssemblyID + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	  _sample, _sampleConditions, dataSource, "S2order_value",
-	  "bmrb-s2", "s2", _entityAssemblyID, polymerType));
+        String dataSource = _name + S2DNames.ORDER_SUFFIX + frameIndex;
+        String dataName = "S2 Order Parameters [" + _entityAssemblyID + "]";
+        dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                               _sample, _sampleConditions, dataSource, "S2order_value",
+                                               "bmrb-s2", "s2", _entityAssemblyID, polymerType));
     }
 
     //===================================================================
@@ -311,12 +311,12 @@ public class S2DS2Order {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

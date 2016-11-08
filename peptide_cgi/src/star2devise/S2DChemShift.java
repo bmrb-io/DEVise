@@ -169,105 +169,105 @@ public class S2DChemShift {
     //-------------------------------------------------------------------
     // Factory -- experimental chemical shifts.
     public static S2DChemShift create(int polymerType, String name,
-      String longName, S2DNmrStarIfc star, SaveFrameNode frame,
-      String dataDir, String sessionDir, S2DSummaryHtml summary,
-      String entityAssemblyID, S2DResidues residues) throws S2DException
+                                      String longName, S2DNmrStarIfc star, SaveFrameNode frame,
+                                      String dataDir, String sessionDir, S2DSummaryHtml summary,
+                                      String entityAssemblyID, S2DResidues residues) throws S2DException
     {
-	S2DChemShift chemShift = null;
+        S2DChemShift chemShift = null;
 
         switch (polymerType) {
-	case S2DResidues.POLYMER_TYPE_PROTEIN:
-	case S2DResidues.POLYMER_TYPE_UNKNOWN:
-	    chemShift = new S2DProteinChemShift(name, longName, star,
-	      frame, dataDir, sessionDir, summary, entityAssemblyID,
-	      residues);
-	    break;
+        case S2DResidues.POLYMER_TYPE_PROTEIN:
+        case S2DResidues.POLYMER_TYPE_UNKNOWN:
+            chemShift = new S2DProteinChemShift(name, longName, star,
+                                                frame, dataDir, sessionDir, summary, entityAssemblyID,
+                                                residues);
+            break;
 
-	case S2DResidues.POLYMER_TYPE_DNA:
-	    chemShift = new S2DDNAChemShift(name, longName, star,
-	      frame, dataDir, sessionDir, summary, entityAssemblyID,
-	      residues);
-	    break;
+        case S2DResidues.POLYMER_TYPE_DNA:
+            chemShift = new S2DDNAChemShift(name, longName, star,
+                                            frame, dataDir, sessionDir, summary, entityAssemblyID,
+                                            residues);
+            break;
 
-	case S2DResidues.POLYMER_TYPE_RNA:
-	    chemShift = new S2DRNAChemShift(name, longName, star,
-	      frame, dataDir, sessionDir, summary, entityAssemblyID,
-	      residues);
-	    break;
+        case S2DResidues.POLYMER_TYPE_RNA:
+            chemShift = new S2DRNAChemShift(name, longName, star,
+                                            frame, dataDir, sessionDir, summary, entityAssemblyID,
+                                            residues);
+            break;
 
-	default:
-	    throw new S2DError("Illegal polymer type: " + polymerType);
-	}
+        default:
+            throw new S2DError("Illegal polymer type: " + polymerType);
+        }
 
-	return chemShift;
+        return chemShift;
     }
 
     //-------------------------------------------------------------------
     // Factory -- SPARTA-calculated delta shifts.
     public static S2DChemShift createSparta(int polymerType, String name,
-      String longName, S2DNmrStarIfc star, SaveFrameNode frame,
-      String dataDir, String sessionDir, S2DSummaryHtml summary,
-      String entityAssemblyID, String chemShiftListID, int modelNum,
-      S2DResidues residues) throws S2DException
+                                            String longName, S2DNmrStarIfc star, SaveFrameNode frame,
+                                            String dataDir, String sessionDir, S2DSummaryHtml summary,
+                                            String entityAssemblyID, String chemShiftListID, int modelNum,
+                                            S2DResidues residues) throws S2DException
     {
-	S2DChemShift chemShift = null;
+        S2DChemShift chemShift = null;
 
         switch (polymerType) {
-	case S2DResidues.POLYMER_TYPE_PROTEIN:
-	case S2DResidues.POLYMER_TYPE_UNKNOWN:
-	    chemShift = new S2DSpartaChemShift(name, longName, star,
-	      frame, dataDir, sessionDir, summary, entityAssemblyID,
-	      chemShiftListID, modelNum, residues);
-	    break;
+        case S2DResidues.POLYMER_TYPE_PROTEIN:
+        case S2DResidues.POLYMER_TYPE_UNKNOWN:
+            chemShift = new S2DSpartaChemShift(name, longName, star,
+                                               frame, dataDir, sessionDir, summary, entityAssemblyID,
+                                               chemShiftListID, modelNum, residues);
+            break;
 
-	//TEMP -- do we need to support DNA and RNA?
-	case S2DResidues.POLYMER_TYPE_DNA:
-	    throw new S2DError(
-	      "DNA not supported for SPARTA deltashifts");
+        //TEMP -- do we need to support DNA and RNA?
+        case S2DResidues.POLYMER_TYPE_DNA:
+            throw new S2DError(
+                "DNA not supported for SPARTA deltashifts");
 
-	case S2DResidues.POLYMER_TYPE_RNA:
-	    throw new S2DError(
-	      "RNA not supported for SPARTA deltashifts");
+        case S2DResidues.POLYMER_TYPE_RNA:
+            throw new S2DError(
+                "RNA not supported for SPARTA deltashifts");
 
-	default:
-	    throw new S2DError("Illegal polymer type: " + polymerType);
-	}
+        default:
+            throw new S2DError("Illegal polymer type: " + polymerType);
+        }
 
-	return chemShift;
+        return chemShift;
     }
 
     //-------------------------------------------------------------------
     // Constructor.
     public S2DChemShift(String name, String longName, S2DNmrStarIfc star,
-      SaveFrameNode frame, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
+                        SaveFrameNode frame, String dataDir, String sessionDir,
+                        S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DChemShift.S2DChemShift(" + name + ", " +
-	      entityAssemblyID + ")");
-	}
+            System.out.println("S2DChemShift.S2DChemShift(" + name + ", " +
+                               entityAssemblyID + ")");
+        }
 
-	_name = name;
-	_longName = longName;
-	_dataDir = dataDir;
-	_sessionDir = sessionDir;
-	_summary = summary;
-	_frameDetails = star.getFrameDetails(frame);
-	_sample = star.getFrameSample(frame);
-	_sampleConditions = star.getFrameSampleConditions(frame);
+        _name = name;
+        _longName = longName;
+        _dataDir = dataDir;
+        _sessionDir = sessionDir;
+        _summary = summary;
+        _frameDetails = star.getFrameDetails(frame);
+        _sample = star.getFrameSample(frame);
+        _sampleConditions = star.getFrameSampleConditions(frame);
 
-	_entityAssemblyID = star.getEntityAssemblyID(frame,
-	  entityAssemblyID);
+        _entityAssemblyID = star.getEntityAssemblyID(frame,
+                            entityAssemblyID);
 
-	_info = "Visualization of " + _longName;
+        _info = "Visualization of " + _longName;
 
-	_starVersion = star.version();
+        _starVersion = star.version();
     }
 
     //-------------------------------------------------------------------
     // Write the deltashifts for this data.
     public void writeDeltashifts(int frameIndex, boolean append)
-      throws S2DException
+    throws S2DException
     {
     }
 
@@ -280,8 +280,8 @@ public class S2DChemShift {
     //-------------------------------------------------------------------
     // Write the percent assignments for this data.
     public void writePctAssign(int frameIndex, boolean checkPctAssign,
-      String chemAssgFile)
-      throws S2DException
+                               String chemAssgFile)
+    throws S2DException
     {
     }
 
@@ -290,79 +290,79 @@ public class S2DChemShift {
     public void writeAllShifts(int frameIndex) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DChemShift.writeAllShifts()");
-	}
+            System.out.println("S2DChemShift.writeAllShifts()");
+        }
 
         FileWriter asWriter = null;
-	try {
+        try {
             asWriter = S2DFileWriter.create(_dataDir + File.separator +
-	      _name + S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex +
-	      S2DNames.DAT_SUFFIX);
-	    asWriter.write("# Data: all chemical shifts for " + _name + "\n");
-	    asWriter.write("# Schema: bmrb-AllShift\n");
-	    asWriter.write("# Attributes: ChemShiftVal; AtomName; " +
-	      "AtomType; Residue_seq_code; ResLabel; Entity_assembly_ID\n");
+                                            _name + S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex +
+                                            S2DNames.DAT_SUFFIX);
+            asWriter.write("# Data: all chemical shifts for " + _name + "\n");
+            asWriter.write("# Schema: bmrb-AllShift\n");
+            asWriter.write("# Attributes: ChemShiftVal; AtomName; " +
+                           "AtomType; Residue_seq_code; ResLabel; Entity_assembly_ID\n");
             asWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                           S2DMain.PEP_CGI_VERSION + "\n");
             asWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    asWriter.write("#\n");
+                           S2DMain.getTimestamp() + "\n");
+            asWriter.write("#\n");
 
         } catch(IOException ex) {
-	    System.err.println(
-	      "IOException writing all chem shift values: " +
-	      ex.toString());
-	    throw new S2DError("Can't write all chem shift values");
-	}
+            System.err.println(
+                "IOException writing all chem shift values: " +
+                ex.toString());
+            throw new S2DError("Can't write all chem shift values");
+        }
 
-	try {
+        try {
             //
-	    // Write the chemical shift values to the data file.
-	    //
-	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        asWriter.write(_chemShiftVals[index] + " " +
-		  _atomNames[index] + " " +
-		  _atomTypes[index] + " " +
-		  _resSeqCodes[index] + " " +
-		  _residueLabels[index] + " " +
-		  _entityAssemblyID + "\n");
-	    }
+            // Write the chemical shift values to the data file.
+            //
+            for (int index = 0; index < _resSeqCodes.length; index++) {
+                asWriter.write(_chemShiftVals[index] + " " +
+                               _atomNames[index] + " " +
+                               _atomTypes[index] + " " +
+                               _resSeqCodes[index] + " " +
+                               _residueLabels[index] + " " +
+                               _entityAssemblyID + "\n");
+            }
 
-	    //
-	    // Write the session file.
-	    //
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_ALL_CHEM_SHIFTS,
-	      _name, frameIndex, _info, null, true, _starVersion, "");
+            //
+            // Write the session file.
+            //
+            S2DSession.write(_sessionDir, S2DUtils.TYPE_ALL_CHEM_SHIFTS,
+                             _name, frameIndex, _info, null, true, _starVersion, "");
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    String title = "Chemical shift distributions by amino " +
-	      "acid/nucleotide (entity assembly " + _entityAssemblyID + ")";
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(),
-	      S2DUtils.TYPE_ALL_CHEM_SHIFTS, _name, frameIndex,
-	      title, _frameDetails);
-	    specHtml.write();
+            //
+            // Write the session-specific html file.
+            //
+            String title = "Chemical shift distributions by amino " +
+                           "acid/nucleotide (entity assembly " + _entityAssemblyID + ")";
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(),
+                S2DUtils.TYPE_ALL_CHEM_SHIFTS, _name, frameIndex,
+                title, _frameDetails);
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeAllShifts(_entityAssemblyID, frameIndex,
-	      _resSeqCodes.length);
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writeAllShifts(_entityAssemblyID, frameIndex,
+                                    _resSeqCodes.length);
 
-	} catch (IOException ex) {
-	    System.err.println("IOException writing all chem shifts: " +
-	      ex.toString());
-	    throw new S2DError("Unable to write all chem shifts for " +
-	      frameIndex);
-	} finally {
-	    try {
-	        asWriter.close();
-	    } catch (IOException ex) {
-	        System.err.println("IOException: " + ex.toString());
-	    }
-	}
+        } catch (IOException ex) {
+            System.err.println("IOException writing all chem shifts: " +
+                               ex.toString());
+            throw new S2DError("Unable to write all chem shifts for " +
+                               frameIndex);
+        } finally {
+            try {
+                asWriter.close();
+            } catch (IOException ex) {
+                System.err.println("IOException: " + ex.toString());
+            }
+        }
     }
 
     //-------------------------------------------------------------------
@@ -373,7 +373,7 @@ public class S2DChemShift {
 
     //-------------------------------------------------------------------
     public void writeHvsCShifts(String connectionFile, int frameIndex)
-      throws S2DException
+    throws S2DException
     {
     }
 
@@ -386,40 +386,40 @@ public class S2DChemShift {
     public void addDeltaData(Vector dataSets, int frameIndex)
     {
         // Note: attribute names must match the bmrb-DeltaShift schema.
-	String dataSource = _name + S2DNames.DELTASHIFT_SUFFIX + frameIndex;
+        String dataSource = _name + S2DNames.DELTASHIFT_SUFFIX + frameIndex;
 
-	String dataName;
-	if (_atomSet.contains("HA")) {
-	    dataName = "HA delta chem shift [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	      _sample, _sampleConditions, dataSource, "HA_DeltaShift",
-	      "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
-	      S2DResidues.POLYMER_TYPE_PROTEIN));
+        String dataName;
+        if (_atomSet.contains("HA")) {
+            dataName = "HA delta chem shift [" + _entityAssemblyID + "]";
+            dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                                   _sample, _sampleConditions, dataSource, "HA_DeltaShift",
+                                                   "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
+                                                   S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
-	if (_atomSet.contains("C")) {
-	    dataName = "C delta chem shift [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	      _sample, _sampleConditions, dataSource, "C_DeltaShift",
-	      "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
-	      S2DResidues.POLYMER_TYPE_PROTEIN));
+        if (_atomSet.contains("C")) {
+            dataName = "C delta chem shift [" + _entityAssemblyID + "]";
+            dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                                   _sample, _sampleConditions, dataSource, "C_DeltaShift",
+                                                   "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
+                                                   S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
-	if (_atomSet.contains("CA")) {
-	    dataName = "CA delta chem shift [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	      _sample, _sampleConditions, dataSource, "CA_DeltaShift",
-	      "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
-	      S2DResidues.POLYMER_TYPE_PROTEIN));
+        if (_atomSet.contains("CA")) {
+            dataName = "CA delta chem shift [" + _entityAssemblyID + "]";
+            dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                                   _sample, _sampleConditions, dataSource, "CA_DeltaShift",
+                                                   "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
+                                                   S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
-	if (_hasRealCBShifts) {
-	    dataName = "CB delta chem shift [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	      _sample, _sampleConditions, dataSource, "CB_DeltaShift",
-	      "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
-	      S2DResidues.POLYMER_TYPE_PROTEIN));
-	}
+        if (_hasRealCBShifts) {
+            dataName = "CB delta chem shift [" + _entityAssemblyID + "]";
+            dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                                   _sample, _sampleConditions, dataSource, "CB_DeltaShift",
+                                                   "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
+                                                   S2DResidues.POLYMER_TYPE_PROTEIN));
+        }
     }
 
     //-------------------------------------------------------------------
@@ -451,7 +451,7 @@ public class S2DChemShift {
      * @param Whether this is appending to the list of models.
      */
     public void addSpartaData(Vector dataSets, int frameIndex,
-      boolean append) throws S2DError
+                              boolean append) throws S2DError
     {
     }
 
@@ -468,92 +468,92 @@ public class S2DChemShift {
      * @param The residues for the current entity assembly
      */
     void getExperimentalValues(S2DNmrStarIfc star, SaveFrameNode frame,
-      String entityAssemblyID, S2DResidues residues) throws S2DException
+                               String entityAssemblyID, S2DResidues residues) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DChemShift.getExperimentalValues(" +
-	      star.getFrameName(frame) + ", " + entityAssemblyID + ")");
-	}
+            System.out.println("S2DChemShift.getExperimentalValues(" +
+                               star.getFrameName(frame) + ", " + entityAssemblyID + ")");
+        }
 
-	//
-	// Get the values we need from the Star file.
-	//
+        //
+        // Get the values we need from the Star file.
+        //
 
-	// If a non-blank entityAssemblyID is specified, we need to filter
-	// the frame values to only take the ones corresponding to that
-	// entityAssemblyID.  To do that, we get the entityAssemblyID
-	// values in each row of the loop.  (entityAssemblyID will be blank
-	// when processing NMR-STAR 2.1 files -- they don't have data for
-	// more than one entity assembly in a single save frame).
-	String[] entityAssemblyIDs = null;
-	if (!entityAssemblyID.equals("")) {
-	    entityAssemblyIDs = star.getFrameValues(frame,
-	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID,
-	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
-	}
+        // If a non-blank entityAssemblyID is specified, we need to filter
+        // the frame values to only take the ones corresponding to that
+        // entityAssemblyID.  To do that, we get the entityAssemblyID
+        // values in each row of the loop.  (entityAssemblyID will be blank
+        // when processing NMR-STAR 2.1 files -- they don't have data for
+        // more than one entity assembly in a single save frame).
+        String[] entityAssemblyIDs = null;
+        if (!entityAssemblyID.equals("")) {
+            entityAssemblyIDs = star.getFrameValues(frame,
+                                                    star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID,
+                                                    star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
+        }
 
-	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE,
-	  entityAssemblyID, entityAssemblyIDs);
-	_resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
-	  star.CHEM_SHIFT_RES_SEQ_CODE);
-	resSeqCodesTmp = null;
+        String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
+                                  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE,
+                                  entityAssemblyID, entityAssemblyIDs);
+        _resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+                                             star.CHEM_SHIFT_RES_SEQ_CODE);
+        resSeqCodesTmp = null;
 
-	//TEMP -- I don't understand the relationship here between residues and _residueLabels -- is residues just kind of a placeholder or something just to have the polymer type?
-	_residueLabels = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
-	  entityAssemblyIDs);
-	residues.make3Letter(_residueLabels);
+        //TEMP -- I don't understand the relationship here between residues and _residueLabels -- is residues just kind of a placeholder or something just to have the polymer type?
+        _residueLabels = star.getAndFilterFrameValues(frame,
+                         star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
+                         entityAssemblyIDs);
+        residues.make3Letter(_residueLabels);
 
-	_atomNames = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
-	  entityAssemblyIDs);
+        _atomNames = star.getAndFilterFrameValues(frame,
+                     star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
+                     entityAssemblyIDs);
 
-	try { 
-	    _atomTypes = star.getAndFilterFrameValues(frame,
-	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_TYPE,
-	      entityAssemblyID, entityAssemblyIDs);
-	} catch (S2DException ex) {
-	    if (doDebugOutput(0)) {
-	    	System.out.println("Warning: unable to get " +
-		  star.CHEM_SHIFT_ATOM_TYPE +
-		  " values (" + ex.toString() + "); deriving them from " +
-		  star.CHEM_SHIFT_ATOM_NAME + " values instead");
-	    }
+        try {
+            _atomTypes = star.getAndFilterFrameValues(frame,
+                         star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_TYPE,
+                         entityAssemblyID, entityAssemblyIDs);
+        } catch (S2DException ex) {
+            if (doDebugOutput(0)) {
+                System.out.println("Warning: unable to get " +
+                                   star.CHEM_SHIFT_ATOM_TYPE +
+                                   " values (" + ex.toString() + "); deriving them from " +
+                                   star.CHEM_SHIFT_ATOM_NAME + " values instead");
+            }
 
-	    _atomTypes = S2DUtils.atomName2AtomType(_atomNames);
-	}
+            _atomTypes = S2DUtils.atomName2AtomType(_atomNames);
+        }
 
-	String[] chemShiftsTmp = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_VALUE, entityAssemblyID,
-	  entityAssemblyIDs);
+        String[] chemShiftsTmp = star.getAndFilterFrameValues(frame,
+                                 star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_VALUE, entityAssemblyID,
+                                 entityAssemblyIDs);
         _chemShiftVals = S2DUtils.arrayStr2Double(chemShiftsTmp,
-	  star.CHEM_SHIFT_VALUE);
-	chemShiftsTmp = null;
+                         star.CHEM_SHIFT_VALUE);
+        chemShiftsTmp = null;
 
-	try {
-	    String[] ambiguityTmp = star.getAndFilterFrameValues(frame,
-	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE,
-	      entityAssemblyID, entityAssemblyIDs);
-	    if (S2DUtils.entireArrayMatches(ambiguityTmp, ".")) {
-	        throw new S2DWarning("Ambiguity code values are all null");
-	    }
-	    _ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp,
-	      star.CHEM_SHIFT_AMBIG_CODE);
-	    ambiguityTmp = null;
-	} catch (S2DException ex) {
+        try {
+            String[] ambiguityTmp = star.getAndFilterFrameValues(frame,
+                                    star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE,
+                                    entityAssemblyID, entityAssemblyIDs);
+            if (S2DUtils.entireArrayMatches(ambiguityTmp, ".")) {
+                throw new S2DWarning("Ambiguity code values are all null");
+            }
+            _ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp,
+                                                   star.CHEM_SHIFT_AMBIG_CODE);
+            ambiguityTmp = null;
+        } catch (S2DException ex) {
             if (doDebugOutput(4)) {
-	        System.out.println("No ambiguity values in this save frame (" +
-		  star.getFrameName(frame) + ")");
-	    }
-	    _ambiguityVals = new int[_resSeqCodes.length];
-	    for (int index = 0; index < _ambiguityVals.length; ++index) {
-	    	_ambiguityVals[index] = 9;
-	    }
-	}
+                System.out.println("No ambiguity values in this save frame (" +
+                                   star.getFrameName(frame) + ")");
+            }
+            _ambiguityVals = new int[_resSeqCodes.length];
+            for (int index = 0; index < _ambiguityVals.length; ++index) {
+                _ambiguityVals[index] = 9;
+            }
+        }
 
-	_entityAssemblyID = star.getEntityAssemblyID(frame,
-	  entityAssemblyID);
+        _entityAssemblyID = star.getEntityAssemblyID(frame,
+                            entityAssemblyID);
     }
 
     //-------------------------------------------------------------------
@@ -564,14 +564,14 @@ public class S2DChemShift {
      */
     protected int findLastResidue()
     {
-	// We calculate lastResidue this way to allow for the data not
-	// being strictly ordered by residue.
-	int lastResidue = 0;
-	for (int index = 0; index < _resSeqCodes.length; index++) {
-	    lastResidue = Math.max(lastResidue, _resSeqCodes[index]);
-	}
+        // We calculate lastResidue this way to allow for the data not
+        // being strictly ordered by residue.
+        int lastResidue = 0;
+        for (int index = 0; index < _resSeqCodes.length; index++) {
+            lastResidue = Math.max(lastResidue, _resSeqCodes[index]);
+        }
 
-	return lastResidue;
+        return lastResidue;
     }
 
     //-------------------------------------------------------------------
@@ -579,154 +579,154 @@ public class S2DChemShift {
     protected void calculateDeltaShifts() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DChemShift.calculateDeltaShifts()");
-	}
+            System.out.println("S2DChemShift.calculateDeltaShifts()");
+        }
 
-	int lastResidue = findLastResidue();
+        int lastResidue = findLastResidue();
 
-	// Residues normally start with 1 -- skip the first element of
-	// these arrays to make things simpler.
-	_deltaShiftResLabels = new String[lastResidue + 1];
-	_haDeltaShifts = new float[lastResidue + 1];
-	_cDeltaShifts = new float[lastResidue + 1];
-	_caDeltaShifts = new float[lastResidue + 1];
-	_cbDeltaShifts = new float[lastResidue + 1];
-	_nDeltaShifts = new float[lastResidue + 1];
-	_hDeltaShifts = new float[lastResidue + 1];
+        // Residues normally start with 1 -- skip the first element of
+        // these arrays to make things simpler.
+        _deltaShiftResLabels = new String[lastResidue + 1];
+        _haDeltaShifts = new float[lastResidue + 1];
+        _cDeltaShifts = new float[lastResidue + 1];
+        _caDeltaShifts = new float[lastResidue + 1];
+        _cbDeltaShifts = new float[lastResidue + 1];
+        _nDeltaShifts = new float[lastResidue + 1];
+        _hDeltaShifts = new float[lastResidue + 1];
 
-	float[] ha2DeltaShifts = new float[lastResidue + 1];
-	float[] ha3DeltaShifts = new float[lastResidue + 1];
+        float[] ha2DeltaShifts = new float[lastResidue + 1];
+        float[] ha3DeltaShifts = new float[lastResidue + 1];
 
-    	int[] ha2Ambiguities = new int[lastResidue + 1];
-    	int[] ha3Ambiguities = new int[lastResidue + 1];
+        int[] ha2Ambiguities = new int[lastResidue + 1];
+        int[] ha3Ambiguities = new int[lastResidue + 1];
 
-	_hasRealCBShifts = false;
+        _hasRealCBShifts = false;
 
-	for (int index = 0; index <= lastResidue; ++index) {
-	    _deltaShiftResLabels[index] = "";
-	}
+        for (int index = 0; index <= lastResidue; ++index) {
+            _deltaShiftResLabels[index] = "";
+        }
 
-	int prevResSeqCode = -1; // invalid value
-	for (int index = 0; index < _resSeqCodes.length; ++index) {
+        int prevResSeqCode = -1; // invalid value
+        for (int index = 0; index < _resSeqCodes.length; ++index) {
 
-	    int currResSeqCode = _resSeqCodes[index];
-	    String resLabel = _residueLabels[index];
-	    String atomName = _atomNames[index];
-	    _atomSet.add(atomName);
-	    double chemShift = _chemShiftVals[index];
+            int currResSeqCode = _resSeqCodes[index];
+            String resLabel = _residueLabels[index];
+            String atomName = _atomNames[index];
+            _atomSet.add(atomName);
+            double chemShift = _chemShiftVals[index];
 
-	    if (currResSeqCode != prevResSeqCode) {
-	        _deltaShiftResLabels[currResSeqCode] = resLabel;
-	        prevResSeqCode = currResSeqCode;
-	    }
+            if (currResSeqCode != prevResSeqCode) {
+                _deltaShiftResLabels[currResSeqCode] = resLabel;
+                prevResSeqCode = currResSeqCode;
+            }
 
-	    try {
-	        ShiftDataManager.Pair standardValue =
-		  _refTable.returnValues(resLabel, atomName);
+            try {
+                ShiftDataManager.Pair standardValue =
+                    _refTable.returnValues(resLabel, atomName);
 
-		// Note: do the calculation in double and truncate to float
-		// to avoid getting values like 0.05000000000000071.
-		float deltashift = (float)(chemShift -
-		  standardValue.chemshift);
+                // Note: do the calculation in double and truncate to float
+                // to avoid getting values like 0.05000000000000071.
+                float deltashift = (float)(chemShift -
+                                           standardValue.chemshift);
 
-		//TEMP -- need alg reference here
-		//TEMP -- should we make sure the resLabel is *not* GLY for HA?
-	        if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA)) {
-		    _haDeltaShifts[currResSeqCode] = deltashift;
+                //TEMP -- need alg reference here
+                //TEMP -- should we make sure the resLabel is *not* GLY for HA?
+                if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA)) {
+                    _haDeltaShifts[currResSeqCode] = deltashift;
 
-		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA2)) {
-		    ha2DeltaShifts[currResSeqCode] = deltashift;
-		    if ( _ambiguityVals != null) {
-		        ha2Ambiguities[currResSeqCode] = _ambiguityVals[index];
-		    }
+                } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA2)) {
+                    ha2DeltaShifts[currResSeqCode] = deltashift;
+                    if ( _ambiguityVals != null) {
+                        ha2Ambiguities[currResSeqCode] = _ambiguityVals[index];
+                    }
 
-		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA3)) {
-		    ha3DeltaShifts[currResSeqCode] = deltashift;
-		    if ( _ambiguityVals != null) {
-		        ha3Ambiguities[currResSeqCode] = _ambiguityVals[index];
-		    }
+                } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA3)) {
+                    ha3DeltaShifts[currResSeqCode] = deltashift;
+                    if ( _ambiguityVals != null) {
+                        ha3Ambiguities[currResSeqCode] = _ambiguityVals[index];
+                    }
 
-	        } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_C)) {
-		    _cDeltaShifts[currResSeqCode] = deltashift;
+                } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_C)) {
+                    _cDeltaShifts[currResSeqCode] = deltashift;
 
-		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_CA)) {
-		    _caDeltaShifts[currResSeqCode] = deltashift;
+                } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_CA)) {
+                    _caDeltaShifts[currResSeqCode] = deltashift;
 
-		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_CB)) {
-		    _cbDeltaShifts[currResSeqCode] = deltashift;
-		    _hasRealCBShifts = true;
+                } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_CB)) {
+                    _cbDeltaShifts[currResSeqCode] = deltashift;
+                    _hasRealCBShifts = true;
 
-		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA3) &&
-		  resLabel.equalsIgnoreCase(S2DNames.ACID_GLY)) {
-		    // Special case for GLY as per info from Eldon.
-		    _cbDeltaShifts[currResSeqCode] = deltashift;
+                } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA3) &&
+                           resLabel.equalsIgnoreCase(S2DNames.ACID_GLY)) {
+                    // Special case for GLY as per info from Eldon.
+                    _cbDeltaShifts[currResSeqCode] = deltashift;
 
-		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_N)) {
-		    _nDeltaShifts[currResSeqCode] = deltashift;
+                } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_N)) {
+                    _nDeltaShifts[currResSeqCode] = deltashift;
 
-		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_H)) {
-		    _hDeltaShifts[currResSeqCode] = deltashift;
+                } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_H)) {
+                    _hDeltaShifts[currResSeqCode] = deltashift;
 
                 } else {
-	            //TEMP -- should we ever get here????
-	        }
-	    } catch(S2DWarning ex) {
-	        if (doDebugOutput(11)) {
-	            System.err.println(ex.toString());
-	        }
-	    } catch(S2DException ex) {
-	        System.err.println(ex.toString());
-	    }
-	}
+                    //TEMP -- should we ever get here????
+                }
+            } catch(S2DWarning ex) {
+                if (doDebugOutput(11)) {
+                    System.err.println(ex.toString());
+                }
+            } catch(S2DException ex) {
+                System.err.println(ex.toString());
+            }
+        }
 
-	// Special-case calculations for GLY because it has no CB.
-	// As per Wishart papers, discussions with Eldon, etc.
+        // Special-case calculations for GLY because it has no CB.
+        // As per Wishart papers, discussions with Eldon, etc.
         for (int index = 0; index < _deltaShiftResLabels.length; ++index) {
-	     if (_deltaShiftResLabels[index].equalsIgnoreCase(
-	       S2DNames.ACID_GLY)) {
-		if ((ha2Ambiguities[index] == 1) &&
-		  (ha3Ambiguities[index] == 1)) {
-		    _haDeltaShifts[index] = ha2DeltaShifts[index];
-		    _cbDeltaShifts[index] = ha3DeltaShifts[index];
-		} else if ((ha2Ambiguities[index] == 2) &&
-		  (ha3Ambiguities[index] == 2)) {
-		    _haDeltaShifts[index] = (ha2DeltaShifts[index] +
-		      ha3DeltaShifts[index]) / (float)2;
-		    _cbDeltaShifts[index] = (float)0.0;
-		} else {
-		    _haDeltaShifts[index] = (float)0.0;
-		    _cbDeltaShifts[index] = (float)0.0;
-		}
+            if (_deltaShiftResLabels[index].equalsIgnoreCase(
+                        S2DNames.ACID_GLY)) {
+                if ((ha2Ambiguities[index] == 1) &&
+                        (ha3Ambiguities[index] == 1)) {
+                    _haDeltaShifts[index] = ha2DeltaShifts[index];
+                    _cbDeltaShifts[index] = ha3DeltaShifts[index];
+                } else if ((ha2Ambiguities[index] == 2) &&
+                           (ha3Ambiguities[index] == 2)) {
+                    _haDeltaShifts[index] = (ha2DeltaShifts[index] +
+                                             ha3DeltaShifts[index]) / (float)2;
+                    _cbDeltaShifts[index] = (float)0.0;
+                } else {
+                    _haDeltaShifts[index] = (float)0.0;
+                    _cbDeltaShifts[index] = (float)0.0;
+                }
 
-	    }
-	}
+            }
+        }
     }
 
     //-------------------------------------------------------------------
     // Calculate the chemical shift index for the given values; returns
     // 0 if there is an error.
     protected int calculateCSI(String resLabel, String atomName,
-      double deltaShift)
+                               double deltaShift)
     {
         int csi = 0;
-	    try {
+        try {
             ShiftDataManager.Pair standardValue =
-	      _refTable.returnValues(resLabel, atomName);
+                _refTable.returnValues(resLabel, atomName);
 
-	    if (deltaShift > standardValue.offset) {
-	        csi = 1;
-	    } else if (deltaShift < -1.0 * standardValue.offset) {
-	        csi = -1;
-	    }
-	} catch(S2DWarning ex) {
-	    if (doDebugOutput(11)) {
-	        System.err.println(ex.toString());
-	    }
-	} catch (S2DException ex) {
-	    System.err.println(ex.toString());
-	}
+            if (deltaShift > standardValue.offset) {
+                csi = 1;
+            } else if (deltaShift < -1.0 * standardValue.offset) {
+                csi = -1;
+            }
+        } catch(S2DWarning ex) {
+            if (doDebugOutput(11)) {
+                System.err.println(ex.toString());
+            }
+        } catch (S2DException ex) {
+            System.err.println(ex.toString());
+        }
 
-	return csi;
+        return csi;
     }
 
     //===================================================================
@@ -737,12 +737,12 @@ public class S2DChemShift {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

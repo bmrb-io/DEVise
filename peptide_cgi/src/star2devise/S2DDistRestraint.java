@@ -265,9 +265,9 @@ public class S2DDistRestraint extends S2DRestraint {
 
     //TEMP -- make sure the part about CING is right
     public static final String STR_RESTRANTS_GRID = "Distance " +
-      "restraints from restraints grid (violations calculated by CING)";
+            "restraints from restraints grid (violations calculated by CING)";
     public static final String STR_REMEDIATED_RESTRANTS = "Distance " +
-      "restraints from remediated restraints";
+            "restraints from remediated restraints";
 
     // Per-restraint data.
     private class RestraintInfo {
@@ -277,83 +277,83 @@ public class S2DDistRestraint extends S2DRestraint {
         // numerical comparisons, though. wenger 2010-02-24.
 
         public String _entityAssembly1Id;
-	public String _resSeq1Code;
-	public String _resSeq1Label;
+        public String _resSeq1Code;
+        public String _resSeq1Label;
         public String _entityAssembly2Id;
-	public String _resSeq2Code;
-	public String _resSeq2Label;
+        public String _resSeq2Code;
+        public String _resSeq2Label;
 
-	public String _restraintType;
-	public String _restraintLengthType;
+        public String _restraintType;
+        public String _restraintLengthType;
 
-            // combination of entity assembly ID, residue # and atom name
-	public String _atom1Id;
-	public String _atom1Name;
+        // combination of entity assembly ID, residue # and atom name
+        public String _atom1Id;
+        public String _atom1Name;
 
-            // combination of entity assembly ID, residue # and atom name
-	public String _atom2Id;
-	public String _atom2Name;
+        // combination of entity assembly ID, residue # and atom name
+        public String _atom2Id;
+        public String _atom2Name;
 
-	public String _lowerBound;
-	public String _upperBound;
-	public String _averageValue;
-	public String _maxViolation;
-	public boolean _isViolated = false;
-	public boolean _isAmbiguous = false;
+        public String _lowerBound;
+        public String _upperBound;
+        public String _averageValue;
+        public String _maxViolation;
+        public boolean _isViolated = false;
+        public boolean _isAmbiguous = false;
 
-	public RestraintInfo() {
-	}
+        public RestraintInfo() {
+        }
 
-	public RestraintInfo(RestraintInfo resInfo) {
+        public RestraintInfo(RestraintInfo resInfo) {
             this._entityAssembly1Id = resInfo._entityAssembly1Id;
-	    this._resSeq1Code = resInfo._resSeq1Code;
-	    this._resSeq1Label = resInfo._resSeq1Label;
+            this._resSeq1Code = resInfo._resSeq1Code;
+            this._resSeq1Label = resInfo._resSeq1Label;
             this._entityAssembly2Id = resInfo._entityAssembly2Id;
-	    this._resSeq2Code = resInfo._resSeq2Code;
-	    this._resSeq2Label = resInfo._resSeq2Label;
-	    this._restraintType = resInfo._restraintType;
-	    this._restraintLengthType = resInfo._restraintLengthType;
-	    this._atom1Id = resInfo._atom1Id;
-	    this._atom1Name = resInfo._atom1Name;
-	    this._atom2Id = resInfo._atom2Id;
-	    this._atom2Name = resInfo._atom2Name;
-	    this._lowerBound = resInfo._lowerBound;
-	    this._upperBound = resInfo._upperBound;
-	    this._averageValue = resInfo._averageValue;
-	    this._maxViolation = resInfo._maxViolation;
-	    this._isViolated = resInfo._isViolated;
-	    this._isAmbiguous = resInfo._isAmbiguous;
-	}
+            this._resSeq2Code = resInfo._resSeq2Code;
+            this._resSeq2Label = resInfo._resSeq2Label;
+            this._restraintType = resInfo._restraintType;
+            this._restraintLengthType = resInfo._restraintLengthType;
+            this._atom1Id = resInfo._atom1Id;
+            this._atom1Name = resInfo._atom1Name;
+            this._atom2Id = resInfo._atom2Id;
+            this._atom2Name = resInfo._atom2Name;
+            this._lowerBound = resInfo._lowerBound;
+            this._upperBound = resInfo._upperBound;
+            this._averageValue = resInfo._averageValue;
+            this._maxViolation = resInfo._maxViolation;
+            this._isViolated = resInfo._isViolated;
+            this._isAmbiguous = resInfo._isAmbiguous;
+        }
 
-	public String toString()
-	{
-	    String violationStr = _isViolated ? "Violated" : "Non-violated";
-	    String ambigStr = _isAmbiguous ?  "Ambiguous" : "Non-ambiguous";
-	    return "" +
-	      _entityAssembly1Id + "\t" +
-	      _resSeq1Code + "\t" +
-	      _resSeq1Label + "\t" +
-	      _entityAssembly1Id + "_" + _resSeq1Code + "\t" +
-	      _entityAssembly2Id + "\t" +
-	      _resSeq2Code + "\t" +
-	      _resSeq2Label + "\t" +
-	      _entityAssembly2Id + "_" + _resSeq2Code + "\t" +
-	      _lowerBound + "\t" +
-	      _upperBound + "\t" +
-	      _atom1Id + "\t" +
-	      _atom1Name + "\t" +
-	      _atom2Id + "\t" +
-	      _atom2Name + "\t" +
-	      _restraintType + "\t" +
-	      _restraintLengthType + "\t" +
-	      _averageValue + "\t" +
-	      _maxViolation + "\t" +
-	      violationStr + "\t" +
-	      ambigStr;
-	}
+        public String toString()
+        {
+            String violationStr = _isViolated ? "Violated" : "Non-violated";
+            String ambigStr = _isAmbiguous ?  "Ambiguous" : "Non-ambiguous";
+            return "" +
+                   _entityAssembly1Id + "\t" +
+                   _resSeq1Code + "\t" +
+                   _resSeq1Label + "\t" +
+                   _entityAssembly1Id + "_" + _resSeq1Code + "\t" +
+                   _entityAssembly2Id + "\t" +
+                   _resSeq2Code + "\t" +
+                   _resSeq2Label + "\t" +
+                   _entityAssembly2Id + "_" + _resSeq2Code + "\t" +
+                   _lowerBound + "\t" +
+                   _upperBound + "\t" +
+                   _atom1Id + "\t" +
+                   _atom1Name + "\t" +
+                   _atom2Id + "\t" +
+                   _atom2Name + "\t" +
+                   _restraintType + "\t" +
+                   _restraintLengthType + "\t" +
+                   _averageValue + "\t" +
+                   _maxViolation + "\t" +
+                   violationStr + "\t" +
+                   ambigStr;
+        }
     }
 
-        // Vector of RestraintInfo objects.
+    // Vector of RestraintInfo objects.
     private Vector _restraints = new Vector();
 
     private boolean _hasAverages;
@@ -361,70 +361,70 @@ public class S2DDistRestraint extends S2DRestraint {
     private boolean _hasAmbiguous;
 
     private class PerLengthInfo {
-	public int _violAllAmbigAll = 0;
-	public int _violYesAmbigAll = 0;
-	public int _violNoAmbigAll = 0;
-	public int _violAllAmbigYes = 0;
-	public int _violYesAmbigYes = 0;
-	public int _violNoAmbigYes = 0;
-	public int _violAllAmbigNo = 0;
-	public int _violYesAmbigNo = 0;
-	public int _violNoAmbigNo = 0;
+        public int _violAllAmbigAll = 0;
+        public int _violYesAmbigAll = 0;
+        public int _violNoAmbigAll = 0;
+        public int _violAllAmbigYes = 0;
+        public int _violYesAmbigYes = 0;
+        public int _violNoAmbigYes = 0;
+        public int _violAllAmbigNo = 0;
+        public int _violYesAmbigNo = 0;
+        public int _violNoAmbigNo = 0;
 
         public void updateCounts(RestraintInfo restraint)
-	{
-	    _violAllAmbigAll++;
-	    if (restraint._isViolated) {
-		_violYesAmbigAll++;
-	        if (restraint._isAmbiguous) {
-		    _violAllAmbigYes++;
-		    _violYesAmbigYes++;
-		} else {
-		    _violAllAmbigNo++;
-		    _violYesAmbigNo++;
-		}
-	    } else {
-		_violNoAmbigAll++;
-	        if (restraint._isAmbiguous) {
-		    _violAllAmbigYes++;
-		    _violNoAmbigYes++;
-		} else {
-		    _violAllAmbigNo++;
-		    _violNoAmbigNo++;
-		}
-	    }
-	}
+        {
+            _violAllAmbigAll++;
+            if (restraint._isViolated) {
+                _violYesAmbigAll++;
+                if (restraint._isAmbiguous) {
+                    _violAllAmbigYes++;
+                    _violYesAmbigYes++;
+                } else {
+                    _violAllAmbigNo++;
+                    _violYesAmbigNo++;
+                }
+            } else {
+                _violNoAmbigAll++;
+                if (restraint._isAmbiguous) {
+                    _violAllAmbigYes++;
+                    _violNoAmbigYes++;
+                } else {
+                    _violAllAmbigNo++;
+                    _violNoAmbigNo++;
+                }
+            }
+        }
 
-	public String toString()
-	{
-	    return "" +
-	      _violAllAmbigAll + " " +
-	      _violYesAmbigAll + " " +
-	      _violNoAmbigAll + " " +
-	      _violAllAmbigYes + " " +
-	      _violYesAmbigYes + " " +
-	      _violNoAmbigYes + " " +
-	      _violAllAmbigNo + " " +
-	      _violYesAmbigNo + " " +
-	      _violNoAmbigNo;
-	}
+        public String toString()
+        {
+            return "" +
+                   _violAllAmbigAll + " " +
+                   _violYesAmbigAll + " " +
+                   _violNoAmbigAll + " " +
+                   _violAllAmbigYes + " " +
+                   _violYesAmbigYes + " " +
+                   _violNoAmbigYes + " " +
+                   _violAllAmbigNo + " " +
+                   _violYesAmbigNo + " " +
+                   _violNoAmbigNo;
+        }
     };
 
     // Per-residue data.
     private class ResidueInfo {
-	public PerLengthInfo _all = new PerLengthInfo();
-	public PerLengthInfo _intraRes = new PerLengthInfo();
-	public PerLengthInfo _sequential = new PerLengthInfo();
-	public PerLengthInfo _medium = new PerLengthInfo();
-	public PerLengthInfo _long = new PerLengthInfo();
-	public PerLengthInfo _interMol = new PerLengthInfo();
+        public PerLengthInfo _all = new PerLengthInfo();
+        public PerLengthInfo _intraRes = new PerLengthInfo();
+        public PerLengthInfo _sequential = new PerLengthInfo();
+        public PerLengthInfo _medium = new PerLengthInfo();
+        public PerLengthInfo _long = new PerLengthInfo();
+        public PerLengthInfo _interMol = new PerLengthInfo();
 
-	public String toString()
-	{
-	    return _all.toString() + " " + _intraRes.toString() + " " +
-	      _sequential.toString() + " " + _medium.toString() + " " +
-	      _long.toString() + " " + _interMol.toString();
-	}
+        public String toString()
+        {
+            return _all.toString() + " " + _intraRes.toString() + " " +
+                   _sequential.toString() + " " + _medium.toString() + " " +
+                   _long.toString() + " " + _interMol.toString();
+        }
     }
     private Hashtable _entityAssemblies = new Hashtable();
 
@@ -436,458 +436,458 @@ public class S2DDistRestraint extends S2DRestraint {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DDistRestraint(String name, String longName,
-      S2DNmrStarRestIfc star, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, String pdbId) throws S2DException
+                            S2DNmrStarRestIfc star, String dataDir, String sessionDir,
+                            S2DSummaryHtml summary, String pdbId) throws S2DException
     {
-	super(name, longName, star, dataDir, sessionDir, summary, pdbId);
+        super(name, longName, star, dataDir, sessionDir, summary, pdbId);
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DDistRestraint.S2DDistRestraint(" +
-	      name + ")");
-	}
+            System.out.println("S2DDistRestraint.S2DDistRestraint(" +
+                               name + ")");
+        }
 
-	_pseudoAtoms = new S2DPseudoAtoms();
+        _pseudoAtoms = new S2DPseudoAtoms();
 
-	Enumeration frameList = star.getDataFramesByCat(
-	  star.DISTR_CONSTRAINT_STATS_SF_CAT,
-	  star.DISTR_CONSTRAINT_STATS_CAT_NAME);
+        Enumeration frameList = star.getDataFramesByCat(
+                                    star.DISTR_CONSTRAINT_STATS_SF_CAT,
+                                    star.DISTR_CONSTRAINT_STATS_CAT_NAME);
 
-	_hasAverages = false;
-	_hasViolations = false;
-	_hasAmbiguous = false;
-	int restraintIndex = 0;
-	int frameIndex = 1;
+        _hasAverages = false;
+        _hasViolations = false;
+        _hasAmbiguous = false;
+        int restraintIndex = 0;
+        int frameIndex = 1;
         while (frameList.hasMoreElements()) {
-	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+            SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
 
-	    // Remediated restraints files have general_distance_constraints
-	    // save frames that don't have the data we want...
-	    if (!S2DStarUtil.loopExists(frame, star.DISTR_RESTRAINT_ID)) {
+            // Remediated restraints files have general_distance_constraints
+            // save frames that don't have the data we want...
+            if (!S2DStarUtil.loopExists(frame, star.DISTR_RESTRAINT_ID)) {
                 if (doDebugOutput(11)) {
-		    System.out.println("Skipping save frame " +
-		      star.getFrameName(frame) + " because it has no " +
-		      star.DISTR_RESTRAINT_ID + " values");
-		}
-	        continue;
-	    }
-
-	    String restraintType = null;
-	    if (!star.DISTR_CONSTRAINT_TYPE.equals("")) {
-	        restraintType = star.getOneFrameValueOrNull(frame,
-	          star.DISTR_CONSTRAINT_TYPE);
+                    System.out.println("Skipping save frame " +
+                                       star.getFrameName(frame) + " because it has no " +
+                                       star.DISTR_RESTRAINT_ID + " values");
+                }
+                continue;
             }
-	    if (restraintType == null) restraintType = "unknown";
+
+            String restraintType = null;
+            if (!star.DISTR_CONSTRAINT_TYPE.equals("")) {
+                restraintType = star.getOneFrameValueOrNull(frame,
+                                star.DISTR_CONSTRAINT_TYPE);
+            }
+            if (restraintType == null) restraintType = "unknown";
 
             String[] entityAssembly1Ids = star.getFrameValues(frame,
-	      star.DISTR_RESTRAINT_ID, star.DISTR_ENT_ASSEM_1);
+                                          star.DISTR_RESTRAINT_ID, star.DISTR_ENT_ASSEM_1);
             String[] entityAssembly2Ids = star.getFrameValues(frame,
-	      star.DISTR_RESTRAINT_ID, star.DISTR_ENT_ASSEM_2);
+                                          star.DISTR_RESTRAINT_ID, star.DISTR_ENT_ASSEM_2);
 
-	    int restraintCount = entityAssembly1Ids.length;
+            int restraintCount = entityAssembly1Ids.length;
 
-	    String[] ambigCodes = null;
-	    String[] ambigMemberIds = null;
-	    if (!star.DISTR_MEMBER_LOGIC_CODE.equals("")) {
-	        ambigCodes = star.getFrameValues(frame,
-		  star.DISTR_RESTRAINT_ID, star.DISTR_MEMBER_LOGIC_CODE);
-	        ambigMemberIds = star.getFrameValues(frame,
-		  star.DISTR_RESTRAINT_ID, star.DISTR_MEMBER_ID);
-	        _hasAmbiguous = true;
-	    }
+            String[] ambigCodes = null;
+            String[] ambigMemberIds = null;
+            if (!star.DISTR_MEMBER_LOGIC_CODE.equals("")) {
+                ambigCodes = star.getFrameValues(frame,
+                                                 star.DISTR_RESTRAINT_ID, star.DISTR_MEMBER_LOGIC_CODE);
+                ambigMemberIds = star.getFrameValues(frame,
+                                                     star.DISTR_RESTRAINT_ID, star.DISTR_MEMBER_ID);
+                _hasAmbiguous = true;
+            }
 
             String[] resSeq1Codes = star.getFrameValues(frame,
-	      star.DISTR_RESTRAINT_ID, star.DISTR_RES_SEQ_CODE_1);
+                                    star.DISTR_RESTRAINT_ID, star.DISTR_RES_SEQ_CODE_1);
             String[] resSeq1Labels = star.getFrameValues(frame,
-	      star.DISTR_RESTRAINT_ID, star.DISTR_RES_SEQ_LABEL_1);
+                                     star.DISTR_RESTRAINT_ID, star.DISTR_RES_SEQ_LABEL_1);
 
             String[] resSeq2Codes = star.getFrameValues(frame,
-	      star.DISTR_RESTRAINT_ID, star.DISTR_RES_SEQ_CODE_2);
+                                    star.DISTR_RESTRAINT_ID, star.DISTR_RES_SEQ_CODE_2);
             String[] resSeq2Labels = star.getFrameValues(frame,
-	      star.DISTR_RESTRAINT_ID, star.DISTR_RES_SEQ_LABEL_2);
+                                     star.DISTR_RESTRAINT_ID, star.DISTR_RES_SEQ_LABEL_2);
 
             String[] lowerBounds = star.getFrameValues(frame,
-	      star.DISTR_RESTRAINT_ID, star.DISTR_MIN);
+                                   star.DISTR_RESTRAINT_ID, star.DISTR_MIN);
             lowerBounds = S2DUtils.arrayDot2Zero(lowerBounds);
 
             String[] upperBounds = star.getFrameValues(frame,
-	      star.DISTR_RESTRAINT_ID, star.DISTR_MAX);
+                                   star.DISTR_RESTRAINT_ID, star.DISTR_MAX);
             upperBounds = S2DUtils.arrayDot2Zero(upperBounds);
 
             String[] atom1Names = star.getFrameValues(frame,
-	      star.DISTR_RESTRAINT_ID, star.DISTR_ATOM_ID_1);
+                                  star.DISTR_RESTRAINT_ID, star.DISTR_ATOM_ID_1);
 
             String[] atom2Names = star.getFrameValues(frame,
-	      star.DISTR_RESTRAINT_ID, star.DISTR_ATOM_ID_2);
+                                  star.DISTR_RESTRAINT_ID, star.DISTR_ATOM_ID_2);
 
-	    String[] averageValues;
-	    if (!star.DISTR_AVERAGE.equals("")) {
+            String[] averageValues;
+            if (!star.DISTR_AVERAGE.equals("")) {
                 averageValues = star.getFrameValues(frame,
-	          star.DISTR_RESTRAINT_ID, star.DISTR_AVERAGE);
+                                                    star.DISTR_RESTRAINT_ID, star.DISTR_AVERAGE);
                 averageValues = S2DUtils.arrayDot2Zero(averageValues);
-	        _hasAverages = true;
-	    } else {
+                _hasAverages = true;
+            } else {
                 averageValues = S2DUtils.createStringArray(
-		  restraintCount, "0.0");
-	    }
+                                    restraintCount, "0.0");
+            }
 
-	    String[] maxViolations;
-	    if (!star.DISTR_MAX_VIOLATION.equals("")) {
+            String[] maxViolations;
+            if (!star.DISTR_MAX_VIOLATION.equals("")) {
                 maxViolations = star.getFrameValues(frame,
-	          star.DISTR_RESTRAINT_ID, star.DISTR_MAX_VIOLATION);
+                                                    star.DISTR_RESTRAINT_ID, star.DISTR_MAX_VIOLATION);
                 maxViolations = S2DUtils.arrayDot2Zero(maxViolations);
-	        _hasViolations = true;
-	    } else {
+                _hasViolations = true;
+            } else {
                 maxViolations = S2DUtils.createStringArray(
-		  restraintCount, "0.0");
-	    }
+                                    restraintCount, "0.0");
+            }
 
-	    //
+            //
             // Calculate various values for each restraint in this
-	    // save frame.
-	    //
-	    for (int index = 0; index < restraintCount; index++) {
-		RestraintInfo restraintInfo = new RestraintInfo();
+            // save frame.
+            //
+            for (int index = 0; index < restraintCount; index++) {
+                RestraintInfo restraintInfo = new RestraintInfo();
 
-		restraintInfo._entityAssembly1Id =
-		  entityAssembly1Ids[index];
-		restraintInfo._resSeq1Code =
-		  resSeq1Codes[index];
-		restraintInfo._resSeq1Label =
-		  resSeq1Labels[index];
-		restraintInfo._entityAssembly2Id =
-		  entityAssembly2Ids[index];
-		restraintInfo._resSeq2Code =
-		  resSeq2Codes[index];
-		restraintInfo._resSeq2Label =
-		  resSeq2Labels[index];
+                restraintInfo._entityAssembly1Id =
+                    entityAssembly1Ids[index];
+                restraintInfo._resSeq1Code =
+                    resSeq1Codes[index];
+                restraintInfo._resSeq1Label =
+                    resSeq1Labels[index];
+                restraintInfo._entityAssembly2Id =
+                    entityAssembly2Ids[index];
+                restraintInfo._resSeq2Code =
+                    resSeq2Codes[index];
+                restraintInfo._resSeq2Label =
+                    resSeq2Labels[index];
 
-		restraintInfo._restraintType = restraintType;
+                restraintInfo._restraintType = restraintType;
 
-		restraintInfo._atom1Id = S2DUtils.createAtomId(
-		  entityAssembly1Ids[index], resSeq1Codes[index],
-		  atom1Names[index]);
-		restraintInfo._atom2Id = S2DUtils.createAtomId(
-		  entityAssembly2Ids[index], resSeq2Codes[index],
-		  atom2Names[index]);
+                restraintInfo._atom1Id = S2DUtils.createAtomId(
+                                             entityAssembly1Ids[index], resSeq1Codes[index],
+                                             atom1Names[index]);
+                restraintInfo._atom2Id = S2DUtils.createAtomId(
+                                             entityAssembly2Ids[index], resSeq2Codes[index],
+                                             atom2Names[index]);
 
-		restraintInfo._atom1Name = atom1Names[index];
-		restraintInfo._atom2Name = atom2Names[index];
+                restraintInfo._atom1Name = atom1Names[index];
+                restraintInfo._atom2Name = atom2Names[index];
 
-		restraintInfo._lowerBound = lowerBounds[index];
-		restraintInfo._upperBound = upperBounds[index];
-		restraintInfo._averageValue = averageValues[index];
-		restraintInfo._maxViolation = maxViolations[index];
+                restraintInfo._lowerBound = lowerBounds[index];
+                restraintInfo._upperBound = upperBounds[index];
+                restraintInfo._averageValue = averageValues[index];
+                restraintInfo._maxViolation = maxViolations[index];
 
-		//
-		// Get the per-residue data structure(s).
-		//
-	        ResidueInfo residue1Info = getResidueInfo(
-		  entityAssembly1Ids[index], resSeq1Codes[index]); 
-		ResidueInfo residue2Info = null;
-		if (entityAssembly1Ids[index].equals(
-		  entityAssembly2Ids[index]) &&
-		  resSeq1Codes[index].equals(resSeq2Codes[index])) {
-		    // This is a dummy that we'll throw away; just doing
-		    // this here to avoid ifs in code below.
-		    residue2Info = new ResidueInfo();
-		} else {
-	            residue2Info = getResidueInfo(entityAssembly2Ids[index],
-		      resSeq2Codes[index]); 
-		}
+                //
+                // Get the per-residue data structure(s).
+                //
+                ResidueInfo residue1Info = getResidueInfo(
+                                               entityAssembly1Ids[index], resSeq1Codes[index]);
+                ResidueInfo residue2Info = null;
+                if (entityAssembly1Ids[index].equals(
+                            entityAssembly2Ids[index]) &&
+                        resSeq1Codes[index].equals(resSeq2Codes[index])) {
+                    // This is a dummy that we'll throw away; just doing
+                    // this here to avoid ifs in code below.
+                    residue2Info = new ResidueInfo();
+                } else {
+                    residue2Info = getResidueInfo(entityAssembly2Ids[index],
+                                                  resSeq2Codes[index]);
+                }
 
-		//
-		// Figure out whether the restraint is violated.
-		//
-		try {
-		    double maxViolation =
-		      Double.parseDouble(restraintInfo._maxViolation);
-		    if (maxViolation > 0.0) {
-		        restraintInfo._isViolated = true;
-		    }
-		} catch (NumberFormatException ex) {
-		    System.err.println(new S2DWarning(
-		      "Exception parsing maxViolation value: " +
-		      ex.toString()));
-		}
+                //
+                // Figure out whether the restraint is violated.
+                //
+                try {
+                    double maxViolation =
+                        Double.parseDouble(restraintInfo._maxViolation);
+                    if (maxViolation > 0.0) {
+                        restraintInfo._isViolated = true;
+                    }
+                } catch (NumberFormatException ex) {
+                    System.err.println(new S2DWarning(
+                                           "Exception parsing maxViolation value: " +
+                                           ex.toString()));
+                }
 
-		//
-		// Figure out whether the restraint is ambiguous.
-		//
-		if (ambigCodes != null) {
-		    if (ambigCodes[index].equals("OR")) {
-		        restraintInfo._isAmbiguous = true;
-		    }
-		}
+                //
+                // Figure out whether the restraint is ambiguous.
+                //
+                if (ambigCodes != null) {
+                    if (ambigCodes[index].equals("OR")) {
+                        restraintInfo._isAmbiguous = true;
+                    }
+                }
 
-		// Make sure ambiguous restraints only get counted once.
-		if (ambigMemberIds == null ||
-		  ambigMemberIds[index].equals("1")) {
-		    residue1Info._all.updateCounts(restraintInfo);
-		    residue2Info._all.updateCounts(restraintInfo);
-		}
+                // Make sure ambiguous restraints only get counted once.
+                if (ambigMemberIds == null ||
+                        ambigMemberIds[index].equals("1")) {
+                    residue1Info._all.updateCounts(restraintInfo);
+                    residue2Info._all.updateCounts(restraintInfo);
+                }
 
-		//
+                //
                 // Determine restraint length types and update the
-		// counts for the relevant length.
-		//
+                // counts for the relevant length.
+                //
                 findLengthType(entityAssembly1Ids[index],
-		  entityAssembly2Ids[index], resSeq1Codes[index],
-		  resSeq2Codes[index], restraintInfo, residue1Info,
-		  residue2Info);
+                               entityAssembly2Ids[index], resSeq1Codes[index],
+                               resSeq2Codes[index], restraintInfo, residue1Info,
+                               residue2Info);
 
-		//
-		// Deal with pseudoatoms.
-		//
-		Vector atom1List = _pseudoAtoms.get(
-		  restraintInfo._atom1Name, resSeq1Labels[index]);
-		Vector atom2List = _pseudoAtoms.get(
-		  restraintInfo._atom2Name, resSeq2Labels[index]);
-		if (atom1List == null && atom2List == null) {
-		    // No pseudo-atoms.
-		    _restraints.add(restraintIndex, restraintInfo);
-	            restraintIndex++;
-		} else {
-		    restraintIndex = processPseudoAtoms(restraintIndex,
-		      restraintInfo, atom1List, atom2List,
-		      entityAssembly1Ids[index], resSeq1Codes[index],
-		      entityAssembly2Ids[index], resSeq2Codes[index]);
-		}
-	    }
+                //
+                // Deal with pseudoatoms.
+                //
+                Vector atom1List = _pseudoAtoms.get(
+                                       restraintInfo._atom1Name, resSeq1Labels[index]);
+                Vector atom2List = _pseudoAtoms.get(
+                                       restraintInfo._atom2Name, resSeq2Labels[index]);
+                if (atom1List == null && atom2List == null) {
+                    // No pseudo-atoms.
+                    _restraints.add(restraintIndex, restraintInfo);
+                    restraintIndex++;
+                } else {
+                    restraintIndex = processPseudoAtoms(restraintIndex,
+                                                        restraintInfo, atom1List, atom2List,
+                                                        entityAssembly1Ids[index], resSeq1Codes[index],
+                                                        entityAssembly2Ids[index], resSeq2Codes[index]);
+                }
+            }
 
-	    frameIndex++;
-    	}
+            frameIndex++;
+        }
 
-	if (frameIndex == 1) {
-	    S2DMain._noMail = true;
-	    throw new S2DError("No distance restraint save frames found");
-	}
+        if (frameIndex == 1) {
+            S2DMain._noMail = true;
+            throw new S2DError("No distance restraint save frames found");
+        }
     }
 
     //-------------------------------------------------------------------
     // Write the distance restraint values for this data.
     public void writeRestraints(int frameIndex, boolean isRR)
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DDistRestraint.writeRestraints()");
-	}
+            System.out.println("S2DDistRestraint.writeRestraints()");
+        }
 
-	try {
-	    //
-	    // Write the actual data.
-	    //
-	    String suffix = isRR ? S2DNames.RRDISTR_SUFFIX :
-	      S2DNames.DISTR_SUFFIX;
+        try {
+            //
+            // Write the actual data.
+            //
+            String suffix = isRR ? S2DNames.RRDISTR_SUFFIX :
+                            S2DNames.DISTR_SUFFIX;
             FileWriter distWriter = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + suffix + frameIndex +
-	      S2DNames.DAT_SUFFIX);
+                                    File.separator + _name + suffix + frameIndex +
+                                    S2DNames.DAT_SUFFIX);
 
-	    // Write header.
-	    distWriter.write("# Data: distance restraints for " +
-	      _name + "\n");
-	    distWriter.write("# Schema: bmrb-DistanceRestraint\n");
-	    distWriter.write("# Attributes: Entity_assembly1_ID; " +
-	      "Residue1_seq_code; Residue1_label; EA_res1; " +
-	      "Entity_assembly2_ID; Residue2_seq_code; Residue2_label; " +
-	      "EA_res2; Distance_lower_bound; Distance_upper_bound; " +
-	      "atom1Id; atom1Name; atom2Id; atom2Name; restraintType; " +
-	      "restraintLengthType; averageValue; maxViolation; " +
-	      "isViolated; isAmbiguous\n");
+            // Write header.
+            distWriter.write("# Data: distance restraints for " +
+                             _name + "\n");
+            distWriter.write("# Schema: bmrb-DistanceRestraint\n");
+            distWriter.write("# Attributes: Entity_assembly1_ID; " +
+                             "Residue1_seq_code; Residue1_label; EA_res1; " +
+                             "Entity_assembly2_ID; Residue2_seq_code; Residue2_label; " +
+                             "EA_res2; Distance_lower_bound; Distance_upper_bound; " +
+                             "atom1Id; atom1Name; atom2Id; atom2Name; restraintType; " +
+                             "restraintLengthType; averageValue; maxViolation; " +
+                             "isViolated; isAmbiguous\n");
             distWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                             S2DMain.PEP_CGI_VERSION + "\n");
             distWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    distWriter.write("#\n");
+                             S2DMain.getTimestamp() + "\n");
+            distWriter.write("#\n");
 
-	    for (int index = 0; index < _restraints.size(); index++) {
-	        RestraintInfo restraintInfo =
-		  (RestraintInfo)_restraints.elementAt(index);
-		distWriter.write(restraintInfo.toString() + "\n");
-	    }
+            for (int index = 0; index < _restraints.size(); index++) {
+                RestraintInfo restraintInfo =
+                    (RestraintInfo)_restraints.elementAt(index);
+                distWriter.write(restraintInfo.toString() + "\n");
+            }
 
-	    distWriter.close();
+            distWriter.close();
 
-	    //
-	    // Write per-residue data.
-	    //
-	    suffix = isRR ? S2DNames.RRDISTRC_SUFFIX :
-	      S2DNames.DISTRC_SUFFIX;
+            //
+            // Write per-residue data.
+            //
+            suffix = isRR ? S2DNames.RRDISTRC_SUFFIX :
+                     S2DNames.DISTRC_SUFFIX;
             distWriter = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + suffix + frameIndex +
-	      S2DNames.DAT_SUFFIX);
+                                              File.separator + _name + suffix + frameIndex +
+                                              S2DNames.DAT_SUFFIX);
 
-	    // Write header.
-	    distWriter.write("# Data: distance restraints for " +
-	      _name + "\n");
-	    distWriter.write("# Schema: bmrb-DistRestraintCounts\n");
-	    distWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; EA_res; All_viol-all_ambig-all; " +
-	      "All_viol-yes_ambig-all; All_viol-no_ambig-all; " +
-	      "All_viol-all_ambig-yes; All_viol-yes_ambig-yes; " +
-	      "All_viol-no_ambig-yes; All_viol-all_ambig-no; " +
-	      "All_viol-yes_ambig-no; All_viol-no_ambig-no;  " +
-	      "Intra-res_viol-all_ambig-all; Intra-res_viol-yes_ambig-all; " +
-	      "Intra-res_viol-no_ambig-all; Intra-res_viol-all_ambig-yes; " +
-	      "Intra-res_viol-yes_ambig-yes; Intra-res_viol-no_ambig-yes; " +
-	      "Intra-res_viol-all_ambig-no; Intra-res_viol-yes_ambig-no; " +
-	      "Intra-res_viol-no_ambig-no; Sequential_viol-all_ambig-all; " +
-	      "Sequential_viol-yes_ambig-all; Sequential_viol-no_ambig-all; " +
-	      "Sequential_viol-all_ambig-yes; Sequential_viol-yes_ambig-yes; " +
-	      "Sequential_viol-no_ambig-yes; Sequential_viol-all_ambig-no; " +
-	      "Sequential_viol-yes_ambig-no; Sequential_viol-no_ambig-no; " +
-	      "Medium_viol-all_ambig-all; Medium_viol-yes_ambig-all; " +
-	      "Medium_viol-no_ambig-all; Medium_viol-all_ambig-yes; " +
-	      "Medium_viol-yes_ambig-yes; Medium_viol-no_ambig-yes; " +
-	      "Medium_viol-all_ambig-no; Medium_viol-yes_ambig-no; " +
-	      "Medium_viol-no_ambig-no; Long_viol-all_ambig-all; " +
-	      "Long_viol-yes_ambig-all; Long_viol-no_ambig-all; " +
-	      "Long_viol-all_ambig-yes; Long_viol-yes_ambig-yes; " +
-	      "Long_viol-no_ambig-yes; Long_viol-all_ambig-no; " +
-	      "Long_viol-yes_ambig-no; Long_viol-no_ambig-no; " +
-	      "Inter-mol_viol-all_ambig-all; Inter-mol_viol-yes_ambig-all; " +
-	      "Inter-mol_viol-no_ambig-all; Inter-mol_viol-all_ambig-yes; " +
-	      "Inter-mol_viol-yes_ambig-yes; Inter-mol_viol-no_ambig-yes; " +
-	      "Inter-mol_viol-all_ambig-no; Inter-mol_viol-yes_ambig-no; " +
-	      "Inter-mol_viol-no_ambig-no\n");
+            // Write header.
+            distWriter.write("# Data: distance restraints for " +
+                             _name + "\n");
+            distWriter.write("# Schema: bmrb-DistRestraintCounts\n");
+            distWriter.write("# Attributes: Entity_assembly_ID; " +
+                             "Residue_seq_code; EA_res; All_viol-all_ambig-all; " +
+                             "All_viol-yes_ambig-all; All_viol-no_ambig-all; " +
+                             "All_viol-all_ambig-yes; All_viol-yes_ambig-yes; " +
+                             "All_viol-no_ambig-yes; All_viol-all_ambig-no; " +
+                             "All_viol-yes_ambig-no; All_viol-no_ambig-no;  " +
+                             "Intra-res_viol-all_ambig-all; Intra-res_viol-yes_ambig-all; " +
+                             "Intra-res_viol-no_ambig-all; Intra-res_viol-all_ambig-yes; " +
+                             "Intra-res_viol-yes_ambig-yes; Intra-res_viol-no_ambig-yes; " +
+                             "Intra-res_viol-all_ambig-no; Intra-res_viol-yes_ambig-no; " +
+                             "Intra-res_viol-no_ambig-no; Sequential_viol-all_ambig-all; " +
+                             "Sequential_viol-yes_ambig-all; Sequential_viol-no_ambig-all; " +
+                             "Sequential_viol-all_ambig-yes; Sequential_viol-yes_ambig-yes; " +
+                             "Sequential_viol-no_ambig-yes; Sequential_viol-all_ambig-no; " +
+                             "Sequential_viol-yes_ambig-no; Sequential_viol-no_ambig-no; " +
+                             "Medium_viol-all_ambig-all; Medium_viol-yes_ambig-all; " +
+                             "Medium_viol-no_ambig-all; Medium_viol-all_ambig-yes; " +
+                             "Medium_viol-yes_ambig-yes; Medium_viol-no_ambig-yes; " +
+                             "Medium_viol-all_ambig-no; Medium_viol-yes_ambig-no; " +
+                             "Medium_viol-no_ambig-no; Long_viol-all_ambig-all; " +
+                             "Long_viol-yes_ambig-all; Long_viol-no_ambig-all; " +
+                             "Long_viol-all_ambig-yes; Long_viol-yes_ambig-yes; " +
+                             "Long_viol-no_ambig-yes; Long_viol-all_ambig-no; " +
+                             "Long_viol-yes_ambig-no; Long_viol-no_ambig-no; " +
+                             "Inter-mol_viol-all_ambig-all; Inter-mol_viol-yes_ambig-all; " +
+                             "Inter-mol_viol-no_ambig-all; Inter-mol_viol-all_ambig-yes; " +
+                             "Inter-mol_viol-yes_ambig-yes; Inter-mol_viol-no_ambig-yes; " +
+                             "Inter-mol_viol-all_ambig-no; Inter-mol_viol-yes_ambig-no; " +
+                             "Inter-mol_viol-no_ambig-no\n");
             distWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                             S2DMain.PEP_CGI_VERSION + "\n");
             distWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    distWriter.write("#\n");
+                             S2DMain.getTimestamp() + "\n");
+            distWriter.write("#\n");
 
-	    // Go through the _entityAssemblies hash table to write the actual
-	    // data.
+            // Go through the _entityAssemblies hash table to write the actual
+            // data.
             //TEMP -- this is not output in sorted order
-	    Enumeration entities = _entityAssemblies.keys();
-	    while (entities.hasMoreElements()) {
-		String entity = (String)entities.nextElement();
-	        Hashtable entityHT = (Hashtable)_entityAssemblies.get(entity);
-		Enumeration residues = entityHT.keys();
-		while (residues.hasMoreElements()) {
-		    String residue = (String)residues.nextElement();
-		    ResidueInfo residueInfo = getResidueInfo(entity, residue);
+            Enumeration entities = _entityAssemblies.keys();
+            while (entities.hasMoreElements()) {
+                String entity = (String)entities.nextElement();
+                Hashtable entityHT = (Hashtable)_entityAssemblies.get(entity);
+                Enumeration residues = entityHT.keys();
+                while (residues.hasMoreElements()) {
+                    String residue = (String)residues.nextElement();
+                    ResidueInfo residueInfo = getResidueInfo(entity, residue);
 
-		    distWriter.write(entity + " " +
-		      residue + " " +
-		      entity + "_" + residue + " " +
-		      residueInfo.toString() +
-		      "\n");
-		}
-	    }
+                    distWriter.write(entity + " " +
+                                     residue + " " +
+                                     entity + "_" + residue + " " +
+                                     residueInfo.toString() +
+                                     "\n");
+                }
+            }
 
-	    distWriter.close();
+            distWriter.close();
 
-	    //
-	    // Write the meta-data.
-	    //
-	    suffix = isRR ? S2DNames.RRDISTR_MD_SUFFIX :
-	      S2DNames.DISTR_MD_SUFFIX;
+            //
+            // Write the meta-data.
+            //
+            suffix = isRR ? S2DNames.RRDISTR_MD_SUFFIX :
+                     S2DNames.DISTR_MD_SUFFIX;
             distWriter = S2DFileWriter.create(_dataDir + File.separator +
-	      _name + suffix + frameIndex + S2DNames.DAT_SUFFIX);
+                                              _name + suffix + frameIndex + S2DNames.DAT_SUFFIX);
 
-	    distWriter.write("# Data: distance restraint meta-data for " +
-	      _name + "\n");
-	    distWriter.write("# Schema: bmrb-DistRestraintMeta\n");
+            distWriter.write("# Data: distance restraint meta-data for " +
+                             _name + "\n");
+            distWriter.write("# Schema: bmrb-DistRestraintMeta\n");
             distWriter.write("# Attributes: Entity_assembly_name; " +
-	      "Entity_assembly_ID; All_or_violated; All_or_violated_link; " +
-	      "All_or_ambiguous; All_or_ambiguous_link " +
-	      "Restraint_length_type; Restraint_length_type_link; " +
-	      "ChildViewYAttribute; " +
-	      "Viol_opt_index; Ambig_opt_index; Length_opt_index; Title\n");
+                             "Entity_assembly_ID; All_or_violated; All_or_violated_link; " +
+                             "All_or_ambiguous; All_or_ambiguous_link " +
+                             "Restraint_length_type; Restraint_length_type_link; " +
+                             "ChildViewYAttribute; " +
+                             "Viol_opt_index; Ambig_opt_index; Length_opt_index; Title\n");
             distWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                             S2DMain.PEP_CGI_VERSION + "\n");
             distWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    distWriter.write("#\n");
+                             S2DMain.getTimestamp() + "\n");
+            distWriter.write("#\n");
 
-	    // Get a sorted list of the entity assembly IDs we have
-	    // data for.
+            // Get a sorted list of the entity assembly IDs we have
+            // data for.
             Vector entityAssemblyIds = new Vector();
-	    Enumeration keys = _entityAssemblies.keys();
-	    while (keys.hasMoreElements()) {
-	        entityAssemblyIds.add(keys.nextElement());
-	    }
-	    Collections.sort(entityAssemblyIds, Collator.getInstance());
+            Enumeration keys = _entityAssemblies.keys();
+            while (keys.hasMoreElements()) {
+                entityAssemblyIds.add(keys.nextElement());
+            }
+            Collections.sort(entityAssemblyIds, Collator.getInstance());
 
-	    // Now set up a list of the different options for violations
-	    // and length types.
-	    Vector options = new Vector();
-	    addOptions(options, VIOLATED_ALL, AMBIGUOUS_ALL);
-	    if (_hasViolations) {
-	        addOptions(options, VIOLATED_YES, AMBIGUOUS_ALL);
-	        addOptions(options, VIOLATED_NO, AMBIGUOUS_ALL);
-		if (_hasAmbiguous) {
-	            addOptions(options, VIOLATED_YES, AMBIGUOUS_YES);
-	            addOptions(options, VIOLATED_NO, AMBIGUOUS_YES);
-	            addOptions(options, VIOLATED_YES, AMBIGUOUS_NO);
-	            addOptions(options, VIOLATED_NO, AMBIGUOUS_NO);
-		}
-	    }
-	    if (_hasAmbiguous) {
-	        addOptions(options, VIOLATED_ALL, AMBIGUOUS_YES);
-	        addOptions(options, VIOLATED_ALL, AMBIGUOUS_NO);
-	    }
+            // Now set up a list of the different options for violations
+            // and length types.
+            Vector options = new Vector();
+            addOptions(options, VIOLATED_ALL, AMBIGUOUS_ALL);
+            if (_hasViolations) {
+                addOptions(options, VIOLATED_YES, AMBIGUOUS_ALL);
+                addOptions(options, VIOLATED_NO, AMBIGUOUS_ALL);
+                if (_hasAmbiguous) {
+                    addOptions(options, VIOLATED_YES, AMBIGUOUS_YES);
+                    addOptions(options, VIOLATED_NO, AMBIGUOUS_YES);
+                    addOptions(options, VIOLATED_YES, AMBIGUOUS_NO);
+                    addOptions(options, VIOLATED_NO, AMBIGUOUS_NO);
+                }
+            }
+            if (_hasAmbiguous) {
+                addOptions(options, VIOLATED_ALL, AMBIGUOUS_YES);
+                addOptions(options, VIOLATED_ALL, AMBIGUOUS_NO);
+            }
 
-	    for (int index = 0; index < entityAssemblyIds.size(); index++) {
-		String eANum = (String)entityAssemblyIds.elementAt(index);
-	        String eAName = "EA " + eANum;
+            for (int index = 0; index < entityAssemblyIds.size(); index++) {
+                String eANum = (String)entityAssemblyIds.elementAt(index);
+                String eAName = "EA " + eANum;
 
-		for (int optIndex = 0; optIndex < options.size();
-		  optIndex++) {
-		    Option option = (Option)options.elementAt(optIndex);
+                for (int optIndex = 0; optIndex < options.size();
+                        optIndex++) {
+                    Option option = (Option)options.elementAt(optIndex);
                     distWriter.write(eAName + "\t" +
-		      eANum + "\t" +
-		      option._violOpt + "\t" +
-		      option._violOptLink + "\t" +
-		      option._ambigOpt + "\t" +
-		      option._ambigOptLink + "\t" +
-		      option._lengthOpt + "\t" +
-		      option._lengthOptLink + "\t" +
-		      option._yAttr + "\t" +
-		      option._violOptIndex + "\t" +
-		      option._ambigOptIndex + "\t" +
-		      option._lengthOptIndex + "\t" +
-		      "Restraints per residue (" + option._title +
-		        " [" + eANum + "])" +
-		      "\n");
-		}
-	    }
+                                     eANum + "\t" +
+                                     option._violOpt + "\t" +
+                                     option._violOptLink + "\t" +
+                                     option._ambigOpt + "\t" +
+                                     option._ambigOptLink + "\t" +
+                                     option._lengthOpt + "\t" +
+                                     option._lengthOptLink + "\t" +
+                                     option._yAttr + "\t" +
+                                     option._violOptIndex + "\t" +
+                                     option._ambigOptIndex + "\t" +
+                                     option._lengthOptIndex + "\t" +
+                                     "Restraints per residue (" + option._title +
+                                     " [" + eANum + "])" +
+                                     "\n");
+                }
+            }
 
-	    distWriter.close();
+            distWriter.close();
 
-	    //
-	    // Write the session files.
-	    //
-	    int type = isRR ? S2DUtils.TYPE_RRDIST_RESTR :
-	      S2DUtils.TYPE_DIST_RESTR;
-	    String info = "Visualization of " + _longName;
-	    if (_pdbId != null) {
-	        info += " and PDB " + _pdbId;
-	    }
-	    S2DSession.write(_sessionDir, type, _name, frameIndex,
-	      info, null, true, _starVersion, "");
+            //
+            // Write the session files.
+            //
+            int type = isRR ? S2DUtils.TYPE_RRDIST_RESTR :
+                       S2DUtils.TYPE_DIST_RESTR;
+            String info = "Visualization of " + _longName;
+            if (_pdbId != null) {
+                info += " and PDB " + _pdbId;
+            }
+            S2DSession.write(_sessionDir, type, _name, frameIndex,
+                             info, null, true, _starVersion, "");
 
-	    //
-	    // Write the session-specific html files.
-	    //
-	    String title = isRR ? STR_REMEDIATED_RESTRANTS :
-	      STR_RESTRANTS_GRID;
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(), type, _name, frameIndex,
-	      title, null);
-	    specHtml.write();
+            //
+            // Write the session-specific html files.
+            //
+            String title = isRR ? STR_REMEDIATED_RESTRANTS :
+                           STR_RESTRANTS_GRID;
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(), type, _name, frameIndex,
+                title, null);
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeDistRestraint(_pdbId, frameIndex, isRR);
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writeDistRestraint(_pdbId, frameIndex, isRR);
 
         } catch(IOException ex) {
-	    System.err.println(
-	      "IOException writing distance restraint values: " +
-	      ex.toString());
-	    throw new S2DError("Can't write distance restraint values");
-	}
+            System.err.println(
+                "IOException writing distance restraint values: " +
+                ex.toString());
+            throw new S2DError("Can't write distance restraint values");
+        }
     }
 
     //===================================================================
@@ -897,22 +897,22 @@ public class S2DDistRestraint extends S2DRestraint {
     // Get the ResidueInfo object for the given entityAssemblyID and
     // resSeqCode, creating one if we don't have one yet.
     private ResidueInfo getResidueInfo(String entityAssemblyID,
-      String resSeqCode)
+                                       String resSeqCode)
     {
         Hashtable entityHT =
-	  (Hashtable)_entityAssemblies.get(entityAssemblyID);
-	if (entityHT == null) {
-	    entityHT = new Hashtable();
-	    _entityAssemblies.put(entityAssemblyID, entityHT);
-	}
+            (Hashtable)_entityAssemblies.get(entityAssemblyID);
+        if (entityHT == null) {
+            entityHT = new Hashtable();
+            _entityAssemblies.put(entityAssemblyID, entityHT);
+        }
 
-	ResidueInfo residueInfo = (ResidueInfo)entityHT.get(resSeqCode);
-	if (residueInfo == null) {
-	    residueInfo = new ResidueInfo();
-	    entityHT.put(resSeqCode, residueInfo);
-	}
+        ResidueInfo residueInfo = (ResidueInfo)entityHT.get(resSeqCode);
+        if (residueInfo == null) {
+            residueInfo = new ResidueInfo();
+            entityHT.put(resSeqCode, residueInfo);
+        }
 
-	return residueInfo;
+        return residueInfo;
     }
 
     //-------------------------------------------------------------------
@@ -921,84 +921,84 @@ public class S2DDistRestraint extends S2DRestraint {
     // residue2Info accordingly.
     //TEMP -- make this just use the values in restraintInfo?
     private static void findLengthType(String entityAssembly1Id,
-      String entityAssembly2Id, String resSeq1Code,
-      String resSeq2Code, RestraintInfo restraintInfo,
-      ResidueInfo residue1Info, ResidueInfo residue2Info)
+                                       String entityAssembly2Id, String resSeq1Code,
+                                       String resSeq2Code, RestraintInfo restraintInfo,
+                                       ResidueInfo residue1Info, ResidueInfo residue2Info)
     {
-	//
-	// Determine restraint length types.
-	//
-	if (entityAssembly1Id.equals(entityAssembly2Id)) {
-	    try {
-	        int resSeq1CodeInt = Integer.parseInt(resSeq1Code);
-	        int resSeq2CodeInt = Integer.parseInt(resSeq2Code);
-	        int diff = Math.abs(resSeq1CodeInt - resSeq2CodeInt);
-	        if (diff == 0) {
-	            restraintInfo._restraintLengthType = "Intra-residue";
-		    residue1Info._intraRes.updateCounts(restraintInfo);
-		    residue2Info._intraRes.updateCounts(restraintInfo);
-	        } else if (diff == 1) {
-	            restraintInfo._restraintLengthType = "Sequential";
-		    residue1Info._sequential.updateCounts(restraintInfo);
-		    residue2Info._sequential.updateCounts(restraintInfo);
-	        } else if (diff < 5) {
-	            restraintInfo._restraintLengthType = "Medium-range";
-		    residue1Info._medium.updateCounts(restraintInfo);
-		    residue2Info._medium.updateCounts(restraintInfo);
-	        } else {
-	            restraintInfo._restraintLengthType = "Long-range";
-		    residue1Info._long.updateCounts(restraintInfo);
-		    residue2Info._long.updateCounts(restraintInfo);
-	        }
-	    } catch (NumberFormatException ex) {
-	        System.err.println(new S2DWarning("Exception parsing int " +
-		  "(resSeq1Code or resSeq2Code): " + ex.toString()));
-	        restraintInfo._restraintLengthType = "unknown";
-	    }
-	} else {
-	    restraintInfo._restraintLengthType = "Intermolecular";
-	    residue1Info._interMol.updateCounts(restraintInfo);
-	    residue2Info._interMol.updateCounts(restraintInfo);
-	}
+        //
+        // Determine restraint length types.
+        //
+        if (entityAssembly1Id.equals(entityAssembly2Id)) {
+            try {
+                int resSeq1CodeInt = Integer.parseInt(resSeq1Code);
+                int resSeq2CodeInt = Integer.parseInt(resSeq2Code);
+                int diff = Math.abs(resSeq1CodeInt - resSeq2CodeInt);
+                if (diff == 0) {
+                    restraintInfo._restraintLengthType = "Intra-residue";
+                    residue1Info._intraRes.updateCounts(restraintInfo);
+                    residue2Info._intraRes.updateCounts(restraintInfo);
+                } else if (diff == 1) {
+                    restraintInfo._restraintLengthType = "Sequential";
+                    residue1Info._sequential.updateCounts(restraintInfo);
+                    residue2Info._sequential.updateCounts(restraintInfo);
+                } else if (diff < 5) {
+                    restraintInfo._restraintLengthType = "Medium-range";
+                    residue1Info._medium.updateCounts(restraintInfo);
+                    residue2Info._medium.updateCounts(restraintInfo);
+                } else {
+                    restraintInfo._restraintLengthType = "Long-range";
+                    residue1Info._long.updateCounts(restraintInfo);
+                    residue2Info._long.updateCounts(restraintInfo);
+                }
+            } catch (NumberFormatException ex) {
+                System.err.println(new S2DWarning("Exception parsing int " +
+                                                  "(resSeq1Code or resSeq2Code): " + ex.toString()));
+                restraintInfo._restraintLengthType = "unknown";
+            }
+        } else {
+            restraintInfo._restraintLengthType = "Intermolecular";
+            residue1Info._interMol.updateCounts(restraintInfo);
+            residue2Info._interMol.updateCounts(restraintInfo);
+        }
     }
 
     //-------------------------------------------------------------------
     //TEMP -- document...
     private int processPseudoAtoms(int restraintIndex,
-      RestraintInfo restraintInfo, Vector atom1List, Vector atom2List,
-      String entityAssembly1Id, String resSeq1Code,
-      String entityAssembly2Id, String resSeq2Code)
+                                   RestraintInfo restraintInfo, Vector atom1List, Vector atom2List,
+                                   String entityAssembly1Id, String resSeq1Code,
+                                   String entityAssembly2Id, String resSeq2Code)
     {
         if (atom1List == null) {
-	    atom1List = new Vector();
-	    atom1List.add(restraintInfo._atom1Name);
-	}
+            atom1List = new Vector();
+            atom1List.add(restraintInfo._atom1Name);
+        }
 
-	if (atom2List == null) {
-	    atom2List = new Vector();
-	    atom2List.add(restraintInfo._atom2Name);
-	}
-	
-	for (int index1 = 0; index1 < atom1List.size(); index1++) {
-	    for (int index2 = 0; index2 < atom2List.size(); index2++) {
-	        RestraintInfo tmpResInfo = new RestraintInfo(restraintInfo);
+        if (atom2List == null) {
+            atom2List = new Vector();
+            atom2List.add(restraintInfo._atom2Name);
+        }
 
-		// Modify the RestraintInfo object to contain the
-		// "real" atoms...
-		tmpResInfo._atom1Name = (String)atom1List.elementAt(index1);
-		tmpResInfo._atom1Id = S2DUtils.createAtomId(
-		  entityAssembly1Id, resSeq1Code, tmpResInfo._atom1Name);
+        for (int index1 = 0; index1 < atom1List.size(); index1++) {
+            for (int index2 = 0; index2 < atom2List.size(); index2++) {
+                RestraintInfo tmpResInfo = new RestraintInfo(restraintInfo);
 
-		tmpResInfo._atom2Name = (String)atom2List.elementAt(index2);
-		tmpResInfo._atom2Id = S2DUtils.createAtomId(
-		  entityAssembly2Id, resSeq2Code, tmpResInfo._atom2Name);
+                // Modify the RestraintInfo object to contain the
+                // "real" atoms...
+                tmpResInfo._atom1Name = (String)atom1List.elementAt(index1);
+                tmpResInfo._atom1Id = S2DUtils.createAtomId(
+                                          entityAssembly1Id, resSeq1Code, tmpResInfo._atom1Name);
 
-		_restraints.add(restraintIndex, tmpResInfo);
-		restraintIndex++;
-	    }
-	}
+                tmpResInfo._atom2Name = (String)atom2List.elementAt(index2);
+                tmpResInfo._atom2Id = S2DUtils.createAtomId(
+                                          entityAssembly2Id, resSeq2Code, tmpResInfo._atom2Name);
 
-	return restraintIndex;
+                _restraints.add(restraintIndex, tmpResInfo);
+                restraintIndex++;
+            }
+        }
+
+        return restraintIndex;
     }
 
     //-------------------------------------------------------------------
@@ -1006,12 +1006,12 @@ public class S2DDistRestraint extends S2DRestraint {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 
     //-------------------------------------------------------------------
@@ -1031,9 +1031,9 @@ public class S2DDistRestraint extends S2DRestraint {
         public int _lengthOptIndex;
         public String _title; // not including entity assembly ID
         Option(String violOpt, String violOptLink, String ambigOpt,
-	  String ambigOptLink, String lengthOpt, String lengthOptLink,
-	  String yAttr, int violOptIndex, int ambigOptIndex,
-	  int lengthOptIndex, String title) {
+               String ambigOptLink, String lengthOpt, String lengthOptLink,
+               String yAttr, int violOptIndex, int ambigOptIndex,
+               int lengthOptIndex, String title) {
             _violOpt = violOpt;
             _violOptLink = violOptLink;
             _ambigOpt = ambigOpt;
@@ -1047,7 +1047,7 @@ public class S2DDistRestraint extends S2DRestraint {
             _title = title;
         }
     }
-    
+
     private static final int VIOLATED_ALL = 0;
     private static final int VIOLATED_YES = 1;
     private static final int VIOLATED_NO = 2;
@@ -1058,155 +1058,155 @@ public class S2DDistRestraint extends S2DRestraint {
 
     //-------------------------------------------------------------------
     private void addOptions(Vector options, int violated, int ambiguous)
-      throws S2DException
+    throws S2DException
     {
-	String violatedStr = "";
-	String violatedStrLink = "";
-	String violatedAttr = "";
+        String violatedStr = "";
+        String violatedStrLink = "";
+        String violatedAttr = "";
         switch (violated) {
         case VIOLATED_ALL:
-	    violatedStr = "All by violation";
-	    violatedStrLink = "All";
-	    violatedAttr = "viol-all";
-	    break;
+            violatedStr = "All by violation";
+            violatedStrLink = "All";
+            violatedAttr = "viol-all";
+            break;
 
         case VIOLATED_YES:
-	    violatedStr = "Violated";
-	    violatedStrLink = "Violated";
-	    violatedAttr = "viol-yes";
-	    break;
+            violatedStr = "Violated";
+            violatedStrLink = "Violated";
+            violatedAttr = "viol-yes";
+            break;
 
         case VIOLATED_NO:
-	    violatedStr = "Non-violated";
-	    violatedStrLink = "Non-violated";
-	    violatedAttr = "viol-no";
-	    break;
+            violatedStr = "Non-violated";
+            violatedStrLink = "Non-violated";
+            violatedAttr = "viol-no";
+            break;
 
-	default:
-	    throw new S2DError("Illegal violated value: " + violated);
-	}
+        default:
+            throw new S2DError("Illegal violated value: " + violated);
+        }
 
-	String ambiguousStr = "";
-	String ambiguousStrLink = "";
-	String ambigAttr = "";
+        String ambiguousStr = "";
+        String ambiguousStrLink = "";
+        String ambigAttr = "";
         switch (ambiguous) {
         case AMBIGUOUS_ALL:
-	    ambiguousStr = "All by ambiguity";
-	    ambiguousStrLink = "All";
-	    ambigAttr = "ambig-all";
-	    break;
+            ambiguousStr = "All by ambiguity";
+            ambiguousStrLink = "All";
+            ambigAttr = "ambig-all";
+            break;
 
         case AMBIGUOUS_YES:
-	    ambiguousStr = "Ambiguous";
-	    ambiguousStrLink = "Ambiguous";
-	    ambigAttr = "ambig-yes";
-	    break;
+            ambiguousStr = "Ambiguous";
+            ambiguousStrLink = "Ambiguous";
+            ambigAttr = "ambig-yes";
+            break;
 
         case AMBIGUOUS_NO:
-	    ambiguousStr = "Non-ambiguous";
-	    ambiguousStrLink = "Non-ambiguous";
-	    ambigAttr = "ambig-no";
-	    break;
+            ambiguousStr = "Non-ambiguous";
+            ambiguousStrLink = "Non-ambiguous";
+            ambigAttr = "ambig-no";
+            break;
 
-	default:
-	    throw new S2DError("Illegal ambiguous value: " + ambiguous);
-	}
-	
-	String attrName;
-	String length;
-	String lengthLink;
-	String title;
+        default:
+            throw new S2DError("Illegal ambiguous value: " + ambiguous);
+        }
+
+        String attrName;
+        String length;
+        String lengthLink;
+        String title;
 
         //TEMP -- move some of this stuff into the Option constructor?
-	attrName = "$All";
-	attrName += "_" + violatedAttr + "_" + ambigAttr;
-	length = "All by distance";
-	lengthLink = "All";
-	title = lengthLink;
-	if (violated != VIOLATED_ALL) {
-	    title += " " + violatedStr.toLowerCase();
-	}
-	if (ambiguous != AMBIGUOUS_ALL) {
-	    title += " " + ambiguousStr.toLowerCase();
-	}
-	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
-	  ambiguousStrLink, length, lengthLink, attrName, violated,
-	  ambiguous, 0, title));
+        attrName = "$All";
+        attrName += "_" + violatedAttr + "_" + ambigAttr;
+        length = "All by distance";
+        lengthLink = "All";
+        title = lengthLink;
+        if (violated != VIOLATED_ALL) {
+            title += " " + violatedStr.toLowerCase();
+        }
+        if (ambiguous != AMBIGUOUS_ALL) {
+            title += " " + ambiguousStr.toLowerCase();
+        }
+        options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+                               ambiguousStrLink, length, lengthLink, attrName, violated,
+                               ambiguous, 0, title));
 
-	attrName = "$Intra-res";
-	attrName += "_" + violatedAttr + "_" + ambigAttr;
-	length = "Intra-residue";
-	lengthLink = "Intra-residue";
-	title = lengthLink;
-	if (violated != VIOLATED_ALL) {
-	    title += " " + violatedStr.toLowerCase();
-	}
-	if (ambiguous != AMBIGUOUS_ALL) {
-	    title += " " + ambiguousStr.toLowerCase();
-	}
-	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
-	  ambiguousStrLink, length, lengthLink, attrName,
-	  violated, ambiguous, 1, title));
+        attrName = "$Intra-res";
+        attrName += "_" + violatedAttr + "_" + ambigAttr;
+        length = "Intra-residue";
+        lengthLink = "Intra-residue";
+        title = lengthLink;
+        if (violated != VIOLATED_ALL) {
+            title += " " + violatedStr.toLowerCase();
+        }
+        if (ambiguous != AMBIGUOUS_ALL) {
+            title += " " + ambiguousStr.toLowerCase();
+        }
+        options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+                               ambiguousStrLink, length, lengthLink, attrName,
+                               violated, ambiguous, 1, title));
 
-	attrName = "$Sequential";
-	attrName += "_" + violatedAttr + "_" + ambigAttr;
-	length = "Sequential";
-	lengthLink = "Sequential";
-	title = lengthLink;
-	if (violated != VIOLATED_ALL) {
-	    title += " " + violatedStr.toLowerCase();
-	}
-	if (ambiguous != AMBIGUOUS_ALL) {
-	    title += " " + ambiguousStr.toLowerCase();
-	}
-	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
-	  ambiguousStrLink, length, lengthLink, attrName,
-	  violated, ambiguous, 2, title));
+        attrName = "$Sequential";
+        attrName += "_" + violatedAttr + "_" + ambigAttr;
+        length = "Sequential";
+        lengthLink = "Sequential";
+        title = lengthLink;
+        if (violated != VIOLATED_ALL) {
+            title += " " + violatedStr.toLowerCase();
+        }
+        if (ambiguous != AMBIGUOUS_ALL) {
+            title += " " + ambiguousStr.toLowerCase();
+        }
+        options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+                               ambiguousStrLink, length, lengthLink, attrName,
+                               violated, ambiguous, 2, title));
 
-	attrName = "$Medium";
-	attrName += "_" + violatedAttr + "_" + ambigAttr;
-	length = "Medium-range";
-	lengthLink = "Medium-range";
-	title = lengthLink;
-	if (violated != VIOLATED_ALL) {
-	    title += " " + violatedStr.toLowerCase();
-	}
-	if (ambiguous != AMBIGUOUS_ALL) {
-	    title += " " + ambiguousStr.toLowerCase();
-	}
-	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
-	  ambiguousStrLink, length, lengthLink, attrName,
-	  violated, ambiguous, 3, title));
+        attrName = "$Medium";
+        attrName += "_" + violatedAttr + "_" + ambigAttr;
+        length = "Medium-range";
+        lengthLink = "Medium-range";
+        title = lengthLink;
+        if (violated != VIOLATED_ALL) {
+            title += " " + violatedStr.toLowerCase();
+        }
+        if (ambiguous != AMBIGUOUS_ALL) {
+            title += " " + ambiguousStr.toLowerCase();
+        }
+        options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+                               ambiguousStrLink, length, lengthLink, attrName,
+                               violated, ambiguous, 3, title));
 
-	attrName = "$Long";
-	attrName += "_" + violatedAttr + "_" + ambigAttr;
-	length = "Long-range";
-	lengthLink = "Long-range";
-	title = lengthLink;
-	if (violated != VIOLATED_ALL) {
-	    title += " " + violatedStr.toLowerCase();
-	}
-	if (ambiguous != AMBIGUOUS_ALL) {
-	    title += " " + ambiguousStr.toLowerCase();
-	}
-	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
-	  ambiguousStrLink, length, lengthLink, attrName,
-	  violated, ambiguous, 4, title));
+        attrName = "$Long";
+        attrName += "_" + violatedAttr + "_" + ambigAttr;
+        length = "Long-range";
+        lengthLink = "Long-range";
+        title = lengthLink;
+        if (violated != VIOLATED_ALL) {
+            title += " " + violatedStr.toLowerCase();
+        }
+        if (ambiguous != AMBIGUOUS_ALL) {
+            title += " " + ambiguousStr.toLowerCase();
+        }
+        options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+                               ambiguousStrLink, length, lengthLink, attrName,
+                               violated, ambiguous, 4, title));
 
-	attrName = "$Inter-mol";
-	attrName += "_" + violatedAttr + "_" + ambigAttr;
-	length = "Intermolecular";
-	lengthLink = "Intermolecular";
-	title = lengthLink;
-	if (violated != VIOLATED_ALL) {
-	    title += " " + violatedStr.toLowerCase();
-	}
-	if (ambiguous != AMBIGUOUS_ALL) {
-	    title += " " + ambiguousStr.toLowerCase();
-	}
-	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
-	  ambiguousStrLink, length, lengthLink, attrName,
-	  violated, ambiguous, 5, title));
+        attrName = "$Inter-mol";
+        attrName += "_" + violatedAttr + "_" + ambigAttr;
+        length = "Intermolecular";
+        lengthLink = "Intermolecular";
+        title = lengthLink;
+        if (violated != VIOLATED_ALL) {
+            title += " " + violatedStr.toLowerCase();
+        }
+        if (ambiguous != AMBIGUOUS_ALL) {
+            title += " " + ambiguousStr.toLowerCase();
+        }
+        options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+                               ambiguousStrLink, length, lengthLink, attrName,
+                               violated, ambiguous, 5, title));
     }
 }
 

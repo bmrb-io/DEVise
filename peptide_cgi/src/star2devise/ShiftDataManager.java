@@ -81,137 +81,137 @@ public class ShiftDataManager
     private double [] range = new double[MAX_DATA_ENTRIES];
 
     // Total number of entries in the table
-    private int totalNumEntries; 
+    private int totalNumEntries;
 
 
     public class Pair
     {
-	public double chemshift;
-	public double offset;
+        public double chemshift;
+        public double offset;
     }
 
 
-    // Constructor which initializes the object by reading the data file 
+    // Constructor which initializes the object by reading the data file
     ShiftDataManager( String filename )
-      throws S2DException
+    throws S2DException
     {
-	if (doDebugOutput(11, true)) {
-	    System.out.println("ShiftDataManager(" + filename + ")");
-	}
+        if (doDebugOutput(11, true)) {
+            System.out.println("ShiftDataManager(" + filename + ")");
+        }
 
-	try
-	{
-	    StreamTokenizer inFile = 
-		new StreamTokenizer(new FileReader(filename));
-	    inFile.wordChars('\'', '\'');
-	    totalNumEntries = 0;
-	    this.filename = filename;
-	    
-	    // This assumes that each entry corresponds to one line
-	    while (inFile.nextToken() != inFile.TT_EOF)
-	    {
-		aminoAcidType[totalNumEntries] = inFile.sval;
-		inFile.nextToken();
-		atomName[totalNumEntries] = inFile.sval;
-		inFile.nextToken();
-		chemicalShiftCorr[totalNumEntries] = inFile.nval;
-		inFile.nextToken();
-		range[totalNumEntries] = inFile.nval;
+        try
+        {
+            StreamTokenizer inFile =
+                new StreamTokenizer(new FileReader(filename));
+            inFile.wordChars('\'', '\'');
+            totalNumEntries = 0;
+            this.filename = filename;
 
-		if (doDebugOutput(31, false)) {
-		    System.out.println("  " +
-		      aminoAcidType[totalNumEntries] + " " +
-		      atomName[totalNumEntries] + " " +
-		      chemicalShiftCorr[totalNumEntries] + " " +
-		      range[totalNumEntries]);
-		}
-		totalNumEntries++;
-	    }
+            // This assumes that each entry corresponds to one line
+            while (inFile.nextToken() != inFile.TT_EOF)
+            {
+                aminoAcidType[totalNumEntries] = inFile.sval;
+                inFile.nextToken();
+                atomName[totalNumEntries] = inFile.sval;
+                inFile.nextToken();
+                chemicalShiftCorr[totalNumEntries] = inFile.nval;
+                inFile.nextToken();
+                range[totalNumEntries] = inFile.nval;
 
-	} catch (FileNotFoundException e) {
-	    System.err.println("File not found: " + e.toString() );
-	    throw new S2DError("Unable to open or read shift data file " +
-	      filename);
-	} catch (IOException e) {
-	    System.err.println("IO Exception: " + e.toString() );
-	    throw new S2DError("Unable to open or read shift data file " +
-	      filename);
-	}
+                if (doDebugOutput(31, false)) {
+                    System.out.println("  " +
+                                       aminoAcidType[totalNumEntries] + " " +
+                                       atomName[totalNumEntries] + " " +
+                                       chemicalShiftCorr[totalNumEntries] + " " +
+                                       range[totalNumEntries]);
+                }
+                totalNumEntries++;
+            }
+
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + e.toString() );
+            throw new S2DError("Unable to open or read shift data file " +
+                               filename);
+        } catch (IOException e) {
+            System.err.println("IO Exception: " + e.toString() );
+            throw new S2DError("Unable to open or read shift data file " +
+                               filename);
+        }
     } // end constructor
 
     // Constructor for dummy version that always returns zeroes.
     ShiftDataManager()
     {
-	if (doDebugOutput(11, true)) {
-	    System.out.println("ShiftDataManager()");
-	}
+        if (doDebugOutput(11, true)) {
+            System.out.println("ShiftDataManager()");
+        }
 
-	_dummy = true;
+        _dummy = true;
     }
 
-    
+
     // A function that takes as input arguments a residue name and an
     // atom name and returns a pair of values -- standard value of
     // chemical shift and the range. Also the reference parameter.
     public Pair returnValues(String in_aminoAcidType, String in_atomName)
-      throws S2DException
+    throws S2DException
     {
-	if (doDebugOutput(21, true)) {
-	    System.out.println("ShiftDataManager.returnValues(" +
-	      in_aminoAcidType + ", " + in_atomName + ")");
-	}
+        if (doDebugOutput(21, true)) {
+            System.out.println("ShiftDataManager.returnValues(" +
+                               in_aminoAcidType + ", " + in_atomName + ")");
+        }
 
-	Pair retValues = new Pair();
+        Pair retValues = new Pair();
 
-	if (_dummy) {
-	    retValues.chemshift = 0.0;
-	    retValues.offset    = 0.0;
-	    return retValues;
-	}
-	
-	// Initialize with default error values
-	retValues.chemshift = -1.0;
-	retValues.offset    = -1.0;
-	    
-	int position = 0;
+        if (_dummy) {
+            retValues.chemshift = 0.0;
+            retValues.offset    = 0.0;
+            return retValues;
+        }
 
-	boolean foundAminoAcidType = false;
-	while ((!foundAminoAcidType) && position < totalNumEntries) {
-	    if (in_aminoAcidType.equals(aminoAcidType[position])) {
-		foundAminoAcidType = true;
-	    } else {
-		position++;
-	    }
-	}
+        // Initialize with default error values
+        retValues.chemshift = -1.0;
+        retValues.offset    = -1.0;
 
-	if (foundAminoAcidType) {
-	    boolean foundAtomName = false;
-	    while ((position < totalNumEntries) && (!foundAtomName) &&
-	      in_aminoAcidType.equals(aminoAcidType[position])) {
-	        if (in_atomName.equals(atomName[position])) {
-	            foundAtomName = true;
-	        } else {
-		    position++;
-	        }
-	    }
-		
-	    if (!foundAtomName) {
-		if (doDebugOutput(21, false)) {
-		    throw new S2DWarning("Warning: atom " +
-		      in_atomName + " corresponding to amino acid " +
-		      in_aminoAcidType + " not found in chemical " +
-		      "shift reference table file " + filename);
-		}
-	    }
-	    
-	} else {
-	    throw new S2DWarning("Amino acid type " + in_aminoAcidType +
-	      "  not found..... \n");
-	}
-	    
-	retValues.chemshift = chemicalShiftCorr[position];
-	retValues.offset  = range[position];
-	return retValues;
+        int position = 0;
+
+        boolean foundAminoAcidType = false;
+        while ((!foundAminoAcidType) && position < totalNumEntries) {
+            if (in_aminoAcidType.equals(aminoAcidType[position])) {
+                foundAminoAcidType = true;
+            } else {
+                position++;
+            }
+        }
+
+        if (foundAminoAcidType) {
+            boolean foundAtomName = false;
+            while ((position < totalNumEntries) && (!foundAtomName) &&
+                    in_aminoAcidType.equals(aminoAcidType[position])) {
+                if (in_atomName.equals(atomName[position])) {
+                    foundAtomName = true;
+                } else {
+                    position++;
+                }
+            }
+
+            if (!foundAtomName) {
+                if (doDebugOutput(21, false)) {
+                    throw new S2DWarning("Warning: atom " +
+                                         in_atomName + " corresponding to amino acid " +
+                                         in_aminoAcidType + " not found in chemical " +
+                                         "shift reference table file " + filename);
+                }
+            }
+
+        } else {
+            throw new S2DWarning("Amino acid type " + in_aminoAcidType +
+                                 "  not found..... \n");
+        }
+
+        retValues.chemshift = chemicalShiftCorr[position];
+        retValues.offset  = range[position];
+        return retValues;
     } // end function returnValues
 
     //-------------------------------------------------------------------
@@ -219,12 +219,12 @@ public class ShiftDataManager
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level, boolean doPrint)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0 && doPrint)
-	      System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0 && doPrint)
+                System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }

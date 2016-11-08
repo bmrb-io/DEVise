@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" codebase="CODEBASE" href="peptide-cgi/html/ENTRY_IDd1.jnlp">
+    <information>
+        <title>DEVise JavaScreen Java Web Start</title>
+        <vendor>BioMagResBank</vendor>
+    </information>
+    <resources>
+        <j2se version="1.7+" href="http://java.sun.com/products/autodl/j2se" />
+        <jar href="devise_js.jar" main="true" />
+    </resources>
+    <application-desc name="DEVise JavaScreen" main-class="JavaScreen.js">
+        <argument>-usecgi</argument>
+        <argument>-cgiurl /cgi-bin/devise/js.cgi</argument>
+        <argument>-host DEVISE_HOST</argument>
+        <argument>-session ENTRY_IDd1.ds</argument>
+    </application-desc>
+    <update check="background"/>
+</jnlp>

@@ -64,22 +64,22 @@ public class S2DNmrStarRGIfcFactory extends S2DNmrStarIfcFactory {
     //-------------------------------------------------------------------
     public String getFileName(String pdbId)
     {
-	//TEMP -- is this what we want here??
-	return pdbId;
+        //TEMP -- is this what we want here??
+        return pdbId;
     }
 
     //-------------------------------------------------------------------
     public String getURLName(String fileName)
     {
-	String url = null;
+        String url = null;
 
-	try {
-	    url = pdbIdToUrl(fileName);
+        try {
+            url = pdbIdToUrl(fileName);
         } catch (S2DException ex) {
-	    System.err.println("S2DException: " + ex.toString());
-	}
+            System.err.println("S2DException: " + ex.toString());
+        }
 
-	return url;
+        return url;
     }
 
     //-------------------------------------------------------------------
@@ -93,64 +93,64 @@ public class S2DNmrStarRGIfcFactory extends S2DNmrStarIfcFactory {
     protected String pdbIdToUrl(String pdbId) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarRGIfcFactory.pdbIdToUrl(" +
-	      pdbId + ")");
-	}
+            System.out.println("S2DNmrStarRGIfcFactory.pdbIdToUrl(" +
+                               pdbId + ")");
+        }
 
-	String violationUrlName = S2DRestraint.getViolationUrl(pdbId,
-	  _isAngle);
-	String mrBlockIdName = S2DRestraint.getMrBlockId(
-	  violationUrlName, pdbId);
+        String violationUrlName = S2DRestraint.getViolationUrl(pdbId,
+                                  _isAngle);
+        String mrBlockIdName = S2DRestraint.getMrBlockId(
+                                   violationUrlName, pdbId);
 
         if (doDebugOutput(11)) {
-	    System.out.println("URL: " + mrBlockIdName);
-	}
+            System.out.println("URL: " + mrBlockIdName);
+        }
 
-	return mrBlockIdName;
+        return mrBlockIdName;
     }
 
     //-------------------------------------------------------------------
     // Factory method to create an S2DNmrStarRGIfc object based on
     // PDB ID.
     public S2DNmrStarRGIfc createFromId(String pdbId)
-      throws S2DException
+    throws S2DException
     {
         String urlName = getURLName(getFileName(pdbId));
 
         S2DNmrStarRGIfc ifc = createFromUrl(urlName, pdbId);
 
-	return ifc;
+        return ifc;
     }
 
     //-------------------------------------------------------------------
     // Factory method to create an S2DNmrStarRGIfc object based on
     // URL.
     public S2DNmrStarRGIfc createFromUrl(String urlName,
-      String pdbId) throws S2DException
+                                         String pdbId) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarRGIfcFactory.createFromUrl(" +
-	      urlName + ")");
-	}
-	System.out.println("Using restraint grid file: " + urlName);
+            System.out.println("S2DNmrStarRGIfcFactory.createFromUrl(" +
+                               urlName + ")");
+        }
+        System.out.println("Using restraint grid file: " + urlName);
 
-	S2DNmrStarRGIfc ifc;
+        S2DNmrStarRGIfc ifc;
 
         try {
-	    String tmpFileName =
-	      S2DRestraint.filterUrlToTempFile(urlName, pdbId);
+            String tmpFileName =
+                S2DRestraint.filterUrlToTempFile(urlName, pdbId);
 
-	    ifc = (S2DNmrStarRGIfc)createFromFile(tmpFileName);
+            ifc = (S2DNmrStarRGIfc)createFromFile(tmpFileName);
 
-	} catch(Exception ex) {
-	    System.err.println("Exception (" + ex.toString() +
-	      ") parsing NMR-STAR file");
-	    String errMsg = "Unable to get data in star file " + urlName;
-	    System.err.println(errMsg);
+        } catch(Exception ex) {
+            System.err.println("Exception (" + ex.toString() +
+                               ") parsing NMR-STAR file");
+            String errMsg = "Unable to get data in star file " + urlName;
+            System.err.println(errMsg);
             throw new S2DError(errMsg);
-	}
+        }
 
-	return ifc;
+        return ifc;
     }
 
     //===================================================================
@@ -163,14 +163,14 @@ public class S2DNmrStarRGIfcFactory extends S2DNmrStarIfcFactory {
     protected S2DNmrStarIfc create(InputStream is) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarRGIfcFactory.create()");
-	}
+            System.out.println("S2DNmrStarRGIfcFactory.create()");
+        }
 
-	StarNode starTree = S2DStarIfc.parseStar(is);
+        StarNode starTree = S2DStarIfc.parseStar(is);
 
-	S2DNmrStarIfc ifc = new S2DNmrStarRGIfc(starTree);
+        S2DNmrStarIfc ifc = new S2DNmrStarRGIfc(starTree);
 
-	return ifc;
+        return ifc;
     }
 
     //===================================================================
@@ -181,12 +181,12 @@ public class S2DNmrStarRGIfcFactory extends S2DNmrStarIfcFactory {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

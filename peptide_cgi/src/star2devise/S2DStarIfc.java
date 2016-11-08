@@ -309,45 +309,45 @@ public abstract class S2DStarIfc {
     //-------------------------------------------------------------------
     //TEMP -- check whether this should be used in more places
     public SaveFrameNode getOneDataFrameByCat(String category)
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarIfc.getOneDataFrameByCat(" +
-	      category + ")");
-	}
+            System.out.println("S2DNmrStarIfc.getOneDataFrameByCat(" +
+                               category + ")");
+        }
 
-	return getOneDataFrameByCat(DEFAULT_SAVEFRAME_CATEGORY, category);
+        return getOneDataFrameByCat(DEFAULT_SAVEFRAME_CATEGORY, category);
     }
 
 //TEMP -- move this to S2DNmrStarIfc after merge
     //-------------------------------------------------------------------
     public SaveFrameNode getOneDataFrameByCat(String tagName, String category)
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarIfc.getOneDataFrameByCat(" +
-	      tagName + ", " + category + ")");
-	}
+            System.out.println("S2DNmrStarIfc.getOneDataFrameByCat(" +
+                               tagName + ", " + category + ")");
+        }
 
-	VectorCheckType frameList;
+        VectorCheckType frameList;
 
-	final String dataValue = category;
+        final String dataValue = category;
 
-	frameList = _starTree.searchForTypeByTagValue(S2DStarUtil._frameClass,
-	  tagName, dataValue);
+        frameList = _starTree.searchForTypeByTagValue(S2DStarUtil._frameClass,
+                    tagName, dataValue);
 
         if (frameList.size() != 1) {
-	    throw new S2DError("There should be exactly one " +
-	      category + " save frame; got " + frameList.size());
-	}
+            throw new S2DError("There should be exactly one " +
+                               category + " save frame; got " + frameList.size());
+        }
 
-	return (SaveFrameNode)frameList.elementAt(0);
+        return (SaveFrameNode)frameList.elementAt(0);
     }
 
 //TEMP -- move this to S2DNmrStarIfc after merge?
     //-------------------------------------------------------------------
     public boolean refersToProtein(SaveFrameNode frame, String entityID)
-      throws S2DException
+    throws S2DException
     {
         return false;
     }
@@ -355,7 +355,7 @@ public abstract class S2DStarIfc {
 //TEMP -- move this to S2DNmrStarIfc after merge?
     //-------------------------------------------------------------------
     public boolean refersToPolymer(SaveFrameNode frame, String entityID)
-      throws S2DException
+    throws S2DException
     {
         return false;
     }
@@ -363,7 +363,7 @@ public abstract class S2DStarIfc {
 //TEMP -- move this to S2DNmrStarIfc after merge?
     //-------------------------------------------------------------------
     public S2DResidues getResidues(SaveFrameNode frame,
-      int entityAssemblyId) throws S2DException
+                                   int entityAssemblyId) throws S2DException
     {
         return null;
     }
@@ -376,9 +376,9 @@ public abstract class S2DStarIfc {
      * @return an array of the entity assembly IDs
      */
     public int[] getCoordEntityAssemblyIDs(SaveFrameNode frame)
-      throws S2DException
+    throws S2DException
     {
-    	return null;
+        return null;
     }
 
 //TEMP -- move this to S2DNmrStarIfc after merge?
@@ -392,12 +392,12 @@ public abstract class S2DStarIfc {
      * @return The value of the tag.
      */
     public String getTagValue(StarNode frame, String name)
-      throws S2DException
+    throws S2DException
     {
         String result = getOneFrameValueStrict(frame, name);
         if (result == null) {
-	    throw new S2DError("null value!");
-	}
+            throw new S2DError("null value!");
+        }
 
         return result;
     }
@@ -411,7 +411,7 @@ public abstract class S2DStarIfc {
      * @return An array containing the values.
      */
     public String[] getFrameValues(SaveFrameNode frame, String loopId,
-      String name) throws S2DException
+                                   String name) throws S2DException
     {
         return getFrameValues(frame, loopId, name, -1);
     }
@@ -429,48 +429,48 @@ public abstract class S2DStarIfc {
      *   if we don't find the data.  I think that might be what happens.
      */
     public String[] getFrameValues(SaveFrameNode frame, String loopId,
-      String name, int maxVals) throws S2DException
+                                   String name, int maxVals) throws S2DException
     {
         if (doDebugOutput(12)) {
             System.out.println("  S2DStarIfc.getFrameValues(" +
-	      getFrameName(frame) + ", " + loopId + ", " + name +  ", " +
-	      maxVals + ")");
+                               getFrameName(frame) + ", " + loopId + ", " + name +  ", " +
+                               maxVals + ")");
         }
 
-	DataLoopNode loop = null;
-	if (frame != null) {
-	    loop = S2DStarUtil.findLoop(frame, loopId);
-	} else {
-	    try {
-	        loop = S2DStarUtil.findLoop(_starTree, loopId);
-	    } catch (S2DException ex) {
+        DataLoopNode loop = null;
+        if (frame != null) {
+            loop = S2DStarUtil.findLoop(frame, loopId);
+        } else {
+            try {
+                loop = S2DStarUtil.findLoop(_starTree, loopId);
+            } catch (S2DException ex) {
                 if (doDebugOutput(3)) {
-		    System.err.println("Warning: unable to find loop for " +
-		      loopId + "/" + name + "; trying individual tag " +
-		      name);
-		}
-	        String [] result = new String[1];
-		result[0] = getTagValue(_starTree, name);
-		return result;
-	    }
-	}
-	int valueIndex = S2DStarUtil.getIndex(loop, name);
-	LoopTableNode table = loop.getVals();
+                    System.err.println("Warning: unable to find loop for " +
+                                       loopId + "/" + name + "; trying individual tag " +
+                                       name);
+                }
+                String [] result = new String[1];
+                result[0] = getTagValue(_starTree, name);
+                return result;
+            }
+        }
+        int valueIndex = S2DStarUtil.getIndex(loop, name);
+        LoopTableNode table = loop.getVals();
 
-	int maxRows = table.size();
-	if (maxVals >= 0) {
-	    maxRows = Math.min(maxRows, maxVals);
-	}
+        int maxRows = table.size();
+        if (maxVals >= 0) {
+            maxRows = Math.min(maxRows, maxVals);
+        }
 
-	String[] result = new String[maxRows];
+        String[] result = new String[maxRows];
 
-	for (int index = 0; index < maxRows; index++) {
-	    LoopRowNode row = table.elementAt(index);
-	    String value = row.elementAt(valueIndex).getValue();
-	    result[index] = value;
-	}
+        for (int index = 0; index < maxRows; index++) {
+            LoopRowNode row = table.elementAt(index);
+            String value = row.elementAt(valueIndex).getValue();
+            result[index] = value;
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -488,7 +488,7 @@ public abstract class S2DStarIfc {
      *   value.
      */
     public String[] getOptionalFrameValues(SaveFrameNode frame, String loopId,
-      String name, int size, String defaultValue) throws S2DException
+                                           String name, int size, String defaultValue) throws S2DException
     {
         return null;
     }
@@ -507,22 +507,22 @@ public abstract class S2DStarIfc {
      * @return An array containing the values.
      */
     public String[] getAndFilterFrameValues(SaveFrameNode frame,
-      String loopId, String name, String matchVal, String[] matchList)
-      throws S2DException
+                                            String loopId, String name, String matchVal, String[] matchList)
+    throws S2DException
     {
-    	String[] values = getFrameValues(frame, loopId, name);
+        String[] values = getFrameValues(frame, loopId, name);
 
-	if (!matchVal.equals("")) {
-	    values = S2DUtils.selectMatches(matchList, values, matchVal);
-	}
+        if (!matchVal.equals("")) {
+            values = S2DUtils.selectMatches(matchList, values, matchVal);
+        }
 
-	if (values.length == 0) {
-	    //TEMP -- this never happens! (see to-do 124).
-	    System.err.println("Warning: " + new S2DWarning("all " + name +
-	      " values rejected by matchVal " + matchVal));
-	}
+        if (values.length == 0) {
+            //TEMP -- this never happens! (see to-do 124).
+            System.err.println("Warning: " + new S2DWarning("all " + name +
+                               " values rejected by matchVal " + matchVal));
+        }
 
-	return values;
+        return values;
     }
 
 
@@ -543,33 +543,33 @@ public abstract class S2DStarIfc {
      * @return An array containing the values.
      */
     public String[] getAndFilterOptionalFrameValues(SaveFrameNode frame,
-      String loopId, String name, String matchVal, String[] matchList,
-      int size, String defaultValue)
-      throws S2DException
+            String loopId, String name, String matchVal, String[] matchList,
+            int size, String defaultValue)
+    throws S2DException
     {
         String[] result = null;
 
-	try {
+        try {
             result = getAndFilterFrameValues(frame, loopId, name,
-	      matchVal, matchList);
+                                             matchVal, matchList);
 
             // Change "?" to the default value (fixes problems with
-	    // bmr4267_3.str).
-	    for (int index = 0; index < result.length; index++) {
-	        if (result[index].equals("?")) result[index] = defaultValue;
-	    }
+            // bmr4267_3.str).
+            for (int index = 0; index < result.length; index++) {
+                if (result[index].equals("?")) result[index] = defaultValue;
+            }
 
-	} catch (S2DError ex) {
+        } catch (S2DError ex) {
             System.err.println("Warning: " + ex.toString());
 
             // Generate default values.
             result = S2DUtils.createStringArray(size, defaultValue);
 
-	} catch (S2DWarning ex) {
-	    System.err.println("Warning: " + ex.toString());
-	}
+        } catch (S2DWarning ex) {
+            System.err.println("Warning: " + ex.toString());
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -593,12 +593,12 @@ public abstract class S2DStarIfc {
     {
         String result = "";
 
-	try {
-	    result = getOneFrameValueStrict(frame, name);
-	} catch(S2DException ex) {
-	    System.err.println(ex);
-	    result = name + " not available for this save frame.";
-	}
+        try {
+            result = getOneFrameValueStrict(frame, name);
+        } catch(S2DException ex) {
+            System.err.println(ex);
+            result = name + " not available for this save frame.";
+        }
 
         return result;
     }
@@ -609,11 +609,11 @@ public abstract class S2DStarIfc {
     {
         String result = null;
 
-	try {
-	    result = getOneFrameValueStrict(frame, name);
-	} catch(S2DException ex) {
-	    System.err.println(ex);
-	}
+        try {
+            result = getOneFrameValueStrict(frame, name);
+        } catch(S2DException ex) {
+            System.err.println(ex);
+        }
 
         return result;
     }
@@ -621,21 +621,21 @@ public abstract class S2DStarIfc {
     //-------------------------------------------------------------------
     // Note: frame can be the whole Star tree for an mmCif file.
     public String getOneFrameValueStrict(StarNode frame, String name)
-      throws S2DException
+    throws S2DException
     {
         String result = "";
 
         VectorCheckType list = frame.searchByName(name);
         if (list.size() == 1) {
             DataItemNode node = (DataItemNode)list.firstElement();
-	    result = node.getValue();
+            result = node.getValue();
         } else {
-	    String msg = "Expected one value for " + name + "; got " +
-	                  list.size();
-	    if (frame instanceof SaveFrameNode) {
-	        msg += " in frame " + getFrameName((SaveFrameNode)frame);
-	    }
-	    throw new S2DError(msg);
+            String msg = "Expected one value for " + name + "; got " +
+                         list.size();
+            if (frame instanceof SaveFrameNode) {
+                msg += " in frame " + getFrameName((SaveFrameNode)frame);
+            }
+            throw new S2DError(msg);
         }
 
         return result;
@@ -644,20 +644,20 @@ public abstract class S2DStarIfc {
     //-------------------------------------------------------------------
     // Remove the given tag from the given save frame.
     public static void removeTag(StarNode frame, String tagName)
-      throws S2DException
+    throws S2DException
     {
         //TEMP -- what happens if you pass a name that's really a loop?
         VectorCheckType list = frame.searchByName(tagName);
         if (list.size() == 1) {
             DataItemNode node = (DataItemNode)list.firstElement();
-	    ((SaveFrameNode)frame).removeElement(node);
+            ((SaveFrameNode)frame).removeElement(node);
         } else {
-	    String msg = "Expected one value for " + tagName + "; got " +
-	                  list.size();
-	    if (frame instanceof SaveFrameNode) {
-	        msg += " in frame " + getFrameName((SaveFrameNode)frame);
-	    }
-	    throw new S2DError(msg);
+            String msg = "Expected one value for " + tagName + "; got " +
+                         list.size();
+            if (frame instanceof SaveFrameNode) {
+                msg += " in frame " + getFrameName((SaveFrameNode)frame);
+            }
+            throw new S2DError(msg);
         }
     }
 
@@ -668,45 +668,45 @@ public abstract class S2DStarIfc {
     public Vector getSingleOrLoopValue(SaveFrameNode frame, String tagName)
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DStarIfc.getSingleOrLoopValue(" +
-	      getFrameName(frame) + ", " + tagName + ")");
-	}
+            System.out.println("S2DStarIfc.getSingleOrLoopValue(" +
+                               getFrameName(frame) + ", " + tagName + ")");
+        }
         Vector result = new Vector();
 
-	// Try getting the value as a lone tag; if that doesn't
-	// work, try it in a loop.
-	try {
-	    String tmpName = getOneFrameValueStrict(frame, tagName);
-	    result.addElement(tmpName);
-	} catch (Exception ex) {
-	    try {
-	        String[] tmpNames = getFrameValues(frame, tagName,
-		  tagName);
-	        for (int index = 0; index < tmpNames.length; index++) {
-	            String tmpName = tmpNames[index];
-	            if (!result.contains(tmpName)) {
-	                result.addElement(tmpName);
-	            }
-	        }
-	    } catch (S2DException ex2) {
-	        System.err.println("Warning: " + ex2.toString());
-	    }
-	}
+        // Try getting the value as a lone tag; if that doesn't
+        // work, try it in a loop.
+        try {
+            String tmpName = getOneFrameValueStrict(frame, tagName);
+            result.addElement(tmpName);
+        } catch (Exception ex) {
+            try {
+                String[] tmpNames = getFrameValues(frame, tagName,
+                                                   tagName);
+                for (int index = 0; index < tmpNames.length; index++) {
+                    String tmpName = tmpNames[index];
+                    if (!result.contains(tmpName)) {
+                        result.addElement(tmpName);
+                    }
+                }
+            } catch (S2DException ex2) {
+                System.err.println("Warning: " + ex2.toString());
+            }
+        }
 
         if (doDebugOutput(11)) {
-	    System.out.print("result: ");
-	    for (int index = 0; index < result.size(); index++) {
-	        System.out.print((String)result.elementAt(index) + " ");
-	    }
-	    System.out.println("");
-	}
+            System.out.print("result: ");
+            for (int index = 0; index < result.size(); index++) {
+                System.out.print((String)result.elementAt(index) + " ");
+            }
+            System.out.println("");
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
     public SaveFrameNode getEntityFrame(SaveFrameNode frame,
-      String entityID) throws S2DException
+                                        String entityID) throws S2DException
     {
         return null;
     }
@@ -719,7 +719,7 @@ public abstract class S2DStarIfc {
 
     //-------------------------------------------------------------------
     public String[] translateAtomNomenclature(String[] resLabels,
-      String[] atomNames) throws S2DException
+            String[] atomNames) throws S2DException
     {
         return atomNames;
     }
@@ -727,13 +727,13 @@ public abstract class S2DStarIfc {
     //-------------------------------------------------------------------
     public String getHetNOEAtom1(SaveFrameNode frame)
     {
-    	return null;
+        return null;
     }
 
     //-------------------------------------------------------------------
     public String getHetNOEAtom2(SaveFrameNode frame)
     {
-    	return null;
+        return null;
     }
 
     //-------------------------------------------------------------------
@@ -747,7 +747,7 @@ public abstract class S2DStarIfc {
      * @return A vector of unique values (as Strings)
      */
     public Vector getUniqueTagValues(SaveFrameNode frame)
-      throws S2DException
+    throws S2DException
     {
         return null;
     }
@@ -764,26 +764,26 @@ public abstract class S2DStarIfc {
      * @return An array of the values.
      */
     public String[] getAllChemShiftEntityIDs(SaveFrameNode frame)
-      throws S2DException
+    throws S2DException
     {
-	String[] result = null;
+        String[] result = null;
 
-    	if (!CHEM_SHIFT_ENTITY_ID.equals("")) {
-	    try {
-	        result = getFrameValues(frame, CHEM_SHIFT_VALUE,
-	          CHEM_SHIFT_ENTITY_ID);
+        if (!CHEM_SHIFT_ENTITY_ID.equals("")) {
+            try {
+                result = getFrameValues(frame, CHEM_SHIFT_VALUE,
+                                        CHEM_SHIFT_ENTITY_ID);
             } catch(Exception ex) {
-	        result = getFrameValues(frame, CHEM_SHIFT_VALUE,
-	          CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
-	    }
-	}
+                result = getFrameValues(frame, CHEM_SHIFT_VALUE,
+                                        CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
+            }
+        }
 
-	//TEMP -- hmm -- how does this not crash on a 2.1 file?
-	for (int index = 0; index < result.length; index++) {
-	    if (result[index].equals("?")) result[index] = "1";
-	}
+        //TEMP -- hmm -- how does this not crash on a 2.1 file?
+        for (int index = 0; index < result.length; index++) {
+            if (result[index].equals("?")) result[index] = "1";
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -796,13 +796,13 @@ public abstract class S2DStarIfc {
     public static boolean valueIsEmpty(String value)
     {
         if (value == null ||
-	  value.equals("") ||
-	  value.equals(".") ||
-	  value.equals("?")) {
-	    return true;
-	} else {
-	    return false;
-	}
+                value.equals("") ||
+                value.equals(".") ||
+                value.equals("?")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //===================================================================
@@ -813,24 +813,24 @@ public abstract class S2DStarIfc {
     // the parse tree.
     protected static StarNode parseStar(InputStream is) throws S2DException
     {
-	StarNode starTree;
+        StarNode starTree;
 
         try {
-	    if (_parser != null) {
-	        _parser.ReInit(is);
-	    } else {
+            if (_parser != null) {
+                _parser.ReInit(is);
+            } else {
                 _parser = new StarParser(is);
-	    }
-	    StarParser.StarFileNodeParse(_parser);
-	    starTree = _parser.popResult();
+            }
+            StarParser.StarFileNodeParse(_parser);
+            starTree = _parser.popResult();
 
         } catch(ParseException ex) {
-	    System.err.println("Star file parse error: " + ex.toString());
+            System.err.println("Star file parse error: " + ex.toString());
             if (doDebugOutput(11)) ex.printStackTrace();
             throw new S2DError("Unable to parse star file");
-	}
+        }
 
-	return starTree;
+        return starTree;
     }
 
     //===================================================================
@@ -841,12 +841,12 @@ public abstract class S2DStarIfc {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

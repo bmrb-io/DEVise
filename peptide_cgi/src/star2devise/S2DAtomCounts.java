@@ -87,10 +87,10 @@ public class S2DAtomCounts {
     public static S2DAtomCounts getInstance()
     {
         if (instance == null) {
-	    instance = new S2DAtomCounts();
-	}
+            instance = new S2DAtomCounts();
+        }
 
-	return instance;
+        return instance;
     }
 
     // ------------------------------------------------------------------
@@ -98,14 +98,14 @@ public class S2DAtomCounts {
     // (three-letter label).
     public int getCHNCount(String residueLabel) throws S2DException
     {
-	int result = -1;
+        int result = -1;
 
         Integer value = (Integer)_chnCounts.get(residueLabel);
-	if (value != null) {
-	    result = value.intValue();
-	} else {
-	    throw new S2DError("Illegal residue label: " + residueLabel);
-	}
+        if (value != null) {
+            result = value.intValue();
+        } else {
+            throw new S2DError("Illegal residue label: " + residueLabel);
+        }
 
         return result;
     }
@@ -115,14 +115,14 @@ public class S2DAtomCounts {
     // for the given amino acid (three-letter label).
     public int getPistBackCount(String residueLabel) throws S2DException
     {
-	int result = -1;
+        int result = -1;
 
         Integer value = (Integer)_pistBackCounts.get(residueLabel);
-	if (value != null) {
-	    result = value.intValue();
-	} else {
-	    throw new S2DError("Illegal residue label: " + residueLabel);
-	}
+        if (value != null) {
+            result = value.intValue();
+        } else {
+            throw new S2DError("Illegal residue label: " + residueLabel);
+        }
 
         return result;
     }
@@ -132,14 +132,14 @@ public class S2DAtomCounts {
     // label).
     public int getPistHCount(String residueLabel) throws S2DException
     {
-	int result = -1;
+        int result = -1;
 
         Integer value = (Integer)_pistHCounts.get(residueLabel);
-	if (value != null) {
-	    result = value.intValue();
-	} else {
-	    throw new S2DError("Illegal residue label: " + residueLabel);
-	}
+        if (value != null) {
+            result = value.intValue();
+        } else {
+            throw new S2DError("Illegal residue label: " + residueLabel);
+        }
 
         return result;
     }
@@ -150,14 +150,14 @@ public class S2DAtomCounts {
     // acid (three-letter label).
     public int getPistSideCount(String residueLabel) throws S2DException
     {
-	int result = -1;
+        int result = -1;
 
         Integer value = (Integer)_pistSideCounts.get(residueLabel);
-	if (value != null) {
-	    result = value.intValue();
-	} else {
-	    throw new S2DError("Illegal residue label: " + residueLabel);
-	}
+        if (value != null) {
+            result = value.intValue();
+        } else {
+            throw new S2DError("Illegal residue label: " + residueLabel);
+        }
 
         return result;
     }
@@ -174,96 +174,96 @@ public class S2DAtomCounts {
         _pistHCounts = new Hashtable();
         _pistSideCounts = new Hashtable();
 
-	// Note: this is the total number of C, H, and N atoms in each
-	// amino acid (O, S, etc. are excluded from the counts).
-	_chnCounts.put("ALA", new Integer(9));
-	_chnCounts.put("ARG", new Integer(23));
-	_chnCounts.put("ASP", new Integer(10));
-	_chnCounts.put("ASN", new Integer(12));
-	_chnCounts.put("CYS", new Integer(9));
-	_chnCounts.put("GLU", new Integer(13));
-	_chnCounts.put("GLN", new Integer(15));
-	_chnCounts.put("GLY", new Integer(6));
-	_chnCounts.put("HIS", new Integer(17));
-	_chnCounts.put("ILE", new Integer(18));
-	_chnCounts.put("LEU", new Integer(18));
-	_chnCounts.put("LYS", new Integer(21));
-	_chnCounts.put("MET", new Integer(15));
-	_chnCounts.put("PHE", new Integer(19));
-	_chnCounts.put("PRO", new Integer(15));
-	_chnCounts.put("SER", new Integer(9));
-	_chnCounts.put("THR", new Integer(12));
-	_chnCounts.put("TRP", new Integer(23));
-	_chnCounts.put("TYR", new Integer(19));
-	_chnCounts.put("VAL", new Integer(15));
+        // Note: this is the total number of C, H, and N atoms in each
+        // amino acid (O, S, etc. are excluded from the counts).
+        _chnCounts.put("ALA", new Integer(9));
+        _chnCounts.put("ARG", new Integer(23));
+        _chnCounts.put("ASP", new Integer(10));
+        _chnCounts.put("ASN", new Integer(12));
+        _chnCounts.put("CYS", new Integer(9));
+        _chnCounts.put("GLU", new Integer(13));
+        _chnCounts.put("GLN", new Integer(15));
+        _chnCounts.put("GLY", new Integer(6));
+        _chnCounts.put("HIS", new Integer(17));
+        _chnCounts.put("ILE", new Integer(18));
+        _chnCounts.put("LEU", new Integer(18));
+        _chnCounts.put("LYS", new Integer(21));
+        _chnCounts.put("MET", new Integer(15));
+        _chnCounts.put("PHE", new Integer(19));
+        _chnCounts.put("PRO", new Integer(15));
+        _chnCounts.put("SER", new Integer(9));
+        _chnCounts.put("THR", new Integer(12));
+        _chnCounts.put("TRP", new Integer(23));
+        _chnCounts.put("TYR", new Integer(19));
+        _chnCounts.put("VAL", new Integer(15));
 
-	// This is the total number of backbone atoms in
-	// each amino acid, counting H as a backbone atom.
-	_pistBackCounts.put("ALA", new Integer(4));
-	_pistBackCounts.put("ARG", new Integer(4));
-	_pistBackCounts.put("ASP", new Integer(4));
-	_pistBackCounts.put("ASN", new Integer(4));
-	_pistBackCounts.put("CYS", new Integer(4));
-	_pistBackCounts.put("GLU", new Integer(4));
-	_pistBackCounts.put("GLN", new Integer(4));
-	_pistBackCounts.put("GLY", new Integer(4));
-	_pistBackCounts.put("HIS", new Integer(4));
-	_pistBackCounts.put("ILE", new Integer(4));
-	_pistBackCounts.put("LEU", new Integer(4));
-	_pistBackCounts.put("LYS", new Integer(4));
-	_pistBackCounts.put("MET", new Integer(4));
-	_pistBackCounts.put("PHE", new Integer(4));
-	_pistBackCounts.put("PRO", new Integer(3));
-	_pistBackCounts.put("SER", new Integer(4));
-	_pistBackCounts.put("THR", new Integer(4));
-	_pistBackCounts.put("TRP", new Integer(4));
-	_pistBackCounts.put("TYR", new Integer(4));
-	_pistBackCounts.put("VAL", new Integer(4));
+        // This is the total number of backbone atoms in
+        // each amino acid, counting H as a backbone atom.
+        _pistBackCounts.put("ALA", new Integer(4));
+        _pistBackCounts.put("ARG", new Integer(4));
+        _pistBackCounts.put("ASP", new Integer(4));
+        _pistBackCounts.put("ASN", new Integer(4));
+        _pistBackCounts.put("CYS", new Integer(4));
+        _pistBackCounts.put("GLU", new Integer(4));
+        _pistBackCounts.put("GLN", new Integer(4));
+        _pistBackCounts.put("GLY", new Integer(4));
+        _pistBackCounts.put("HIS", new Integer(4));
+        _pistBackCounts.put("ILE", new Integer(4));
+        _pistBackCounts.put("LEU", new Integer(4));
+        _pistBackCounts.put("LYS", new Integer(4));
+        _pistBackCounts.put("MET", new Integer(4));
+        _pistBackCounts.put("PHE", new Integer(4));
+        _pistBackCounts.put("PRO", new Integer(3));
+        _pistBackCounts.put("SER", new Integer(4));
+        _pistBackCounts.put("THR", new Integer(4));
+        _pistBackCounts.put("TRP", new Integer(4));
+        _pistBackCounts.put("TYR", new Integer(4));
+        _pistBackCounts.put("VAL", new Integer(4));
 
-	// This is the total number of H atoms in each amino acid.
-	_pistHCounts.put("ALA", new Integer(1));
-	_pistHCounts.put("ARG", new Integer(1));
-	_pistHCounts.put("ASP", new Integer(1));
-	_pistHCounts.put("ASN", new Integer(1));
-	_pistHCounts.put("CYS", new Integer(1));
-	_pistHCounts.put("GLU", new Integer(1));
-	_pistHCounts.put("GLN", new Integer(1));
-	_pistHCounts.put("GLY", new Integer(1));
-	_pistHCounts.put("HIS", new Integer(1));
-	_pistHCounts.put("ILE", new Integer(1));
-	_pistHCounts.put("LEU", new Integer(1));
-	_pistHCounts.put("LYS", new Integer(1));
-	_pistHCounts.put("MET", new Integer(1));
-	_pistHCounts.put("PHE", new Integer(1));
-	_pistHCounts.put("PRO", new Integer(0));
-	_pistHCounts.put("SER", new Integer(1));
-	_pistHCounts.put("THR", new Integer(1));
-	_pistHCounts.put("TRP", new Integer(1));
-	_pistHCounts.put("TYR", new Integer(1));
-	_pistHCounts.put("VAL", new Integer(1));
+        // This is the total number of H atoms in each amino acid.
+        _pistHCounts.put("ALA", new Integer(1));
+        _pistHCounts.put("ARG", new Integer(1));
+        _pistHCounts.put("ASP", new Integer(1));
+        _pistHCounts.put("ASN", new Integer(1));
+        _pistHCounts.put("CYS", new Integer(1));
+        _pistHCounts.put("GLU", new Integer(1));
+        _pistHCounts.put("GLN", new Integer(1));
+        _pistHCounts.put("GLY", new Integer(1));
+        _pistHCounts.put("HIS", new Integer(1));
+        _pistHCounts.put("ILE", new Integer(1));
+        _pistHCounts.put("LEU", new Integer(1));
+        _pistHCounts.put("LYS", new Integer(1));
+        _pistHCounts.put("MET", new Integer(1));
+        _pistHCounts.put("PHE", new Integer(1));
+        _pistHCounts.put("PRO", new Integer(0));
+        _pistHCounts.put("SER", new Integer(1));
+        _pistHCounts.put("THR", new Integer(1));
+        _pistHCounts.put("TRP", new Integer(1));
+        _pistHCounts.put("TYR", new Integer(1));
+        _pistHCounts.put("VAL", new Integer(1));
 
-	// This is the total number of side chain atoms in each
-	// amino acid, counting HAs, etc., as side chain atoms.
-	_pistSideCounts.put("ALA", new Integer(6));
-	_pistSideCounts.put("ARG", new Integer(20));
-	_pistSideCounts.put("ASP", new Integer(9));
-	_pistSideCounts.put("ASN", new Integer(10));
-	_pistSideCounts.put("CYS", new Integer(7));
-	_pistSideCounts.put("GLU", new Integer(12));
-	_pistSideCounts.put("GLN", new Integer(13));
-	_pistSideCounts.put("GLY", new Integer(3));
-	_pistSideCounts.put("HIS", new Integer(14));
-	_pistSideCounts.put("ILE", new Integer(15));
-	_pistSideCounts.put("LEU", new Integer(15));
-	_pistSideCounts.put("LYS", new Integer(18));
-	_pistSideCounts.put("MET", new Integer(13));
-	_pistSideCounts.put("PHE", new Integer(16));
-	_pistSideCounts.put("PRO", new Integer(13)); // includes H2, H3
-	_pistSideCounts.put("SER", new Integer(7));
-	_pistSideCounts.put("THR", new Integer(10));
-	_pistSideCounts.put("TRP", new Integer(20));
-	_pistSideCounts.put("TYR", new Integer(17));
-	_pistSideCounts.put("VAL", new Integer(12));
+        // This is the total number of side chain atoms in each
+        // amino acid, counting HAs, etc., as side chain atoms.
+        _pistSideCounts.put("ALA", new Integer(6));
+        _pistSideCounts.put("ARG", new Integer(20));
+        _pistSideCounts.put("ASP", new Integer(9));
+        _pistSideCounts.put("ASN", new Integer(10));
+        _pistSideCounts.put("CYS", new Integer(7));
+        _pistSideCounts.put("GLU", new Integer(12));
+        _pistSideCounts.put("GLN", new Integer(13));
+        _pistSideCounts.put("GLY", new Integer(3));
+        _pistSideCounts.put("HIS", new Integer(14));
+        _pistSideCounts.put("ILE", new Integer(15));
+        _pistSideCounts.put("LEU", new Integer(15));
+        _pistSideCounts.put("LYS", new Integer(18));
+        _pistSideCounts.put("MET", new Integer(13));
+        _pistSideCounts.put("PHE", new Integer(16));
+        _pistSideCounts.put("PRO", new Integer(13)); // includes H2, H3
+        _pistSideCounts.put("SER", new Integer(7));
+        _pistSideCounts.put("THR", new Integer(10));
+        _pistSideCounts.put("TRP", new Integer(20));
+        _pistSideCounts.put("TYR", new Integer(17));
+        _pistSideCounts.put("VAL", new Integer(12));
     }
 
     //-------------------------------------------------------------------
@@ -271,12 +271,12 @@ public class S2DAtomCounts {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

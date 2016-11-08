@@ -83,8 +83,8 @@ public class S2DDummyCoords
 
     public class AtomInfo {
         public String _atomName;
-	public float _x;
-	public float _y;
+        public float _x;
+        public float _y;
     }
 
     private static S2DDummyCoords _instance = null;
@@ -97,8 +97,9 @@ public class S2DDummyCoords
     private static float VERT_SPACING = 2.2f;
 
     private static String[] chains = {"A", "B", "C", "D", "E", "F", "G",
-      "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
-      "U", "V", "W", "X", "Y", "Z"};
+                                      "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+                                      "U", "V", "W", "X", "Y", "Z"
+                                     };
 
     //===================================================================
     // PUBLIC METHODS
@@ -110,14 +111,14 @@ public class S2DDummyCoords
     public static S2DDummyCoords getInstance() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DDummyCoords.getInstance()");
-	}
+            System.out.println("S2DDummyCoords.getInstance()");
+        }
 
-    	if (_instance == null) {
-	    _instance = new S2DDummyCoords("chem_info/pistachio_tmpl");
-	}
+        if (_instance == null) {
+            _instance = new S2DDummyCoords("chem_info/pistachio_tmpl");
+        }
 
-	return _instance;
+        return _instance;
     }
 
     /** -----------------------------------------------------------------
@@ -130,21 +131,21 @@ public class S2DDummyCoords
      *        no wrapping).
      */
     public void writeCoords(S2DResidues residues, int entityAssemblyID,
-      String filename, int wrapLength) throws S2DException
+                            String filename, int wrapLength) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DDummyCoords.writeCoords(" +
-	      entityAssemblyID + ", " + filename + ")");
-	}
+            System.out.println("S2DDummyCoords.writeCoords(" +
+                               entityAssemblyID + ", " + filename + ")");
+        }
 
-	String chain = entAssemID2Chain(entityAssemblyID);
+        String chain = entAssemID2Chain(entityAssemblyID);
 
-	try {
-	    //TEMP -- this should use strings from S2DmmCifIfc
-	    S2DFileWriter writer = S2DFileWriter.create(filename);
-	    writer.write("data_dummy_coords_Temp\n");
-	    writer.write("#\n");
-	    writer.write("loop_\n");
+        try {
+            //TEMP -- this should use strings from S2DmmCifIfc
+            S2DFileWriter writer = S2DFileWriter.create(filename);
+            writer.write("data_dummy_coords_Temp\n");
+            writer.write("#\n");
+            writer.write("loop_\n");
             writer.write("_atom_site.type_symbol\n");
             writer.write("_atom_site.label_atom_id\n");
             writer.write("_atom_site.label_comp_id\n");
@@ -156,88 +157,88 @@ public class S2DDummyCoords
             writer.write("_atom_site.pdbx_PDB_model_num\n");
 
 
-	    float xLoc = 0.0f;
-	    float yLoc = 0.0f;
+            float xLoc = 0.0f;
+            float yLoc = 0.0f;
 
-	    // 1 means we're progressing from left to right; -1 from right
-	    // to left.
-	    int direction = 1;
+            // 1 means we're progressing from left to right; -1 from right
+            // to left.
+            int direction = 1;
 
-	    // Note: this is set to false for the first residue because it's
-	    // not connecting to a previous residue.
-	    boolean firstInRow = false;
-	    boolean lastInRow = false;
+            // Note: this is set to false for the first residue because it's
+            // not connecting to a previous residue.
+            boolean firstInRow = false;
+            boolean lastInRow = false;
 
-	    for (int resIndex = 0; resIndex < residues._resLabels.length;
-	      resIndex++) {
+            for (int resIndex = 0; resIndex < residues._resLabels.length;
+                    resIndex++) {
 
-		if (wrapLength != 0 && (resIndex + 1) % wrapLength == 0) {
-		    lastInRow = true;
-		} else {
-		    lastInRow = false;
-		}
-		
-	        String aminoAcid = residues._resLabels[resIndex];
-	        Vector residueCoords = (Vector)_coordList.get(aminoAcid);
-	        if (residueCoords == null) {
-		    // Note: this is *not* thrown, just created to log
-		    // the warning.
-	            new S2DWarning("No dummy template coordinates " +
-		      "for amino acid " + aminoAcid + "; skipping it");
-	        } else {
-	            for (int atomIndex = 0; atomIndex < residueCoords.size();
-	              atomIndex++) {
-		        AtomInfo info =
-			  (AtomInfo)residueCoords.elementAt(atomIndex);
+                if (wrapLength != 0 && (resIndex + 1) % wrapLength == 0) {
+                    lastInRow = true;
+                } else {
+                    lastInRow = false;
+                }
 
-		        // Note: this relies on us having only one-letter atom
-		        // types; I think that's true for everything in the
-		        // dummy coordinates template.  wenger 2005-01-20.
-		        String atomType = info._atomName.substring(0, 1);
+                String aminoAcid = residues._resLabels[resIndex];
+                Vector residueCoords = (Vector)_coordList.get(aminoAcid);
+                if (residueCoords == null) {
+                    // Note: this is *not* thrown, just created to log
+                    // the warning.
+                    new S2DWarning("No dummy template coordinates " +
+                                   "for amino acid " + aminoAcid + "; skipping it");
+                } else {
+                    for (int atomIndex = 0; atomIndex < residueCoords.size();
+                            atomIndex++) {
+                        AtomInfo info =
+                            (AtomInfo)residueCoords.elementAt(atomIndex);
 
-		        int residueNum = resIndex + 1;
-		        float atomX = xLoc + (info._x * direction);
-		        float atomY = yLoc + info._y;
-		        float atomZ = 0.0f;
-		        int modelNum = 1;
+                        // Note: this relies on us having only one-letter atom
+                        // types; I think that's true for everything in the
+                        // dummy coordinates template.  wenger 2005-01-20.
+                        String atomType = info._atomName.substring(0, 1);
 
-		        if (lastInRow && info._atomName.equals("C")) {
-		            atomX += 0.5 * direction;
-		        }
-		        if (firstInRow && info._atomName.equals("N")) {
-		    	    atomX -= 0.5 * direction;
-		        }
+                        int residueNum = resIndex + 1;
+                        float atomX = xLoc + (info._x * direction);
+                        float atomY = yLoc + info._y;
+                        float atomZ = 0.0f;
+                        int modelNum = 1;
 
-		        writer.write(atomType + "\t" +
-			  info._atomName + "\t" +
-		          aminoAcid + "\t" +
-			  chain + "\t" +
-			  residueNum + "\t" +
-		          atomX + "\t" +
-			  atomY + "\t" +
-			  atomZ + "\t" +
-		          modelNum + "\n");
-	            }
-		}
+                        if (lastInRow && info._atomName.equals("C")) {
+                            atomX += 0.5 * direction;
+                        }
+                        if (firstInRow && info._atomName.equals("N")) {
+                            atomX -= 0.5 * direction;
+                        }
 
-		if (lastInRow) {
-		    direction = -direction;
-		    yLoc += VERT_SPACING;
-		    firstInRow = true; // for the next residue
-		} else {
-		    xLoc += HORIZ_SPACING * direction;
-		    firstInRow = false; // for the next residue
-		}
-	    }
+                        writer.write(atomType + "\t" +
+                                     info._atomName + "\t" +
+                                     aminoAcid + "\t" +
+                                     chain + "\t" +
+                                     residueNum + "\t" +
+                                     atomX + "\t" +
+                                     atomY + "\t" +
+                                     atomZ + "\t" +
+                                     modelNum + "\n");
+                    }
+                }
 
-	    writer.write("#\n");
-	    writer.write("#\n");
-	    writer.close();
+                if (lastInRow) {
+                    direction = -direction;
+                    yLoc += VERT_SPACING;
+                    firstInRow = true; // for the next residue
+                } else {
+                    xLoc += HORIZ_SPACING * direction;
+                    firstInRow = false; // for the next residue
+                }
+            }
 
-	} catch (IOException ex) {
-	    throw new S2DError("Unable to create dummy coordinates " +
-	      "file: " + ex);
-	}
+            writer.write("#\n");
+            writer.write("#\n");
+            writer.close();
+
+        } catch (IOException ex) {
+            throw new S2DError("Unable to create dummy coordinates " +
+                               "file: " + ex);
+        }
     }
 
     /** -----------------------------------------------------------------
@@ -250,18 +251,18 @@ public class S2DDummyCoords
     //TEMP -- this should deal with entity assembly IDs > 26 (chain can
     //TEMP be more than one character)
     public String entAssemID2Chain(int entityAssemblyID)
-      throws S2DException
+    throws S2DException
     {
-	String result;
+        String result;
 
-	try {
-	    result = chains[entityAssemblyID-1];
-	} catch (ArrayIndexOutOfBoundsException ex) {
-	    throw new S2DError("Illegal entity assembly ID: " +
-	      ex.toString());
-	}
+        try {
+            result = chains[entityAssemblyID-1];
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            throw new S2DError("Illegal entity assembly ID: " +
+                               ex.toString());
+        }
 
-	return result;
+        return result;
     }
 
     //===================================================================
@@ -275,46 +276,46 @@ public class S2DDummyCoords
     private S2DDummyCoords(String templateFilename) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DDummyCoords.S2DDummyCoords(" +
-	      templateFilename + ")");
-	}
+            System.out.println("S2DDummyCoords.S2DDummyCoords(" +
+                               templateFilename + ")");
+        }
 
-	_coordList = new Hashtable();
+        _coordList = new Hashtable();
 
-	try {
-	    BufferedReader reader = new BufferedReader(new FileReader(
-	      templateFilename));
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(
+                        templateFilename));
 
-    	    String line;
-	    while ((line = reader.readLine()) != null) {
-		if (!line.equals("") && !line.startsWith("#")) {
-		    String [] tokens = line.split("\t");
-		    if (tokens.length != 4) {
-		    	throw new S2DError("Bad dummy coordinate template " +
-			  "line (" + line + ") (must have four tokens)");
-		    }
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.equals("") && !line.startsWith("#")) {
+                    String [] tokens = line.split("\t");
+                    if (tokens.length != 4) {
+                        throw new S2DError("Bad dummy coordinate template " +
+                                           "line (" + line + ") (must have four tokens)");
+                    }
 
-		    AtomInfo info = new AtomInfo();
-		    info._atomName = tokens[1];
-		    info._x = Float.parseFloat(tokens[2]);
-		    info._y = Float.parseFloat(tokens[3]);
+                    AtomInfo info = new AtomInfo();
+                    info._atomName = tokens[1];
+                    info._x = Float.parseFloat(tokens[2]);
+                    info._y = Float.parseFloat(tokens[3]);
 
-		    Vector residueCoords = (Vector)_coordList.get(tokens[0]);
-		    if (residueCoords == null) {
-		    	residueCoords = new Vector();
-			_coordList.put(tokens[0], residueCoords);
-		    }
-		    residueCoords.addElement(info);
-		}
-	    }
+                    Vector residueCoords = (Vector)_coordList.get(tokens[0]);
+                    if (residueCoords == null) {
+                        residueCoords = new Vector();
+                        _coordList.put(tokens[0], residueCoords);
+                    }
+                    residueCoords.addElement(info);
+                }
+            }
 
-	} catch (IOException ex) {
-	    throw new S2DError("Unable to read dummy coordinates " +
-	      "template: " + ex);
-	} catch (NumberFormatException ex) {
-	    throw new S2DError("Error parsing dummy coordinates " +
-	      "template float value: " + ex);
-	}
+        } catch (IOException ex) {
+            throw new S2DError("Unable to read dummy coordinates " +
+                               "template: " + ex);
+        } catch (NumberFormatException ex) {
+            throw new S2DError("Error parsing dummy coordinates " +
+                               "template float value: " + ex);
+        }
     }
 
     //-------------------------------------------------------------------
@@ -322,12 +323,12 @@ public class S2DDummyCoords
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

@@ -249,6 +249,8 @@ s2d_props:
 	echo "bmrb_mirror.dyn_movie_url=$(DYNAMICS_MOVIE_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.dyn_movie_gen_url=$(DYNAMICS_MOVIE_GEN_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.dssp_file_url=$(DSSP_FILE_URL)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.host=$(OUTPUT_WEB_DOMAIN)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.codebase=$(CODEBASE)" >> $(S2D_PROPS_FILE)
 
 error_email:
 	-rm -f $(ERROR_EMAIL_FILE)

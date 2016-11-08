@@ -56,10 +56,10 @@ public class AssgDataManager
 
     public class AssgEntry
     {
-	String residueLabel;
-	int numH;
-	int numC;
-	int numN;
+        String residueLabel;
+        int numH;
+        int numC;
+        int numN;
     }
 
     private static final int MAX_ENTRIES = 30;
@@ -71,95 +71,95 @@ public class AssgDataManager
 
     //Reads in the input assignment file and stores in memory data structure
     public AssgDataManager( String filename )
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("AssgDataManager(" + filename + ")");
-	}
+            System.out.println("AssgDataManager(" + filename + ")");
+        }
 
-	try
-	{
-	    StreamTokenizer inFile 
-		= new StreamTokenizer (new FileReader( filename ));
+        try
+        {
+            StreamTokenizer inFile
+                = new StreamTokenizer (new FileReader( filename ));
             inFile.slashSlashComments(true);
 
-	    totalNumEntries = 0;
-	    this.filename = filename;
-	    
-	    // This assumes that each entry corresponds to one line
-	    while (inFile.nextToken() != inFile.TT_EOF)
-	    {
-		assgInfo[totalNumEntries] = new AssgEntry();
+            totalNumEntries = 0;
+            this.filename = filename;
 
-		assgInfo[totalNumEntries].residueLabel = inFile.sval;
+            // This assumes that each entry corresponds to one line
+            while (inFile.nextToken() != inFile.TT_EOF)
+            {
+                assgInfo[totalNumEntries] = new AssgEntry();
 
-		inFile.nextToken();
-		assgInfo[totalNumEntries].numH = (int)inFile.nval;
+                assgInfo[totalNumEntries].residueLabel = inFile.sval;
 
-		inFile.nextToken();
-		assgInfo[totalNumEntries].numC = (int)inFile.nval;
+                inFile.nextToken();
+                assgInfo[totalNumEntries].numH = (int)inFile.nval;
 
-		inFile.nextToken();
-		assgInfo[totalNumEntries].numN = (int)inFile.nval;
+                inFile.nextToken();
+                assgInfo[totalNumEntries].numC = (int)inFile.nval;
 
-		if(totalNumEntries++ == MAX_ENTRIES-1) 
-		{
-		    throw new S2DError("Overflow of assgInfo array.");
-		}
-		
-	    }
-	    
-	} catch (FileNotFoundException e) 
-	{
-	    System.err.println("File not found: " + e.toString() );
-	    throw new S2DError("Unable to read assignment file " +
-	      filename);
-	} catch (IOException e)
-	{
-	    System.err.println("IO Exception: " + e.toString() );
-	    throw new S2DError("Unable to read assignment file " +
-	      filename);
-	}
+                inFile.nextToken();
+                assgInfo[totalNumEntries].numN = (int)inFile.nval;
+
+                if(totalNumEntries++ == MAX_ENTRIES-1)
+                {
+                    throw new S2DError("Overflow of assgInfo array.");
+                }
+
+            }
+
+        } catch (FileNotFoundException e)
+        {
+            System.err.println("File not found: " + e.toString() );
+            throw new S2DError("Unable to read assignment file " +
+                               filename);
+        } catch (IOException e)
+        {
+            System.err.println("IO Exception: " + e.toString() );
+            throw new S2DError("Unable to read assignment file " +
+                               filename);
+        }
     }
-    
+
 
     // Given a particular residue label, returns (by reference) total
     // Hydrogen, Carbon and Nitrogen assignments
-    public AssgEntry returnAssg(String residueLabel) 
-      throws S2DException
+    public AssgEntry returnAssg(String residueLabel)
+    throws S2DException
     {
         if (doDebugOutput(15)) {
-	    System.out.println("AssgDataManager.returnAssg(" +
-	      residueLabel + ")");
-	}
-	
-	AssgEntry totalAssignments = new AssgEntry();
-	boolean found = false;
-	int position = 0;
-	totalAssignments.numH = -1;
-	totalAssignments.numC = -1;
-	totalAssignments.numN = -1;
-	
-	while(!found && position < totalNumEntries)
-	{
-	    if (residueLabel.compareTo(assgInfo[position].residueLabel) == 0) {
-		totalAssignments.numH = assgInfo[position].numH;
-		totalAssignments.numC = assgInfo[position].numC;
-		totalAssignments.numN = assgInfo[position].numN;
-		found = true;
-		
-	    } else {
-		position++;
-	    }
-	}
-	
-	if (!found) {
-	    throw new S2DWarning("Warning: " + residueLabel +
-	      " entry not found in assignment " +
-	      "reference table file " + filename );
-	}
+            System.out.println("AssgDataManager.returnAssg(" +
+                               residueLabel + ")");
+        }
 
-	return totalAssignments;
+        AssgEntry totalAssignments = new AssgEntry();
+        boolean found = false;
+        int position = 0;
+        totalAssignments.numH = -1;
+        totalAssignments.numC = -1;
+        totalAssignments.numN = -1;
+
+        while(!found && position < totalNumEntries)
+        {
+            if (residueLabel.compareTo(assgInfo[position].residueLabel) == 0) {
+                totalAssignments.numH = assgInfo[position].numH;
+                totalAssignments.numC = assgInfo[position].numC;
+                totalAssignments.numN = assgInfo[position].numN;
+                found = true;
+
+            } else {
+                position++;
+            }
+        }
+
+        if (!found) {
+            throw new S2DWarning("Warning: " + residueLabel +
+                                 " entry not found in assignment " +
+                                 "reference table file " + filename );
+        }
+
+        return totalAssignments;
     }
 
     //-------------------------------------------------------------------
@@ -167,11 +167,11 @@ public class AssgDataManager
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }

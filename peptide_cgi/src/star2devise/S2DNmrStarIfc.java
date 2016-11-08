@@ -64,7 +64,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public String VARIABLE_VALUE = "";
 
     public static String CHEMASSG_FILE = "chem_info" +
-      File.separator + "assignments.txt";
+                                         File.separator + "assignments.txt";
 
     public static final int TYPE_SAMPLE = 1;
     public static final int TYPE_SAMPLE_COND = 2;
@@ -87,22 +87,22 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
      */
     public String toString()
     {
-    	return _description + " (version " + version() + ")";
+        return _description + " (version " + version() + ")";
     }
 
     //-------------------------------------------------------------------
     // Returns the system name from the NMR-Star file.
     public String getSystemName()
     {
-	String systemName = null;
+        String systemName = null;
 
-	VectorCheckType nodes = _starTree.searchByName(MOL_SYSTEM_NAME);
+        VectorCheckType nodes = _starTree.searchByName(MOL_SYSTEM_NAME);
         if (nodes.size() != 1) {
-	    System.err.println("System name is not available");
-	    systemName = "System name not available";
-	} else {
-	    systemName = ((DataItemNode)nodes.firstElement()).getValue();
-	}
+            System.err.println("System name is not available");
+            systemName = "System name not available";
+        } else {
+            systemName = ((DataItemNode)nodes.firstElement()).getValue();
+        }
 
         return systemName;
     }
@@ -110,15 +110,15 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     //-------------------------------------------------------------------
     public String getEntryTitle()
     {
-	String result = "unknown";
+        String result = "unknown";
 
-	try {
-	    SaveFrameNode frame = getOneDataFrameByCat(ENTRY_SF_CAT,
-	      ENTRY_INFO);
-	    result = getOneFrameValue(frame, ENTRY_TITLE);
-	} catch (Exception ex) {
-	    System.err.println(ex.toString());
-	}
+        try {
+            SaveFrameNode frame = getOneDataFrameByCat(ENTRY_SF_CAT,
+                                  ENTRY_INFO);
+            result = getOneFrameValue(frame, ENTRY_TITLE);
+        } catch (Exception ex) {
+            System.err.println(ex.toString());
+        }
 
         return result;
     }
@@ -138,92 +138,92 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public Vector getPdbIds(boolean doProteinCheck)
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DNmrStarIfc.getPdbIds(" +
-	      doProteinCheck + ")");
-	}
+            System.out.println("S2DNmrStarIfc.getPdbIds(" +
+                               doProteinCheck + ")");
+        }
 
         Vector ids = new Vector();
 
-	//
-	// First try getting PDB IDs from the molecular_system save frame.
-	//
-	try {
-	     getPdbIdsFromMolSys(ids);
-	} catch(S2DException ex) {
-	    System.err.println("Error getting PDB IDs: " + ex.toString());
-	}
+        //
+        // First try getting PDB IDs from the molecular_system save frame.
+        //
+        try {
+            getPdbIdsFromMolSys(ids);
+        } catch(S2DException ex) {
+            System.err.println("Error getting PDB IDs: " + ex.toString());
+        }
 
-	if (doDebugOutput(12)) {
-	    System.out.print("  PDB IDs from molecular_system save frame: ");
-	    for (int index = 0; index < ids.size(); index++) {
-	        System.out.print(" " +  (String)ids.elementAt(index));
-	    }
-	    System.out.print("\n");
-	}
+        if (doDebugOutput(12)) {
+            System.out.print("  PDB IDs from molecular_system save frame: ");
+            for (int index = 0; index < ids.size(); index++) {
+                System.out.print(" " +  (String)ids.elementAt(index));
+            }
+            System.out.print("\n");
+        }
 
-	//
-	// Then get any additional relevant ones from the monomeric_polymer
-	// save frame.
-	//
-	try {
-	    getPdbIdsFromMonoPoly(doProteinCheck, ids);
-	} catch(S2DException ex) {
-	    System.err.println("Error getting PDB IDs: " + ex.toString());
-	}
+        //
+        // Then get any additional relevant ones from the monomeric_polymer
+        // save frame.
+        //
+        try {
+            getPdbIdsFromMonoPoly(doProteinCheck, ids);
+        } catch(S2DException ex) {
+            System.err.println("Error getting PDB IDs: " + ex.toString());
+        }
 
-	if (doDebugOutput(12)) {
-	    System.out.print("  getPdbIds returning:");
-	    for (int index = 0; index < ids.size(); index++) {
-	        System.out.print(" " +  (String)ids.elementAt(index));
-	    }
-	    System.out.print("\n");
-	}
+        if (doDebugOutput(12)) {
+            System.out.print("  getPdbIds returning:");
+            for (int index = 0; index < ids.size(); index++) {
+                System.out.print(" " +  (String)ids.elementAt(index));
+            }
+            System.out.print("\n");
+        }
 
-	return ids;
+        return ids;
     }
 
     // ----------------------------------------------------------------------
     // Check whether a DB entry should be processed.
     private boolean checkDBEntry(int residueCount, String dbName,
-      int seqLength, String seqIdent)
+                                 int seqLength, String seqIdent)
     {
         if (doDebugOutput(13)) {
-	    System.out.println("S2DNmrStarIfc.checkDBEntry(" +
-	      residueCount + ", " + dbName + ", " + seqLength + ", " +
-	      seqIdent + ")");
-	}
+            System.out.println("S2DNmrStarIfc.checkDBEntry(" +
+                               residueCount + ", " + dbName + ", " + seqLength + ", " +
+                               seqIdent + ")");
+        }
 
         boolean result = false;
 
-	// Get a numerical value for the sequence identity, whether
-	// the value has a percent sign or not.
-	double seqIdentVal = 0.0;
-	if (seqIdent != null) {
-	    try {
-	        // Remove leading and trailing whitespace.
-	        String seqIdentStr = seqIdent.trim();
+        // Get a numerical value for the sequence identity, whether
+        // the value has a percent sign or not.
+        double seqIdentVal = 0.0;
+        if (seqIdent != null) {
+            try {
+                // Remove leading and trailing whitespace.
+                String seqIdentStr = seqIdent.trim();
 
-	        // Get rid of "%" if we have it.
-	        if (seqIdentStr.endsWith("%")) {
-	            seqIdentStr = seqIdentStr.substring(0,
-	            seqIdentStr.length() - 1);
-	        }
+                // Get rid of "%" if we have it.
+                if (seqIdentStr.endsWith("%")) {
+                    seqIdentStr = seqIdentStr.substring(0,
+                                                        seqIdentStr.length() - 1);
+                }
 
                 seqIdentVal = Double.valueOf(seqIdentStr).floatValue();
             } catch (NumberFormatException ex) {
                 if (doDebugOutput(13)) {
                     System.err.println(
-		      "NumberFormatExeption in sequence identity: " + ex);
-	        }
-	    }
+                        "NumberFormatExeption in sequence identity: " + ex);
+                }
+            }
         }
 
-	// Residue count must match; sequence identity must be at least
-	// 100% (if doing protein check, e.g. NMR Browser) or 97% (if
-	// not doing protein check, e.g. Jafar).
-	if (seqLength == residueCount && seqIdentVal >= _seqIdentMin) {
-	    result = true;
-	}
+        // Residue count must match; sequence identity must be at least
+        // 100% (if doing protein check, e.g. NMR Browser) or 97% (if
+        // not doing protein check, e.g. Jafar).
+        if (seqLength == residueCount && seqIdentVal >= _seqIdentMin) {
+            result = true;
+        }
 
         return result;
     }
@@ -236,7 +236,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
      */
     public int getPolymerType(SaveFrameNode entityFrame)
     {
-    	return S2DResidues.POLYMER_TYPE_NONE;
+        return S2DResidues.POLYMER_TYPE_NONE;
     }
 
     // ----------------------------------------------------------------------
@@ -250,19 +250,19 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     {
         int result = S2DResidues.POLYMER_TYPE_UNKNOWN;
 
-	try {
-	    //TEMP -- should probably throw an exeption if entityID is
-	    // blank and there is more than one entity in this entry
-	    if (entityID.equals("")) entityID = "1";
+        try {
+            //TEMP -- should probably throw an exeption if entityID is
+            // blank and there is more than one entity in this entry
+            if (entityID.equals("")) entityID = "1";
             SaveFrameNode compFrame = getEntityFrame(dataFrame, entityID);
             result = getPolymerType(compFrame);
 
-	} catch (S2DException ex) {
-	    if (doDebugOutput(11)) {
-	        System.err.println("S2DException finding data polymer type: " +
-	          ex.toString());
-	    }
-	}
+        } catch (S2DException ex) {
+            if (doDebugOutput(11)) {
+                System.err.println("S2DException finding data polymer type: " +
+                                   ex.toString());
+            }
+        }
 
         return result;
     }
@@ -276,11 +276,11 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
      */
     public boolean isAProtein(SaveFrameNode entityFrame)
     {
-	int polymerType = getPolymerType(entityFrame);
-	boolean result = (polymerType == S2DResidues.POLYMER_TYPE_PROTEIN ||
-	  polymerType == S2DResidues.POLYMER_TYPE_UNKNOWN);
+        int polymerType = getPolymerType(entityFrame);
+        boolean result = (polymerType == S2DResidues.POLYMER_TYPE_PROTEIN ||
+                          polymerType == S2DResidues.POLYMER_TYPE_UNKNOWN);
 
-	return result;
+        return result;
     }
 
     // ----------------------------------------------------------------------
@@ -288,42 +288,42 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public int getHAChemShiftCount(SaveFrameNode frame)
     {
         if (doDebugOutput(12)) {
-	    System.out.println("  S2DNmrStarIfc.getHAChemShiftCount()");
-	}
+            System.out.println("  S2DNmrStarIfc.getHAChemShiftCount()");
+        }
 
-	int haCsCount = 0;
+        int haCsCount = 0;
 
         try {
-	    DataLoopNode loop = S2DStarUtil.findLoop(frame,
-	      CHEM_SHIFT_VALUE);
+            DataLoopNode loop = S2DStarUtil.findLoop(frame,
+                                CHEM_SHIFT_VALUE);
 
-	    int atomNameIndex = S2DStarUtil.getIndex(loop,
-	      CHEM_SHIFT_ATOM_NAME);
+            int atomNameIndex = S2DStarUtil.getIndex(loop,
+                                CHEM_SHIFT_ATOM_NAME);
 
-	    int maxRows = loop.getVals().size();
-	    for (int currRowNum = 0; currRowNum < maxRows; currRowNum++) {
-	        LoopRowNode currRow =
-	          loop.getVals().elementAt(currRowNum);
-    
-	        String currAtomName =
-		  currRow.elementAt(atomNameIndex).getValue();
-	        if (currAtomName.equalsIgnoreCase(S2DNames.ATOM_HA) ||
-		  currAtomName.equalsIgnoreCase(S2DNames.ATOM_HA2)) {
-	            haCsCount++;
-	        }
+            int maxRows = loop.getVals().size();
+            for (int currRowNum = 0; currRowNum < maxRows; currRowNum++) {
+                LoopRowNode currRow =
+                    loop.getVals().elementAt(currRowNum);
+
+                String currAtomName =
+                    currRow.elementAt(atomNameIndex).getValue();
+                if (currAtomName.equalsIgnoreCase(S2DNames.ATOM_HA) ||
+                        currAtomName.equalsIgnoreCase(S2DNames.ATOM_HA2)) {
+                    haCsCount++;
+                }
 
             }
-	} catch(Exception ex) {
-	    System.err.println("Exception: " + ex.toString() +
-	      " while finding HA chem shift count");
-	    // Note: value returned will be 0.
-	}
+        } catch(Exception ex) {
+            System.err.println("Exception: " + ex.toString() +
+                               " while finding HA chem shift count");
+            // Note: value returned will be 0.
+        }
 
         if (doDebugOutput(12)) {
             System.out.println("    haCsCount = " + haCsCount);
         }
 
-	return haCsCount;
+        return haCsCount;
     }
 
     //-------------------------------------------------------------------
@@ -331,9 +331,9 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public Enumeration getDataFramesByCat(String category)
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarIfc.getDataFramesByCat(" +
-	      category + ")");
-	}
+            System.out.println("S2DNmrStarIfc.getDataFramesByCat(" +
+                               category + ")");
+        }
 
         return getDataFramesByCat(DEFAULT_SAVEFRAME_CATEGORY, category);
     }
@@ -343,18 +343,18 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public Enumeration getDataFramesByCat(String tagName, String category)
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarIfc.getDataFramesByCat(" +
-	      tagName + ", " + category + ")");
-	}
+            System.out.println("S2DNmrStarIfc.getDataFramesByCat(" +
+                               tagName + ", " + category + ")");
+        }
 
-	VectorCheckType frameList;
+        VectorCheckType frameList;
 
-	final String dataValue = category;
+        final String dataValue = category;
 
-	frameList = _starTree.searchForTypeByTagValue(S2DStarUtil._frameClass,
-	  tagName, dataValue);
+        frameList = _starTree.searchForTypeByTagValue(S2DStarUtil._frameClass,
+                    tagName, dataValue);
 
-	return frameList.elements();
+        return frameList.elements();
     }
 
     //-------------------------------------------------------------------
@@ -373,106 +373,106 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     // the residue list(s).  If it is not present, it is calculated from
     // the residue list(s).
     public S2DResidues getResidues(SaveFrameNode frame,
-      int entityAssemblyId) throws S2DException
+                                   int entityAssemblyId) throws S2DException
     {
         if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStarIfc.getResidues(" +
-	      frame.getLabel() + ")");
+                               frame.getLabel() + ")");
         }
 
-	int polymerType = getPolymerType(frame);
+        int polymerType = getPolymerType(frame);
 
-	//
-	// Get the three-letter residue list, if it's available.
-	//
-	S2DResidues resList1 = null;
+        //
+        // Get the three-letter residue list, if it's available.
+        //
+        S2DResidues resList1 = null;
 
-	try {
-	    String[] resSeqCodesTmp = getFrameValues(frame,
-	      ENTITY_RES_SEQ_CODE, ENTITY_RES_SEQ_CODE);
-	    int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
-	      ENTITY_RES_SEQ_CODE);
-	    resSeqCodesTmp = null;
+        try {
+            String[] resSeqCodesTmp = getFrameValues(frame,
+                                      ENTITY_RES_SEQ_CODE, ENTITY_RES_SEQ_CODE);
+            int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+                                ENTITY_RES_SEQ_CODE);
+            resSeqCodesTmp = null;
 
-	    String[] resLabels = getFrameValues(frame,
-	      ENTITY_RES_SEQ_CODE, ENTITY_RES_LABEL);
+            String[] resLabels = getFrameValues(frame,
+                                                ENTITY_RES_SEQ_CODE, ENTITY_RES_LABEL);
 
-	    resList1 = new S2DResidues(resSeqCodes, resLabels,
-	      polymerType, entityAssemblyId, "");
+            resList1 = new S2DResidues(resSeqCodes, resLabels,
+                                       polymerType, entityAssemblyId, "");
             if (doDebugOutput(13)) {
-	        System.out.println("Got three-letter residue list");
-	    }
+                System.out.println("Got three-letter residue list");
+            }
 
         } catch (S2DException ex) {
-	    resList1 = null;
+            resList1 = null;
             if (doDebugOutput(13)) {
-	        System.out.println("Did not get three-letter residue list" +
-		  ex.toString());
-	    }
-	}
+                System.out.println("Did not get three-letter residue list" +
+                                   ex.toString());
+            }
+        }
 
-	//
-	// Get the one-letter residue list, if it's available.
-	//
-	S2DResidues resList2 = null;
+        //
+        // Get the one-letter residue list, if it's available.
+        //
+        S2DResidues resList2 = null;
 
-	try {
+        try {
             String molResSeq = getTagValue(frame, ENTITY_SEQ_1LETTER);
 
-	    resList2 = new S2DResidues(molResSeq, polymerType,
-	      entityAssemblyId, "");
+            resList2 = new S2DResidues(molResSeq, polymerType,
+                                       entityAssemblyId, "");
             if (doDebugOutput(13)) {
-	        System.out.println("Got one-letter residue list");
-	    }
+                System.out.println("Got one-letter residue list");
+            }
 
-	} catch (S2DException ex) {
-	    resList2 = null;
+        } catch (S2DException ex) {
+            resList2 = null;
             if (doDebugOutput(13)) {
-	        System.out.println("Did not get one-letter residue list: " +
-		  ex.toString());
-	    }
-	}
+                System.out.println("Did not get one-letter residue list: " +
+                                   ex.toString());
+            }
+        }
 
-	// Kind of awkward code structure here is a result of the following:
-	// if residueCount is not specified in the file, that's okay; but
-	// if it is specified, and doesn't agree with the residue list(s),
-	// that's an error.  wenger 2003-04-07.
-	int residueCount = -1;
+        // Kind of awkward code structure here is a result of the following:
+        // if residueCount is not specified in the file, that's okay; but
+        // if it is specified, and doesn't agree with the residue list(s),
+        // that's an error.  wenger 2003-04-07.
+        int residueCount = -1;
         try {
-	    String tmpCount = getTagValue(frame, ENTITY_RESIDUE_COUNT);
-	    residueCount = Integer.parseInt(tmpCount);
-	} catch (S2DException ex) {
-	    // See comment above.
-	} catch (NumberFormatException ex) {
-	    System.err.println("Error parsing " + ENTITY_RESIDUE_COUNT +
-	      ": " + ex.toString());
-	    throw new S2DError("Illegal " + ENTITY_RESIDUE_COUNT + " value");
-	}
-	if (residueCount != -1) {
-	    if (resList1 != null && residueCount != resList1._resCount) {
-	        throw new S2DError("Residue count (" + residueCount +
-		  ", from " + ENTITY_RESIDUE_COUNT +
-		  ") disagrees with residue list (" + resList1._resCount +
-		  " residues)");
-	    }
-	    if (resList2 != null && residueCount != resList2._resCount) {
-	        throw new S2DError("Residue count (" + residueCount +
-		  ", from " + ENTITY_RESIDUE_COUNT +
-		  ") disagrees with residue list (" + resList2._resCount +
-		  " residues)");
-	    }
-	}
+            String tmpCount = getTagValue(frame, ENTITY_RESIDUE_COUNT);
+            residueCount = Integer.parseInt(tmpCount);
+        } catch (S2DException ex) {
+            // See comment above.
+        } catch (NumberFormatException ex) {
+            System.err.println("Error parsing " + ENTITY_RESIDUE_COUNT +
+                               ": " + ex.toString());
+            throw new S2DError("Illegal " + ENTITY_RESIDUE_COUNT + " value");
+        }
+        if (residueCount != -1) {
+            if (resList1 != null && residueCount != resList1._resCount) {
+                throw new S2DError("Residue count (" + residueCount +
+                                   ", from " + ENTITY_RESIDUE_COUNT +
+                                   ") disagrees with residue list (" + resList1._resCount +
+                                   " residues)");
+            }
+            if (resList2 != null && residueCount != resList2._resCount) {
+                throw new S2DError("Residue count (" + residueCount +
+                                   ", from " + ENTITY_RESIDUE_COUNT +
+                                   ") disagrees with residue list (" + resList2._resCount +
+                                   " residues)");
+            }
+        }
 
-	//
-	// Now check for consistency between the residue lists.
-	//
-	if (resList1 != null && resList2 != null) {
-	    if (!resList1.equals(resList2)) {
-	        throw new S2DError("Residue lists are inconsistent!!");
-	    }
-	} else if (resList1 == null && resList2 == null) {
-	    throw new S2DError("No residue lists available!");
-	}
+        //
+        // Now check for consistency between the residue lists.
+        //
+        if (resList1 != null && resList2 != null) {
+            if (!resList1.equals(resList2)) {
+                throw new S2DError("Residue lists are inconsistent!!");
+            }
+        } else if (resList1 == null && resList2 == null) {
+            throw new S2DError("No residue lists available!");
+        }
 
         return resList1 != null ? resList1 : resList2;
     }
@@ -484,34 +484,34 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     // "Optional" indicates that if we can't get these values it is only
     // a warning, not an error.
     public String[] getOptionalFrameValues(SaveFrameNode frame, String loopId,
-      String name, int size, String defaultValue) throws S2DException
+                                           String name, int size, String defaultValue) throws S2DException
     {
         if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStarIfc.getOptionalFrameValues(" +
-	      frame.getLabel() + ", " + loopId + ", " + name + ", " +
-	      size + ", " + defaultValue + ")");
+                               frame.getLabel() + ", " + loopId + ", " + name + ", " +
+                               size + ", " + defaultValue + ")");
         }
 
-	String[] result = null;
+        String[] result = null;
 
         try {
-	    result = getFrameValues(frame, loopId, name);
+            result = getFrameValues(frame, loopId, name);
 
-	    // Change "?" to the default value (fixes problems with
-	    // bmr4267_3.str).
-	    for (int index = 0; index < result.length; index++) {
-	        if (result[index].equals("?")) result[index] = defaultValue;
-	    }
-	} catch (S2DError ex) {
-	    System.err.println("Warning: " + ex.toString());
+            // Change "?" to the default value (fixes problems with
+            // bmr4267_3.str).
+            for (int index = 0; index < result.length; index++) {
+                if (result[index].equals("?")) result[index] = defaultValue;
+            }
+        } catch (S2DError ex) {
+            System.err.println("Warning: " + ex.toString());
 
-	    // Generate default values.
-	    result = S2DUtils.createStringArray(size, defaultValue);
-	} catch (S2DWarning ex) {
-	    System.err.println("Warning: " + ex.toString());
-	}
+            // Generate default values.
+            result = S2DUtils.createStringArray(size, defaultValue);
+        } catch (S2DWarning ex) {
+            System.err.println("Warning: " + ex.toString());
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -519,13 +519,13 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     {
         String result = "-";
 
-	if (frame != null) {
+        if (frame != null) {
             VectorCheckType details = frame.searchByName(DETAILS);
             if (details.size() == 1) {
                 DataItemNode node = (DataItemNode)details.elementAt(0);
-	        result = node.getValue();
+                result = node.getValue();
             }
-	}
+        }
 
         return result;
     }
@@ -536,46 +536,46 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public String getFrameSample(SaveFrameNode frame)
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DNmrStarIfc.getFrameSample(" +
-	      getFrameName(frame) + ")");
-	}
+            System.out.println("S2DNmrStarIfc.getFrameSample(" +
+                               getFrameName(frame) + ")");
+        }
 
-	String result = "";
+        String result = "";
 
-	Vector sampleFrames = getSampleInfoSaveFrames(frame, TYPE_SAMPLE);
+        Vector sampleFrames = getSampleInfoSaveFrames(frame, TYPE_SAMPLE);
 
-	for (int index = 0; index < sampleFrames.size(); index++) {
-	    SaveFrameNode sf = (SaveFrameNode)sampleFrames.elementAt(index);
-	    try {
-	        String details = getOneFrameValueStrict(sf,
-		  SAMPLE_DETAILS);
-	        if (!details.equals(".") && !details.equals("")) {
-		    result = S2DUtils.appendWithSemicolon(result, details);
-		}
-	    } catch (S2DException ex) {
-	        System.err.println("Warning: " + ex.toString());
-	    }
+        for (int index = 0; index < sampleFrames.size(); index++) {
+            SaveFrameNode sf = (SaveFrameNode)sampleFrames.elementAt(index);
+            try {
+                String details = getOneFrameValueStrict(sf,
+                                                        SAMPLE_DETAILS);
+                if (!details.equals(".") && !details.equals("")) {
+                    result = S2DUtils.appendWithSemicolon(result, details);
+                }
+            } catch (S2DException ex) {
+                System.err.println("Warning: " + ex.toString());
+            }
 
-	    try {
-		String[] molLabels = getFrameValues(sf, MOL_LABEL, MOL_LABEL);
-		String[] concValues = getFrameValues(sf, MOL_LABEL,
-		  CONCENTRATION_VALUE);
-		String[] concUnits = getFrameValues(sf, MOL_LABEL,
-		  CONCENTRATION_UNITS);
-		for (int index2 = 0; index2 < molLabels.length; index2++) {
-		    result = S2DUtils.appendWithSemicolon(result,
-		      molLabels[index2] + ": " + concValues[index2] +
-		      " " + concUnits[index2]);
-		}
-	    } catch (S2DException ex) {
-	        System.err.println("Warning: " + ex.toString());
-	    }
-	}
+            try {
+                String[] molLabels = getFrameValues(sf, MOL_LABEL, MOL_LABEL);
+                String[] concValues = getFrameValues(sf, MOL_LABEL,
+                                                     CONCENTRATION_VALUE);
+                String[] concUnits = getFrameValues(sf, MOL_LABEL,
+                                                    CONCENTRATION_UNITS);
+                for (int index2 = 0; index2 < molLabels.length; index2++) {
+                    result = S2DUtils.appendWithSemicolon(result,
+                                                          molLabels[index2] + ": " + concValues[index2] +
+                                                          " " + concUnits[index2]);
+                }
+            } catch (S2DException ex) {
+                System.err.println("Warning: " + ex.toString());
+            }
+        }
 
-	if (result.equals("")) result = "-";
-	result = result.trim();
+        if (result.equals("")) result = "-";
+        result = result.trim();
 
-	return result;
+        return result;
     }
 
     // ----------------------------------------------------------------------
@@ -584,40 +584,40 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public String getFrameSampleConditions(SaveFrameNode frame)
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DNmrStarIfc.getFrameSampleConditions(" +
-	      getFrameName(frame) + ")");
-	}
+            System.out.println("S2DNmrStarIfc.getFrameSampleConditions(" +
+                               getFrameName(frame) + ")");
+        }
 
-	String result = "";
+        String result = "";
 
-	Vector sampleFrames = getSampleInfoSaveFrames(frame,
-	  TYPE_SAMPLE_COND);
+        Vector sampleFrames = getSampleInfoSaveFrames(frame,
+                              TYPE_SAMPLE_COND);
 
-	for (int index = 0; index < sampleFrames.size(); index++) {
-	    SaveFrameNode sf = (SaveFrameNode)sampleFrames.elementAt(index);
-	    try {
-		String[] varTypes = getFrameValues(sf, VARIABLE_TYPE,
-		  VARIABLE_TYPE);
-		String[] varValues = getFrameValues(sf, VARIABLE_TYPE,
-		  VARIABLE_VALUE);
-		String[] varUnits = getFrameValues(sf, VARIABLE_TYPE,
-		  VARIABLE_UNITS);
-		for (int index2 = 0; index2 < varTypes.length; index2++) {
-		    String condition = varTypes[index2] + ": " +
-		      varValues[index2];
-		    if (!varUnits[index2].equals("n/a")) {
-		        condition += " " + varUnits[index2];
-		    }
-		    result = S2DUtils.appendWithSemicolon(result,
-		      condition);
-		}
-	    } catch (S2DException ex) {
-	        System.err.println("Warning: " + ex.toString());
-	    }
-	}
+        for (int index = 0; index < sampleFrames.size(); index++) {
+            SaveFrameNode sf = (SaveFrameNode)sampleFrames.elementAt(index);
+            try {
+                String[] varTypes = getFrameValues(sf, VARIABLE_TYPE,
+                                                   VARIABLE_TYPE);
+                String[] varValues = getFrameValues(sf, VARIABLE_TYPE,
+                                                    VARIABLE_VALUE);
+                String[] varUnits = getFrameValues(sf, VARIABLE_TYPE,
+                                                   VARIABLE_UNITS);
+                for (int index2 = 0; index2 < varTypes.length; index2++) {
+                    String condition = varTypes[index2] + ": " +
+                                       varValues[index2];
+                    if (!varUnits[index2].equals("n/a")) {
+                        condition += " " + varUnits[index2];
+                    }
+                    result = S2DUtils.appendWithSemicolon(result,
+                                                          condition);
+                }
+            } catch (S2DException ex) {
+                System.err.println("Warning: " + ex.toString());
+            }
+        }
 
-	if (result.equals("")) result = "-";
-	result = result.trim();
+        if (result.equals("")) result = "-";
+        result = result.trim();
 
         return result;
     }
@@ -633,12 +633,12 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
         }
 
         SaveFrameNode result = getOneDataFrameByCat(
-	  MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
+                                   MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
 
         if (doDebugOutput(12)) {
             System.out.println(
-	      "  S2DNmrStarIfc.getEntityFrame() returns " +
-	      result.getLabel());
+                "  S2DNmrStarIfc.getEntityFrame() returns " +
+                result.getLabel());
         }
 
         return result;
@@ -655,7 +655,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
      * @return A vector of unique values (as Strings)
      */
     public Vector getUniqueTagValues(SaveFrameNode frame,
-      String tagName) throws S2DException
+                                     String tagName) throws S2DException
     {
         return null;
     }
@@ -682,17 +682,17 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     protected S2DNmrStarIfc(StarNode starTree) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarIfc.S2DNmrStarIfc()");
-	}
+            System.out.println("S2DNmrStarIfc.S2DNmrStarIfc()");
+        }
 
         setStarNames();
 
-	S2DStarUtil.initialize();
+        S2DStarUtil.initialize();
 
-	_starTree = starTree;
+        _starTree = starTree;
 
-	//TEMP -- should we find certain critical save frames
-	// here and save them?  (e.g., SAVE_ENTRY_INFO)?
+        //TEMP -- should we find certain critical save frames
+        // here and save them?  (e.g., SAVE_ENTRY_INFO)?
     }
 
     //-------------------------------------------------------------------
@@ -702,45 +702,45 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     private void initialize(InputStream is) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarIfc.S2DNmrStarIfc(InputStream)");
-	}
+            System.out.println("S2DNmrStarIfc.S2DNmrStarIfc(InputStream)");
+        }
 
         setStarNames();
 
-	S2DStarUtil.initialize();
+        S2DStarUtil.initialize();
 
         try {
-	    if (_parser != null) {
-	        _parser.ReInit(is);
-	    } else {
+            if (_parser != null) {
+                _parser.ReInit(is);
+            } else {
                 _parser = new StarParser(is);
-	    }
-	    StarParser.StarFileNodeParse(_parser);
-	    _starTree = _parser.popResult();
-	    is.close();
+            }
+            StarParser.StarFileNodeParse(_parser);
+            _starTree = _parser.popResult();
+            is.close();
 
-	    //TEMP -- should we find certain critical save frames
-	    // here and save them?  (e.g., SAVE_ENTRY_INFO)?
+            //TEMP -- should we find certain critical save frames
+            // here and save them?  (e.g., SAVE_ENTRY_INFO)?
 
         } catch(java.io.IOException ex) {
             System.err.println("Unable to open or read " + ex.toString());
             if (doDebugOutput(11)) ex.printStackTrace();
             throw new S2DError("Unable to get data in star file " +
-              _fileName);
+                               _fileName);
 
         } catch(ParseException ex) {
-	    System.err.println("Star file parse error: " + ex.toString());
+            System.err.println("Star file parse error: " + ex.toString());
             if (doDebugOutput(11)) ex.printStackTrace();
             throw new S2DError("Unable to parse star file " + _fileName);
-	}
+        }
     }
 
     // ----------------------------------------------------------------------
     // Set the tag names and values to work for NMR-Star files.
     private void setStarNames()
     {
-	//TEMPTEMP3.0 -- make sure all of the stuff in here really should
-	// be here, as opposed to in one of the subclasses
+        //TEMPTEMP3.0 -- make sure all of the stuff in here really should
+        // be here, as opposed to in one of the subclasses
         ASSIGNED_CHEM_SHIFTS = "assigned_chemical_shifts";
 
         CONF_SUB_TOTAL = "_Conformer_submitted_total_number";
@@ -761,8 +761,8 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 
         HEME = "HEME";
 
-	POLYMER = "polymer";
-	POLYPEPTIDE = "polypeptide";
+        POLYMER = "polymer";
+        POLYPEPTIDE = "polypeptide";
 
         S2_PARAMS = "S2_parameters";
         SAVE_CONF_STAT = "save_conformer_statistical_characteristics";
@@ -780,11 +780,11 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public Enumeration getAllEntityFrames() throws S2DException
     {
         Enumeration frameList = getDataFramesByCat(
-	  MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
+                                    MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
 
         if (!frameList.hasMoreElements()) {
-	    throw new S2DError("No entity save frames found!");
-	}
+            throw new S2DError("No entity save frames found!");
+        }
 
         return frameList;
     }
@@ -792,8 +792,8 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     // ----------------------------------------------------------------------
     /** Get a Vector of the entity frames corresponding to each entity
         assembly ID (note that if we have homodimers, the same entity
-	frame will be in the Vector more than once).
-	@return: the Vector of entity save frames
+    frame will be in the Vector more than once).
+    @return: the Vector of entity save frames
     */
     public Vector getAllEntityAssemblyFrames() throws S2DException
     {
@@ -809,15 +809,15 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public SaveFrameNode getFrameByName(String frameName) throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("  S2DNmrStarIfc.getFrameByName(" +
-	      frameName + ")");
-	}
+            System.out.println("  S2DNmrStarIfc.getFrameByName(" +
+                               frameName + ")");
+        }
 
-	VectorCheckType list = _starTree.searchByName(frameName);
-	if (list.size() != 1) {
-	    throw new S2DError("There should be exactly one " +
-	      frameName + " save frame; got " + list.size());
-	}
+        VectorCheckType list = _starTree.searchByName(frameName);
+        if (list.size() != 1) {
+            throw new S2DError("There should be exactly one " +
+                               frameName + " save frame; got " + list.size());
+        }
 
         return (SaveFrameNode)list.elementAt(0);
     }
@@ -829,29 +829,29 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     private int getResidueCount(SaveFrameNode frame, String entityID)
     {
         if (doDebugOutput(12)) {
-	    System.out.println("  S2DNmrStarIfc.getResidueCount(" +
-	      getFrameName(frame) + ")");
-	}
+            System.out.println("  S2DNmrStarIfc.getResidueCount(" +
+                               getFrameName(frame) + ")");
+        }
 
-	int residueCount = -1;
+        int residueCount = -1;
 
-	//TEMP -- check that _Saveframe_category is assigned_chemical_shifts?
+        //TEMP -- check that _Saveframe_category is assigned_chemical_shifts?
 
-	DataItemNode node = null;
+        DataItemNode node = null;
         try {
-	    SaveFrameNode tmpFrame = getEntityFrame(frame, entityID);
+            SaveFrameNode tmpFrame = getEntityFrame(frame, entityID);
 
-	    residueCount = getResCountVal(tmpFrame);
-	} catch(Exception ex) {
-	    System.err.println("Exception getting residue count: " +
-	      ex.toString());
-	}
+            residueCount = getResCountVal(tmpFrame);
+        } catch(Exception ex) {
+            System.err.println("Exception getting residue count: " +
+                               ex.toString());
+        }
 
         if (doDebugOutput(12)) {
             System.out.println("    residueCount = " + residueCount);
         }
 
-	return residueCount;
+        return residueCount;
     }
 
     // ----------------------------------------------------------------------
@@ -861,84 +861,84 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
      * @param The Vector in which to put the PDB IDs.
      */
     private void getPdbIdsFromMonoPoly(boolean doProteinCheck, Vector ids)
-      throws S2DException
+    throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DNmrStarIfc.getPdbIdsFromMonoPoly(" +
-	      doProteinCheck + ")");
-	}
+            System.out.println("S2DNmrStarIfc.getPdbIdsFromMonoPoly(" +
+                               doProteinCheck + ")");
+        }
 
-	//
-	// If we're in Jafar, we want to use a limit of 97%; otherwise
-	// we want it to be 100%.  We're using !doProteinCheck as a
-	// surrogate test for whether we're in Jafar, so we don't have
-	// to change the command-line arguments.
-	//
-	if (doProteinCheck) {
-	    _seqIdentMin = 100.0;
-	} else {
-	    _seqIdentMin = 97.0;
-	}
+        //
+        // If we're in Jafar, we want to use a limit of 97%; otherwise
+        // we want it to be 100%.  We're using !doProteinCheck as a
+        // surrogate test for whether we're in Jafar, so we don't have
+        // to change the command-line arguments.
+        //
+        if (doProteinCheck) {
+            _seqIdentMin = 100.0;
+        } else {
+            _seqIdentMin = 97.0;
+        }
 
-	Enumeration frameList = getAllEntityFrames();
-	while (frameList.hasMoreElements()) {
-	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+        Enumeration frameList = getAllEntityFrames();
+        while (frameList.hasMoreElements()) {
+            SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
             if (doDebugOutput(12)) {
                 System.out.println("  Checking save frame " +
-		  getFrameName(frame));
+                                   getFrameName(frame));
             }
 
             try {
-	        // Make sure this is a polymer.
-	        if (getPolymerType(frame) != S2DResidues.POLYMER_TYPE_NONE) {
-	            int residueCount = getResCountVal(frame);
+                // Make sure this is a polymer.
+                if (getPolymerType(frame) != S2DResidues.POLYMER_TYPE_NONE) {
+                    int residueCount = getResCountVal(frame);
 
                     String[] dbNames = getFrameValues(frame, ENTITY_DB_NAME,
-	              ENTITY_DB_NAME);
+                                                      ENTITY_DB_NAME);
                     String[] dbAccCodes = getFrameValues(frame, ENTITY_DB_NAME,
-	              ENTITY_DB_ACC_CODE);
+                                                         ENTITY_DB_ACC_CODE);
 
-		    int[] seqLengths = null;
+                    int[] seqLengths = null;
                     String[] seqIdents = null;
                     String[] tmpSeqLengths = getFrameValues(frame,
-		      ENTITY_DB_NAME, SEQ_SUBJ_LENGTH);
-		    seqLengths = S2DUtils.arrayStr2Int(tmpSeqLengths,
-		      SEQ_SUBJ_LENGTH);
+                                                            ENTITY_DB_NAME, SEQ_SUBJ_LENGTH);
+                    seqLengths = S2DUtils.arrayStr2Int(tmpSeqLengths,
+                                                       SEQ_SUBJ_LENGTH);
                     seqIdents = getFrameValues(frame, ENTITY_DB_NAME,
-		      SEQ_IDENTITY);
+                                               SEQ_IDENTITY);
 
                     //TEMP -- when we have 2 entities, what residue count
-		    // are we checking against?
+                    // are we checking against?
                     for (int index = 0; index < dbAccCodes.length; index++) {
-		        if (dbNames[index].equals("PDB") &&
-			  !S2DStarIfc.valueIsEmpty(dbAccCodes[index])) {
-			    if (checkDBEntry(residueCount, dbNames[index],
-			      seqLengths[index], seqIdents[index])) {
-			        ids.addElement(dbAccCodes[index]);
+                        if (dbNames[index].equals("PDB") &&
+                                !S2DStarIfc.valueIsEmpty(dbAccCodes[index])) {
+                            if (checkDBEntry(residueCount, dbNames[index],
+                                             seqLengths[index], seqIdents[index])) {
+                                ids.addElement(dbAccCodes[index]);
                                 if (doDebugOutput(12)) {
-			            System.out.println("  Got PDB ID " +
-				      dbAccCodes[index]);
-			        }
-		            } else {
-            		        if (doDebugOutput(11)) {
-			            System.out.println("PDB entry " +
-			              dbAccCodes[index] + " rejected because " +
-			              "of residue count mismatch or sequence " +
-			              "identity less than " + _seqIdentMin + "%");
-	                        }
-		            }
-		        }
-	            }
-	        } else {
+                                    System.out.println("  Got PDB ID " +
+                                                       dbAccCodes[index]);
+                                }
+                            } else {
+                                if (doDebugOutput(11)) {
+                                    System.out.println("PDB entry " +
+                                                       dbAccCodes[index] + " rejected because " +
+                                                       "of residue count mismatch or sequence " +
+                                                       "identity less than " + _seqIdentMin + "%");
+                                }
+                            }
+                        }
+                    }
+                } else {
                     if (doDebugOutput(11)) {
-		        System.out.println("PDB IDs in save frame " +
-		          getFrameName(frame) +
-		          " ignored because of polymer check");
-	            }
-	        }
+                        System.out.println("PDB IDs in save frame " +
+                                           getFrameName(frame) +
+                                           " ignored because of polymer check");
+                    }
+                }
             } catch (S2DException ex) {
                 System.err.println("Exception getting PDB IDs: " +
-		  ex.toString());
+                                   ex.toString());
             }
         }
     }
@@ -951,34 +951,34 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     private void getPdbIdsFromMolSys(Vector ids) throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DNmrStarIfc.getPdbIdsFromMolSys()");
-	}
+            System.out.println("S2DNmrStarIfc.getPdbIdsFromMolSys()");
+        }
 
-	Enumeration frameList = getDataFramesByCat(MOL_SYSTEM_SF_CAT,
-	  MOL_SYSTEM);
+        Enumeration frameList = getDataFramesByCat(MOL_SYSTEM_SF_CAT,
+                                MOL_SYSTEM);
         while (frameList.hasMoreElements()) {
-	    SaveFrameNode frame =
-	      (SaveFrameNode)frameList.nextElement();
+            SaveFrameNode frame =
+                (SaveFrameNode)frameList.nextElement();
 
             String[] dbNames = getFrameValues(frame, ASSEMBLY_DB_NAME,
-	      ASSEMBLY_DB_NAME);
+                                              ASSEMBLY_DB_NAME);
             String[] dbAccCodes = getFrameValues(frame, ASSEMBLY_DB_NAME,
-	      ASSEMBLY_DB_ACC_CODE);
+                                                 ASSEMBLY_DB_ACC_CODE);
 
             for (int index = 0; index < dbAccCodes.length; index++) {
 
-	        // Make sure the database is PDB, and we don't have an
-		// empty PDB ID.
-	        if (dbNames[index].equals("PDB") &&
-		  !S2DStarIfc.valueIsEmpty(dbAccCodes[index])) {
-	            ids.addElement(dbAccCodes[index]);
+                // Make sure the database is PDB, and we don't have an
+                // empty PDB ID.
+                if (dbNames[index].equals("PDB") &&
+                        !S2DStarIfc.valueIsEmpty(dbAccCodes[index])) {
+                    ids.addElement(dbAccCodes[index]);
                     if (doDebugOutput(12)) {
                         System.out.println("  Got PDB ID " +
-			  dbAccCodes[index]);
-		    }
-	        }
-	    }
-	}
+                                           dbAccCodes[index]);
+                    }
+                }
+            }
+        }
     }
 
     // ----------------------------------------------------------------------
@@ -989,15 +989,15 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
      */
     public String getMolPolymerClass(SaveFrameNode frame)
     {
-	String molPolymerClass;
+        String molPolymerClass;
 
-	try {
-	    molPolymerClass = getOneFrameValueStrict(frame,
-	      ENTITY_POLYMER_TYPE);
-	} catch (Exception ex) {
-	    System.err.println(ex.toString());
-	    molPolymerClass = null;
-	}
+        try {
+            molPolymerClass = getOneFrameValueStrict(frame,
+                              ENTITY_POLYMER_TYPE);
+        } catch (Exception ex) {
+            System.err.println(ex.toString());
+            molPolymerClass = null;
+        }
 
         return molPolymerClass;
     }
@@ -1012,9 +1012,9 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
      * @return The entity assembly ID (int)
      */
     public int getEntityAssemblyID(SaveFrameNode frame, String entAssemIDStr)
-      throws S2DException
+    throws S2DException
     {
-    	return 0;
+        return 0;
     }
 
     // ----------------------------------------------------------------------
@@ -1025,7 +1025,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
      */
     public String entAssemID2entID(String entityAssemblyID)
     {
-    	return null;
+        return null;
     }
 
     // ----------------------------------------------------------------------
@@ -1036,7 +1036,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
      */
     public String entID2entAssemID(String entityID)
     {
-    	return null;
+        return null;
     }
 
     // ----------------------------------------------------------------------
@@ -1050,34 +1050,34 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     private int getResCountVal(SaveFrameNode frame)
     {
         if (doDebugOutput(12)) {
-	    System.out.println("  S2DNmrStarIfc.getResCountVal(" +
-	      getFrameName(frame) + ")");
-	}
+            System.out.println("  S2DNmrStarIfc.getResCountVal(" +
+                               getFrameName(frame) + ")");
+        }
 
-	int residueCount = -1;
+        int residueCount = -1;
 
         try {
-	    //
-	    // Find the _Residue_count value.
-	    //
-	    String countStr = getOneFrameValueStrict(frame,
-	      ENTITY_RESIDUE_COUNT);
-	    residueCount = Integer.parseInt(countStr);
+            //
+            // Find the _Residue_count value.
+            //
+            String countStr = getOneFrameValueStrict(frame,
+                              ENTITY_RESIDUE_COUNT);
+            residueCount = Integer.parseInt(countStr);
 
-	} catch(NumberFormatException ex) {
-	    System.err.println("NumberFormatException (" + ex.toString() +
-	      ") getting residue count in save frame " +
-	      getFrameName(frame));
-	} catch(Exception ex) {
-	    System.err.println("Exception getting residue count: " +
-	      ex.toString());
-	}
+        } catch(NumberFormatException ex) {
+            System.err.println("NumberFormatException (" + ex.toString() +
+                               ") getting residue count in save frame " +
+                               getFrameName(frame));
+        } catch(Exception ex) {
+            System.err.println("Exception getting residue count: " +
+                               ex.toString());
+        }
 
         if (doDebugOutput(12)) {
             System.out.println("    residueCount = " + residueCount);
         }
 
-	return residueCount;
+        return residueCount;
     }
 
     //-------------------------------------------------------------------
@@ -1085,12 +1085,12 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

@@ -131,99 +131,99 @@ public class S2DNAChemShift extends S2DChemShift {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DNAChemShift(String name, String longName,
-      S2DNmrStarIfc star, SaveFrameNode frame, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, String entityAssemblyID,
-      S2DResidues residues) throws S2DException
+                          S2DNmrStarIfc star, SaveFrameNode frame, String dataDir,
+                          String sessionDir, S2DSummaryHtml summary, String entityAssemblyID,
+                          S2DResidues residues) throws S2DException
     {
         super(name, longName, star, frame, dataDir, sessionDir, summary,
-	  entityAssemblyID);
+              entityAssemblyID);
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNAChemShift.S2DNAChemShift(" + name +
-	      ")");
-	}
+            System.out.println("S2DNAChemShift.S2DNAChemShift(" + name +
+                               ")");
+        }
 
-	getExperimentalValues(star, frame, entityAssemblyID, residues);
+        getExperimentalValues(star, frame, entityAssemblyID, residues);
     }
 
     //-------------------------------------------------------------------
     // Write the deltashifts for this data.
     public void writeDeltaShifts(int frameIndex, String schemaName,
-      String attributes, int sessionType) throws S2DException
+                                 String attributes, int sessionType) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNAChemShift.writeDeltashifts()");
-	}
+            System.out.println("S2DNAChemShift.writeDeltashifts()");
+        }
 
-	//
-	// Write the deltashift values to the appropriate data file.
-	//
+        //
+        // Write the deltashift values to the appropriate data file.
+        //
         FileWriter deltashiftWriter = null;
-	try {
+        try {
             deltashiftWriter = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + S2DNames.DELTASHIFT_SUFFIX +
-	      frameIndex + S2DNames.DAT_SUFFIX);
-	    deltashiftWriter.write("# Data: delta shift values for " +
-	      _name + "\n");
-	    deltashiftWriter.write("# Schema: " + schemaName + "\n");
-	    deltashiftWriter.write("# Attributes: " + attributes + "\n");
+                                                    File.separator + _name + S2DNames.DELTASHIFT_SUFFIX +
+                                                    frameIndex + S2DNames.DAT_SUFFIX);
+            deltashiftWriter.write("# Data: delta shift values for " +
+                                   _name + "\n");
+            deltashiftWriter.write("# Schema: " + schemaName + "\n");
+            deltashiftWriter.write("# Attributes: " + attributes + "\n");
             deltashiftWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                                   S2DMain.PEP_CGI_VERSION + "\n");
             deltashiftWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    deltashiftWriter.write("#\n");
+                                   S2DMain.getTimestamp() + "\n");
+            deltashiftWriter.write("#\n");
 
         } catch(IOException ex) {
-	    System.err.println("IOException writing deltashifts: " +
-	      ex.toString());
-	    throw new S2DError("Can't write deltashifts");
-	}
+            System.err.println("IOException writing deltashifts: " +
+                               ex.toString());
+            throw new S2DError("Can't write deltashifts");
+        }
 
-	try {
-	    int dsCount = 0;
+        try {
+            int dsCount = 0;
 
-	    for (int index = 1; index < _deltashiftData.length; index++) {
-		if (_deltashiftData[index] != null) {
-		    dsCount++;
-	            _deltashiftData[index].write(deltashiftWriter);
-		}
-	    }
+            for (int index = 1; index < _deltashiftData.length; index++) {
+                if (_deltashiftData[index] != null) {
+                    dsCount++;
+                    _deltashiftData[index].write(deltashiftWriter);
+                }
+            }
 
-	    //
-	    // Write the session file
-	    //
-	    S2DSession.write(_sessionDir, sessionType, _name, frameIndex,
-	      _info, null, true, _starVersion, "");
+            //
+            // Write the session file
+            //
+            S2DSession.write(_sessionDir, sessionType, _name, frameIndex,
+                             _info, null, true, _starVersion, "");
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    String title = "Chemical Shift Delta (entity assembly " +
-	      _entityAssemblyID + ")";
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(),
-	      sessionType, _name, frameIndex,
-	      title, _frameDetails);
-	    specHtml.write();
+            //
+            // Write the session-specific html file.
+            //
+            String title = "Chemical Shift Delta (entity assembly " +
+                           _entityAssemblyID + ")";
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(),
+                sessionType, _name, frameIndex,
+                title, _frameDetails);
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeDeltashift(frameIndex, _entityAssemblyID,
-	      dsCount, true);
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writeDeltashift(frameIndex, _entityAssemblyID,
+                                     dsCount, true);
 
-	} catch (IOException ex) {
-	    System.err.println("IOException writing deltashift data: " +
-	      ex.toString());
-	    throw new S2DError("Unable to write deltashift data for " +
-	      frameIndex);
-	} finally {
-	    try {
-	        deltashiftWriter.close();
-	    } catch (IOException ex) {
-	        System.err.println("IOException: " + ex.toString());
-	    }
-	}
+        } catch (IOException ex) {
+            System.err.println("IOException writing deltashift data: " +
+                               ex.toString());
+            throw new S2DError("Unable to write deltashift data for " +
+                               frameIndex);
+        } finally {
+            try {
+                deltashiftWriter.close();
+            } catch (IOException ex) {
+                System.err.println("IOException: " + ex.toString());
+            }
+        }
     }
 
     //===================================================================
@@ -233,47 +233,47 @@ public class S2DNAChemShift extends S2DChemShift {
     protected void calculateDeltaShifts() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNAChemShift.calculateDeltaShifts()");
-	}
-	
-	int lastResidue = findLastResidue();
+            System.out.println("S2DNAChemShift.calculateDeltaShifts()");
+        }
 
-	// Residues normally start with 1 -- skip the first element of
-	// this array to make things simpler.
-	_deltashiftData = new ResidueInfo[lastResidue + 1];
+        int lastResidue = findLastResidue();
 
-	for (int index = 0; index < _resSeqCodes.length; ++index) {
-	    int resSeqCode = _resSeqCodes[index];
+        // Residues normally start with 1 -- skip the first element of
+        // this array to make things simpler.
+        _deltashiftData = new ResidueInfo[lastResidue + 1];
+
+        for (int index = 0; index < _resSeqCodes.length; ++index) {
+            int resSeqCode = _resSeqCodes[index];
             String resLabel = _residueLabels[index];
-	    if (_deltashiftData[resSeqCode] == null) {
-	        _deltashiftData[resSeqCode] = new ResidueInfo(resSeqCode,
-		  resLabel);
-	    }
+            if (_deltashiftData[resSeqCode] == null) {
+                _deltashiftData[resSeqCode] = new ResidueInfo(resSeqCode,
+                        resLabel);
+            }
 
-	    String atomName = _atomNames[index];
-	    _atomSet.add(atomName);
-	    double chemShift = _chemShiftVals[index];
+            String atomName = _atomNames[index];
+            _atomSet.add(atomName);
+            double chemShift = _chemShiftVals[index];
 
-	    try {
-	        ShiftDataManager.Pair standardValue =
-		  _refTable.returnValues(resLabel, atomName);
+            try {
+                ShiftDataManager.Pair standardValue =
+                    _refTable.returnValues(resLabel, atomName);
 
                 // Note: do the calculation in double and truncate to float
-		// to avoid getting values like 0.05000000000000071.
-		float deltashift = (float)(chemShift -
-		  standardValue.chemshift);
+                // to avoid getting values like 0.05000000000000071.
+                float deltashift = (float)(chemShift -
+                                           standardValue.chemshift);
 
-		_deltashiftData[resSeqCode].put(atomName,
-		  new Float(deltashift));
+                _deltashiftData[resSeqCode].put(atomName,
+                                                new Float(deltashift));
 
-	    } catch(S2DWarning ex) {
-	        if (doDebugOutput(11)) {
-	            System.err.println(ex.toString());
-	        }
-	    } catch(S2DException ex) {
-	        System.err.println(ex.toString());
-	    }
-	}
+            } catch(S2DWarning ex) {
+                if (doDebugOutput(11)) {
+                    System.err.println(ex.toString());
+                }
+            } catch(S2DException ex) {
+                System.err.println(ex.toString());
+            }
+        }
     }
 
     //-------------------------------------------------------------------
@@ -281,44 +281,44 @@ public class S2DNAChemShift extends S2DChemShift {
     // atom name to deltashift value.
     protected class ResidueInfo extends Hashtable
     {
-	int _residueSequenceCode;
-	String _residueLabel;
+        int _residueSequenceCode;
+        String _residueLabel;
 
         //---------------------------------------------------------------
-	/**
-	 * Constructor.
-	 * @param The residue sequence code for this residue.
-	 */
+        /**
+         * Constructor.
+         * @param The residue sequence code for this residue.
+         */
         public ResidueInfo(int residueSequenceCode, String residueLabel) {
-	    super();
+            super();
 
-	    _residueSequenceCode = residueSequenceCode;
-	    _residueLabel = residueLabel;
+            _residueSequenceCode = residueSequenceCode;
+            _residueLabel = residueLabel;
 
-	    // Add all possible atoms to the hash table.
-	    for (int index = 0; index < atomNameList.length; index++) {
-	    	Float value = new Float(0.0/*TEMP?*/);
-		put(atomNameList[index], value);
-	    }
-	}
+            // Add all possible atoms to the hash table.
+            for (int index = 0; index < atomNameList.length; index++) {
+                Float value = new Float(0.0/*TEMP?*/);
+                put(atomNameList[index], value);
+            }
+        }
 
         //---------------------------------------------------------------
-	/**
-	 * Write the deltashift values for this residue.
-	 * @param The FileWriter to write to.
-	 */
-	public void write(FileWriter writer) throws IOException
-	{
-	    for (int index = 0; index < atomNameList.length; index++) {
-	    	Float value = (Float)get(atomNameList[index]);
-		writer.write(value + " ");
-	    }
+        /**
+         * Write the deltashift values for this residue.
+         * @param The FileWriter to write to.
+         */
+        public void write(FileWriter writer) throws IOException
+        {
+            for (int index = 0; index < atomNameList.length; index++) {
+                Float value = (Float)get(atomNameList[index]);
+                writer.write(value + " ");
+            }
 
-	    writer.write( _residueSequenceCode + " " +
-	      _residueLabel + " " +
-	      _entityAssemblyID);
-	    writer.write("\n");
-	}
+            writer.write( _residueSequenceCode + " " +
+                          _residueLabel + " " +
+                          _entityAssemblyID);
+            writer.write("\n");
+        }
     }
 
     //===================================================================
@@ -329,12 +329,12 @@ public class S2DNAChemShift extends S2DChemShift {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

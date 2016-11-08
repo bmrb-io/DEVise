@@ -96,14 +96,14 @@ public class S2DNmrStarRRIfc extends S2DNmrStarRestIfc {
      * @return an array of the entity assembly IDs
      */
     public int[] getCoordEntityAssemblyIDs(SaveFrameNode frame)
-      throws S2DException
+    throws S2DException
     {
-	String[] entAssemIDStrs = getFrameValues(frame, ATOM_COORD_X,
-	  REP_CONF_ENTITY_ASSEMBLY_ID);
-    	int [] entAssemIDVals = S2DUtils.arrayStr2Int(entAssemIDStrs,
-	  REP_CONF_ENTITY_ASSEMBLY_ID);
+        String[] entAssemIDStrs = getFrameValues(frame, ATOM_COORD_X,
+                                  REP_CONF_ENTITY_ASSEMBLY_ID);
+        int [] entAssemIDVals = S2DUtils.arrayStr2Int(entAssemIDStrs,
+                                REP_CONF_ENTITY_ASSEMBLY_ID);
 
-    	return entAssemIDVals;
+        return entAssemIDVals;
     }
 
     //-------------------------------------------------------------------
@@ -113,7 +113,7 @@ public class S2DNmrStarRRIfc extends S2DNmrStarRestIfc {
      */
     public String version()
     {
-    	return "remediated_restraint";
+        return "remediated_restraint";
     }
 
     //===================================================================
@@ -127,10 +127,10 @@ public class S2DNmrStarRRIfc extends S2DNmrStarRestIfc {
         super(starTree);
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarRRIfc.S2DNmrStarRRIfc()");
-	}
+            System.out.println("S2DNmrStarRRIfc.S2DNmrStarRRIfc()");
+        }
 
-	setStarNames();
+        setStarNames();
     }
 
     //===================================================================
@@ -140,56 +140,56 @@ public class S2DNmrStarRRIfc extends S2DNmrStarRestIfc {
     // Set the tag names and values to work for NMR-Star files.
     private void setStarNames()
     {
-	// Atomic coordinates.
-	//TEMP -- check these...
-	ATOM_COORD_MODEL_NUM = "_Atom_site.Model_ID";
-	ATOM_COORD_ATOM_NAME = "_Atom_site.Label_atom_ID";
-	ATOM_COORD_ATOM_TYPE = "_Atom_site.Type_symbol";
-	ATOM_COORD_RES_LABEL = "_Atom_site.Label_comp_ID";
-	ATOM_COORD_RES_SEQ_CODE = "_Atom_site.Label_comp_index_ID";
-	ATOM_COORD_X = "_Atom_site.Cartn_x";
-	ATOM_COORD_Y = "_Atom_site.Cartn_y";
-	ATOM_COORD_Z = "_Atom_site.Cartn_z";
+        // Atomic coordinates.
+        //TEMP -- check these...
+        ATOM_COORD_MODEL_NUM = "_Atom_site.Model_ID";
+        ATOM_COORD_ATOM_NAME = "_Atom_site.Label_atom_ID";
+        ATOM_COORD_ATOM_TYPE = "_Atom_site.Type_symbol";
+        ATOM_COORD_RES_LABEL = "_Atom_site.Label_comp_ID";
+        ATOM_COORD_RES_SEQ_CODE = "_Atom_site.Label_comp_index_ID";
+        ATOM_COORD_X = "_Atom_site.Cartn_x";
+        ATOM_COORD_Y = "_Atom_site.Cartn_y";
+        ATOM_COORD_Z = "_Atom_site.Cartn_z";
 
-	// Distance restraints.
+        // Distance restraints.
         DISTR_ATOM_ID_1 = "_Gen_dist_constraint.Atom_ID_1";
         DISTR_ATOM_ID_2 = "_Gen_dist_constraint.Atom_ID_2";
 
         DISTR_CONSTRAINT_STATS_SF_CAT =
-	  "_Gen_dist_constraint_list.Sf_category";
+            "_Gen_dist_constraint_list.Sf_category";
         DISTR_CONSTRAINT_STATS_CAT_NAME = "general_distance_constraints";
         DISTR_CONSTRAINT_TYPE = "_Gen_dist_constraint_list.Constraint_type";
 
         DISTR_ENT_ASSEM_1 = "_Gen_dist_constraint.Entity_assembly_ID_1";
         DISTR_ENT_ASSEM_2 = "_Gen_dist_constraint.Entity_assembly_ID_2";
 
-	DISTR_MAX = "_Gen_dist_constraint.Distance_upper_bound_val";
-	DISTR_MEMBER_ID = "_Gen_dist_constraint.Member_ID";
-	DISTR_MEMBER_LOGIC_CODE = "_Gen_dist_constraint.Member_logic_code";
-	DISTR_MIN = "_Gen_dist_constraint.Distance_lower_bound_val";
+        DISTR_MAX = "_Gen_dist_constraint.Distance_upper_bound_val";
+        DISTR_MEMBER_ID = "_Gen_dist_constraint.Member_ID";
+        DISTR_MEMBER_LOGIC_CODE = "_Gen_dist_constraint.Member_logic_code";
+        DISTR_MIN = "_Gen_dist_constraint.Distance_lower_bound_val";
 
-	    //TEMP -- check this one
+        //TEMP -- check this one
         DISTR_RES_SEQ_CODE_1 = "_Gen_dist_constraint.Comp_index_ID_1";
-	    //TEMP -- check this one
+        //TEMP -- check this one
         DISTR_RES_SEQ_CODE_2 = "_Gen_dist_constraint.Comp_index_ID_2";
         DISTR_RES_SEQ_LABEL_1 = "_Gen_dist_constraint.Comp_ID_1";
         DISTR_RES_SEQ_LABEL_2 = "_Gen_dist_constraint.Comp_ID_2";
         DISTR_RESTRAINT_ID = "_Gen_dist_constraint.ID";
 
-	REP_CONF_ENTITY_ASSEMBLY_ID = "_Atom_site.Label_entity_assembly_ID";
+        REP_CONF_ENTITY_ASSEMBLY_ID = "_Atom_site.Label_entity_assembly_ID";
 
-	// Torsion angle restraints.
+        // Torsion angle restraints.
         TAR_ANGLE_LOWER_BOUND =
-	  "_Torsion_angle_constraint.Angle_lower_bound_val";
+            "_Torsion_angle_constraint.Angle_lower_bound_val";
         TAR_ANGLE_UPPER_BOUND =
-	  "_Torsion_angle_constraint.Angle_upper_bound_val";
+            "_Torsion_angle_constraint.Angle_upper_bound_val";
         TAR_ATOM_ID_1 = "_Torsion_angle_constraint.Atom_ID_1";
         TAR_ATOM_ID_2 = "_Torsion_angle_constraint.Atom_ID_2";
         TAR_ATOM_ID_3 = "_Torsion_angle_constraint.Atom_ID_3";
         TAR_ATOM_ID_4 = "_Torsion_angle_constraint.Atom_ID_4";
 
         TAR_CONSTRAINT_STATS_SF_CAT =
-	  "_Torsion_angle_constraint_list.Sf_category";
+            "_Torsion_angle_constraint_list.Sf_category";
         TAR_CONSTRAINT_STATS_CAT_NAME = "torsion_angle_constraints";
 
         TAR_ENT_ASSEM_1 = "_Torsion_angle_constraint.Entity_assembly_ID_1";
@@ -213,12 +213,12 @@ public class S2DNmrStarRRIfc extends S2DNmrStarRestIfc {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

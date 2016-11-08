@@ -53,7 +53,7 @@ public class S2DNmrStarRGIfc extends S2DNmrStarRestIfc {
      */
     public String version()
     {
-    	return "restraint_grid";
+        return "restraint_grid";
     }
 
     //-------------------------------------------------------------------
@@ -65,10 +65,10 @@ public class S2DNmrStarRGIfc extends S2DNmrStarRestIfc {
         super(starTree);
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarRGIfc.S2DNmrStarRGIfc()");
-	}
+            System.out.println("S2DNmrStarRGIfc.S2DNmrStarRGIfc()");
+        }
 
-	setStarNames();
+        setStarNames();
     }
 
     //===================================================================
@@ -78,34 +78,34 @@ public class S2DNmrStarRGIfc extends S2DNmrStarRestIfc {
     // Set the tag names and values to work for NMR-Star files.
     private void setStarNames()
     {
-	// Distance restraints.
+        // Distance restraints.
         DISTR_ATOM_ID_1 = "_Distance_constraint_stats.Atom_1_ID";
         DISTR_ATOM_ID_2 = "_Distance_constraint_stats.Atom_2_ID";
         DISTR_AVERAGE = "_Distance_constraint_stats.Distance_average";
 
         DISTR_CONSTRAINT_STATS_SF_CAT =
-	  "_Distance_constraint_stats_list.Sf_category";
+            "_Distance_constraint_stats_list.Sf_category";
         DISTR_CONSTRAINT_STATS_CAT_NAME = "distance_constraint_statistics";
 
         DISTR_ENT_ASSEM_1 =
-	  "_Distance_constraint_stats.Atom_1_entity_assembly_ID";
+            "_Distance_constraint_stats.Atom_1_entity_assembly_ID";
         DISTR_ENT_ASSEM_2 =
-	  "_Distance_constraint_stats.Atom_2_entity_assembly_ID";
+            "_Distance_constraint_stats.Atom_2_entity_assembly_ID";
 
         DISTR_MAX = "_Distance_constraint_stats.Distance_maximum";
         DISTR_MAX_VIOLATION =
-	  "_Distance_constraint_stats.Max_violation";
+            "_Distance_constraint_stats.Max_violation";
         DISTR_MIN = "_Distance_constraint_stats.Distance_minimum";
 
         DISTR_RES_SEQ_CODE_1 =
-	  "_Distance_constraint_stats.Atom_1_comp_index_ID";
+            "_Distance_constraint_stats.Atom_1_comp_index_ID";
         DISTR_RES_SEQ_CODE_2 =
-	  "_Distance_constraint_stats.Atom_2_comp_index_ID";
+            "_Distance_constraint_stats.Atom_2_comp_index_ID";
         DISTR_RES_SEQ_LABEL_1 = "_Distance_constraint_stats.Atom_1_comp_ID";
         DISTR_RES_SEQ_LABEL_2 = "_Distance_constraint_stats.Atom_2_comp_ID";
         DISTR_RESTRAINT_ID = "_Distance_constraint_stats.Restraint_ID";
 
-	// Torsion angle restraints.
+        // Torsion angle restraints.
         TAR_ANGLE_AVERAGE = "_TA_constraint_stats.Angle_average";
         TAR_ANGLE_LOWER_BOUND = "_TA_constraint_stats.Angle_lower_bound_val";
         TAR_ANGLE_UPPER_BOUND = "_TA_constraint_stats.Angle_upper_bound_val";
@@ -140,12 +140,12 @@ public class S2DNmrStarRGIfc extends S2DNmrStarRestIfc {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

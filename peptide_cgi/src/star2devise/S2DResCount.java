@@ -78,56 +78,57 @@ public class S2DResCount {
     //===================================================================
     // PUBLIC METHODS
     public S2DResCount(String name, String dataDir, int[] resSeqCodes,
-      String[] residueLabels, int polymerType) throws S2DException
+                       String[] residueLabels, int polymerType) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DResCount.S2DResCount(" +
-	      polymerType + ")");
-	}
+            System.out.println("S2DResCount.S2DResCount(" +
+                               polymerType + ")");
+        }
 
-	// Initialize the list of "amino acids" according to the type
-	// of polymer we have.
-	switch (polymerType) {
-	case S2DResidues.POLYMER_TYPE_PROTEIN:
-	case S2DResidues.POLYMER_TYPE_UNKNOWN:
+        // Initialize the list of "amino acids" according to the type
+        // of polymer we have.
+        switch (polymerType) {
+        case S2DResidues.POLYMER_TYPE_PROTEIN:
+        case S2DResidues.POLYMER_TYPE_UNKNOWN:
             _acidList = new String[] { "ALA", "ARG", "ASP", "ASN",
-	      "CYS", "GLU", "GLN", "GLY", "HIS", "ILE", "LEU", "LYS",
-	      "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL" };
-	    break;
+                                       "CYS", "GLU", "GLN", "GLY", "HIS", "ILE", "LEU", "LYS",
+                                       "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL"
+                                     };
+            break;
 
-	case S2DResidues.POLYMER_TYPE_DNA:
+        case S2DResidues.POLYMER_TYPE_DNA:
             _acidList = new String[] { "DA", "DC", "DG", "DT" };
-	    break;
+            break;
 
-	case S2DResidues.POLYMER_TYPE_RNA:
+        case S2DResidues.POLYMER_TYPE_RNA:
             _acidList = new String[] { "A", "C", "G", "U" };
-	    break;
+            break;
 
-	default:
-	    throw new S2DError("Illegal polymer type: " + polymerType);
-	}
+        default:
+            throw new S2DError("Illegal polymer type: " + polymerType);
+        }
 
         _name = name;
-	_dataDir = dataDir;
+        _dataDir = dataDir;
 
         _resSeqCodes = resSeqCodes;
-	_residueLabels = residueLabels;
+        _residueLabels = residueLabels;
 
-	//
+        //
         // Pre-load hash table with all amino acids, count of 0.
-	//
-	_ht = new Hashtable(_acidList.length);
+        //
+        _ht = new Hashtable(_acidList.length);
 
-	Integer tmpInt = new Integer(0);
-	for (int index = 0; index < _acidList.length; index++) {
-	    _ht.put (_acidList[index], tmpInt);
-	}
+        Integer tmpInt = new Integer(0);
+        for (int index = 0; index < _acidList.length; index++) {
+            _ht.put (_acidList[index], tmpInt);
+        }
     }
 
     public void write(int frameIndex) throws S2DException
     {
         String filename = _dataDir + File.separator + _name +
-	  S2DNames.RES_COUNT_SUFFIX + frameIndex + S2DNames.DAT_SUFFIX;
+                          S2DNames.RES_COUNT_SUFFIX + frameIndex + S2DNames.DAT_SUFFIX;
         write(filename);
     }
 
@@ -136,17 +137,17 @@ public class S2DResCount {
         FileWriter countWriter = null;
         try {
             countWriter = S2DFileWriter.create(filename);
-	    countWriter.write("# Data: residue counts for " + _name + "\n");
-	    countWriter.write("# Schema: bmrb-ResCount\n");
-	    countWriter.write("# Attributes: ResLabel; ResCount\n");
+            countWriter.write("# Data: residue counts for " + _name + "\n");
+            countWriter.write("# Schema: bmrb-ResCount\n");
+            countWriter.write("# Attributes: ResLabel; ResCount\n");
             countWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                              S2DMain.PEP_CGI_VERSION + "\n");
             countWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    countWriter.write("#\n");
+                              S2DMain.getTimestamp() + "\n");
+            countWriter.write("#\n");
         } catch(IOException ex) {
             System.err.println("IOException writing amino acid counts: " +
-	      ex.toString());
+                               ex.toString());
             throw new S2DError("Can't write amino acid counts");
         }
 
@@ -164,35 +165,35 @@ public class S2DResCount {
     public void write(Writer writer) throws S2DException
     {
 
-	//
-	// Count up the number of each amino acid.
-	//
-	if (_resSeqCodes != null && _residueLabels != null) {
-	    int prevCode = -1;
+        //
+        // Count up the number of each amino acid.
+        //
+        if (_resSeqCodes != null && _residueLabels != null) {
+            int prevCode = -1;
             for (int index = 0; index < _resSeqCodes.length; index++) {
-	        if (_resSeqCodes[index] != prevCode) {
-		    incrementCount(_residueLabels[index]);
-	            prevCode = _resSeqCodes[index];
-	        }
-	    }
-	}
+                if (_resSeqCodes[index] != prevCode) {
+                    incrementCount(_residueLabels[index]);
+                    prevCode = _resSeqCodes[index];
+                }
+            }
+        }
 
-	//
-	// Write out the totals.
-	//
+        //
+        // Write out the totals.
+        //
         try {
-	    if (_ht.size() != _acidList.length) {
-	        System.err.println("Warning: probable bad entries in amino " +
-		  "acid count list");
-	    }
-	    for (int index = 0; index < _acidList.length; index++) {
-	        String residueLabel = _acidList[index];
-	        Integer tmpInt = (Integer)_ht.get(residueLabel);
-	        writer.write(residueLabel + " " + tmpInt + "\n");
-	    }
+            if (_ht.size() != _acidList.length) {
+                System.err.println("Warning: probable bad entries in amino " +
+                                   "acid count list");
+            }
+            for (int index = 0; index < _acidList.length; index++) {
+                String residueLabel = _acidList[index];
+                Integer tmpInt = (Integer)_ht.get(residueLabel);
+                writer.write(residueLabel + " " + tmpInt + "\n");
+            }
         } catch (IOException ex) {
             System.err.println("IOException writing amino acid counts: " +
-              ex.toString());
+                               ex.toString());
             throw new S2DError("Can't write amino acid counts");
         }
     }
@@ -216,12 +217,12 @@ public class S2DResCount {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

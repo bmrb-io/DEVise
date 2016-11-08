@@ -76,18 +76,18 @@ public class S2DStarUtil
     public static void initialize() throws S2DException
     {
         if (!_initialized) {
-	    try {
-	        _frameClass = Class.forName(StarValidity.pkgName() +
-	          ".SaveFrameNode");
-	        _loopClass = Class.forName(StarValidity.pkgName() +
-	          ".DataLoopNode");
-	        _initialized = true;
-	    } catch (ClassNotFoundException ex) {
-	        System.err.println("Exception getting class: " +
-		  ex.toString());
-	        throw new S2DError("Unable to get star file class");
-	    }
-	}
+            try {
+                _frameClass = Class.forName(StarValidity.pkgName() +
+                                            ".SaveFrameNode");
+                _loopClass = Class.forName(StarValidity.pkgName() +
+                                           ".DataLoopNode");
+                _initialized = true;
+            } catch (ClassNotFoundException ex) {
+                System.err.println("Exception getting class: " +
+                                   ex.toString());
+                throw new S2DError("Unable to get star file class");
+            }
+        }
     }
 
     // ----------------------------------------------------------------------
@@ -95,18 +95,18 @@ public class S2DStarUtil
     // is of the given class.
     public static StarNode getParentByClass(StarNode node, Class desiredClass)
     {
-	StarNode result = null;
+        StarNode result = null;
 
-	StarNode tmpNode = node;
+        StarNode tmpNode = node;
         while (tmpNode != null) {
-	    tmpNode = tmpNode.getParent();
-	    if (tmpNode != null && tmpNode.getClass() == desiredClass) {
-	        result = tmpNode;
-		break;
-	    }
-	}
+            tmpNode = tmpNode.getParent();
+            if (tmpNode != null && tmpNode.getClass() == desiredClass) {
+                result = tmpNode;
+                break;
+            }
+        }
 
-	return result;
+        return result;
     }
 
     // ----------------------------------------------------------------------
@@ -114,10 +114,10 @@ public class S2DStarUtil
     // tag exist in the given save frame.
     //TEMP -- change name of 'frame'?
     public static boolean loopExists(StarNode frame, String loopId)
-      throws S2DException
+    throws S2DException
     {
         VectorCheckType loopList = frame.searchForTypeByName(_loopClass,
-	  loopId);
+                                   loopId);
 
         return (loopList.size() > 0);
     }
@@ -127,37 +127,37 @@ public class S2DStarUtil
     // frame.
     //TEMP -- change name of 'frame'?
     public static DataLoopNode findLoop(StarNode frame, String loopId)
-      throws S2DException
+    throws S2DException
     {
         VectorCheckType loopList = frame.searchForTypeByName(_loopClass,
-	  loopId);
+                                   loopId);
 
         // There should be only one data loop.
-        if (loopList.size() != 1) { 
-           throw new S2DError("Found " + loopList.size() +
-              " " + loopId + " tags, expect exactly 1." );
+        if (loopList.size() != 1) {
+            throw new S2DError("Found " + loopList.size() +
+                               " " + loopId + " tags, expect exactly 1." );
         }
 
         DataLoopNode loop = (DataLoopNode)loopList.firstElement();
 
-	return loop;
+        return loop;
     }
 
     // ----------------------------------------------------------------------
     // Gets the index for the named value in the given data loop.
     public static int getIndex(DataLoopNode loop, String name)
-      throws S2DException
+    throws S2DException
     {
         // Necessary for tagPositionDeep procedure.
         RemoteInt returnIndex = new RemoteInt();
         RemoteInt nestLevel = new RemoteInt();
 
-	// Get the index.
-	loop.getNames().tagPositionDeep(name, nestLevel, returnIndex);
+        // Get the index.
+        loop.getNames().tagPositionDeep(name, nestLevel, returnIndex);
 
-	if (returnIndex.num == -1) {
-	    throw new S2DError("Can't get index for " + name + " values");
-	}
+        if (returnIndex.num == -1) {
+            throw new S2DError("Can't get index for " + name + " values");
+        }
 
         return returnIndex.num;
     }
@@ -168,13 +168,13 @@ public class S2DStarUtil
     {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-	StarUnparser up = new StarUnparser(os);
-	up.writeOut(node, 0);
+        StarUnparser up = new StarUnparser(os);
+        up.writeOut(node, 0);
 
-	String result = "star file at line " + node.getLineNum() +
-	  ", column " + node.getColNum() + ": " + os.toString();
+        String result = "star file at line " + node.getLineNum() +
+                        ", column " + node.getColNum() + ": " + os.toString();
 
-	return result;
+        return result;
     }
 }
 

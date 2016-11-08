@@ -102,45 +102,45 @@ public class S2DSummaryFileData extends S2DFileData
      * @return True iff the data was gotten successfully.
      */
     public boolean getSummaryData(String name, String fullName,
-      String htmlDir, String masterBmrbId)
+                                  String htmlDir, String masterBmrbId)
     {
-    	if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryFileData.getSummaryData(" +
-	      name + ", " + htmlDir + ", " + masterBmrbId + ")");
-	}
+        if (doDebugOutput(11)) {
+            System.out.println("S2DSummaryFileData.getSummaryData(" +
+                               name + ", " + htmlDir + ", " + masterBmrbId + ")");
+        }
 
-	fileVersion = null;
-	fileDate = null;
+        fileVersion = null;
+        fileDate = null;
 
-	bmrbIds = new Vector();
-	bmrbIds.addElement(masterBmrbId);
+        bmrbIds = new Vector();
+        bmrbIds.addElement(masterBmrbId);
 
-	pdbIds = new Vector();
+        pdbIds = new Vector();
 
-	String filename = S2DSummaryHtml.fileName(htmlDir, name,
-	  fullName);
+        String filename = S2DSummaryHtml.fileName(htmlDir, name,
+                          fullName);
 
-	boolean result = getData(filename);
+        boolean result = getData(filename);
 
-	//TEMP -- only do this if result is true?
-	if (doDebugOutput(12)) {
-	    System.out.println("fileVersion: " + fileVersion);
-	    System.out.println("fileDate: " + fileDate);
+        //TEMP -- only do this if result is true?
+        if (doDebugOutput(12)) {
+            System.out.println("fileVersion: " + fileVersion);
+            System.out.println("fileDate: " + fileDate);
 
-	    System.out.print("Related BMRB IDs: ");
-	    for (int index = 0; index < bmrbIds.size(); ++index) {
-	        System.out.print((String)bmrbIds.elementAt(index) + ", ");
-	    }
-	    System.out.println("");
+            System.out.print("Related BMRB IDs: ");
+            for (int index = 0; index < bmrbIds.size(); ++index) {
+                System.out.print((String)bmrbIds.elementAt(index) + ", ");
+            }
+            System.out.println("");
 
-	    System.out.print("Related PDB IDs: ");
-	    for (int index = 0; index < pdbIds.size(); ++index) {
-	        System.out.print((String)pdbIds.elementAt(index) + ", ");
-	    }
-	    System.out.println("");
-	}
+            System.out.print("Related PDB IDs: ");
+            for (int index = 0; index < pdbIds.size(); ++index) {
+                System.out.print((String)pdbIds.elementAt(index) + ", ");
+            }
+            System.out.println("");
+        }
 
-	return result;
+        return result;
     }
 
     //===================================================================
@@ -153,45 +153,45 @@ public class S2DSummaryFileData extends S2DFileData
      */
     protected void GetDataFromLine(String line) throws ParseException
     {
-	// Get the version of peptide-cgi that created the
-	// summary file.
-	String tmpValue = getLabeledValue(line,
-	  S2DSummaryHtmlGen.VERSION_LABEL);
-	if (tmpValue != null) {
-	    fileVersion = tmpValue;
-	    if (doDebugOutput(13)) {
-	        System.out.println("File version: " + fileVersion);
-	    }
-	}
+        // Get the version of peptide-cgi that created the
+        // summary file.
+        String tmpValue = getLabeledValue(line,
+                                          S2DSummaryHtmlGen.VERSION_LABEL);
+        if (tmpValue != null) {
+            fileVersion = tmpValue;
+            if (doDebugOutput(13)) {
+                System.out.println("File version: " + fileVersion);
+            }
+        }
 
-	// Get the creation time/date of the summary file.
-	tmpValue = getLabeledValue(line,
-	  S2DSummaryHtmlGen.GEN_DATE_LABEL);
-	if (tmpValue != null) {
-	    fileDate = DateFormat.getDateTimeInstance().parse(tmpValue);
-	    if (doDebugOutput(13)) {
-	        System.out.println("Date string: " + tmpValue);
-	        System.out.println("File date: " + fileDate);
-	    }
-	}
+        // Get the creation time/date of the summary file.
+        tmpValue = getLabeledValue(line,
+                                   S2DSummaryHtmlGen.GEN_DATE_LABEL);
+        if (tmpValue != null) {
+            fileDate = DateFormat.getDateTimeInstance().parse(tmpValue);
+            if (doDebugOutput(13)) {
+                System.out.println("Date string: " + tmpValue);
+                System.out.println("File date: " + fileDate);
+            }
+        }
 
-	// Get any related BMRB IDs.
-	tmpValue = getLabeledValue(line, S2DSummaryHtmlGen.BMRB_ID_LABEL);
-	if (tmpValue != null) {
-	    if (doDebugOutput(13)) {
-	        System.out.println("Related BMRB ID: " + tmpValue);
-	    }
+        // Get any related BMRB IDs.
+        tmpValue = getLabeledValue(line, S2DSummaryHtmlGen.BMRB_ID_LABEL);
+        if (tmpValue != null) {
+            if (doDebugOutput(13)) {
+                System.out.println("Related BMRB ID: " + tmpValue);
+            }
             bmrbIds.addElement(tmpValue);
-	}
+        }
 
-	// Get any related PDB IDs.
-	tmpValue = getLabeledValue(line, S2DSummaryHtmlGen.PDB_ID_LABEL);
-	if (tmpValue != null) {
-	    if (doDebugOutput(13)) {
-	        System.out.println("Related PDB ID: " + tmpValue);
-	    }
+        // Get any related PDB IDs.
+        tmpValue = getLabeledValue(line, S2DSummaryHtmlGen.PDB_ID_LABEL);
+        if (tmpValue != null) {
+            if (doDebugOutput(13)) {
+                System.out.println("Related PDB ID: " + tmpValue);
+            }
             pdbIds.addElement(tmpValue);
-	}
+        }
     }
 
     //===================================================================
@@ -202,12 +202,12 @@ public class S2DSummaryFileData extends S2DFileData
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

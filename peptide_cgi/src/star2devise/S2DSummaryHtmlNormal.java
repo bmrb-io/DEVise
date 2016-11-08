@@ -98,32 +98,32 @@ public class S2DSummaryHtmlNormal extends S2DSummaryHtmlGen {
     //-------------------------------------------------------------------
     // Constructor.  Opens the html file and writes the header.
     public S2DSummaryHtmlNormal(String name, String fullName,
-      String longName, String masterId, Vector localFiles,
-      String htmlDir, boolean restraintOnly) throws S2DException
+                                String longName, String masterId, Vector localFiles,
+                                String htmlDir, boolean restraintOnly) throws S2DException
     {
-	super(name, fullName, longName, masterId, localFiles, htmlDir,
-	  restraintOnly);
+        super(name, fullName, longName, masterId, localFiles, htmlDir,
+              restraintOnly);
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryHtmlNormal.S2DSummaryHtmlNormal(" +
-	      name + ", " + masterId + ")");
-	}
+            System.out.println("S2DSummaryHtmlNormal.S2DSummaryHtmlNormal(" +
+                               name + ", " + masterId + ")");
+        }
     }
 
     //-------------------------------------------------------------------
     // Constructor for multi-entry summary page.  Opens the html file and
     // writes the header.
     public S2DSummaryHtmlNormal(String name, String fullName,
-      String longName, String masterId, String extraId, Vector localFiles,
-      String htmlDir, boolean restraintOnly) throws S2DException
+                                String longName, String masterId, String extraId, Vector localFiles,
+                                String htmlDir, boolean restraintOnly) throws S2DException
     {
-	super(name, fullName, longName, masterId, extraId, localFiles,
-	  htmlDir, restraintOnly);
+        super(name, fullName, longName, masterId, extraId, localFiles,
+              htmlDir, restraintOnly);
 
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryHtmlNormal.S2DSummaryHtmlNormal(" +
-	      name + ", " + masterId + ", " + extraId + ")");
-	}
+            System.out.println("S2DSummaryHtmlNormal.S2DSummaryHtmlNormal(" +
+                               name + ", " + masterId + ", " + extraId + ")");
+        }
     }
 
     //===================================================================
@@ -134,8 +134,8 @@ public class S2DSummaryHtmlNormal extends S2DSummaryHtmlGen {
     protected void writeSizeLink() throws IOException
     {
         _writer.write("Normal-size visualizations on this page; " +
-	  "<a href=\"" + _sibling.fileNameShort() +
-	  "\">large</a> visualizations\n");
+                      "<a href=\"" + _sibling.fileNameShort() +
+                      "\">large</a> visualizations\n");
     }
 
     //===================================================================
@@ -146,12 +146,12 @@ public class S2DSummaryHtmlNormal extends S2DSummaryHtmlGen {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

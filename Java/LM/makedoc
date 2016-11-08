@@ -1,5 +1,0 @@
-javadoc -d /p/devise/taodb/world/Java/LM/doc/AwtUtil AwtUtil 
-javadoc -d /p/devise/taodb/world/Java/LM/doc/Util    Util 
-javadoc -d /p/devise/taodb/world/Java/LM/doc/LayoutMgr/Application LayoutMgr.Application 
-javadoc -d /p/devise/taodb/world/Java/LM/doc/LayoutMgr/MetaData LayoutMgr.MetaData
-javadoc -d /p/devise/taodb/world/Java/LM/doc/LayoutEditor LayoutEditor

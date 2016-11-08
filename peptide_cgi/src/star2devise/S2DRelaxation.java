@@ -106,53 +106,53 @@ public class S2DRelaxation {
     //-------------------------------------------------------------------
     // Constructor.  (See S2DUtils for dataType.)
     public S2DRelaxation(String name, String longName, S2DNmrStarIfc star,
-      SaveFrameNode frame, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, int dataType, String entityAssemblyID)
-      throws S2DException
+                         SaveFrameNode frame, String dataDir, String sessionDir,
+                         S2DSummaryHtml summary, int dataType, String entityAssemblyID)
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DRelaxation.S2DRelaxation(" + name + ")");
-	}
+            System.out.println("S2DRelaxation.S2DRelaxation(" + name + ")");
+        }
 
         _name = name;
         _longName = longName;
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
-	_entityAssemblyID = star.getEntityAssemblyID(frame,
-	  entityAssemblyID);
-	_frameDetails = star.getFrameDetails(frame);
-	_sample = star.getFrameSample(frame);
-	_sampleConditions = star.getFrameSampleConditions(frame);
+        _entityAssemblyID = star.getEntityAssemblyID(frame,
+                            entityAssemblyID);
+        _frameDetails = star.getFrameDetails(frame);
+        _sample = star.getFrameSample(frame);
+        _sampleConditions = star.getFrameSampleConditions(frame);
         _starVersion = star.version();
 
-	// Note: we should probably split this into subclasses for T1 and
-	// T2, but I'm keeping things in a single class for now to do
-	// restructuring more quickly.
-	_dataType = dataType;
+        // Note: we should probably split this into subclasses for T1 and
+        // T2, but I'm keeping things in a single class for now to do
+        // restructuring more quickly.
+        _dataType = dataType;
         switch (dataType) {
-	case S2DUtils.TYPE_T1_RELAX:
-	    initT1(star, frame, entityAssemblyID);
-	    break;
+        case S2DUtils.TYPE_T1_RELAX:
+            initT1(star, frame, entityAssemblyID);
+            break;
 
-	case S2DUtils.TYPE_T2_RELAX:
-	    initT2(star, frame, entityAssemblyID);
-	    break;
+        case S2DUtils.TYPE_T2_RELAX:
+            initT2(star, frame, entityAssemblyID);
+            break;
 
-	default:
-	    throw new S2DError("Illegal data type: " + dataType);
-	}
+        default:
+            throw new S2DError("Illegal data type: " + dataType);
+        }
 
-	_shortName = _title + " (" + _frequency + ")";
-	_title += " (" + _frequency + " MHz)";
-	try { 
-	    // Parse as a float, convert to int for tables in summary.
-	    _freqValue = (int)Float.parseFloat(_frequency);
-	} catch (NumberFormatException ex) {
-	    System.err.println("Warning: exception parsing relaxation " +
-	      "frequency: " + ex);
-	    _freqValue = 0;
-	}
+        _shortName = _title + " (" + _frequency + ")";
+        _title += " (" + _frequency + " MHz)";
+        try {
+            // Parse as a float, convert to int for tables in summary.
+            _freqValue = (int)Float.parseFloat(_frequency);
+        } catch (NumberFormatException ex) {
+            System.err.println("Warning: exception parsing relaxation " +
+                               "frequency: " + ex);
+            _freqValue = 0;
+        }
     }
 
     //-------------------------------------------------------------------
@@ -160,66 +160,66 @@ public class S2DRelaxation {
     public void writeRelaxation(int frameIndex) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DRelaxation.writeRelaxation()");
-	}
+            System.out.println("S2DRelaxation.writeRelaxation()");
+        }
 
-	try {
-	    //
-	    // Write the relaxation values to the data file.
-	    //
+        try {
+            //
+            // Write the relaxation values to the data file.
+            //
             FileWriter relaxWriter = S2DFileWriter.create(_dataDir +
-	      File.separator +
-	      _name + _suffix + frameIndex + S2DNames.DAT_SUFFIX);
+                                     File.separator +
+                                     _name + _suffix + frameIndex + S2DNames.DAT_SUFFIX);
             relaxWriter.write("# Data: relaxation values for " + _name + "\n");
             relaxWriter.write("# Schema: bmrb-relax\n");
             relaxWriter.write("# Attributes: relax_value; relax_error; " +
-	      "Atom_name; Residue_seq_code; Residue_label; " +
-	      "Entity_assembly_ID\n");
+                              "Atom_name; Residue_seq_code; Residue_label; " +
+                              "Entity_assembly_ID\n");
             relaxWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                              S2DMain.PEP_CGI_VERSION + "\n");
             relaxWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
+                              S2DMain.getTimestamp() + "\n");
             relaxWriter.write("#\n");
 
-	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        relaxWriter.write(_relaxationValues[index] + " " +
-		  _relaxationErrors[index] + " " +
-		  _atomNames[index] + " " +
-		  _resSeqCodes[index] + " " +
-		  _resLabels[index] + " " +
-		  _entityAssemblyID + "\n");
-	    }
+            for (int index = 0; index < _resSeqCodes.length; index++) {
+                relaxWriter.write(_relaxationValues[index] + " " +
+                                  _relaxationErrors[index] + " " +
+                                  _atomNames[index] + " " +
+                                  _resSeqCodes[index] + " " +
+                                  _resLabels[index] + " " +
+                                  _entityAssemblyID + "\n");
+            }
 
-	    relaxWriter.close();
+            relaxWriter.close();
 
-	    //
-	    // Write the session file.
-	    //
-	    String info = "Visualization of " + _longName;
-	    S2DSession.write(_sessionDir, _dataType,
-	      _name, frameIndex, info, _title, true, _starVersion, "");
+            //
+            // Write the session file.
+            //
+            String info = "Visualization of " + _longName;
+            S2DSession.write(_sessionDir, _dataType,
+                             _name, frameIndex, info, _title, true, _starVersion, "");
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    String fullTitle = _title + " (entity assembly " +
-	      _entityAssemblyID + ")";
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(), _dataType,
-	      _name, frameIndex, fullTitle, _frameDetails);
-	    specHtml.write();
+            //
+            // Write the session-specific html file.
+            //
+            String fullTitle = _title + " (entity assembly " +
+                               _entityAssemblyID + ")";
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(), _dataType,
+                _name, frameIndex, fullTitle, _frameDetails);
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeRelax(_dataType, _freqValue, _suffix, _title,
-	      frameIndex, _entityAssemblyID, _resSeqCodes.length);
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writeRelax(_dataType, _freqValue, _suffix, _title,
+                                frameIndex, _entityAssemblyID, _resSeqCodes.length);
 
         } catch(IOException ex) {
-	    System.err.println("IOException writing relaxation data: " +
-	      ex.toString());
-	    throw new S2DError("Can't write relaxation data");
-	}
+            System.err.println("IOException writing relaxation data: " +
+                               ex.toString());
+            throw new S2DError("Can't write relaxation data");
+        }
     }
 
     //-------------------------------------------------------------------
@@ -229,14 +229,14 @@ public class S2DRelaxation {
      * @param The frame index.
      */
     public void addRelaxationData(Vector dataSets, int frameIndex,
-      int polymerType)
+                                  int polymerType)
     {
         // Note: attribute names must match the bmrb-relax schema.
-	String dataSource = _name + _suffix + frameIndex;
-	String dataName = _shortName + " [" + _entityAssemblyID + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	  _sample, _sampleConditions, dataSource, "relax_value",
-	  "bmrb-relax", "relax", _entityAssemblyID, polymerType));
+        String dataSource = _name + _suffix + frameIndex;
+        String dataName = _shortName + " [" + _entityAssemblyID + "]";
+        dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+                                               _sample, _sampleConditions, dataSource, "relax_value",
+                                               "bmrb-relax", "relax", _entityAssemblyID, polymerType));
     }
 
     //===================================================================
@@ -245,48 +245,48 @@ public class S2DRelaxation {
     //-------------------------------------------------------------------
     // Initialize this object with T1 relaxation values.
     private void initT1(S2DNmrStarIfc star, SaveFrameNode frame,
-      String entityAssemblyID) throws S2DException
+                        String entityAssemblyID) throws S2DException
     {
         _suffix = S2DNames.T1_SUFFIX;
         _title = "T1 Relaxation";
 
-	//
-	// Get the values we need from the Star file.
-	//
+        //
+        // Get the values we need from the Star file.
+        //
 
-	// If a non-blank entityAssemblyID is specified, we need to filter
-	// the frame values to only take the ones corresponding to that
-	// entityAssemblyID.  To do that, we get the entityAssemblyID
-	// values in each row of the loop.  (entityAssemblyID will be blank
-	// when processing NMR-STAR 2.1 files -- they don't have data for
-	// more than one entity assembly in a single save frame).
-	String[] entityAssemblyIDs = null;
-	if (!entityAssemblyID.equals("")) {
-	    entityAssemblyIDs = star.getFrameValues(frame,
-	      star.T1_ENTITY_ASSEMBLY_ID,
-	      star.T1_ENTITY_ASSEMBLY_ID);
-	}
+        // If a non-blank entityAssemblyID is specified, we need to filter
+        // the frame values to only take the ones corresponding to that
+        // entityAssemblyID.  To do that, we get the entityAssemblyID
+        // values in each row of the loop.  (entityAssemblyID will be blank
+        // when processing NMR-STAR 2.1 files -- they don't have data for
+        // more than one entity assembly in a single save frame).
+        String[] entityAssemblyIDs = null;
+        if (!entityAssemblyID.equals("")) {
+            entityAssemblyIDs = star.getFrameValues(frame,
+                                                    star.T1_ENTITY_ASSEMBLY_ID,
+                                                    star.T1_ENTITY_ASSEMBLY_ID);
+        }
 
-	_resSeqCodes = star.getAndFilterFrameValues(frame,
-	  star.T1_VALUE, star.T1_RES_SEQ_CODE, entityAssemblyID,
-	  entityAssemblyIDs);
+        _resSeqCodes = star.getAndFilterFrameValues(frame,
+                       star.T1_VALUE, star.T1_RES_SEQ_CODE, entityAssemblyID,
+                       entityAssemblyIDs);
 
-	_resLabels = star.getAndFilterFrameValues(frame,
-	  star.T1_VALUE, star.T1_RES_LABEL, entityAssemblyID,
-	  entityAssemblyIDs);
+        _resLabels = star.getAndFilterFrameValues(frame,
+                     star.T1_VALUE, star.T1_RES_LABEL, entityAssemblyID,
+                     entityAssemblyIDs);
 
-	_atomNames = star.getAndFilterFrameValues(frame,
-	  star.T1_VALUE, star.T1_ATOM_NAME, entityAssemblyID,
-	  entityAssemblyIDs);
+        _atomNames = star.getAndFilterFrameValues(frame,
+                     star.T1_VALUE, star.T1_ATOM_NAME, entityAssemblyID,
+                     entityAssemblyIDs);
 
-	_relaxationValues = star.getAndFilterFrameValues(frame,
-	  star.T1_VALUE, star.T1_VALUE, entityAssemblyID,
-	  entityAssemblyIDs);
+        _relaxationValues = star.getAndFilterFrameValues(frame,
+                            star.T1_VALUE, star.T1_VALUE, entityAssemblyID,
+                            entityAssemblyIDs);
 
-	//TEMP -- 4096 has "_T1_error" instead of "_T1_value_error".
-	_relaxationErrors = star.getAndFilterOptionalFrameValues(frame,
-	  star.T1_VALUE, star.T1_VALUE_ERR, entityAssemblyID,
-	  entityAssemblyIDs, _relaxationValues.length, "0");
+        //TEMP -- 4096 has "_T1_error" instead of "_T1_value_error".
+        _relaxationErrors = star.getAndFilterOptionalFrameValues(frame,
+                            star.T1_VALUE, star.T1_VALUE_ERR, entityAssemblyID,
+                            entityAssemblyIDs, _relaxationValues.length, "0");
 
         _frequency = star.getOneFrameValue(frame, star.T1_SPEC_FREQ_1H);
     }
@@ -294,48 +294,48 @@ public class S2DRelaxation {
     //-------------------------------------------------------------------
     // Initialize this object with T2 relaxation values.
     private void initT2(S2DNmrStarIfc star, SaveFrameNode frame,
-      String entityAssemblyID) throws S2DException
+                        String entityAssemblyID) throws S2DException
     {
         _suffix = S2DNames.T2_SUFFIX;
         _title = "T2 Relaxation";
 
-	//
-	// Get the values we need from the Star file.
-	//
+        //
+        // Get the values we need from the Star file.
+        //
 
-	// If a non-blank entityAssemblyID is specified, we need to filter
-	// the frame values to only take the ones corresponding to that
-	// entityAssemblyID.  To do that, we get the entityAssemblyID
-	// values in each row of the loop.  (entityAssemblyID will be blank
-	// when processing NMR-STAR 2.1 files -- they don't have data for
-	// more than one entity assembly in a single save frame).
-	String[] entityAssemblyIDs = null;
-	if (!entityAssemblyID.equals("")) {
-	    entityAssemblyIDs = star.getFrameValues(frame,
-	      star.T2_ENTITY_ASSEMBLY_ID,
-	      star.T2_ENTITY_ASSEMBLY_ID);
-	}
+        // If a non-blank entityAssemblyID is specified, we need to filter
+        // the frame values to only take the ones corresponding to that
+        // entityAssemblyID.  To do that, we get the entityAssemblyID
+        // values in each row of the loop.  (entityAssemblyID will be blank
+        // when processing NMR-STAR 2.1 files -- they don't have data for
+        // more than one entity assembly in a single save frame).
+        String[] entityAssemblyIDs = null;
+        if (!entityAssemblyID.equals("")) {
+            entityAssemblyIDs = star.getFrameValues(frame,
+                                                    star.T2_ENTITY_ASSEMBLY_ID,
+                                                    star.T2_ENTITY_ASSEMBLY_ID);
+        }
 
-	_resSeqCodes = star.getAndFilterFrameValues(frame,
-	  star.T2_VALUE, star.T2_RES_SEQ_CODE, entityAssemblyID,
-	  entityAssemblyIDs);
+        _resSeqCodes = star.getAndFilterFrameValues(frame,
+                       star.T2_VALUE, star.T2_RES_SEQ_CODE, entityAssemblyID,
+                       entityAssemblyIDs);
 
-	_resLabels = star.getAndFilterFrameValues(frame,
-	  star.T2_VALUE, star.T2_RES_LABEL, entityAssemblyID,
-	  entityAssemblyIDs);
+        _resLabels = star.getAndFilterFrameValues(frame,
+                     star.T2_VALUE, star.T2_RES_LABEL, entityAssemblyID,
+                     entityAssemblyIDs);
 
-	_atomNames = star.getAndFilterFrameValues(frame,
-	  star.T2_VALUE, star.T2_ATOM_NAME, entityAssemblyID,
-	  entityAssemblyIDs);
+        _atomNames = star.getAndFilterFrameValues(frame,
+                     star.T2_VALUE, star.T2_ATOM_NAME, entityAssemblyID,
+                     entityAssemblyIDs);
 
-	_relaxationValues = star.getAndFilterFrameValues(frame,
-	  star.T2_VALUE, star.T2_VALUE, entityAssemblyID,
-	  entityAssemblyIDs);
+        _relaxationValues = star.getAndFilterFrameValues(frame,
+                            star.T2_VALUE, star.T2_VALUE, entityAssemblyID,
+                            entityAssemblyIDs);
 
-	//TEMP -- 4096 has "_T2_error" instead of "_T2_value_error".
-	_relaxationErrors = star.getAndFilterOptionalFrameValues(frame,
-	  star.T2_VALUE, star.T2_VALUE_ERR, entityAssemblyID,
-	  entityAssemblyIDs, _relaxationValues.length, "0");
+        //TEMP -- 4096 has "_T2_error" instead of "_T2_value_error".
+        _relaxationErrors = star.getAndFilterOptionalFrameValues(frame,
+                            star.T2_VALUE, star.T2_VALUE_ERR, entityAssemblyID,
+                            entityAssemblyIDs, _relaxationValues.length, "0");
 
         _frequency = star.getOneFrameValue(frame, star.T2_SPEC_FREQ_1H);
     }
@@ -345,12 +345,12 @@ public class S2DRelaxation {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

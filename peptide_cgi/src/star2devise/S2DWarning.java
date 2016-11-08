@@ -52,34 +52,34 @@ public class S2DWarning extends S2DException
     {
         super(msg);
 
-	if (getDebugLvl() >= 0) {
-	    if (_writer == null) {
-	        createWriter();
-	    }
-	    if (_writer != null) {
-	        try {
-	            _writer.write(msg + "\n");
-		    _writer.flush();
-	        } catch(IOException ex) {
-	            System.err.println("Error writing error log: " + ex);
-	        }
-	    }
-	}
+        if (getDebugLvl() >= 0) {
+            if (_writer == null) {
+                createWriter();
+            }
+            if (_writer != null) {
+                try {
+                    _writer.write(msg + "\n");
+                    _writer.flush();
+                } catch(IOException ex) {
+                    System.err.println("Error writing error log: " + ex);
+                }
+            }
+        }
 
         if (getDebugLvl() >= 2) {
-	    printStackTrace(new PrintWriter(_writer));
-	}
+            printStackTrace(new PrintWriter(_writer));
+        }
     }
 
     public static void removeLogFile()
     {
-	_writer = null;
-	try {
+        _writer = null;
+        try {
             S2DUtils.deleteFile(getFileName());
         } catch(IOException ex) {
-	    System.err.println(
-	      "Error trying to delete warning log file: " + ex);
-	}
+            System.err.println(
+                "Error trying to delete warning log file: " + ex);
+        }
     }
 
     public static void clear()
@@ -89,16 +89,16 @@ public class S2DWarning extends S2DException
 
     private static String getFileName()
     {
-	return "tmp/s2d." + _name + ".warn";
+        return "tmp/s2d." + _name + ".warn";
     }
 
     private static void createWriter()
     {
-	try {
+        try {
             _writer = S2DFileWriter.create(getFileName());
-	} catch(IOException ex) {
-	    System.err.println("Can't create S2DError file writer: " + ex);
-	}
+        } catch(IOException ex) {
+            System.err.println("Can't create S2DError file writer: " + ex);
+        }
     }
 }
 

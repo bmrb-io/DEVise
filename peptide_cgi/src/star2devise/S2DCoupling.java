@@ -129,85 +129,85 @@ public class S2DCoupling {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DCoupling(String name, String longName, S2DNmrStarIfc star,
-      SaveFrameNode frame, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
+                       SaveFrameNode frame, String dataDir, String sessionDir,
+                       S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DCoupling.S2DCoupling(" + name +
-	      ")");
-	}
+            System.out.println("S2DCoupling.S2DCoupling(" + name +
+                               ")");
+        }
 
         _name = name;
         _longName = longName;
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
-	_frameDetails = star.getFrameDetails(frame);
-	_sample = star.getFrameSample(frame);
-	_sampleConditions = star.getFrameSampleConditions(frame);
-	_starVersion = star.version();
+        _frameDetails = star.getFrameDetails(frame);
+        _sample = star.getFrameSample(frame);
+        _sampleConditions = star.getFrameSampleConditions(frame);
+        _starVersion = star.version();
 
-	//
-	// Get the values we need from the Star file.
-	//
+        //
+        // Get the values we need from the Star file.
+        //
 
-	// If a non-blank entityAssemblyID is specified, we need to filter
-	// the frame values to only take the ones corresponding to that
-	// entityAssemblyID.  To do that, we get the entityAssemblyID
-	// values in each row of the loop.  (entityAssemblyID will be blank
-	// when processing NMR-STAR 2.1 files -- they don't have data for
-	// more than one entity assembly in a single save frame).
-	String[] entityAssemblyIDs = null;
-	if (!entityAssemblyID.equals("")) {
-	    entityAssemblyIDs = star.getFrameValues(frame,
-	      star.COUPLING_ENTITY_ASSEMBLY_ID_1,
-	      star.COUPLING_ENTITY_ASSEMBLY_ID_1);
-	}
+        // If a non-blank entityAssemblyID is specified, we need to filter
+        // the frame values to only take the ones corresponding to that
+        // entityAssemblyID.  To do that, we get the entityAssemblyID
+        // values in each row of the loop.  (entityAssemblyID will be blank
+        // when processing NMR-STAR 2.1 files -- they don't have data for
+        // more than one entity assembly in a single save frame).
+        String[] entityAssemblyIDs = null;
+        if (!entityAssemblyID.equals("")) {
+            entityAssemblyIDs = star.getFrameValues(frame,
+                                                    star.COUPLING_ENTITY_ASSEMBLY_ID_1,
+                                                    star.COUPLING_ENTITY_ASSEMBLY_ID_1);
+        }
 
-	_atom1ResSeqs = star.getAndFilterFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_SEQ_CODE_1,
-	  entityAssemblyID, entityAssemblyIDs);
+        _atom1ResSeqs = star.getAndFilterFrameValues(frame,
+                        star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_SEQ_CODE_1,
+                        entityAssemblyID, entityAssemblyIDs);
 
-	_atom2ResSeqs = star.getAndFilterFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_SEQ_CODE_2,
-	  entityAssemblyID, entityAssemblyIDs);
+        _atom2ResSeqs = star.getAndFilterFrameValues(frame,
+                        star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_SEQ_CODE_2,
+                        entityAssemblyID, entityAssemblyIDs);
 
-	_couplingConstValues = star.getAndFilterFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_CONSTANT_VALUE,
-	  entityAssemblyID, entityAssemblyIDs);
+        _couplingConstValues = star.getAndFilterFrameValues(frame,
+                               star.COUPLING_CONSTANT_VALUE, star.COUPLING_CONSTANT_VALUE,
+                               entityAssemblyID, entityAssemblyIDs);
 
-	_couplingConstCodes = star.getAndFilterOptionalFrameValues(
-	  frame, star.COUPLING_CONSTANT_VALUE, star.COUPLING_CONSTANT_CODE,
-	  entityAssemblyID, entityAssemblyIDs,
-	  _atom1ResSeqs.length, "0");
+        _couplingConstCodes = star.getAndFilterOptionalFrameValues(
+                                  frame, star.COUPLING_CONSTANT_VALUE, star.COUPLING_CONSTANT_CODE,
+                                  entityAssemblyID, entityAssemblyIDs,
+                                  _atom1ResSeqs.length, "0");
 
-	_atom1ResLabels = star.getAndFilterOptionalFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_LABEL_1,
-	  entityAssemblyID, entityAssemblyIDs,
-	  _atom1ResSeqs.length, "0");
+        _atom1ResLabels = star.getAndFilterOptionalFrameValues(frame,
+                          star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_LABEL_1,
+                          entityAssemblyID, entityAssemblyIDs,
+                          _atom1ResSeqs.length, "0");
 
-	_atom1Names = star.getAndFilterOptionalFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_ATOM_NAME_1,
-	  entityAssemblyID, entityAssemblyIDs,
-	  _atom1ResSeqs.length, "0");
+        _atom1Names = star.getAndFilterOptionalFrameValues(frame,
+                      star.COUPLING_CONSTANT_VALUE, star.COUPLING_ATOM_NAME_1,
+                      entityAssemblyID, entityAssemblyIDs,
+                      _atom1ResSeqs.length, "0");
 
-	_atom2ResLabels = star.getAndFilterOptionalFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_LABEL_2,
-	  entityAssemblyID, entityAssemblyIDs,
-	  _atom1ResSeqs.length, "0");
+        _atom2ResLabels = star.getAndFilterOptionalFrameValues(frame,
+                          star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_LABEL_2,
+                          entityAssemblyID, entityAssemblyIDs,
+                          _atom1ResSeqs.length, "0");
 
-	_atom2Names = star.getAndFilterOptionalFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_ATOM_NAME_2,
-	  entityAssemblyID, entityAssemblyIDs,
-	  _atom1ResSeqs.length, "0");
+        _atom2Names = star.getAndFilterOptionalFrameValues(frame,
+                      star.COUPLING_CONSTANT_VALUE, star.COUPLING_ATOM_NAME_2,
+                      entityAssemblyID, entityAssemblyIDs,
+                      _atom1ResSeqs.length, "0");
 
-	_couplingConstErrors = star.getAndFilterOptionalFrameValues(
-	  frame, star.COUPLING_CONSTANT_VALUE,
-	  star.COUPLING_CONSTANT_VALUE_ERR, entityAssemblyID,
-	  entityAssemblyIDs, _atom1ResSeqs.length, "0");
+        _couplingConstErrors = star.getAndFilterOptionalFrameValues(
+                                   frame, star.COUPLING_CONSTANT_VALUE,
+                                   star.COUPLING_CONSTANT_VALUE_ERR, entityAssemblyID,
+                                   entityAssemblyIDs, _atom1ResSeqs.length, "0");
 
-	_entityAssemblyID = star.getEntityAssemblyID(frame,
-	  entityAssemblyID);
+        _entityAssemblyID = star.getEntityAssemblyID(frame,
+                            entityAssemblyID);
     }
 
     //-------------------------------------------------------------------
@@ -215,76 +215,76 @@ public class S2DCoupling {
     public void writeCoupling(int frameIndex) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DCoupling.writeCoupling()");
-	}
+            System.out.println("S2DCoupling.writeCoupling()");
+        }
 
-	try {
-	    //
-	    // Write the coupling constant values to the data file.
-	    //
+        try {
+            //
+            // Write the coupling constant values to the data file.
+            //
             FileWriter couplingWriter = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + S2DNames.COUPLING_SUFFIX + frameIndex +
-	      S2DNames.DAT_SUFFIX);
+                                        File.separator + _name + S2DNames.COUPLING_SUFFIX + frameIndex +
+                                        S2DNames.DAT_SUFFIX);
             couplingWriter.write("# Data: coupling constant values for " +
-	      _name + "\n");
+                                 _name + "\n");
             couplingWriter.write("# Schema: bmrb-CouplingConstant\n");
             couplingWriter.write("# Attributes: Coupling_constant_value; " +
-              "Coupling_constant_value_error; Residue_seq_code; " +
-	      "Atom_one_residue_label; Atom_one_name; " +
-	      "Atom_two_residue_seq_code; " +
-	      "Atom_two_residue_label; Atom_two_name; " +
-	      "Coupling_constant_code; Entity_assembly_ID\n");
+                                 "Coupling_constant_value_error; Residue_seq_code; " +
+                                 "Atom_one_residue_label; Atom_one_name; " +
+                                 "Atom_two_residue_seq_code; " +
+                                 "Atom_two_residue_label; Atom_two_name; " +
+                                 "Coupling_constant_code; Entity_assembly_ID\n");
 
             couplingWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                                 S2DMain.PEP_CGI_VERSION + "\n");
             couplingWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
+                                 S2DMain.getTimestamp() + "\n");
             couplingWriter.write("#\n");
 
-	    for (int index = 0; index < _couplingConstValues.length; index++) {
-	        couplingWriter.write(_couplingConstValues[index] + " " +
-		  _couplingConstErrors[index] + " " +
-		  _atom1ResSeqs[index] + " " +
-		  _atom1ResLabels[index] + " " +
-		  _atom1Names[index] + " " +
-		  _atom2ResSeqs[index] + " " +
-		  _atom2ResLabels[index] + " " +
-		  _atom2Names[index] + " " +
-		  _couplingConstCodes[index] + " " +
-		  _entityAssemblyID + "\n");
-	    }
+            for (int index = 0; index < _couplingConstValues.length; index++) {
+                couplingWriter.write(_couplingConstValues[index] + " " +
+                                     _couplingConstErrors[index] + " " +
+                                     _atom1ResSeqs[index] + " " +
+                                     _atom1ResLabels[index] + " " +
+                                     _atom1Names[index] + " " +
+                                     _atom2ResSeqs[index] + " " +
+                                     _atom2ResLabels[index] + " " +
+                                     _atom2Names[index] + " " +
+                                     _couplingConstCodes[index] + " " +
+                                     _entityAssemblyID + "\n");
+            }
 
-	    couplingWriter.close();
+            couplingWriter.close();
 
-	    //
-	    // Write the session file.
-	    //
-	    String info = "Visualization of " + _longName;
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_COUPLING,
-	      _name, frameIndex, info, null, true, _starVersion, "");
+            //
+            // Write the session file.
+            //
+            String info = "Visualization of " + _longName;
+            S2DSession.write(_sessionDir, S2DUtils.TYPE_COUPLING,
+                             _name, frameIndex, info, null, true, _starVersion, "");
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    String title = "Coupling Constants (entity assembly " +
-	      _entityAssemblyID + ")";
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(),
-	      S2DUtils.TYPE_COUPLING, _name, frameIndex,
-	      title, _frameDetails);
-	    specHtml.write();
+            //
+            // Write the session-specific html file.
+            //
+            String title = "Coupling Constants (entity assembly " +
+                           _entityAssemblyID + ")";
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(),
+                S2DUtils.TYPE_COUPLING, _name, frameIndex,
+                title, _frameDetails);
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeCoupling(frameIndex, _entityAssemblyID,
-	      _couplingConstValues.length);
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writeCoupling(frameIndex, _entityAssemblyID,
+                                   _couplingConstValues.length);
 
         } catch(IOException ex) {
-	    System.err.println("IOException writing coupling constants: " +
-	      ex.toString());
-	    throw new S2DError("Can't write coupling constants");
-	}
+            System.err.println("IOException writing coupling constants: " +
+                               ex.toString());
+            throw new S2DError("Can't write coupling constants");
+        }
     }
 
     //-------------------------------------------------------------------
@@ -294,16 +294,16 @@ public class S2DCoupling {
      * @param The frame index.
      */
     public void addCouplingData(Vector dataSets, int frameIndex,
-      int polymerType)
+                                int polymerType)
     {
         // Note: attribute names must match the bmrb-CouplingConstant schema.
-	String dataSource = _name + S2DNames.COUPLING_SUFFIX +
-	  frameIndex;
-	String dataName = "3JHNHA coupling const [" + _entityAssemblyID + "]";
+        String dataSource = _name + S2DNames.COUPLING_SUFFIX +
+                            frameIndex;
+        String dataName = "3JHNHA coupling const [" + _entityAssemblyID + "]";
         dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	  _sample, _sampleConditions, dataSource,
-	  "Coupling_constant_value", "bmrb-CouplingConstant",
-	  "CouplingConstant", _entityAssemblyID, polymerType));
+                                               _sample, _sampleConditions, dataSource,
+                                               "Coupling_constant_value", "bmrb-CouplingConstant",
+                                               "CouplingConstant", _entityAssemblyID, polymerType));
     }
 
     //===================================================================
@@ -314,12 +314,12 @@ public class S2DCoupling {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

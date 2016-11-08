@@ -71,17 +71,17 @@ public class S2DFileWriter extends FileWriter {
     //-------------------------------------------------------------------
     public static S2DFileWriter create(String fileName) throws IOException
     {
-	S2DUtils.deleteFile(fileName);
+        S2DUtils.deleteFile(fileName);
 
-	File file = new File(fileName);
+        File file = new File(fileName);
 
-	return new S2DFileWriter(file);
+        return new S2DFileWriter(file);
     }
 
     //-------------------------------------------------------------------
     public static S2DFileWriter append(String fileName) throws IOException
     {
-	return new S2DFileWriter(fileName, true);
+        return new S2DFileWriter(fileName, true);
     }
 
     //===================================================================
@@ -106,12 +106,12 @@ public class S2DFileWriter extends FileWriter {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

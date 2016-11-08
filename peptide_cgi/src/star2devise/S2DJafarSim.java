@@ -47,28 +47,28 @@ public class S2DJafarSim
     //-------------------------------------------------------------------
     public static void main(String args[]) throws S2DException
     {
-	Vector myArgs = null;
+        Vector myArgs = null;
 
-	// Replicate test2
-	myArgs = new Vector();
-	setFixedArgs(myArgs);
+        // Replicate test2
+        myArgs = new Vector();
+        setFixedArgs(myArgs);
         myArgs.addElement("-file");
         myArgs.addElement("bmr4267.str");
         myArgs.addElement("-name");
         myArgs.addElement("test2_out");
         myArgs.addElement("-force");
 
-	runS2D(myArgs);
+        runS2D(myArgs);
 
-	try {
-	    Thread.sleep(2 * 60 * 1000);
-	} catch(InterruptedException ex) {
-	    System.out.println("Sleep was interrupted: " + ex);
-	}
+        try {
+            Thread.sleep(2 * 60 * 1000);
+        } catch(InterruptedException ex) {
+            System.out.println("Sleep was interrupted: " + ex);
+        }
 
-	// Replicate test13
-	myArgs = new Vector();
-	setFixedArgs(myArgs);
+        // Replicate test13
+        myArgs = new Vector();
+        setFixedArgs(myArgs);
         myArgs.addElement("-file");
         myArgs.addElement("Jafar1.str");
         myArgs.addElement("-name");
@@ -77,7 +77,7 @@ public class S2DJafarSim
         myArgs.addElement("2");
         myArgs.addElement("-force");
 
-	runS2D(myArgs);
+        runS2D(myArgs);
     }
 
     //===================================================================
@@ -86,7 +86,7 @@ public class S2DJafarSim
     //-------------------------------------------------------------------
     private static void setFixedArgs(Vector myArgs)
     {
-	// Fixed arguments (from vsc script).
+        // Fixed arguments (from vsc script).
         myArgs.addElement("-data_dir");
         myArgs.addElement("data_dir/vis_server");
         myArgs.addElement("-js_data_dir");
@@ -105,12 +105,12 @@ public class S2DJafarSim
     //-------------------------------------------------------------------
     private static void runS2D(Vector myArgs) throws S2DException
     {
-    	String [] args = new String[myArgs.size()];
-	for (int index = 0; index < myArgs.size(); ++index) {
-	    args[index] = (String)myArgs.elementAt(index);
-	}
+        String [] args = new String[myArgs.size()];
+        for (int index = 0; index < myArgs.size(); ++index) {
+            args[index] = (String)myArgs.elementAt(index);
+        }
 
-	S2DMain.main(args);
+        S2DMain.main(args);
     }
 
     //-------------------------------------------------------------------
@@ -118,12 +118,12 @@ public class S2DJafarSim
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

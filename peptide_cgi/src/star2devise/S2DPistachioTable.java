@@ -63,29 +63,29 @@ public class S2DPistachioTable implements S2DAtomDataTable {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DPistachioTable(int[] resSeqCodes, String[] atomNames,
-      double[] meritVals) throws S2DException
+                             double[] meritVals) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DPistachioTable.S2DPistachioTable()");
-	}
+            System.out.println("S2DPistachioTable.S2DPistachioTable()");
+        }
 
-	_residues = new Hashtable();
+        _residues = new Hashtable();
 
         for (int index = 0; index < resSeqCodes.length; index++) {
-	    int resNum = resSeqCodes[index];
-	    Integer key = new Integer(resNum);
-	    Hashtable resHash = (Hashtable)_residues.get(key);
-	    if (resHash == null) {
-	        resHash = new Hashtable();
-		_residues.put(key, resHash);
-	    }
-	    Double val = new Double(meritVals[index]);
-	    if (resHash.put(atomNames[index], val) != null) {
-		// Note: this is *not* thrown, just created to log the warning.
-	        new S2DWarning("Warning: duplicate figure of merit " +
-		  "entries for " + atomNames[index]);
-	    }
-	}
+            int resNum = resSeqCodes[index];
+            Integer key = new Integer(resNum);
+            Hashtable resHash = (Hashtable)_residues.get(key);
+            if (resHash == null) {
+                resHash = new Hashtable();
+                _residues.put(key, resHash);
+            }
+            Double val = new Double(meritVals[index]);
+            if (resHash.put(atomNames[index], val) != null) {
+                // Note: this is *not* thrown, just created to log the warning.
+                new S2DWarning("Warning: duplicate figure of merit " +
+                               "entries for " + atomNames[index]);
+            }
+        }
     }
 
     //-------------------------------------------------------------------
@@ -109,11 +109,11 @@ public class S2DPistachioTable implements S2DAtomDataTable {
     public String getCoordDataStr(int residueNum, String atomName)
     {
         double fm = getFigOfMerit(residueNum, atomName);
-	String fmStr = getFMStr(fm);
+        String fmStr = getFMStr(fm);
 
-	if (Double.isNaN(fm)) fm = -1.0;
+        if (Double.isNaN(fm)) fm = -1.0;
 
-	return fmStr + " " + fm;
+        return fmStr + " " + fm;
     }
 
     //===================================================================
@@ -124,22 +124,22 @@ public class S2DPistachioTable implements S2DAtomDataTable {
     // Returns NaN if data is not available.
     private double getFigOfMerit(int residueNum, String atomName)
     {
-	double result = Double.NaN; // no data
-	Integer key = new Integer(residueNum);
+        double result = Double.NaN; // no data
+        Integer key = new Integer(residueNum);
         Hashtable resHash = (Hashtable)_residues.get(key);
         if (resHash != null) {
             Double val = (Double)resHash.get(atomName);
             if (val != null) {
-                 result = val.doubleValue();
+                result = val.doubleValue();
             }
         }
 
-	if (doDebugOutput(13)) {
-	    System.out.println("S2DPistachioTable.getFigOfMerit(" +
-	      key + ", " + atomName + ") returns " + result);
-	}
+        if (doDebugOutput(13)) {
+            System.out.println("S2DPistachioTable.getFigOfMerit(" +
+                               key + ", " + atomName + ") returns " + result);
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -148,27 +148,27 @@ public class S2DPistachioTable implements S2DAtomDataTable {
     // in the DEVise Pistachio visualization.)
     private static String getFMStr(double fm)
     {
-	String result;
+        String result;
 
-	if (fm >= 0.99) {
-	    result = "FM1";
-	} else if (fm >= 0.96) {
-	    result = "FM2";
-	} else if (fm >= 0.9) {
-	    result = "FM3";
-	} else if (fm >= 0.76) {
-	    result = "FM4";
-	} else if (fm >= 0.5) {
-	    result = "FM5";
-	} else if (fm >= 0.1) {
-	    result = "FM6";
-	} else if (fm >= 0.0) {
-	    result = "FM7";
-	} else {
-	    result = "FMU"; // unknown/unassigned
-	}
+        if (fm >= 0.99) {
+            result = "FM1";
+        } else if (fm >= 0.96) {
+            result = "FM2";
+        } else if (fm >= 0.9) {
+            result = "FM3";
+        } else if (fm >= 0.76) {
+            result = "FM4";
+        } else if (fm >= 0.5) {
+            result = "FM5";
+        } else if (fm >= 0.1) {
+            result = "FM6";
+        } else if (fm >= 0.0) {
+            result = "FM7";
+        } else {
+            result = "FMU"; // unknown/unassigned
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -176,12 +176,12 @@ public class S2DPistachioTable implements S2DAtomDataTable {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

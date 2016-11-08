@@ -114,13 +114,13 @@ public class S2DSummaryData
     public S2DSummaryData(String name, String dataDir, Vector dataSets)
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryData.S2DSummaryData(" +
-	      name + " " + dataDir + ")");
+            System.out.println("S2DSummaryData.S2DSummaryData(" +
+                               name + " " + dataDir + ")");
         }
 
-	_name = name;
-	_dataDir = dataDir;
-    	_dataSets = dataSets;
+        _name = name;
+        _dataDir = dataDir;
+        _dataSets = dataSets;
     }
 
     //-------------------------------------------------------------------
@@ -130,57 +130,57 @@ public class S2DSummaryData
     public void writeSummaryData() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSummaryData.writeSummaryData()");
+            System.out.println("S2DSummaryData.writeSummaryData()");
             System.out.println("Data sets: ");
             for (int index = 0; index < _dataSets.size(); index++) {
                 S2DDatasetInfo info =
-		  (S2DDatasetInfo)_dataSets.elementAt(index);
+                    (S2DDatasetInfo)_dataSets.elementAt(index);
                 System.out.println("  " + info.getName() + "\t" +
-                  info.getDataSourceName() + "\t" + info.getYAttribute());
+                                   info.getDataSourceName() + "\t" + info.getYAttribute());
             }
         }
 
-	try {
-	    FileWriter writer = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + S2DNames.SUMMARY_DATA_SUFFIX +
-	        S2DNames.DAT_SUFFIX);
-	    writer.write("# Data: summary of available datasets for " +
-	      _name + " 3D visualization\n");
-	    writer.write("# Schema: bmrb-summary\n");
-	    writer.write("# Attributes: Entity_assembly_name; " +
-	      "Entity_assembly_ID; name; " +
-	      "Details; Sample; Sample_conditions; " +
-	      "data_source; y_attribute\n");
+        try {
+            FileWriter writer = S2DFileWriter.create(_dataDir +
+                                File.separator + _name + S2DNames.SUMMARY_DATA_SUFFIX +
+                                S2DNames.DAT_SUFFIX);
+            writer.write("# Data: summary of available datasets for " +
+                         _name + " 3D visualization\n");
+            writer.write("# Schema: bmrb-summary\n");
+            writer.write("# Attributes: Entity_assembly_name; " +
+                         "Entity_assembly_ID; name; " +
+                         "Details; Sample; Sample_conditions; " +
+                         "data_source; y_attribute\n");
             writer.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                         S2DMain.PEP_CGI_VERSION + "\n");
             writer.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    writer.write("#\n");
+                         S2DMain.getTimestamp() + "\n");
+            writer.write("#\n");
 
-	    // Sort metadata (fixes bug 081).
+            // Sort metadata (fixes bug 081).
             Collections.sort(_dataSets, new DataSetComparator());
 
             for (int index = 0; index < _dataSets.size(); index++) {
                 S2DDatasetInfo info =
-		  (S2DDatasetInfo)_dataSets.elementAt(index);
+                    (S2DDatasetInfo)_dataSets.elementAt(index);
                 writer.write(info.getEntityAssemblyName() + "\t" +
-		  info.getEntityAssemblyID() + "\t" +
-		  info.getName() + "\t" +
-		  info.getDetails() + "\t" +
-		  info.getSample() + "\t" +
-		  info.getSampleConditions() + "\t" +
-		  info.getDataSourceName() + "\t" +
-		  "$" + info.getYAttribute() + "\n");
-	    }
+                             info.getEntityAssemblyID() + "\t" +
+                             info.getName() + "\t" +
+                             info.getDetails() + "\t" +
+                             info.getSample() + "\t" +
+                             info.getSampleConditions() + "\t" +
+                             info.getDataSourceName() + "\t" +
+                             "$" + info.getYAttribute() + "\n");
+            }
 
-	    writer.close();
+            writer.close();
 
         } catch (IOException ex) {
-	    System.err.println("IOException writing summary data values: " +
-	      ex.toString());
-	    throw new S2DError("Can't write summary data values");
+            System.err.println("IOException writing summary data values: " +
+                               ex.toString());
+            throw new S2DError("Can't write summary data values");
 
-	}
+        }
     }
 
     //===================================================================
@@ -191,24 +191,24 @@ public class S2DSummaryData
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 
     //-------------------------------------------------------------------
     // Comparator for sorting S2DDatasetInfo Vectors.
-    class DataSetComparator implements Comparator 
+    class DataSetComparator implements Comparator
     {
         public int compare(Object o1, Object o2)
-	{
-	    String s1 = ((S2DDatasetInfo)o1).getEntityAssemblyName();
-	    String s2 = ((S2DDatasetInfo)o2).getEntityAssemblyName();
-	    return s1.compareTo(s2);
-	}
+        {
+            String s1 = ((S2DDatasetInfo)o1).getEntityAssemblyName();
+            String s2 = ((S2DDatasetInfo)o2).getEntityAssemblyName();
+            return s1.compareTo(s2);
+        }
     }
 }
 

@@ -124,9 +124,9 @@ public class S2DS2Pred {
 
     private class ResidueData {
         public String _entityAssemblyId;
-	public String _residueSeqCode;
-	public float _experimentalS2;
-	public float _predictedS2;
+        public String _residueSeqCode;
+        public float _experimentalS2;
+        public float _predictedS2;
     }
     private Vector _residueData = new Vector();
 
@@ -136,7 +136,7 @@ public class S2DS2Pred {
     //-------------------------------------------------------------------
     public static class S2PData {
         public String _pdbId;
-	public int _frameIndex;
+        public int _frameIndex;
     }
 
     //-------------------------------------------------------------------
@@ -145,111 +145,111 @@ public class S2DS2Pred {
     public static Vector FindData(String s2PName) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DS2Pred.FindData(" + s2PName + ")");
-	}
+            System.out.println("S2DS2Pred.FindData(" + s2PName + ")");
+        }
 
-	Vector s2PredData = new Vector();
+        Vector s2PredData = new Vector();
 
-	try {
-	    URL s2PredDir = new URL(S2DNames.S2PRED_URL);
-	    InputStream is = s2PredDir.openStream();
-	    BufferedReader reader =
-	      new BufferedReader(new InputStreamReader(is));
+        try {
+            URL s2PredDir = new URL(S2DNames.S2PRED_URL);
+            InputStream is = s2PredDir.openStream();
+            BufferedReader reader =
+                new BufferedReader(new InputStreamReader(is));
 
-	    Pattern pat = Pattern.compile(".*s2pred-" + s2PName +
-	      "-(.*)-(.*).out.*");
+            Pattern pat = Pattern.compile(".*s2pred-" + s2PName +
+                                          "-(.*)-(.*).out.*");
             if (doDebugOutput(21)) {
-	        System.out.println("s2predict pattern: " + pat);
-	    }
+                System.out.println("s2predict pattern: " + pat);
+            }
 
             String line;
-	    while ((line = reader.readLine()) != null) {
-		Matcher matcher = pat.matcher(line);
-		if (matcher.matches()) {
+            while ((line = reader.readLine()) != null) {
+                Matcher matcher = pat.matcher(line);
+                if (matcher.matches()) {
                     if (doDebugOutput(21)) {
-		        System.out.println("Line " + line +
-			  " matches s2predict pattern");
-		    }
-		    S2PData data = new S2PData();
-		    data._pdbId = matcher.group(1).toUpperCase();
-		    data._frameIndex = S2DUtils.string2Int(matcher.group(2));
-		    s2PredData.addElement(data);
-		}
-	    }
+                        System.out.println("Line " + line +
+                                           " matches s2predict pattern");
+                    }
+                    S2PData data = new S2PData();
+                    data._pdbId = matcher.group(1).toUpperCase();
+                    data._frameIndex = S2DUtils.string2Int(matcher.group(2));
+                    s2PredData.addElement(data);
+                }
+            }
 
-	    reader.close();
-	} catch(IOException ex) {
-	    throw new S2DError("Error (" + ex.toString() +
-	      ") reading s2predict output");
-	}
+            reader.close();
+        } catch(IOException ex) {
+            throw new S2DError("Error (" + ex.toString() +
+                               ") reading s2predict output");
+        }
 
-	return s2PredData;
+        return s2PredData;
     }
 
     //-------------------------------------------------------------------
     // Constructor.
     public S2DS2Pred(String name, String longName, String pdbId,
-      int coordIndex, int s2FrameIndex, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, String entityAssemblyId, String s2PName)
-      throws S2DException
+                     int coordIndex, int s2FrameIndex, String dataDir, String sessionDir,
+                     S2DSummaryHtml summary, String entityAssemblyId, String s2PName)
+    throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DS2Pred.S2DS2Pred(" + name + ", " +
-	      pdbId + ", " + coordIndex + ", " + s2FrameIndex + ", " +
-	      s2PName + ")");
-	}
+            System.out.println("S2DS2Pred.S2DS2Pred(" + name + ", " +
+                               pdbId + ", " + coordIndex + ", " + s2FrameIndex + ", " +
+                               s2PName + ")");
+        }
 
-	_name = name;
-	_longName = longName;
-	_pdbId = pdbId;
-	_coordIndex = coordIndex;
-	_frameIndex = s2FrameIndex;
-	_dataDir = dataDir;
-	_sessionDir = sessionDir;
-	_summary = summary;
-	_entityAssemblyId = entityAssemblyId;
+        _name = name;
+        _longName = longName;
+        _pdbId = pdbId;
+        _coordIndex = coordIndex;
+        _frameIndex = s2FrameIndex;
+        _dataDir = dataDir;
+        _sessionDir = sessionDir;
+        _summary = summary;
+        _entityAssemblyId = entityAssemblyId;
 
-	try {
-	    String filename = getFilename(s2PName, pdbId, s2FrameIndex);
-	    URL s2PredUrl = new URL(filename);
-	    InputStream is = s2PredUrl.openStream();
-	    BufferedReader reader =
-	      new BufferedReader(new InputStreamReader(is));
+        try {
+            String filename = getFilename(s2PName, pdbId, s2FrameIndex);
+            URL s2PredUrl = new URL(filename);
+            InputStream is = s2PredUrl.openStream();
+            BufferedReader reader =
+                new BufferedReader(new InputStreamReader(is));
 
             String line;
-	    while ((line = reader.readLine()) != null) {
-		String[] tokens = line.split("\t");
-	        if (tokens.length == 3) {
-		    ResidueData rd = new ResidueData();
-		    try {
-		        rd._entityAssemblyId = entityAssemblyId;
-		        rd._residueSeqCode = tokens[0];
-		        rd._experimentalS2 = Float.parseFloat(tokens[1]);
-		        rd._predictedS2 = Float.parseFloat(tokens[2]);
+            while ((line = reader.readLine()) != null) {
+                String[] tokens = line.split("\t");
+                if (tokens.length == 3) {
+                    ResidueData rd = new ResidueData();
+                    try {
+                        rd._entityAssemblyId = entityAssemblyId;
+                        rd._residueSeqCode = tokens[0];
+                        rd._experimentalS2 = Float.parseFloat(tokens[1]);
+                        rd._predictedS2 = Float.parseFloat(tokens[2]);
 
-			// For some reason, s2predict outputs everything
-			// as 1-the value, instead of just the value.
-			// So here we reverse the sense of the s2predict
-			// output, to make it match up with the original
-			// S2 values in the NMR-STAR file.
-			rd._experimentalS2 = 1.0f - rd._experimentalS2;
-			rd._predictedS2 = 1.0f - rd._predictedS2;
-		        _residueData.addElement(rd);
-		    } catch(NumberFormatException ex) {
-			System.out.println("Exception (" + ex.toString() +
-			  ") reading S2 values from s2predict output");
-		    }
-		} else {
-		    System.err.println(
-		      "Error parsing s2predict output line: " + line);
-		}
-	    }
+                        // For some reason, s2predict outputs everything
+                        // as 1-the value, instead of just the value.
+                        // So here we reverse the sense of the s2predict
+                        // output, to make it match up with the original
+                        // S2 values in the NMR-STAR file.
+                        rd._experimentalS2 = 1.0f - rd._experimentalS2;
+                        rd._predictedS2 = 1.0f - rd._predictedS2;
+                        _residueData.addElement(rd);
+                    } catch(NumberFormatException ex) {
+                        System.out.println("Exception (" + ex.toString() +
+                                           ") reading S2 values from s2predict output");
+                    }
+                } else {
+                    System.err.println(
+                        "Error parsing s2predict output line: " + line);
+                }
+            }
 
-	    reader.close();
-	} catch(IOException ex) {
-	    throw new S2DError("Error (" + ex.toString() +
-	      ") reading s2predict output");
-	}
+            reader.close();
+        } catch(IOException ex) {
+            throw new S2DError("Error (" + ex.toString() +
+                               ") reading s2predict output");
+        }
 
     }
 
@@ -258,69 +258,69 @@ public class S2DS2Pred {
     public void writeS2Pred() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DS2Pred.writeS2Pred()");
-	}
+            System.out.println("S2DS2Pred.writeS2Pred()");
+        }
 
-	try {
-	    //
-	    // Write the experimental and predicted S2 values to the data
-	    // file.
-	    //
-	    FileWriter writer = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + S2DNames.S2PRED_SUFFIX +
-	      _coordIndex + "-" + _frameIndex + S2DNames.DAT_SUFFIX);
+        try {
+            //
+            // Write the experimental and predicted S2 values to the data
+            // file.
+            //
+            FileWriter writer = S2DFileWriter.create(_dataDir +
+                                File.separator + _name + S2DNames.S2PRED_SUFFIX +
+                                _coordIndex + "-" + _frameIndex + S2DNames.DAT_SUFFIX);
 
-	    writer.write("# Data: s2pred values for " + _name + "\n");
-	    writer.write("# Schema: bmrb-s2pred\n");
-	    writer.write("# Attributes: Experimental_S2; Predicted_S2; " +
-	      "Residue_seq_code; Entity_assembly_ID\n");
-	    writer.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
-	    writer.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    writer.write("#\n");
+            writer.write("# Data: s2pred values for " + _name + "\n");
+            writer.write("# Schema: bmrb-s2pred\n");
+            writer.write("# Attributes: Experimental_S2; Predicted_S2; " +
+                         "Residue_seq_code; Entity_assembly_ID\n");
+            writer.write("# Peptide-CGI version: " +
+                         S2DMain.PEP_CGI_VERSION + "\n");
+            writer.write("# Generation date: " +
+                         S2DMain.getTimestamp() + "\n");
+            writer.write("#\n");
 
-	    for (int index = 0; index < _residueData.size(); index++) {
-	        ResidueData rd = (ResidueData)_residueData.elementAt(index);
-	        writer.write(rd._experimentalS2 + " " +
-		  rd._predictedS2 + " " +
-		  rd._residueSeqCode + " " +
-		  rd._entityAssemblyId + "\n");
-	    }
+            for (int index = 0; index < _residueData.size(); index++) {
+                ResidueData rd = (ResidueData)_residueData.elementAt(index);
+                writer.write(rd._experimentalS2 + " " +
+                             rd._predictedS2 + " " +
+                             rd._residueSeqCode + " " +
+                             rd._entityAssemblyId + "\n");
+            }
 
-	    writer.close();
+            writer.close();
 
-	    //
-	    // Write the session file.
-	    //
-	    String info = "Visualization of " + _longName;
-	    if (_pdbId != null) {
-	        info += " and PDB " + _pdbId;
-	    }
-	    String title = "S2 predicted vs. experimental values (" +
-	      "entity assembly " + _entityAssemblyId + ")";
+            //
+            // Write the session file.
+            //
+            String info = "Visualization of " + _longName;
+            if (_pdbId != null) {
+                info += " and PDB " + _pdbId;
+            }
+            String title = "S2 predicted vs. experimental values (" +
+                           "entity assembly " + _entityAssemblyId + ")";
             S2DSession.write(_sessionDir, S2DUtils.TYPE_S2PRED, _name,
-	      _name, _name, null, _coordIndex, _frameIndex, info, title,
-	      false, "", _pdbId);
+                             _name, _name, null, _coordIndex, _frameIndex, info, title,
+                             false, "", _pdbId);
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(), S2DUtils.TYPE_S2PRED, _name,
-	      _coordIndex, _frameIndex, title, "");
-	    specHtml.write();
+            //
+            // Write the session-specific html file.
+            //
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(), S2DUtils.TYPE_S2PRED, _name,
+                _coordIndex, _frameIndex, title, "");
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeS2Pred(_pdbId, _coordIndex, _frameIndex);
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writeS2Pred(_pdbId, _coordIndex, _frameIndex);
 
-	} catch(IOException ex) {
-	    System.err.println("IOException writing s2pred data: " +
-	      ex.toString());
-	    throw new S2DError("Can't write s2pred data");
-	}
+        } catch(IOException ex) {
+            System.err.println("IOException writing s2pred data: " +
+                               ex.toString());
+            throw new S2DError("Can't write s2pred data");
+        }
 
     }
 
@@ -331,11 +331,11 @@ public class S2DS2Pred {
     // Get the s2predict output filename for the given bmrbId, pdbId,
     // and S2 values frame index.
     private static String getFilename(String bmrbId, String pdbId,
-      int s2FrameIndex)
+                                      int s2FrameIndex)
     {
         String name = S2DNames.S2PRED_URL + "s2pred-" +
-	  bmrbId.toLowerCase() + "-" + pdbId.toLowerCase() + "-" +
-	  s2FrameIndex + ".out";
+                      bmrbId.toLowerCase() + "-" + pdbId.toLowerCase() + "-" +
+                      s2FrameIndex + ".out";
         return name;
     }
 
@@ -344,12 +344,12 @@ public class S2DS2Pred {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 

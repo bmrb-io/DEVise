@@ -132,73 +132,73 @@ public class S2DHetNOE {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DHetNOE(String name, String longName, S2DNmrStarIfc star,
-      SaveFrameNode frame, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
+                     SaveFrameNode frame, String dataDir, String sessionDir,
+                     S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DHetNOE.S2DHetNOE(" + name +
-	      ")");
-	}
+            System.out.println("S2DHetNOE.S2DHetNOE(" + name +
+                               ")");
+        }
 
         _name = name;
         _longName = longName;
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
-	_frameDetails = star.getFrameDetails(frame);
-	_sample = star.getFrameSample(frame);
-	_sampleConditions = star.getFrameSampleConditions(frame);
-	_starVersion = star.version();
+        _frameDetails = star.getFrameDetails(frame);
+        _sample = star.getFrameSample(frame);
+        _sampleConditions = star.getFrameSampleConditions(frame);
+        _starVersion = star.version();
 
-	//
-	// Get the values we need from the Star file.
-	// TEMP -- NMR-STAR 3.0 has two residues for each heternuclear
-	// NOE, so we should probably deal with that eventually.
-	//
+        //
+        // Get the values we need from the Star file.
+        // TEMP -- NMR-STAR 3.0 has two residues for each heternuclear
+        // NOE, so we should probably deal with that eventually.
+        //
 
-	// If a non-blank entityAssemblyID is specified, we need to filter
-	// the frame values to only take the ones corresponding to that
-	// entityAssemblyID.  To do that, we get the entityAssemblyID
-	// values in each row of the loop.  (entityAssemblyID will be blank
-	// when processing NMR-STAR 2.1 files -- they don't have data for
-	// more than one entity assembly in a single save frame).
-	String[] entityAssemblyIDs = null;
-	if (!entityAssemblyID.equals("")) {
-	    entityAssemblyIDs = star.getFrameValues(frame,
-	      star.HET_NOE_ENTITY_ASSEMBLY_ID_1,
-	      star.HET_NOE_ENTITY_ASSEMBLY_ID_1);
-	}
+        // If a non-blank entityAssemblyID is specified, we need to filter
+        // the frame values to only take the ones corresponding to that
+        // entityAssemblyID.  To do that, we get the entityAssemblyID
+        // values in each row of the loop.  (entityAssemblyID will be blank
+        // when processing NMR-STAR 2.1 files -- they don't have data for
+        // more than one entity assembly in a single save frame).
+        String[] entityAssemblyIDs = null;
+        if (!entityAssemblyID.equals("")) {
+            entityAssemblyIDs = star.getFrameValues(frame,
+                                                    star.HET_NOE_ENTITY_ASSEMBLY_ID_1,
+                                                    star.HET_NOE_ENTITY_ASSEMBLY_ID_1);
+        }
 
 //TEMP -- convert these to numerical values?
-	_resSeqCodes = star.getAndFilterFrameValues(frame,
-	  star.HET_NOE_VALUE, star.HET_NOE_RES_SEQ_CODE, entityAssemblyID,
-	  entityAssemblyIDs);
+        _resSeqCodes = star.getAndFilterFrameValues(frame,
+                       star.HET_NOE_VALUE, star.HET_NOE_RES_SEQ_CODE, entityAssemblyID,
+                       entityAssemblyIDs);
 
-	_resLabels = star.getAndFilterFrameValues(frame,
-	  star.HET_NOE_VALUE, star.HET_NOE_RES_LABEL, entityAssemblyID,
-	  entityAssemblyIDs);
+        _resLabels = star.getAndFilterFrameValues(frame,
+                     star.HET_NOE_VALUE, star.HET_NOE_RES_LABEL, entityAssemblyID,
+                     entityAssemblyIDs);
 
-	_hetNOEValues = star.getAndFilterFrameValues(frame,
-	  star.HET_NOE_VALUE, star.HET_NOE_VALUE, entityAssemblyID,
-	  entityAssemblyIDs);
+        _hetNOEValues = star.getAndFilterFrameValues(frame,
+                        star.HET_NOE_VALUE, star.HET_NOE_VALUE, entityAssemblyID,
+                        entityAssemblyIDs);
 
-	_hetNOEErrors = star.getAndFilterFrameValues(frame,
-	  star.HET_NOE_VALUE, star.HET_NOE_VALUE_ERR, entityAssemblyID,
-	  entityAssemblyIDs);
+        _hetNOEErrors = star.getAndFilterFrameValues(frame,
+                        star.HET_NOE_VALUE, star.HET_NOE_VALUE_ERR, entityAssemblyID,
+                        entityAssemblyIDs);
 
-	_entityAssemblyID = star.getEntityAssemblyID(frame,
-	  entityAssemblyID);
+        _entityAssemblyID = star.getEntityAssemblyID(frame,
+                            entityAssemblyID);
 
-	String frequency = star.getOneFrameValue(frame,
-	  star.HET_NOE_SPEC_FREQ_1H);
-	String atom1Name = star.getHetNOEAtom1(frame);
-	String atom2Name = star.getHetNOEAtom2(frame);
+        String frequency = star.getOneFrameValue(frame,
+                           star.HET_NOE_SPEC_FREQ_1H);
+        String atom1Name = star.getHetNOEAtom1(frame);
+        String atom2Name = star.getHetNOEAtom2(frame);
 
-	if (atom1Name.indexOf("not available") != -1) atom1Name = "?";
-	if (atom2Name.indexOf("not available") != -1) atom2Name = "?";
-	_shortName = "Het NOE (" + frequency + ") " + atom1Name +
-	  " " + atom2Name;
-	_title = frequency + " MHz " + atom1Name + " " + atom2Name;
+        if (atom1Name.indexOf("not available") != -1) atom1Name = "?";
+        if (atom2Name.indexOf("not available") != -1) atom2Name = "?";
+        _shortName = "Het NOE (" + frequency + ") " + atom1Name +
+                     " " + atom2Name;
+        _title = frequency + " MHz " + atom1Name + " " + atom2Name;
     }
 
     //-------------------------------------------------------------------
@@ -206,66 +206,66 @@ public class S2DHetNOE {
     public void writeHetNOE(int frameIndex) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DHetNOE.writeHetNOE()");
-	}
+            System.out.println("S2DHetNOE.writeHetNOE()");
+        }
 
-	try {
-	    //
-	    // Write the heteronuclear NOE values to the data file.
-	    //
+        try {
+            //
+            // Write the heteronuclear NOE values to the data file.
+            //
             FileWriter hetNOEWriter = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + S2DNames.HETERONUCLEAR_NOE_SUFFIX +
-	      frameIndex + S2DNames.DAT_SUFFIX);
+                                      File.separator + _name + S2DNames.HETERONUCLEAR_NOE_SUFFIX +
+                                      frameIndex + S2DNames.DAT_SUFFIX);
 
-	    hetNOEWriter.write("# Data: heteronuclear NOE for " + _name + "\n");
-	    hetNOEWriter.write("# Schema: bmrb-NOE\n");
-	    hetNOEWriter.write("# Attributes: NOE_value; NOE_error; " +
-	      "Residue_seq_code; Residue_label; Entity_assembly_ID;\n");
+            hetNOEWriter.write("# Data: heteronuclear NOE for " + _name + "\n");
+            hetNOEWriter.write("# Schema: bmrb-NOE\n");
+            hetNOEWriter.write("# Attributes: NOE_value; NOE_error; " +
+                               "Residue_seq_code; Residue_label; Entity_assembly_ID;\n");
             hetNOEWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
+                               S2DMain.PEP_CGI_VERSION + "\n");
             hetNOEWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    hetNOEWriter.write("#\n");
+                               S2DMain.getTimestamp() + "\n");
+            hetNOEWriter.write("#\n");
 
-	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        hetNOEWriter.write(_hetNOEValues[index] + " " +
-		  _hetNOEErrors[index] + " " +
-		  _resSeqCodes[index] + " " +
-		  _resLabels[index] + " " +
-		  _entityAssemblyID + "\n");
-	    }
+            for (int index = 0; index < _resSeqCodes.length; index++) {
+                hetNOEWriter.write(_hetNOEValues[index] + " " +
+                                   _hetNOEErrors[index] + " " +
+                                   _resSeqCodes[index] + " " +
+                                   _resLabels[index] + " " +
+                                   _entityAssemblyID + "\n");
+            }
 
-	    hetNOEWriter.close();
+            hetNOEWriter.close();
 
-	    //
-	    // Write the session file.
-	    //
-	    String info = "Visualization of " + _longName;
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_HETNOE,
-	      _name, frameIndex, info, _title, true, _starVersion, "");
+            //
+            // Write the session file.
+            //
+            String info = "Visualization of " + _longName;
+            S2DSession.write(_sessionDir, S2DUtils.TYPE_HETNOE,
+                             _name, frameIndex, info, _title, true, _starVersion, "");
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    String fullTitle = _title + " (entity assembly " +
-	      _entityAssemblyID + ")";
-	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(), S2DUtils.TYPE_HETNOE,
-	      _name, frameIndex, fullTitle, _frameDetails);
-	    specHtml.write();
+            //
+            // Write the session-specific html file.
+            //
+            String fullTitle = _title + " (entity assembly " +
+                               _entityAssemblyID + ")";
+            S2DSpecificHtml specHtml = new S2DSpecificHtml(
+                _summary.getHtmlDir(), S2DUtils.TYPE_HETNOE,
+                _name, frameIndex, fullTitle, _frameDetails);
+            specHtml.write();
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeHetNOE(_title, frameIndex, _entityAssemblyID,
-	      _resSeqCodes.length);
+            //
+            // Write the link in the summary html file.
+            //
+            _summary.writeHetNOE(_title, frameIndex, _entityAssemblyID,
+                                 _resSeqCodes.length);
 
         } catch(IOException ex) {
-	    System.err.println(
-	      "IOException writing heteronuclear NOE values: " +
-	      ex.toString());
-	    throw new S2DError("Can't write heteronuclear NOE values");
-	}
+            System.err.println(
+                "IOException writing heteronuclear NOE values: " +
+                ex.toString());
+            throw new S2DError("Can't write heteronuclear NOE values");
+        }
     }
 
     //-------------------------------------------------------------------
@@ -275,15 +275,15 @@ public class S2DHetNOE {
      * @param The frame index.
      */
     public void addHetNOEData(Vector dataSets, int frameIndex,
-      int polymerType)
+                              int polymerType)
     {
         // Note: attribute names must match the bmrb-NOE schema.
-	String dataSource = _name +
-	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex;
-	String dataName = _shortName + " [" + _entityAssemblyID + "]";
+        String dataSource = _name +
+                            S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex;
+        String dataName = _shortName + " [" + _entityAssemblyID + "]";
         dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
-	  _sample, _sampleConditions, dataSource, "NOE_value", "bmrb-NOE",
-	  "NOE", _entityAssemblyID, polymerType));
+                                               _sample, _sampleConditions, dataSource, "NOE_value", "bmrb-NOE",
+                                               "NOE", _entityAssemblyID, polymerType));
     }
 
     //===================================================================
@@ -294,12 +294,12 @@ public class S2DHetNOE {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
-    	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
-	    return true;
-	}
+        if (DEBUG >= level || S2DMain._verbosity >= level) {
+            if (level > 0) System.out.print("DEBUG " + level + ": ");
+            return true;
+        }
 
-	return false;
+        return false;
     }
 }
 
