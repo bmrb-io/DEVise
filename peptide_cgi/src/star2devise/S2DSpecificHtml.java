@@ -237,8 +237,8 @@ public class S2DSpecificHtml {
         _replaceString1b =  _fullName + _dataSuffix +
                             _frameIndexStr + S2DNames.HTML_SUFFIX;
 
-        _replaceString1c =  _fullName + _dataSuffix +
-                            _frameIndexStr + S2DNames.JNLP_SUFFIX;
+        _replaceString1c =  _name + File.separator + _fullName + _dataSuffix +
+                          _frameIndexStr + S2DNames.JNLP_SUFFIX;
 
         _replaceString2 = _fullName;
         String helpSuffix = _dataSuffix;
