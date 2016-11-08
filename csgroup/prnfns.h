@@ -79,8 +79,8 @@
 #define _PRNFNS_H
 
 #ifdef __tcltk
-#include "tcl.h"
-#include "tk.h"
+#include "<tk/tk.h>"
+#include "<tch/tcl.h>"
 
 extern Tcl_Interp *interp;
 #endif /* __tcltk */

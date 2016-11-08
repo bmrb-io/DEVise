@@ -65,7 +65,7 @@ using namespace std;
 #include <fstream>
 #include <stdlib.h>
 #include <string.h>
-#include <tcl.h>
+#include <tcl/tcl.h>
 
 #include "sec.h"
 #include "tapedrive.h"

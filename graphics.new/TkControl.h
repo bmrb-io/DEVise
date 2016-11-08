@@ -169,8 +169,8 @@
 
 #define OPEN_TEST_FILE 1
 
-#include <tcl.h>
-#include <tk.h>
+#include <tcl/tcl.h>
+#include <tk/tk.h>
 #if OPEN_TEST_FILE
 #include <fcntl.h>
 #endif
