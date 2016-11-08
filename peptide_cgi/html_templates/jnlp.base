@@ -9,12 +9,11 @@
         <j2se version="1.7+" href="http://java.sun.com/products/autodl/j2se" />
         <jar href="devise_js.jar" main="true" />
     </resources>
-    <application-desc name="DEVise JavaScreen" main-class="JavaScreen.js"
-        width="800" height="600">
+    <application-desc name="DEVise JavaScreen" main-class="JavaScreen.js" width="800" height="600">
         <argument>-usecgi</argument>
-        <argument>-cgiurl /cgi-bin/devise/js.cgi</argument>
-        <argument>-host DEVISE_HOST</argument>
-        <argument>-session ENTRY_IDd1.ds</argument>
+        <argument>-cgiurl/cgi-bin/devise/js.cgi</argument>
+        <argument>-hostDEVISE_HOST</argument>
+        <argument>-sessionbmrb/dynamic_sessions/ENTRY_IDd1.ds</argument>
     </application-desc>
     <update check="background"/>
 </jnlp>
