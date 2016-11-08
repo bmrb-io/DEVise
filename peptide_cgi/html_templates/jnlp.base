@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="CODEBASE" href="peptide-cgi/html/ENTRY_IDd1.jnlp">
+<jnlp spec="1.0+" codebase="CODEBASE" href="peptide-cgi/html/ENTRY_ID/ENTRY_IDd1.jnlp">
     <information>
         <title>DEVise JavaScreen Java Web Start</title>
         <vendor>BioMagResBank</vendor>

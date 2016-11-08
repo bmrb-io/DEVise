@@ -42,7 +42,6 @@ public class S2DSpecificHtml {
 
     private static final String searchString1 = "ENTRY_IDd1.ds";
     private static final String searchString1b = "ENTRY_IDd1.html";
-    private static final String searchString1c = "ENTRY_IDd1.jnlp";
     private static final String searchString2 = "bmrENTRY_ID.str";
     private static final String searchString3 = "HELP_FILE.html";
     private static final String searchString4 = "DUMMY_TITLE";
@@ -53,9 +52,11 @@ public class S2DSpecificHtml {
     private static final String searchString8 = "CGI_URL";
     private static final String searchString9 = "EXAMPLE_ID";
 
+    // Allow substiting the plain entry ID
+    private static final String searchString10 = "ENTRY_ID";
+
     private String _replaceString1;
     private String _replaceString1b;
-    private String _replaceString1c;
     private String _replaceString2;
     private String _replaceString3;
     private String _replaceString4;
@@ -64,6 +65,7 @@ public class S2DSpecificHtml {
     private String _replaceString7;
     private String _replaceString8;
     private String _replaceString9;
+    private String _replaceString10;
 
     private boolean _multiEntry = false;
     private boolean _isJmol = false;
@@ -177,8 +179,6 @@ public class S2DSpecificHtml {
                                 _replaceString1);
         line = S2DUtils.replace(line, searchString1b,
                                 _replaceString1b);
-        line = S2DUtils.replace(line, searchString1c,
-                                _replaceString1c);
         line = S2DUtils.replace(line, searchString2,
                                 _replaceString2);
         line = S2DUtils.replace(line, searchString3,
@@ -195,6 +195,8 @@ public class S2DSpecificHtml {
                                 _replaceString8);
         line = S2DUtils.replace(line, searchString9,
                                 _replaceString9);
+        line = S2DUtils.replace(line, searchString10,
+                                _replaceString10);
         if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS ||
                 _dataType == S2DUtils.TYPE_PISTACHIO ||
                 _dataType == S2DUtils.TYPE_AMBIGUITY) {
@@ -236,10 +238,6 @@ public class S2DSpecificHtml {
                           _frameIndexStr + S2DNames.SESSION_SUFFIX;
         _replaceString1b =  _fullName + _dataSuffix +
                             _frameIndexStr + S2DNames.HTML_SUFFIX;
-
-        _replaceString1c =  _name + File.separator + _fullName + _dataSuffix +
-                          _frameIndexStr + S2DNames.JNLP_SUFFIX;
-
         _replaceString2 = _fullName;
         String helpSuffix = _dataSuffix;
         if (dataType == S2DUtils.TYPE_DNA_DELTASHIFT ||
@@ -263,6 +261,8 @@ public class S2DSpecificHtml {
         _replaceString8 = S2DNames.CGI_URL;
 
         _replaceString9 = _isUvd ? S2DMain.DEFAULT_ACCESSION_NUM : name;
+
+        _replaceString10 = name;
     }
 
     //-------------------------------------------------------------------
