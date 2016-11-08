@@ -44,7 +44,7 @@ public class S2DMain {
     // Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.4.7x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.4.8"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.8";
 
@@ -268,7 +268,7 @@ public class S2DMain {
         if (_retrying) {
             s2d._pdbLevel = PDB_LEVEL_NONE;
             s2d._csrLevel = CSR_LEVEL_NONE;
-            s2d._lacsLevel = LACS_LEVEL_NONE;
+            s2d._lacsLevel = LACS_LCODEBASEEVEL_NONE;
             s2d._tarLevel = TAR_LEVEL_NONE;
             s2d._rrTarLevel = RRTAR_LEVEL_NONE;
             s2d._distRLevel = DISTR_LEVEL_NONE;

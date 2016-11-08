@@ -41,6 +41,9 @@ probably be the domain name of your web site.
 OUTPUT_WEB_DOMAIN:  the domain name of your web site (the web site on
 which Peptide-CGI will be used).
 
+CODEBASE: The full URL of the location of the root directory in which
+the DEVise sessions and JNLP files can be found.
+
 STAR_URL:  the URL for the directory containing NMR-STAR files
 corresponding to complete BMRB entries.  You should almost certainly
 leave this variable set to the default value.  This value should
