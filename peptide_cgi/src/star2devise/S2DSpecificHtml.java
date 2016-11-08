@@ -42,6 +42,7 @@ public class S2DSpecificHtml {
 
     private static final String searchString1 = "ENTRY_IDd1.ds";
     private static final String searchString1b = "ENTRY_IDd1.html";
+    private static final String searchString1c = "ENTRY_IDd1.jnlp";
     private static final String searchString2 = "bmrENTRY_ID.str";
     private static final String searchString3 = "HELP_FILE.html";
     private static final String searchString4 = "DUMMY_TITLE";
@@ -57,6 +58,7 @@ public class S2DSpecificHtml {
 
     private String _replaceString1;
     private String _replaceString1b;
+    private String _replaceString1c;
     private String _replaceString2;
     private String _replaceString3;
     private String _replaceString4;
@@ -179,6 +181,8 @@ public class S2DSpecificHtml {
                                 _replaceString1);
         line = S2DUtils.replace(line, searchString1b,
                                 _replaceString1b);
+        line = S2DUtils.replace(line, searchString1c,
+                                _replaceString1c);
         line = S2DUtils.replace(line, searchString2,
                                 _replaceString2);
         line = S2DUtils.replace(line, searchString3,
@@ -238,6 +242,8 @@ public class S2DSpecificHtml {
                           _frameIndexStr + S2DNames.SESSION_SUFFIX;
         _replaceString1b =  _fullName + _dataSuffix +
                             _frameIndexStr + S2DNames.HTML_SUFFIX;
+        _replaceString1c =  _fullName + _dataSuffix +
+                            _frameIndexStr + S2DNames.JNLP_SUFFIX;
         _replaceString2 = _fullName;
         String helpSuffix = _dataSuffix;
         if (dataType == S2DUtils.TYPE_DNA_DELTASHIFT ||
