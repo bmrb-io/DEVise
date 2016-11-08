@@ -3,8 +3,8 @@
     <information>
         <title>DEVise JavaScreen Java Web Start</title>
         <vendor>BioMagResBank</vendor>
+        <homepage href="CODEBASE" />
     </information>
-    <homepage href="CODEBASE" />
     <resources>
         <j2se version="1.7+" href="http://java.sun.com/products/autodl/j2se" />
         <jar href="devise_js.jar" main="true" />
