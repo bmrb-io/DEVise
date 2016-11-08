@@ -76,7 +76,7 @@
     <form method="get" name="get_by_bmrb" action="CGI_URL">
       <label for="number">Enter a BMRB accession number (e.g., EXAMPLE_ID)
         to generate visualizations for that entry
-	<b><font color="red">(for released entries only)</font></b></label>
+    <b><font color="red">(for released entries only)</font></b></label>
       <p>
       <input type="text" name="number" id="number" size="5" value="EXAMPLE_ID">
       <input type="submit" value="View data">
@@ -87,6 +87,8 @@
   <br>
   <div class="content">
     <center>
+        <a href="ENTRY_IDd1.jnlp">Click here to launch DEVise for this visualization</a>
+        <!-- By commenting this out we don't break the tests
     <object type="application/x-java-applet" height="30" width="400">
       <param name="code" value="JavaScreen.jsa">
       <param name="archive" value="../../../devise_js.jar">
@@ -96,7 +98,6 @@
       <param name="cmdport" value="6666">
       <param name="cgiurl" value="/cgi-bin/devise/js.cgi">
       <param name="rubberbandlimit" value="4x4">
-      <!-- old bgcolor     <param name="bgcolor" value="64+96+0"> -->
       <param name="bgcolor" value="0+0+0">
       <param name="screensize" value="800x600">
       <param name="hidebmrbsess" value="1">
@@ -105,7 +106,7 @@
       <p>If you are using IE 8, you may need to restart your browser to
       enable add-ons.</p>
       <hr>
-    </object>
+    </object>-->
     </center>
     <h3>3D rendering by <a href="http://jmol.sourceforge.net/">Jmol</a></h3>
     <h3>
