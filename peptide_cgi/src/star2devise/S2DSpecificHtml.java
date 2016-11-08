@@ -17,86 +17,6 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.30  2013/03/19 19:10:26  wenger
-// Changed the default BMRB accession number in the web forms to
-// 15381; when you visualize a specific entry, that entry's accession
-// number becomes the default in the forms associated with that entry.
-// (Note: still needs approval from Eldon.)
-//
-// Revision 1.29  2013/03/14 18:36:21  wenger
-// To-do 181:  merged the Jmol and non-Jmol visualization page templates.
-//
-// Revision 1.28  2012/11/21 21:18:03  wenger
-// Merged vis_examples_br_0 thru vis_examples_br_2 to trunk.
-//
-// Revision 1.27.6.1  2012/11/14 22:49:26  wenger
-// Added form to enter accession number to visualization-specific pages.
-//
-// Revision 1.27  2011/12/28 21:08:03  wenger
-// Updated selection pages, per-visualization pages (but not histograms),
-// and help pages to the new layout and color scheme.
-//
-// Revision 1.26  2011/09/19 19:14:42  wenger
-// Fixed tutorial video links for the visualization server.
-//
-// Revision 1.25  2011/05/23 19:47:17  wenger
-// Added S2 predicted vs. experimental help page; fixed some minor problems
-// with the s2 predicted vs. experiemental html page.
-//
-// Revision 1.24  2011/05/19 19:46:09  wenger
-// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
-//
-// Revision 1.23.2.1  2011/04/06 19:53:36  wenger
-// We now create the specific html files for the s2predicted visualizations.
-//
-// Revision 1.23  2011/01/07 22:10:28  wenger
-// Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
-//
-// Revision 1.22.2.3  2011/01/04 19:19:37  wenger
-// Added two-entry help pages (still need changes to the text) and changed
-// the specific HTML code so that two-entry pages link to the right help
-// pages.
-//
-// Revision 1.22.2.2  2010/12/16 00:11:07  wenger
-// Changed how we come up with the list of available data for each
-// entry so that we don't need the -force option anymore for multi-entry
-// processing.
-//
-// Revision 1.22.2.1  2010/12/07 23:43:49  wenger
-// Merged s2d_multi_entry_br_0 thru s2d_multi_entry_br_1 to
-// s2d_multi_entry2_br.
-//
-// Revision 1.22  2010/12/07 17:41:16  wenger
-// Did another version history purge.
-//
-// Revision 1.21.8.2  2010/11/16 00:01:17  wenger
-// We now create a "two-entry" summary HTML page (but it doesn't have the
-// right links yet); added "two-entry" HTML pages to the tests.
-//
-// Revision 1.21.8.1  2010/11/13 00:05:25  wenger
-// Basic creation of session-specific HTML pages for two-entry
-// visualizations is now in place (includes removing some leftover
-// provisions for the "large" specific HTML files).
-//
-// Revision 1.21  2010/09/01 18:49:56  wenger
-// Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
-//
-// Revision 1.20.2.1  2010/07/29 17:58:42  wenger
-// Added specification of the JS command port to the configuration, and
-// made other changes so that the "test" Peptide-CGI setup at CS can use
-// the "test" JavaScreen installation.
-//
-// Revision 1.20  2010/07/07 20:54:13  wenger
-// Changed Peptide-CGI to work with new JavaScreen re-sizing feature
-// (since the user can now re-size the JS, we don't generate html
-// pages for different sizes of visualization; this also includes
-// eliminating the different-size pages for the histograms).
-//
-// ...
-
 // ========================================================================
 
 package star2devise;
@@ -122,6 +42,7 @@ public class S2DSpecificHtml {
 
     private static final String searchString1 = "ENTRY_IDd1.ds";
     private static final String searchString1b = "ENTRY_IDd1.html";
+    private static final String searchString1c = "ENTRY_IDd1.jnlp";
     private static final String searchString2 = "bmrENTRY_ID.str";
     private static final String searchString3 = "HELP_FILE.html";
     private static final String searchString4 = "DUMMY_TITLE";
@@ -134,6 +55,7 @@ public class S2DSpecificHtml {
 
     private String _replaceString1;
     private String _replaceString1b;
+    private String _replaceString1c;
     private String _replaceString2;
     private String _replaceString3;
     private String _replaceString4;
@@ -213,8 +135,9 @@ public class S2DSpecificHtml {
         }
 
         // Write the "normal size" file.
-        String templateFile = TemplateFileName();
-        writeOne(templateFile);
+        String templateFile = TemplateFileName("specific_html_jmol.base");
+        String templateJNLPFile = TemplateFileName("jnlp.base");
+        writeOne(templateFile, templateJNLPFile);
     }
 
     //===================================================================
@@ -222,7 +145,7 @@ public class S2DSpecificHtml {
 
     //-------------------------------------------------------------------
     // Get the template file name.
-    protected String TemplateFileName()
+    protected String TemplateFileName(String template_name)
     {
         _isJmol = (_dataType == S2DUtils.TYPE_ATOMIC_COORDS) ||
                   (_dataType == S2DUtils.TYPE_TORSION_ANGLE) ||
@@ -231,18 +154,16 @@ public class S2DSpecificHtml {
                   (_dataType == S2DUtils.TYPE_RRDIST_RESTR);
 
         String templateFile = "html_templates" + File.separator;
-        templateFile += "specific_html_jmol.base";
+        templateFile += template_name;
 
         return templateFile;
     }
 
-    //-------------------------------------------------------------------
-    // Get the output file name we need to generate.
-    protected String OutFileName() throws S2DError
+    protected String OutFileName(String suffix) throws S2DError
     {
         String outFileName = _htmlDir + File.separator + _name +
                              File.separator + _fullName + _dataSuffix + _frameIndexStr +
-                             S2DNames.HTML_SUFFIX;
+                             suffix;
         return outFileName;
     }
 
@@ -256,6 +177,8 @@ public class S2DSpecificHtml {
                                 _replaceString1);
         line = S2DUtils.replace(line, searchString1b,
                                 _replaceString1b);
+        line = S2DUtils.replace(line, searchString1c,
+                                _replaceString1c);
         line = S2DUtils.replace(line, searchString2,
                                 _replaceString2);
         line = S2DUtils.replace(line, searchString3,
@@ -314,6 +237,9 @@ public class S2DSpecificHtml {
         _replaceString1b =  _fullName + _dataSuffix +
                             _frameIndexStr + S2DNames.HTML_SUFFIX;
 
+        _replaceString1c =  _fullName + _dataSuffix +
+                            _frameIndexStr + S2DNames.JNLP_SUFFIX;
+
         _replaceString2 = _fullName;
         String helpSuffix = _dataSuffix;
         if (dataType == S2DUtils.TYPE_DNA_DELTASHIFT ||
@@ -340,12 +266,12 @@ public class S2DSpecificHtml {
     }
 
     //-------------------------------------------------------------------
-    private void writeOne(String templateFile)
+    private void writeOne(String templateFile, String templateJNLPFile)
     throws S2DException
     {
         try {
             FileWriter writer = S2DFileWriter.create(
-                                    OutFileName());
+                                    OutFileName(S2DNames.HTML_SUFFIX));
             BufferedReader reader = new BufferedReader(
                 new FileReader(templateFile));
 
@@ -380,6 +306,30 @@ public class S2DSpecificHtml {
             System.err.println("IOException: " +
                                ex.toString() + " writing specific html file");
             throw new S2DError("Can't write specific html file");
+        }
+
+
+        // Write out the JNLP file in the same style
+        try {
+            FileWriter writer = S2DFileWriter.create(
+                                    OutFileName(S2DNames.JNLP_SUFFIX));
+            BufferedReader reader = new BufferedReader(
+                new FileReader(templateJNLPFile));
+
+            String inLine;
+            while ((inLine = reader.readLine()) != null) {
+                String outLine = FilterLine(inLine);
+                outLine = S2DUtils.replace(outLine, "DEVISE_HOST", S2DNames.HOST);
+                outLine = S2DUtils.replace(outLine, "CODEBASE", S2DNames.CODEBASE);
+                writer.write(outLine + "\n");
+            }
+
+            reader.close();
+            writer.close();
+        } catch(IOException ex) {
+            System.err.println("IOException: " +
+                               ex.toString() + " writing specific JNLP file");
+            throw new S2DError("Can't write specific JNLP file");
         }
     }
 

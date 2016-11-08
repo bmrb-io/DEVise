@@ -18,30 +18,6 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.373  2015/06/15 20:32:22  wenger
-// Changed config for pacu and piranha to put DEVise data, sessions, and
-// html files into shared directory
-// (/website/htdocs/vis_serv/upload_data/devise) so that visualization
-// server IDs will work across failover.
-//
-// Revision 1.372  2015/06/05 20:41:02  wenger
-// Changed version to 12.4.7x0, added 12.4.7 version history section.
-//
-// Revision 1.371  2015/05/12 20:09:59  wenger
-// Changed version to 12.4.6 for release.
-//
-// Revision 1.370  2015/05/11 20:45:45  wenger
-// Fixed JS_CLIENT_MIN_VERSION.
-//
-// Revision 1.369  2015/05/08 18:03:20  wenger
-// Merged mod_perl_br_0 thru mod_perl_br_1 to trunk.
-//
-// Revision 1.368.2.1  2015/04/30 21:16:17  wenger
-// Modified Peptide-CGI to generate html files with new CGI script path
-// for mod_perl.
 //
 // ========================================================================
 
@@ -569,6 +545,18 @@ public class S2DMain {
         if (S2DNames.BMRB_STAR_URL == null) {
             throw new S2DError("Unable to get value for " +
                                "bmrb_mirror.star_url property");
+        }
+
+        S2DNames.HOST = props.getProperty("bmrb_mirror.host");
+        if (S2DNames.HOST == null) {
+            throw new S2DError("Unable to get value for " +
+                               "bmrb_mirror.host property");
+        }
+
+        S2DNames.CODEBASE = props.getProperty("bmrb_mirror.codebase");
+        if (S2DNames.CODEBASE == null) {
+            throw new S2DError("Unable to get value for " +
+                               "bmrb_mirror.codebase property");
         }
 
         S2DNames.MMCIF_TEMPLATE = props.getProperty("bmrb_mirror.mmcif_template");

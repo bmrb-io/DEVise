@@ -16,73 +16,6 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.22.4.1  2013/10/22 19:45:08  wenger
-// Merged peak_lists_br_0 thru peak_lists_br_2 to peak_lists2_br.
-//
-// Revision 1.22.2.1  2013/05/20 23:53:01  wenger
-// We now partially create the NMR-STAR output containing the peak lists.
-//
-// Revision 1.22  2012/12/06 01:14:07  wenger
-// We now get mmCIF files from the "divided" rather than "all" directory.
-//
-// Revision 1.21  2011/10/31 20:18:37  wenger
-// In the S2 predicted vs. experimental visualizations the secondary
-// structures are now obtained from DSSP output files instead of from the
-// chemical shift reference back calculations.
-//
-// Revision 1.20  2011/05/19 19:46:09  wenger
-// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
-//
-// Revision 1.19.2.3  2011/04/12 21:43:08  wenger
-// More cleanup.
-//
-// Revision 1.19.2.2  2011/04/06 19:53:36  wenger
-// We now create the specific html files for the s2predicted visualizations.
-//
-// Revision 1.19.2.1  2011/03/30 19:53:15  wenger
-// The basic framework for s2 experimental vs. predicted processing is
-// now in place.
-//
-// Revision 1.19  2011/01/07 22:10:28  wenger
-// Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
-//
-// Revision 1.18.2.1  2010/12/16 00:11:07  wenger
-// Changed how we come up with the list of available data for each
-// entry so that we don't need the -force option anymore for multi-entry
-// processing.
-//
-// Revision 1.18  2010/12/07 17:41:15  wenger
-// Did another version history purge.
-//
-// Revision 1.17  2010/09/01 18:49:56  wenger
-// Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
-//
-// Revision 1.16.2.1  2010/07/29 17:58:42  wenger
-// Added specification of the JS command port to the configuration, and
-// made other changes so that the "test" Peptide-CGI setup at CS can use
-// the "test" JavaScreen installation.
-//
-// Revision 1.16  2010/04/23 16:51:06  wenger
-// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
-//
-// Revision 1.15.2.2  2010/03/03 19:07:47  wenger
-// We now output total and violated restraint counts for intra-residue,
-// sequential, etc., so we can select on those in the visualization.
-//
-// Revision 1.15.2.1  2010/02/24 20:03:06  wenger
-// Got basic generation of distance restraint data from the restraints
-// grid mostly working.
-//
-// Revision 1.15  2010/02/11 22:13:11  wenger
-// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
-// to trunk (note: s2d_remediated_rest_1002_br_1 ==
-// s2d_remediated_rest_1002_br_end).
-//
-// ...
-
 // ========================================================================
 
 package star2devise;
@@ -117,6 +50,12 @@ public class S2DNames
     // Misc. values.
     //
     public static final String PROTEIN = "protein";
+
+    //
+    // Server hostname
+    //
+    public static String HOST = "www.bmrb.wisc.edu";
+    public static String CODEBASE = "http://www.bmrb.wisc.edu/devise/";
 
     //
     // URL for getting NMR-STAR files from BMRB.  Note: this will be
@@ -274,6 +213,9 @@ public class S2DNames
     //
     public static final String HTML_SUFFIX = ".html";
     public static final String SUMMARY_HTML_SUFFIX = "y";
+
+    // JNLP suffixes
+    public static final String JNLP_SUFFIX = ".jnlp";
 
     //
     // Session file suffixes.
