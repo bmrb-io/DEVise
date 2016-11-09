@@ -25,9 +25,10 @@
 #-----------------------------------------------------------
 # Check and get the arguments.
 
-if ($#argv != 5) then
+if ($#argv != 7) then
   echo "Usage: install_histogram <dev_demo_home> <www_home>"
   echo "  <histogram_data_home> <histogram_html_home> <pep_html_home>"
+  echo "  <codebase> <host>"
   exit 1;
 endif
 
