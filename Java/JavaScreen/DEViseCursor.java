@@ -20,78 +20,10 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.23  2008/07/17 20:28:00  wenger
-// (Mostly) fixed bug 968 (JavaScreen doesn't correctly handle cursors
-// that are entirely outside the destination view's visual filter).
-//
-// Revision 1.22  2003/01/13 19:23:43  wenger
-// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
-//
-// Revision 1.21.8.1  2002/08/01 17:38:22  wenger
-// Massive reorganization of axis labeling and mouse location display
-// code: both now use common number formatting code, which uses DecimalFormat
-// to do the actual work; axis tick locations are calculated differently,
-// so we don't try to draw out-of-window ticks; tick labels are constrained
-// to fit within views; etc., etc.
-//
-// Revision 1.21  2001/05/11 20:36:06  wenger
-// Set up a package for the JavaScreen code.
-//
-// Revision 1.20  2000/06/27 16:44:45  wenger
-// Considerably cleaned up and simplified the cursor-related code; moved
-// cursor grid implementation from the DEViseCanvas class to the DEViseCursor
-// class.
-//
-// Revision 1.19  2000/05/12 20:43:56  wenger
-// Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
-// classes and cleaned up the code; commented out unused code; added
-// named constants for location of mouse pointer on a DEVise cursor.
-//
-// Revision 1.18  2000/04/07 22:43:13  wenger
-// Improved shading of atoms (it now works on white atoms); added comments
-// based on meeting with Hongyu on 2000-04-06.
-//
-// Revision 1.17  2000/04/05 06:25:39  hongyu
-// fix excessive memory usage problem associated with gdata
-//
-// Revision 1.16  2000/03/23 16:26:14  wenger
-// Cleaned up headers and added requests for comments.
-//
-// Revision 1.15  2000/02/16 08:53:58  hongyu
-// *** empty log message ***
-//
-// Revision 1.14  1999/10/12 00:08:43  hongyu
-// *** empty log message ***
-//
-// Revision 1.13  1999/10/10 08:49:52  hongyu
-// Major changes to JAVAScreen have been commited in this update, including:
-// 1. restructure of JavaScreen internal structure to adapt to vast changes
-//    in DEVise and also prepare to future upgrade
-// 2. Fix a number of bugs in visualization and user interaction
-// 3. Add a number of new features in visualization and user interaction
-// 4. Add support for complicated 3D molecular view
-//
-// Revision 1.12  1999/08/19 07:21:06  hongyu
-// *** empty log message ***
-//
-// Revision 1.11  1999/08/03 05:56:49  hongyu
-// bug fixes    by Hongyu Yao
-//
-// Revision 1.10  1999/07/27 17:11:18  hongyu
-// *** empty log message ***
-//
-// Revision 1.9  1999/06/23 20:59:16  wenger
-// Added standard DEVise header.
-//
-
 // ========================================================================
 
 // DEViseCursor.java
 
-//TEMP package edu.wisc.cs.devise.js.jsc;
 package JavaScreen;
 
 import java.awt.*;
@@ -126,7 +58,7 @@ public class DEViseCursor
     private boolean isVisible = true;
 
     public static final int sideNone = -1; // not on a cursor, or cursor
-                                           // cannot be moved or resized
+    // cannot be moved or resized
     public static final int sideMiddle = 0;
     public static final int sideLeft = 1;
     public static final int sideRight = 2;
@@ -138,12 +70,12 @@ public class DEViseCursor
     public static final int sideBottomRight = 8;
 
     public DEViseCursor(jsdevisec panel, String cn, String vn,
-      Rectangle rect, String move, String fixedSize, float gx, float gy,
-      int gtype, int ctype, Color c) throws YException
+                        Rectangle rect, String move, String fixedSize, float gx, float gy,
+                        int gtype, int ctype, Color c) throws YException
     {
         if (DEBUG >= 2) {
             System.out.println("DEViseCursor.DEViseCursor(" + cn + ", " +
-	      vn + ")");
+                               vn + ")");
         }
 
         if (cn == null) {
@@ -185,7 +117,7 @@ public class DEViseCursor
         } else {
             isXMovable = (move.indexOf("X") != -1);
             isYMovable = (move.indexOf("Y") != -1);
-	}
+        }
 
         if (fixedSize == null) {
             isXResizable = false;
@@ -193,13 +125,13 @@ public class DEViseCursor
         } else {
             isXResizable = (fixedSize.indexOf("X") == -1);
             isYResizable = (fixedSize.indexOf("Y") == -1);
-	}
+        }
     }
 
     public synchronized Rectangle getLocInCanvas()
     {
         return new Rectangle (parentView.viewLocInCanvas.x + x,
-	  parentView.viewLocInCanvas.y + y, width, height);
+                              parentView.viewLocInCanvas.y + y, width, height);
     }
 
 
@@ -208,87 +140,87 @@ public class DEViseCursor
     // see side* for return values
     public int inCursor(Point p)
     {
-	int result = sideNone;
+        int result = sideNone;
 
-	boolean onCursor = false;
-	boolean topEdge = false;
-	boolean bottomEdge = false;
-	boolean leftEdge = false;
-	boolean rightEdge = false;
+        boolean onCursor = false;
+        boolean topEdge = false;
+        boolean bottomEdge = false;
+        boolean leftEdge = false;
+        boolean rightEdge = false;
 
         Rectangle loc = cursorLocInCanvas;
 
         if (p.x < loc.x || p.y < loc.y || p.x > loc.x + loc.width - 1 ||
-	  p.y > loc.y + loc.height - 1) {
+                p.y > loc.y + loc.height - 1) {
 
-	    // p is outside of the cursor.
-	    onCursor = false;
+            // p is outside of the cursor.
+            onCursor = false;
 
         } else {
 
-	    onCursor = true;
+            onCursor = true;
 
-	    // Figure out how close to the edge to have to be to be on
-	    // the edge rather than the middle (depends on the size of
-	    // the cursor).
+            // Figure out how close to the edge to have to be to be on
+            // the edge rather than the middle (depends on the size of
+            // the cursor).
             int xEdgeTol = (int)(loc.width / 4 + 0.4f);
-	    xEdgeTol = Math.min(Math.max(xEdgeTol, 1), 10);
+            xEdgeTol = Math.min(Math.max(xEdgeTol, 1), 10);
 
-	    int yEdgeTol = (int)(loc.height / 4 + 0.4f);
-	    yEdgeTol = Math.min(Math.max(yEdgeTol, 1), 10);
+            int yEdgeTol = (int)(loc.height / 4 + 0.4f);
+            yEdgeTol = Math.min(Math.max(yEdgeTol, 1), 10);
 
-	    //
-	    // Figure out which edges of the cursor, if any, we're on
-	    // (taking into account whether is moveable and resizeable
-	    // in the appropriate directions).
-	    //
-	    if (isXMovable && isXResizable) {
-	        if (p.x < loc.x + xEdgeTol) {
-	            leftEdge = true;
-	        } else if (p.x > loc.x + loc.width - xEdgeTol - 1) {
-	            rightEdge = true;
-	        }
-	    }
+            //
+            // Figure out which edges of the cursor, if any, we're on
+            // (taking into account whether is moveable and resizeable
+            // in the appropriate directions).
+            //
+            if (isXMovable && isXResizable) {
+                if (p.x < loc.x + xEdgeTol) {
+                    leftEdge = true;
+                } else if (p.x > loc.x + loc.width - xEdgeTol - 1) {
+                    rightEdge = true;
+                }
+            }
 
-	    if (isYMovable && isYResizable) {
-	        if (p.y < loc.y + yEdgeTol) {
-	            topEdge = true;
-	        } else if (p.y > loc.y + loc.height - yEdgeTol - 1) {
-	            bottomEdge = true;
-	        }
-	    }
+            if (isYMovable && isYResizable) {
+                if (p.y < loc.y + yEdgeTol) {
+                    topEdge = true;
+                } else if (p.y > loc.y + loc.height - yEdgeTol - 1) {
+                    bottomEdge = true;
+                }
+            }
         }
 
-	//
-	// Okay, now put everything together.
-	//
-	if (onCursor) {
-	    if (topEdge) {
-	        if (leftEdge) {
-		    result = sideTopLeft;
-		} else if (rightEdge) {
-		    result = sideTopRight;
-		} else {
-		    result = sideTop;
-		}
-	    } else if (bottomEdge) {
-	        if (leftEdge) {
-		    result = sideBottomLeft;
-		} else if (rightEdge) {
-		    result = sideBottomRight;
-		} else {
-		    result = sideBottom;
-		}
-	    } else if (leftEdge) {
-	        result = sideLeft;
-	    } else if (rightEdge) {
-	        result = sideRight;
-	    } else {
-	        result = sideMiddle;
-	    }
-	} else {
-	    result = sideNone;
-	}
+        //
+        // Okay, now put everything together.
+        //
+        if (onCursor) {
+            if (topEdge) {
+                if (leftEdge) {
+                    result = sideTopLeft;
+                } else if (rightEdge) {
+                    result = sideTopRight;
+                } else {
+                    result = sideTop;
+                }
+            } else if (bottomEdge) {
+                if (leftEdge) {
+                    result = sideBottomLeft;
+                } else if (rightEdge) {
+                    result = sideBottomRight;
+                } else {
+                    result = sideBottom;
+                }
+            } else if (leftEdge) {
+                result = sideLeft;
+            } else if (rightEdge) {
+                result = sideRight;
+            } else {
+                result = sideMiddle;
+            }
+        } else {
+            result = sideNone;
+        }
 
         return result;
     }
@@ -298,79 +230,79 @@ public class DEViseCursor
     // Adjust the postion and size of the cursor that is being resized
     // or moved.
     public synchronized void updateCursorLoc(int dx, int dy,
-      int whichSide, boolean isLast)
+            int whichSide, boolean isLast)
     {
-	Rectangle oldLoc = cursorLoc;
+        Rectangle oldLoc = cursorLoc;
 
         x = cursorLoc.x;
         y = cursorLoc.y;
         width = cursorLoc.width;
         height = cursorLoc.height;
 
-	switch (whichSide) {
-	case sideNone:
-	case sideMiddle:
-	    x += dx;
-	    y += dy;
-	    break;
+        switch (whichSide) {
+        case sideNone:
+        case sideMiddle:
+            x += dx;
+            y += dy;
+            break;
 
         case sideTopLeft:
-	    x += dx;
-	    width -= dx;
-	    y += dy;
-	    height -= dy;
-	    break;
+            x += dx;
+            width -= dx;
+            y += dy;
+            height -= dy;
+            break;
 
         case sideTop:
-	    y += dy;
-	    height -= dy;
-	    break;
+            y += dy;
+            height -= dy;
+            break;
 
         case sideTopRight:
-	    width += dx;
-	    y += dy;
-	    height -= dy;
-	    break;
+            width += dx;
+            y += dy;
+            height -= dy;
+            break;
 
         case sideLeft:
-	    x += dx;
-	    width -= dx;
-	    break;
+            x += dx;
+            width -= dx;
+            break;
 
         case sideRight:
-	    width += dx;
-	    break;
+            width += dx;
+            break;
 
         case sideBottomLeft:
-	    x += dx;
-	    width -= dx;
-	    height += dy;
-	    break;
+            x += dx;
+            width -= dx;
+            height += dy;
+            break;
 
         case sideBottom:
-	    height += dy;
-	    break;
+            height += dy;
+            break;
 
         case sideBottomRight:
-	    width += dx;
-	    height += dy;
-	    break;
+            width += dx;
+            height += dy;
+            break;
 
-	default:
-	    throw new YError("Illegal whichSide value: " + whichSide);
-	}
+        default:
+            throw new YError("Illegal whichSide value: " + whichSide);
+        }
 
-	if (!isXMovable) {
-	    x = oldLoc.x;
-	    width = oldLoc.width;
-	}
+        if (!isXMovable) {
+            x = oldLoc.x;
+            width = oldLoc.width;
+        }
 
-	if (!isYMovable) {
-	    y = oldLoc.y;
-	    height = oldLoc.height;
-	}
+        if (!isYMovable) {
+            y = oldLoc.y;
+            height = oldLoc.height;
+        }
 
-	matchGrid();
+        matchGrid();
 
         if (isLast) {
             cursorLoc = new Rectangle(x, y, width, height);
@@ -388,60 +320,60 @@ public class DEViseCursor
     {
 
         double dataX0 = parentView.pixel2DataX(x, false);
-	double dataY0 = parentView.pixel2DataY(y, false);
-	double dataX1 = parentView.pixel2DataX(x + width - 1, false);
-	double dataY1 = parentView.pixel2DataY(y + height - 1, false);
+        double dataY0 = parentView.pixel2DataY(y, false);
+        double dataX1 = parentView.pixel2DataX(x + width - 1, false);
+        double dataY1 = parentView.pixel2DataY(y + height - 1, false);
 
-	if (isXMovable) {
-	    if (gridXData > 0.0f) {
-	        if (gridType == GRID_TYPE_CENTER) {
-		    double dataXC = (dataX0 + dataX1) / 2.0;
-		    double dataHt = dataX0 - dataX1;
+        if (isXMovable) {
+            if (gridXData > 0.0f) {
+                if (gridType == GRID_TYPE_CENTER) {
+                    double dataXC = (dataX0 + dataX1) / 2.0;
+                    double dataHt = dataX0 - dataX1;
 
-		    int tmp = (int)Math.round(dataXC / gridXData);
-		    dataXC = tmp * gridXData;
+                    int tmp = (int)Math.round(dataXC / gridXData);
+                    dataXC = tmp * gridXData;
 
-		    dataX0 = dataXC + (dataHt / 2.0);
-		    dataX1 = dataXC - (dataHt / 2.0);
-		} else if (gridType == GRID_TYPE_EDGE) {
-		    int tmp = (int)Math.round(dataX0 / gridXData - 0.5);
-		    dataX0 = (tmp + 0.5) * gridXData;
-		    tmp = (int)Math.round(dataX1 / gridXData + 0.5);
-		    dataX1 = (tmp - 0.5) * gridXData;
-		} else {
-		    throw new YError("Illegal grid type: " + gridType);
-		}
-	    }
-	}
+                    dataX0 = dataXC + (dataHt / 2.0);
+                    dataX1 = dataXC - (dataHt / 2.0);
+                } else if (gridType == GRID_TYPE_EDGE) {
+                    int tmp = (int)Math.round(dataX0 / gridXData - 0.5);
+                    dataX0 = (tmp + 0.5) * gridXData;
+                    tmp = (int)Math.round(dataX1 / gridXData + 0.5);
+                    dataX1 = (tmp - 0.5) * gridXData;
+                } else {
+                    throw new YError("Illegal grid type: " + gridType);
+                }
+            }
+        }
 
-	if (isYMovable) {
-	    if (gridYData > 0.0f) {
-	        if (gridType == GRID_TYPE_CENTER) {
-		    double dataYC = (dataY0 + dataY1) / 2.0;
-		    double dataHt = dataY0 - dataY1;
+        if (isYMovable) {
+            if (gridYData > 0.0f) {
+                if (gridType == GRID_TYPE_CENTER) {
+                    double dataYC = (dataY0 + dataY1) / 2.0;
+                    double dataHt = dataY0 - dataY1;
 
-		    int tmp = (int)Math.round(dataYC / gridYData);
-		    dataYC = tmp * gridYData;
+                    int tmp = (int)Math.round(dataYC / gridYData);
+                    dataYC = tmp * gridYData;
 
-		    dataY0 = dataYC + (dataHt / 2.0);
-		    dataY1 = dataYC - (dataHt / 2.0);
-		} else if (gridType == GRID_TYPE_EDGE) {
-		    int tmp = (int)Math.round(dataY0 / gridYData + 0.5);
-		    dataY0 = (tmp - 0.5) * gridYData;
-		    tmp = (int)Math.round(dataY1 / gridYData - 0.5);
-		    dataY1 = (tmp + 0.5) * gridYData;
-		} else {
-		    throw new YError("Illegal grid type: " + gridType);
-		}
-	    }
-	}
+                    dataY0 = dataYC + (dataHt / 2.0);
+                    dataY1 = dataYC - (dataHt / 2.0);
+                } else if (gridType == GRID_TYPE_EDGE) {
+                    int tmp = (int)Math.round(dataY0 / gridYData + 0.5);
+                    dataY0 = (tmp - 0.5) * gridYData;
+                    tmp = (int)Math.round(dataY1 / gridYData - 0.5);
+                    dataY1 = (tmp + 0.5) * gridYData;
+                } else {
+                    throw new YError("Illegal grid type: " + gridType);
+                }
+            }
+        }
 
-	x = parentView.data2PixelX(dataX0, false);
-	y = parentView.data2PixelY(dataY0, false);
-	width = Math.abs(parentView.data2PixelX(dataX1, false) -
-	  parentView.data2PixelX(dataX0, false)) + 1;
-	height = Math.abs(parentView.data2PixelY(dataY1, false) -
-	  parentView.data2PixelY(dataY0, false)) + 1;
+        x = parentView.data2PixelX(dataX0, false);
+        y = parentView.data2PixelY(dataY0, false);
+        width = Math.abs(parentView.data2PixelX(dataX1, false) -
+                         parentView.data2PixelX(dataX0, false)) + 1;
+        height = Math.abs(parentView.data2PixelY(dataY1, false) -
+                          parentView.data2PixelY(dataY0, false)) + 1;
     }
 
     // --------------------------------------------------------------------
@@ -462,15 +394,15 @@ public class DEViseCursor
     {
         isVisible = false;
 
-	cursorLoc.x = 0;
-	cursorLoc.y = 0;
-	cursorLoc.width = 0;
-	cursorLoc.height = 0;
+        cursorLoc.x = 0;
+        cursorLoc.y = 0;
+        cursorLoc.width = 0;
+        cursorLoc.height = 0;
 
-	cursorLocInCanvas.x = 0;
-	cursorLocInCanvas.y = 0;
-	cursorLocInCanvas.width = 0;
-	cursorLocInCanvas.height = 0;
+        cursorLocInCanvas.x = 0;
+        cursorLocInCanvas.y = 0;
+        cursorLocInCanvas.width = 0;
+        cursorLocInCanvas.height = 0;
     }
 
     private int adjustToParentDataAreaX(int x)
@@ -480,7 +412,7 @@ public class DEViseCursor
 
     private int adjustToParentDataAreaX(int x, int w)
     {
-	int result = x;
+        int result = x;
 
         Rectangle loc = parentView.viewDataLoc;
 
@@ -500,7 +432,7 @@ public class DEViseCursor
 
     private int adjustToParentDataAreaY(int y, int h)
     {
-	int result = y;
+        int result = y;
 
         Rectangle loc = parentView.viewDataLoc;
 
@@ -517,8 +449,8 @@ public class DEViseCursor
     {
         if (cursor != null) {
             if (cursor.name.equals(name) && cursor.x == x &&
-	      cursor.y == y && cursor.width == width &&
-	      cursor.height == height && cursor.isVisible == isVisible) {
+                    cursor.y == y && cursor.width == width &&
+                    cursor.height == height && cursor.isVisible == isVisible) {
                 return true;
             } else {
                 return false;

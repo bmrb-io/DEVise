@@ -16,185 +16,10 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.23.36.2  2012/04/23 18:48:25  wenger
-// Data download now handles piles (still with dummy data); partway to
-// correctly doing Miron's requested change of creating a file that we
-// redirect the user's browser to.
-//
-// Revision 1.23.36.1  2012/04/12 23:27:22  wenger
-// Initial implementation of command framework for JavaScreen data saving
-// (the command doesn't really do anything on the devised end yet).  Note
-// that the toolbar icons for data saving are just a copy of the icons
-// for drill down right now -- I want to get things implemented on the
-// devised end before I put time into farting around making new icons.
-//
-// Revision 1.23  2006/05/26 16:22:15  wenger
-// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
-//
-// Revision 1.22.4.1  2006/02/23 22:08:39  wenger
-// Added flag for whether or not 3D views should use Jmol.
-//
-// Revision 1.22  2005/12/06 20:00:19  wenger
-// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
-// be the end of the V1_7b0_br branch.)
-//
-// Revision 1.21  2002/06/17 19:40:14  wenger
-// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
-//
-// Revision 1.20  2002/05/01 21:28:58  wenger
-// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
-//
-// Revision 1.19.2.7  2003/12/22 22:47:14  wenger
-// JavaScreen support for print color modes is now in place.
-//
-// Revision 1.19.2.6  2003/10/15 21:55:10  wenger
-// Added new JAVAC_StopCollab command to fix ambiguity with
-// JAVAC_CollabExit; minor improvements to collaboration-related stuff
-// in the auto test scripts.
-//
-// Revision 1.19.2.5  2003/09/23 21:55:11  wenger
-// "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
-//
-// Revision 1.19.2.4  2002/05/20 21:21:33  wenger
-// Fixed bug 779 (client switching problem with multiple DEViseds).
-//
-// Revision 1.19.2.3  2002/04/18 17:25:10  wenger
-// Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
-// temporary session files when the JSPoP and DEViseds are on different
-// machines).  Note: JS protocol version is now 11.0.
-//
-// Revision 1.19.2.2.2.4  2002/04/18 15:40:59  wenger
-// Further cleanup of JavaScreen temporary session file code (added
-// JAVAC_DeleteTmpSession command) (includes fixing bug 774).
-//
-// Revision 1.19.2.2.2.3  2002/04/17 20:14:31  wenger
-// Implemented new JAVAC_OpenTmpSession command to go along with
-// JAVAC_SaveTmpSession (so the JSPoP doesn't need to have any info about
-// the path of the temporary session directory relative to the base
-// session directory).
-//
-// Revision 1.19.2.2.2.2  2002/04/17 19:13:54  wenger
-// Changed JAVAC_SaveSession command to JAVAC_SaveTmpSession (path is
-// now relative to temp session directory, not main session directory).
-//
-// Revision 1.19.2.2.2.1  2002/04/17 17:45:53  wenger
-// DEVised, not JSPoP, now does the actual work of creating or clearing
-// the temporary session directory (new command from client to DEVised
-// means that communication protocol version is now 11.0).  (Client
-// switching is not working yet with this code because I need to change
-// how temporary sessions are saved and loaded.)
-//
-// Revision 1.19.2.2  2002/04/04 21:16:07  xuk
-// Fixed bug 768: collaboration followers can close dialog automatically.
-// Added new command Close_Collab_Dlg.
-//
-// Revision 1.19.2.1  2002/04/03 17:42:18  xuk
-// Fixed bug 766: Hide view help for collaboration followers.
-// Add HIDE_ALL_VIEW_HELP command.
-//
-// Revision 1.19  2002/03/20 22:14:40  xuk
-// Added automatic collaboration functionality.
-// Added Reset_Collab_Name command
-// Changed the argument format of Collaborate and Clients commands.
-//
-// Revision 1.18  2002/03/01 19:58:53  xuk
-// Added new command DEViseCommands.UpdateJS to update JavaScreen after
-// a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
-//
-// Revision 1.17  2001/11/28 21:56:18  wenger
-// Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
-//
-// Revision 1.16  2001/11/19 17:17:02  wenger
-// Merged changes through collab_cleanup_br_2 to trunk.
-//
-// Revision 1.15.2.2  2001/11/19 21:04:02  wenger
-// Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
-// Squid to be able to force DEVise to re-read all data and update the
-// visualization; did some cleanup of JavaScreenCmd.C.
-//
-// Revision 1.15.2.1  2001/11/13 20:31:35  wenger
-// Cleaned up new collab code in the JSPoP and client: avoid unnecessary
-// client switches in the JSPoP (on JAVAC_Connect, for example), removed
-// processFirstCommand() from jspop; JSPoP checks devised protocol version
-// when devised connects; cleaned up client-side collab code a bit (handles
-// some errors better, restores pre-collaboration state better).
-//
-// Revision 1.15  2001/10/30 17:29:09  xuk
-// reated DEViseClient object for collaborating clients in jspop.
-// Added JAVAC_ASK_COLLAB_LEADER and JAVAC_COLLABORATE commands.
-//
-// Revision 1.14  2001/05/11 20:36:06  wenger
-// Set up a package for the JavaScreen code.
-//
-// Revision 1.13  2001/04/21 20:53:31  xuk
-// Added functionality to disable collaboration.
-// Added JAVAC_DisableCollab command.
-//
-// Revision 1.12  2001/04/20 21:05:11  wenger
-// Changed 3D version of JAVAC_ShowRecords to use the previously-defined
-// JAVAC_ShowRecords3D command; DEVise accepts that command but doesn't
-// but doesn't actually return records yet; updated JavaScreen version;
-// updated command documentation and protocol version.
-//
-// Revision 1.11  2001/04/01 03:51:18  xuk
-// Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
-//
-// Revision 1.10  2001/03/20 17:49:45  xuk
-// Added collaboration for 3D Views.
-//
-// Revision 1.9  2001/03/03 20:13:11  xuk
-// Restore old state if user goes into, then out of, collaboration mode.
-// 1. Added JAVAC_SaveCurSession command.
-// 2. Added JAVAC_ReopenSession command.
-//
-// Revision 1.8  2001/02/22 17:09:35  xuk
-// Added JAVAC_CollabExit command for closing collaboration JSs.
-//
-// Revision 1.7  2001/02/21 17:45:34  xuk
-// Added JAVAC_SetCollabPass command for setting collaboration passwd.
-//
-// Revision 1.6  2001/02/19 20:31:42  xuk
-// Added command(s) and GUI so that a collaboration leader can find out who is
-// collaborating with it.
-// Added JAVAC_GET_COLLAB_LIST and JAVAC_COLLAB_STATE commands.
-//
-// Revision 1.5  2001/02/16 17:47:33  xuk
-// Added new command JAVAC_Clients for collaboration JS to collect active client ID list.
-//
-// Revision 1.4  2001/01/22 17:08:12  wenger
-// Added DEViseCheckPop to actually connect to the jspop when checking
-// with cron; added JAVAC_CheckPop command to make this possible; cleaned
-// up some of the jspop code dealing with heartbeats, etc.; DEViseCommSocket
-// constructor error messages now go to stderr.
-//
-// Revision 1.3  2001/01/08 20:31:51  wenger
-// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
-// back onto the trunk.
-//
-// Revision 1.1.4.2  2000/10/18 20:28:10  wenger
-// Merged changes from fixed_bug_616 through link_gui_improvements onto
-// the branch.
-//
-// Revision 1.2  2000/09/12 20:51:27  wenger
-// Did some cleanup of the command-related code, better error messages from JSS.
-//
-// Revision 1.1.4.1  2000/10/09 16:26:41  xuk
-// Add JAVAC_HEARTBEAT command for heart-beat from JS
-//
-// Revision 1.1  2000/04/27 20:15:24  wenger
-// Added DEViseCommands class which has string constants for all command
-// names; replaced all literal command names in code with the appropriate
-// DEViseCommand constants.
-//
-
 // ========================================================================
 
 // DEViseCommands.java
 
-//TEMP package edu.wisc.cs.devise.js.util;
 package JavaScreen;
 
 public final class DEViseCommands
@@ -211,17 +36,17 @@ public final class DEViseCommands
     public static final String ACK = JS_PREFIX + "Ack";
 
     public static final String ASK_COLLAB_LEADER = JS_PREFIX +
-      "AskCollabLeader";
+            "AskCollabLeader";
 
     public static final String CHECK_POP = JS_PREFIX + "CheckPop";
 
     public static final String CLIENTS = JS_PREFIX + "Clients";
 
-    public static final String CLOSE_COLLAB_DLG = JS_PREFIX + 
-      "Close_Collab_Dlg";
+    public static final String CLOSE_COLLAB_DLG = JS_PREFIX +
+            "Close_Collab_Dlg";
 
     public static final String CLOSE_SESSION = JS_PREFIX +
-      "CloseCurrentSession";
+            "CloseCurrentSession";
 
     public static final String COLLAB_EXIT = JS_PREFIX + "CollabExit";
 
@@ -232,17 +57,17 @@ public final class DEViseCommands
     public static final String CONNECT = JS_PREFIX + "Connect";
 
     public static final String CREATE_TMP_SESSION_DIR = JS_PREFIX +
-        "CreateTmpSessionDir";
+            "CreateTmpSessionDir";
 
     public static final String CREATE_VIEW = JS_PREFIX + "CreateView";
 
     public static final String CURSOR_CHANGED = JS_PREFIX + "CursorChanged";
 
     public static final String DELETE_CHILD_VIEWS = JS_PREFIX +
-      "DeleteChildViews";
+            "DeleteChildViews";
 
     public static final String DELETE_TMP_SESSION = JS_PREFIX +
-      "DeleteTmpSession";
+            "DeleteTmpSession";
 
     public static final String DELETE_VIEW = JS_PREFIX + "DeleteView";
 
@@ -265,7 +90,7 @@ public final class DEViseCommands
     public static final String GET_COLLAB_LIST = JS_PREFIX + "GetCollabList";
 
     public static final String GET_DEVISE_VERSION =
-      JS_PREFIX + "GetDeviseVersion";
+        JS_PREFIX + "GetDeviseVersion";
 
     public static final String GET_POP_VERSION = JS_PREFIX + "GetPopVersion";
 
@@ -279,15 +104,15 @@ public final class DEViseCommands
 
     public static final String HEART_BEAT = JS_PREFIX + "HeartBeat";
 
-    public static final String HIDE_ALL_VIEW_HELP = JS_PREFIX + 
-      "Hide_All_View_Help";
+    public static final String HIDE_ALL_VIEW_HELP = JS_PREFIX +
+            "Hide_All_View_Help";
 
     public static final String INIT_COLLAB = JS_PREFIX + "InitCollaboration";
 
     public static final String KEY_ACTION = JS_PREFIX + "KeyAction";
 
     public static final String MOUSE_RUBBERBAND = JS_PREFIX +
-      "MouseAction_RubberBand";
+            "MouseAction_RubberBand";
 
     public static final String OPEN_SESSION = JS_PREFIX + "OpenSession";
 
@@ -299,8 +124,8 @@ public final class DEViseCommands
 
     public static final String REFRESH_DATA = JS_PREFIX + "RefreshData";
 
-    public static final String RESET_COLLAB_NAME = JS_PREFIX + 
-	"Reset_Collab_Name";
+    public static final String RESET_COLLAB_NAME = JS_PREFIX +
+            "Reset_Collab_Name";
 
     public static final String RESET_FILTERS = JS_PREFIX + "ResetFilters";
 
@@ -319,12 +144,12 @@ public final class DEViseCommands
     public static final String SET_DISPLAY_SIZE = JS_PREFIX + "SetDisplaySize";
 
     public static final String SET_TMP_SESSION_DIR = JS_PREFIX +
-        "SetTmpSessionDir";
+            "SetTmpSessionDir";
 
     public static final String SET_USE_JMOL = JS_PREFIX + "SetUseJmol";
 
     public static final String SET_VIEW_COLORS = JS_PREFIX +
-        "SetViewColors";
+            "SetViewColors";
 
     public static final String SHOW_RECORDS = JS_PREFIX + "ShowRecords";
 
@@ -337,16 +162,16 @@ public final class DEViseCommands
     public static final String UPDATE_GDATA = JS_PREFIX + "UpdateGData";
 
     public static final String UPDATE_RECORD_VALUE = JS_PREFIX +
-      "UpdateRecordValue";
+            "UpdateRecordValue";
 
     public static final String UPDATE_SERVER_STATE = JS_PREFIX +
-      "UpdateServerState";
+            "UpdateServerState";
 
     public static final String UPDATE_SESSION_LIST = JS_PREFIX +
-      "UpdateSessionList";
+            "UpdateSessionList";
 
     public static final String UPDATE_VIEW_IMAGE = JS_PREFIX +
-      "UpdateViewImage";
+            "UpdateViewImage";
 
     public static final String USER = JS_PREFIX + "User";
 
@@ -355,7 +180,7 @@ public final class DEViseCommands
     public static final String VIEW_DATA_URL = JS_PREFIX + "ViewDataUrl";
 
     public static final String UPDATEJS = JS_PREFIX + "UpdateJS";
-    
+
     // -------------------------------------------------------------------
     // JSS commands.
 

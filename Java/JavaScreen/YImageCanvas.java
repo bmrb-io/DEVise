@@ -16,27 +16,9 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.17  2000/06/12 22:13:58  wenger
-// Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
-// DEViseTrafficLight, YImageCanvas; added debug output of number of
-// bytes of data available to the JS.
-//
-// Revision 1.16  2000/05/22 17:52:50  wenger
-// JavaScreen handles fonts much more efficiently to avoid the problems with
-// GData text being drawn very slowly on Intel platforms.
-//
-// Revision 1.15  2000/03/23 16:26:17  wenger
-// Cleaned up headers and added requests for comments.
-//
-// Revision 1.14  1999/12/10 15:37:01  wenger
-// Added standard headers to source files.
 //
 // ========================================================================
 
-//TEMP package edu.wisc.cs.devise.js.jsc;
 package JavaScreen;
 
 import java.awt.*;
@@ -167,10 +149,10 @@ public class YImageCanvas extends Canvas
         Graphics og = offScrImg.getGraphics();
         paint(og);
 
-	if (offScrImg != null) {
+        if (offScrImg != null) {
             g.drawImage(offScrImg, 0, 0, this);
-	} else {
-	    paint(g);
+        } else {
+            paint(g);
         }
 
         og.dispose();
@@ -194,4 +176,4 @@ public class YImageCanvas extends Canvas
         }
     }
 }
-        
+

@@ -19,172 +19,8 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
+// ========================================================================
 
-// $Log$
-// Revision 1.20  2015/07/09 20:02:44  wenger
-// Merged aditya_merge_br_0 thru aditya_merge_br_3 to trunk.
-//
-// Revision 1.19  2015/06/22 19:40:03  wenger
-// Changed minor version to 15 instead of just incrementing the revision,
-// because I'm hoping the next release will have some fairly major GUI
-// changes.  Implemented to-do 09.047 (remove "Larger" and "Smaller" menu
-// items).  Also changed "View" menu to "Tools".
-//
-// Revision 1.18.2.5  2015/07/20 21:54:52  wenger
-// Removed (for now) in-progress About dialog and visualization help.
-//
-// Revision 1.18.2.4  2015/07/20 21:18:22  wenger
-// Moved Feedback button to the right side of the JavaScreen.
-//
-// Revision 1.18.2.3  2015/07/16 19:54:24  wenger
-// A lot of the JavaScreen feedback GUI is working, but quite a bit of
-// cleanup still needed to the PHP script, and also need to reposition
-// the feedback button.  Started on "About" dialog.  Various debug code
-// still in place.
-//
-// Revision 1.18.2.2  2015/06/19 17:02:57  wenger
-// Changed "suggest" to "feedback" as per feedback from Eldon (still working
-// on moving the feedback button to the right side).  Added -showallbut
-// command-line flag (for debugging) that causes the JS to show the
-// Jmol and session-specific buttons.
-//
-// Revision 1.18.2.1  2015/06/18 21:34:09  wenger
-// First cut at the "Suggest" button and related HTML form.  Also, a few
-// other changes to the menu buttons.  Fixed version in JavaScreen
-// help page.
-//
-// Revision 1.18  2015/05/08 17:54:49  wenger
-// Merged mod_perl_br_0 thru mod_perl_br_2 to trunk.
-//
-// Revision 1.17.4.1  2015/05/05 18:34:15  wenger
-// Fixed bug 1045:  CGI path dialog now works more intuitively.
-//
-// Revision 1.17.2.3  2015/07/07 14:56:37  wenger
-// Merged aditya1_br_4 thru aditya1_br_5 to aditya_merge_br.
-//
-// Revision 1.17.2.2  2015/07/07 14:32:16  wenger
-// Merged aditya1_br_3 thru aditya1_br_4 to aditya_merge_br.
-//
-// Revision 1.17.2.1  2015/07/06 22:22:52  wenger
-// Merged aditya1_br_1 thru aditya1_br_2 to aditya_merge_br.
-//
-// Revision 1.17  2015/02/18 22:53:46  wenger
-// The JavaScreen now reports in the log window how long each command
-// takes.  Socket mode can now be turned on in an applet by setting the
-// usecgi parameter to 0.  Added the capability to make jar files that
-// request all-permissions instead of sandbox.
-//
-// Revision 1.16.20.5  2015/01/16 21:30:16  kancherla
-// *** empty log message ***
-//
-// Revision 1.16.20.4  2014/12/29 19:32:58  kancherla
-// *** empty log message ***
-//
-// Revision 1.16.20.3  2014/12/29 19:00:36  kancherla
-// *** empty log message ***
-//
-// Revision 1.16.20.2  2014/12/19 21:05:04  kancherla
-// fixed help icons bug - 1025
-//
-// Revision 1.16.20.1  2014/12/13 02:39:36  kancherla
-// Added restart button, added a check for in browser flag before adding smaller and larger to view menu
-//
-// Revision 1.16  2010/07/01 17:32:59  wenger
-// Implemented JavaScreen to-do 09.019 -- JS window can now be re-sized
-// while a session is open, added new view menu options to enlarge and
-// reduce by a fixed amount.
-//
-// Revision 1.15  2010/05/20 18:38:41  wenger
-// In the JavaScreen, you can now switch sessions without explicitly
-// closing the current one before opening the new one (to make it easier
-// to switch sessions in the new Peptide-CGI setup).
-//
-// Revision 1.14  2009/09/10 22:06:39  wenger
-// Fixed JavaScreen bug 985 (change 'Reset Filters' to 'Reset Axis Ranges');
-// made other menu improvements; changed communication mode dialog to
-// menu for simplification.
-//
-// Revision 1.13  2008/02/20 20:22:10  wenger
-// JavaScreen now defaults to showing help in browser window (to
-// get around problems on Mac with the Java window); added links
-// and images to the help page because of this change.
-//
-// Revision 1.12  2008/02/08 21:03:12  wenger
-// Changed version from 5.8.3 to 5.9.0 because the toolbar and associated
-// stuff is such a big change; added JavaScreen help dialog (although the
-// text is not yet complete, and some is commented out until I get html
-// links to work in that dialog); added (currently disabled) menu item to
-// show JS version history.
-//
-// Revision 1.11  2008/01/24 20:30:53  wenger
-// Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
-//
-// Revision 1.10  2008/01/22 20:02:38  wenger
-// Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
-// my fix to the pre-toolbar version of the JS, but it doesn't work for
-// some reason (I suspect that some of the other cleanups since then
-// also affect the fix).  Note that this commit has a bunch of temporary
-// code still in place; I want to get a working version into CVS ASAP.
-//
-// Revision 1.9  2008/01/11 17:03:26  wenger
-// Removed unnecessary swing import.
-//
-// Revision 1.8  2007/12/19 00:08:32  wenger
-// Changed a bunch of JButton references to DEViseButtons to make things
-// more consistent.
-//
-// Revision 1.7  2007/08/27 20:53:45  wenger
-// Made separate menu items for showing and hiding view help, as requested
-// by Chris Schulte.
-//
-// Revision 1.6  2007/08/27 19:16:39  wenger
-// Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
-//
-// Revision 1.5  2007/04/20 19:42:35  wenger
-// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
-// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
-//
-// Revision 1.4.2.2  2007/08/24 16:51:42  wenger
-// Removed elipses from "View Help" menu item; renamed "Toggle visual
-// filter" tooltip to "Toggle axis ranges" (hopefully clearer).
-//
-// Revision 1.4.2.1  2007/03/16 17:12:46  adayton
-// Add UI package
-//
-// Revision 1.4  2006/06/23 19:52:41  wenger
-// Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
-//
-// Revision 1.3  2006/05/26 16:22:16  wenger
-// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
-//
-// Revision 1.2.4.2  2006/06/14 16:32:02  wenger
-// Added new DEViseButton class to force the colors and font we want
-// for buttons; cleaned up things in jsdevisec (made public members
-// private, etc.); started on getting more of the Jmol menus actually
-// working.
-//
-// Revision 1.2.4.1  2006/05/23 18:17:50  wenger
-// Added initial Jmol menu with a menu item to show the tree selection
-// window; destroying and re-creating the window currently doesn't
-// preserve the existing selection, although I started on provision for
-// that.
-//
-// Revision 1.2  2005/12/06 20:00:19  wenger
-// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
-// be the end of the V1_7b0_br branch.)
-//
-// Revision 1.1.2.2  2003/12/22 22:47:15  wenger
-// JavaScreen support for print color modes is now in place.
-//
-// Revision 1.1.2.1  2003/12/03 19:31:09  wenger
-// Changed most buttons in the JavaScreen GUI to menus (to save space
-// in preparation for adding new functionality).
-//
-
-// ------------------------------------------------------------------------
-
-//TEMP package edu.wisc.cs.devise.js;
 package JavaScreen;
 
 import java.io.*;
@@ -203,7 +39,7 @@ public class DEViseMainButtons
     public static int MENU_Y_OFFSET = 10;
 
     private jsdevisec _js = null;
-    
+
     private Component[] _buttons = null;
 
     // DEViseButton that bring up menus.
@@ -252,11 +88,11 @@ public class DEViseMainButtons
     private MenuItem aboutMenuItem = new MenuItem("About JavaScreen...");
 
     private MenuItem jsHelpBrowserMenuItem = new MenuItem(
-      "JavaScreen Help (in browser window)...");
+        "JavaScreen Help (in browser window)...");
     private MenuItem jsHelpInternalMenuItem = new MenuItem(
-      "JavaScreen Help (in Java window)...");
+        "JavaScreen Help (in Java window)...");
     private MenuItem visHelpMenuItem = new MenuItem(
-      "Help about this visualization...");
+        "Help about this visualization...");
 
     // Dialogs
     private DEViseHtmlWindow helpWindow;
@@ -274,13 +110,13 @@ public class DEViseMainButtons
     public DEViseMainButtons(jsdevisec js)
     {
         if (DEBUG >= 1) {
-	    System.out.println("DEViseMainButtons.DEViseMainButtons()");
-	}
+            System.out.println("DEViseMainButtons.DEViseMainButtons()");
+        }
 
-	_js = js;
+        _js = js;
 
         createButtons();
-	addActions();
+        addActions();
     }
 
     //-------------------------------------------------------------------
@@ -291,10 +127,10 @@ public class DEViseMainButtons
     public Component[] getButtons()
     {
         if (DEBUG >= 1) {
-	    System.out.println("DEViseMainButtons.getButtons()");
-	}
+            System.out.println("DEViseMainButtons.getButtons()");
+        }
 
-	return _buttons;
+        return _buttons;
     }
 
     //-------------------------------------------------------------------
@@ -306,10 +142,10 @@ public class DEViseMainButtons
     public DEViseButton getStopButton()
     {
         if (DEBUG >= 1) {
-	    System.out.println("DEViseMainButtons.getStopButton()");
-	}
+            System.out.println("DEViseMainButtons.getStopButton()");
+        }
 
-	return stopButton;
+        return stopButton;
     }
 
     /**
@@ -320,10 +156,10 @@ public class DEViseMainButtons
     public DEViseButton getFeedbackButton()
     {
         if (DEBUG >= 1) {
-	    System.out.println("DEViseMainButtons.getFeedbackButton()");
-	}
+            System.out.println("DEViseMainButtons.getFeedbackButton()");
+        }
 
-	return feedbackButton;
+        return feedbackButton;
     }
 
     //===================================================================
@@ -336,15 +172,15 @@ public class DEViseMainButtons
     private void createButtons()
     {
         if (DEBUG >= 2) {
-	    System.out.println("DEViseMainButtons.createButtons()");
-	}
+            System.out.println("DEViseMainButtons.createButtons()");
+        }
         sessionMenuButton = new DEViseButton("Session", _js.jsValues);
         viewMenuButton = new DEViseButton("Tools", _js.jsValues);
         helpMenuButton = new DEViseButton("Help", _js.jsValues);
         stopButton = new DEViseButton("Stop", _js.jsValues,
-	  "Stop the current operation");
+                                      "Stop the current operation");
         feedbackButton = new DEViseButton("Feedback", _js.jsValues,
-	  "Go to a form to give feedback");
+                                          "Go to a form to give feedback");
 
         _buttons = new Component[5];
         _buttons[0] = sessionMenuButton;
@@ -353,45 +189,45 @@ public class DEViseMainButtons
         _buttons[3] = helpMenuButton;
         _buttons[4] = feedbackButton;
 
-	// Set up session menu.
+        // Set up session menu.
         if (!_js.jsValues.uiglobals.inBrowser) {
-	    sessionPM.add(openMenuItem);
-	    sessionPM.add(closeMenuItem);
-	}
-	//sessionPM.add(restartMenuItem); -- Not needed since we are adding a refresh button -- kancherla
-	sessionPM.add(filterMenuItem);
+            sessionPM.add(openMenuItem);
+            sessionPM.add(closeMenuItem);
+        }
+        //sessionPM.add(restartMenuItem); -- Not needed since we are adding a refresh button -- kancherla
+        sessionPM.add(filterMenuItem);
         if (!_js.jsValues.uiglobals.inBrowser) {
-	    sessionPM.add(exitMenuItem);
-	}
-	sessionMenuButton.add(sessionPM);
+            sessionPM.add(exitMenuItem);
+        }
+        sessionMenuButton.add(sessionPM);
 
-	// Set up display mode menu.
-	displayModeMenu.add(normalDisplayMenuItem);
-	displayModeMenu.add(colorPrintDisplayMenuItem);
-	displayModeMenu.add(bwPrintDisplayMenuItem);
+        // Set up display mode menu.
+        displayModeMenu.add(normalDisplayMenuItem);
+        displayModeMenu.add(colorPrintDisplayMenuItem);
+        displayModeMenu.add(bwPrintDisplayMenuItem);
 
-	// Set up communication mode menu.
-	commModeMenu.add(socketModeMenuItem);
-	commModeMenu.add(cgiModeMenuItem);
-	
-	// Set up view menu.
-	viewPM.add(displayModeMenu);
-	viewPM.add(setMenuItem);
-	viewPM.add(commModeMenu);
-	viewPM.add(collabMenuItem);
-	viewPM.add(playbackMenuItem);
-	viewPM.add(logMenuItem);
-	viewMenuButton.add(viewPM);
+        // Set up communication mode menu.
+        commModeMenu.add(socketModeMenuItem);
+        commModeMenu.add(cgiModeMenuItem);
 
-	// Set up help menu.
-	helpPM.add(jsHelpBrowserMenuItem);
-	//TEMP helpPM.add(visHelpMenuItem);
-	helpPM.add(showViewHelpMenuItem);
-	helpPM.add(hideViewHelpMenuItem);
-	helpPM.add(jsHelpInternalMenuItem);
-	//TEMP helpPM.add(aboutMenuItem);
-	helpMenuButton.add(helpPM);
-	if (_js._parentApplet == null) {
+        // Set up view menu.
+        viewPM.add(displayModeMenu);
+        viewPM.add(setMenuItem);
+        viewPM.add(commModeMenu);
+        viewPM.add(collabMenuItem);
+        viewPM.add(playbackMenuItem);
+        viewPM.add(logMenuItem);
+        viewMenuButton.add(viewPM);
+
+        // Set up help menu.
+        helpPM.add(jsHelpBrowserMenuItem);
+        //TEMP helpPM.add(visHelpMenuItem);
+        helpPM.add(showViewHelpMenuItem);
+        helpPM.add(hideViewHelpMenuItem);
+        helpPM.add(jsHelpInternalMenuItem);
+        //TEMP helpPM.add(aboutMenuItem);
+        helpMenuButton.add(helpPM);
+        if (_js._parentApplet == null) {
             jsHelpBrowserMenuItem.setEnabled(false);
             feedbackButton.setEnabled(false);
         }
@@ -404,210 +240,210 @@ public class DEViseMainButtons
     private void addActions()
     {
         if (DEBUG >= 2) {
-	    System.out.println("DEViseMainButtons.addActions()");
-	}
+            System.out.println("DEViseMainButtons.addActions()");
+        }
 
         sessionMenuButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-			sessionPM.show(sessionMenuButton, MENU_X_OFFSET,
-			  MENU_Y_OFFSET);
-                }
-            });
+                sessionPM.show(sessionMenuButton, MENU_X_OFFSET,
+                               MENU_Y_OFFSET);
+            }
+        });
 
         viewMenuButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-			viewPM.show(viewMenuButton, MENU_X_OFFSET,
-			  MENU_Y_OFFSET);
-                }
-            });
+                viewPM.show(viewMenuButton, MENU_X_OFFSET,
+                            MENU_Y_OFFSET);
+            }
+        });
 
         helpMenuButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-			helpPM.show(helpMenuButton, MENU_X_OFFSET,
-			  MENU_Y_OFFSET);
-                }
-            });
+                helpPM.show(helpMenuButton, MENU_X_OFFSET,
+                            MENU_Y_OFFSET);
+            }
+        });
 
         openMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.getSessionList();
-                }
-            });
+                _js.getSessionList();
+            }
+        });
 
         closeMenuItem.addActionListener(new ActionListener()
-	    {
-	        public void actionPerformed(ActionEvent event)
-	        {
-	            _js.closeSession();
-	        }
-	    });
+        {
+            public void actionPerformed(ActionEvent event)
+            {
+                _js.closeSession();
+            }
+        });
 
         /*restartMenuItem.addActionListener(new ActionListener()
-	    {
-	        public void actionPerformed(ActionEvent event)
-	        {
-	            _js.restartSession();
-	        }
-	    });*/
+        {
+            public void actionPerformed(ActionEvent event)
+            {
+                _js.restartSession();
+            }
+        });*/
 
         filterMenuItem.addActionListener(new ActionListener()
-	    {
-	        public void actionPerformed(ActionEvent event)
-	        {
-		    _js.resetFilters();
-	        }
-            });
+        {
+            public void actionPerformed(ActionEvent event)
+            {
+                _js.resetFilters();
+            }
+        });
 
         exitMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-                    _js.checkQuit();
-                }
-            });
+                _js.checkQuit();
+            }
+        });
 
         normalDisplayMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.setDisplayMode(0);
-                }
-            });
+                _js.setDisplayMode(0);
+            }
+        });
 
         colorPrintDisplayMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.setDisplayMode(1);
-                }
-            });
+                _js.setDisplayMode(1);
+            }
+        });
 
         bwPrintDisplayMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.setDisplayMode(2);
-                }
-            });
+                _js.setDisplayMode(2);
+            }
+        });
 
         socketModeMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.jsValues.connection.useCgi = false;
-		    _js.socketMode();
+                _js.jsValues.connection.useCgi = false;
+                _js.socketMode();
 
-                }
-            });
+            }
+        });
 
         cgiModeMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.setCgiUrl();
-                }
-            });
+                _js.setCgiUrl();
+            }
+        });
 
         setMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-                    _js.showSetting();
-                }
-            });
+                _js.showSetting();
+            }
+        });
 
         collabMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.showCollab();
-                }
-            });	
+                _js.showCollab();
+            }
+        });
 
         playbackMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.setLogFile();
-                }
-            });	
+                _js.setLogFile();
+            }
+        });
 
         logMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.setLog(logMenuItem);
-                }
-            });
+                _js.setLog(logMenuItem);
+            }
+        });
 
         stopButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-	            _js.stopCommand();
-                }
-            });
+                _js.stopCommand();
+            }
+        });
 
         jsHelpBrowserMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.showHelpInBrowser();
-                }
-            });
+                _js.showHelpInBrowser();
+            }
+        });
 
         jsHelpInternalMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    String htmlText = DEViseHtmlWindow.getTextFromFile(
-		      _js.jsValues, DEViseGlobals.JS_HELP_URL);
-		    helpWindow = new DEViseHtmlWindow(
-		      "DEVise JavaScreen help", htmlText);
-                }
-            });
+                String htmlText = DEViseHtmlWindow.getTextFromFile(
+                                      _js.jsValues, DEViseGlobals.JS_HELP_URL);
+                helpWindow = new DEViseHtmlWindow(
+                    "DEVise JavaScreen help", htmlText);
+            }
+        });
 
         showViewHelpMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.showViewHelp();
-                }
-            });
+                _js.showViewHelp();
+            }
+        });
 
         hideViewHelpMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.hideViewHelp();
-                }
-            });
+                _js.hideViewHelp();
+            }
+        });
 
-/*TEMP
-        aboutMenuItem.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.showAbout();
-                }
-            });
-TEMP*/
+        /*TEMP
+                aboutMenuItem.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent event)
+                        {
+                    _js.showAbout();
+                        }
+                    });
+        TEMP*/
 
         feedbackButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
             {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.showFeedbackInBrowser();
-                }
-            });
+                _js.showFeedbackInBrowser();
+            }
+        });
     }
 }
 

@@ -21,35 +21,9 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.11  2000/06/21 18:37:28  wenger
-// Removed a bunch of unused code (previously just commented out).
-//
-// Revision 1.10  2000/05/24 14:07:09  wenger
-// Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
-// DEViseAtomInCrystal, DEVise3DLCS).
-//
-// Revision 1.9  2000/04/07 22:43:13  wenger
-// Improved shading of atoms (it now works on white atoms); added comments
-// based on meeting with Hongyu on 2000-04-06.
-//
-// Revision 1.8  2000/04/05 06:25:36  hongyu
-// fix excessive memory usage problem associated with gdata
-//
-// Revision 1.7  2000/03/23 16:26:12  wenger
-// Cleaned up headers and added requests for comments.
-//
-// Revision 1.6  2000/01/12 14:37:48  hongyu
-// *** empty log message ***
-//
-// Revision 1.5  1999/12/10 15:37:00  wenger
-// Added standard headers to source files.
 //
 // ========================================================================
 
-//TEMP package edu.wisc.cs.devise.js.jsc;
 package JavaScreen;
 
 import java.awt.*;
@@ -101,7 +75,7 @@ public class DEViseAtomType {
             color = c;
         } else {
             color = new Color(DEViseUIGlobals.COLOR_MIN,
-	      DEViseUIGlobals.COLOR_MIN, DEViseUIGlobals.COLOR_MIN);
+                              DEViseUIGlobals.COLOR_MIN, DEViseUIGlobals.COLOR_MIN);
         }
     }
 
@@ -115,12 +89,12 @@ public class DEViseAtomType {
             radius = rr;
         }
 
-	int red = Math.min(DEViseUIGlobals.COLOR_MAX,
-	  Math.max(DEViseUIGlobals.COLOR_MIN, r));
-	int green = Math.min(DEViseUIGlobals.COLOR_MAX,
-	  Math.max(DEViseUIGlobals.COLOR_MIN, g));
-	int blue = Math.min(DEViseUIGlobals.COLOR_MAX,
-	  Math.max(DEViseUIGlobals.COLOR_MIN, b));
+        int red = Math.min(DEViseUIGlobals.COLOR_MAX,
+                           Math.max(DEViseUIGlobals.COLOR_MIN, r));
+        int green = Math.min(DEViseUIGlobals.COLOR_MAX,
+                             Math.max(DEViseUIGlobals.COLOR_MIN, g));
+        int blue = Math.min(DEViseUIGlobals.COLOR_MAX,
+                            Math.max(DEViseUIGlobals.COLOR_MIN, b));
 
         color = new Color(red, green, blue);
     }
@@ -179,13 +153,13 @@ public class DEViseAtomType {
             newcolor = color;
         }
 
-	// ADD COMMENT -- what are hx, hy?
+        // ADD COMMENT -- what are hx, hy?
         int maxR = 0, hx = (int)(0.2f * D + 0.5f), hy = (int)(0.2f * D + 0.5f);
         int pos, x0, xx, yy, r;
 
         for (int y = 0; y < D; y++) {
             // the effect Y range is the range that line X = x intersect
-	    // with the circle
+            // with the circle
             x0 = (int)(Math.sqrt(R * R - (y - R) * (y - R)) + 0.5f);
 
             // the starting position of this range in the data array
@@ -193,7 +167,7 @@ public class DEViseAtomType {
 
             for (int x = -x0; x < x0; x++) {
                 // the x and y position shifted according to highlight
-		// point (hx, hy)
+                // point (hx, hy)
                 xx = x + hx;
                 yy = y - R + hy;
 
@@ -206,34 +180,34 @@ public class DEViseAtomType {
                 }
 
                 // recording the position realR into data array, later on,
-		// we will use an index color model to dim or intensify the
-		// color according to the magnitude of this position
+                // we will use an index color model to dim or intensify the
+                // color according to the magnitude of this position
                 newdata[pos++] = (r <= 0 ? (byte)1 : (byte)r);
             }
         }
 
-	//
-	// Shade the atom.  Make part of it lighter, and part of it
-	// darker.
-	//
+        //
+        // Shade the atom.  Make part of it lighter, and part of it
+        // darker.
+        //
         byte[] icmR = new byte[maxR+1], icmG = new byte[maxR+1],
-	  icmB = new byte[maxR+1];
+        icmB = new byte[maxR+1];
         int red = newcolor.getRed();
         int green = newcolor.getGreen();
         int blue = newcolor.getBlue();
         int endLighter = maxR / 2;
 
-	for (int i = 0; i <= endLighter; i++) {
+        for (int i = 0; i <= endLighter; i++) {
             float factor = (float)i / endLighter;
             icmR[i] = (byte)blend(red, DEViseUIGlobals.COLOR_MAX, factor);
             icmG[i] = (byte)blend(green, DEViseUIGlobals.COLOR_MAX, factor);
             icmB[i] = (byte)blend(blue, DEViseUIGlobals.COLOR_MAX, factor);
-	}
+        }
 
-	for (int i = endLighter + 1; i <= maxR; i++) {
+        for (int i = endLighter + 1; i <= maxR; i++) {
             float factor = (float)i / maxR;
-	    factor = 1.0F - factor;
-	    factor += 0.5; // avoid making things too dark...
+            factor = 1.0F - factor;
+            factor += 0.5; // avoid making things too dark...
             factor = Math.min(factor, 1.0F);
             icmR[i] = (byte)blend(red, DEViseUIGlobals.COLOR_MIN, factor);
             icmG[i] = (byte)blend(green, DEViseUIGlobals.COLOR_MIN, factor);
@@ -241,9 +215,9 @@ public class DEViseAtomType {
         }
 
         IndexColorModel model = new IndexColorModel(8, maxR + 1, icmR,
-	  icmG, icmB, 0);
+                icmG, icmB, 0);
         newimage = component.createImage(new MemoryImageSource(D, D,
-	  model, newdata, 0, D));
+                                         model, newdata, 0, D));
 
         if (isSelected) {
             selectedImage = newimage;
@@ -265,7 +239,7 @@ public class DEViseAtomType {
     public static final int DRAW_SHADED_UNSELECTED = 0;
 
     public void paint(Component component, Graphics gc, int x, int y,
-      float zfactor, int drawStyle) throws YError
+                      float zfactor, int drawStyle) throws YError
     {
         if (component == null || gc == null) {
             return;
@@ -295,7 +269,7 @@ public class DEViseAtomType {
                 }
             }
             gc.drawImage(selectedImage, x - drawSize / 2, y - drawSize / 2,
-	      drawSize, drawSize, component);
+                         drawSize, drawSize, component);
         } else if (drawStyle == DRAW_SHADED_UNSELECTED) {
             if (image == null) {
                 createImage(component, false);
@@ -304,9 +278,9 @@ public class DEViseAtomType {
                 }
             }
             gc.drawImage(image, x - drawSize / 2, y - drawSize / 2, drawSize,
-	      drawSize, component);
+                         drawSize, component);
         } else {
-	    throw new YError("Illegal draw style: " + drawStyle);
-	}
+            throw new YError("Illegal draw style: " + drawStyle);
+        }
     }
 }

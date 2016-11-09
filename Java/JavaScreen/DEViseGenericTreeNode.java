@@ -16,25 +16,10 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.3  2006/07/11 18:32:42  wenger
-// Minor cleanups for DEVise 1.9.0 -- changed versions, etc.
-//
-// Revision 1.2  2006/05/26 16:22:16  wenger
-// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
-//
-// Revision 1.1.2.1  2006/05/08 20:19:47  wenger
-// Made the JavaScreen tree code itself generic (although the Jmol-
-// related code that calls it is not).
-//
-
 // ========================================================================
 
 // DEViseGenericTreeNode.java
 
-//TEMP package edu.wisc.cs.devise.js.jsc;
 package JavaScreen;
 
 import java.util.*;
@@ -48,7 +33,7 @@ public class DEViseGenericTreeNode
     public DEViseGenericTreeNode(String name)
     {
         this.name = name;
-	children = new Vector();
+        children = new Vector();
     }
 
     public void addChild(DEViseGenericTreeNode child)
