@@ -101,6 +101,11 @@
       <param name="hidebmrbsess" value="1">
       <hr>
         <h1><a href="ENTRY_IDd1.jnlp">Click here to launch DEVise for this visualization</a></h1>
+        <p>Depending on your browser, you may have to click or double click on the downloaded
+        file to launch the visualizations.</p>
+        <p>In Firefox you should be asked how to handle the file. Select "open with Java" to launch the viewer.</p>
+        <p>In Chrome you will be asked if you want to keep the downloaded file. Click "Keep", and then click once on the downloaded file.</p>
+        <p>In Safari after the file downloads you must go to your downloads and then double click the file to launch it.</p>
       <hr>
     </object>
     </center>
