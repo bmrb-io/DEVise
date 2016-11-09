@@ -130,6 +130,9 @@ echo "Installing histogram html files in $targetdir"
 cp -p html2/devise/*hist*.html $targetdir
 chmod a+r $targetdir/*.html
 
+# Attempt to copy the jnlp files
+cp -p histograms/jnlp/* $targetdir
+chmad a+r $targetdir/*jnlp
 
 # Copy the schemas to the demo area.
 

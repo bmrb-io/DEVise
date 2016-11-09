@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" codebase="CODEBASE" href="dna_histogram.jnlp">
+    <information>
+        <title>DEVise JavaScreen Java Web Start</title>
+        <vendor>BioMagResBank</vendor>
+        <homepage href="CODEBASE" />
+    </information>
+    <resources>
+        <j2se version="1.7+" href="http://java.sun.com/products/autodl/j2se" />
+        <jar href="devise_js.jar" main="true" />
+    </resources>
+    <application-desc name="DEVise JavaScreen" main-class="JavaScreen.js" width="800" height="600">
+        <argument>-usecgi</argument>
+        <argument>-cgiurl/cgi-bin/devise/js.cgi</argument>
+        <argument>-hostDEVISE_HOST</argument>
+        <argument>-sessionbmrb/dna_histogram.ds</argument>
+        <argument>-screensize800x600</argument>
+    </application-desc>
+    <update check="background"/>
+</jnlp>
