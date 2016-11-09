@@ -134,10 +134,10 @@ chmod a+r $targetdir/*.html
 
 # Attempt to copy the jnlp files
 cp -p histograms/jnlp/* $targetdir
-# Update the JNLP files based on the settings.
-sed -i "s/CODEBASE/$codebase/" $targetdir/*jnlp
-sed -i "s/DEVISE_HOST/$host/" $targetdir/*jnlp
 chmod a+r $targetdir/*jnlp
+# Update the JNLP files based on the settings.
+sed -i "s/CODEBASE/$codebase/g" $targetdir/*jnlp
+sed -i "s/DEVISE_HOST/$host/g" $targetdir/*jnlp
 
 # Copy the schemas to the demo area.
 
