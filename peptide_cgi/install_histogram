@@ -136,8 +136,8 @@ chmod a+r $targetdir/*.html
 cp -p histograms/jnlp/* $targetdir
 chmod a+r $targetdir/*jnlp
 # Update the JNLP files based on the settings.
-sed -i "s/CODEBASE/${codebase}/g" $targetdir/*jnlp
-sed -i "s/DEVISE_HOST/${hostname}/g" $targetdir/*jnlp
+sed -i "s|CODEBASE|${codebase}|g" $targetdir/*jnlp
+sed -i "s|DEVISE_HOST|${hostname}|g" $targetdir/*jnlp
 
 # Copy the schemas to the demo area.
 
