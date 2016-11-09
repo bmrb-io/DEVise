@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2013
+#  (c) Copyright 2001-2016
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -16,7 +16,7 @@
 
 ############################################################
 
-#  $Id$
+#  $Id: Makefile.config.bmrb_manatee,v 1.20 2015/05/12 19:50:15 wenger Exp $
 
 ############################################################
 
@@ -27,12 +27,13 @@ PERL_BIN = /usr/bin
 
 #-----------------------------------------------------------
 # Where to find stuff on the web.
-INPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
-OUTPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
+INPUT_WEB_DOMAIN = manta.bmrb.wisc.edu
+OUTPUT_WEB_DOMAIN = manta.bmrb.wisc.edu
+CODEBASE = http://manta.bmrb.wisc.edu/devise/
 
-STAR_URL = file:/bmrb/ftp/pub/bmrb/entry_lists/nmr-star3.1/;file:/bmrb/ftp/pub/bmrb/entry_lists/nmr-star2.1/
+STAR_URL = file:/website/ftp/pub/bmrb/entry_lists/nmr-star3.1/;file:/website/ftp/pub/bmrb/entry_lists/nmr-star2.1/
 STAR_NAME_TEMPLATE = "bmr*.str"
-MMCIF_TEMPLATE = "ftp://ftp.pdbj.org/pub/pdb/data/structures/divided/mmCIF/@/*"
+MMCIF_TEMPLATE = "http://www.bmrb.wisc.edu/ftp/pub/pdb/data/structures/divided/mmCIF/@/*"
 
 3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/4096_side3h.html
 SUMMARY_PAGE_DIR = http://$(OUTPUT_WEB_DOMAIN)/devise/peptide-cgi/html
@@ -43,27 +44,28 @@ UVD_CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/peptide-cgi/make_uvd
 # Places to install stuff.
 
 # The base of the DEVise demo setup.
-DEV_DEMO_HOME = /bmrb/devise/demo
+DEV_DEMO_HOME = /tank/devise_install/visualizations/
 
-WWW_HOME = /bmrb/htdocs
+WWW_HOME = /websites/www/html/devise
+HTML_HOME = $(WWW_HOME)
 
 # The directory where the "front-end" file will be put.
-PEP_HOME = $(WWW_HOME)/devise/peptide-cgi
+PEP_HOME = $(WWW_HOME)/peptide-cgi
 
 # The directory where the CGI script and related stuff will be put.
-CGI_HOME = $(WWW_HOME)/cgi-bin/peptide-cgi
+CGI_HOME = /websites/www/cgi-bin/peptide-cgi
 
 # The "real" directory (not symlink) for peptide-cgi sessions.
-PEP_SESSION_HOME = $(PEP_HOME)/session_dir
+PEP_SESSION_HOME = /tank/devise_install/visualizations/bmrb/dynamic_sessions
 
 # The "real" directory (not symlink) for peptide-cgi data.
-PEP_DATA_HOME = $(PEP_HOME)/data_dir
+PEP_DATA_HOME = /tank/devise_install/visualizations/bmrb/dynamic_data
 
 # The "real" directory (not symlink) for peptide-cgi html files.
-PEP_HTML_HOME = $(PEP_HOME)/html_dir
+PEP_HTML_HOME = /websites/www/html/devise/bmrb/dynamic_html
 
 # Machine installation should be done on (optional).
-INSTALL_MACHINE = bmrbweb
+INSTALL_MACHINE = manta.bmrb.wisc.edu
 
 #-----------------------------------------------------------
 # Configuration for viewing unreleased entries.
@@ -72,7 +74,7 @@ INSTALL_MACHINE = bmrbweb
 # This first subsection is installation parameters.
 
 # Where to install the main scripts, jar file, etc.
-VUR_CGI_HOME = /export/home/web/vur/peptide-cgi/cgi-bin
+VUR_CGI_HOME = /home/web/vur/peptide-cgi/cgi-bin
 
 # Where to store the session files for viewing unreleased
 # entries (the session files will actually be stored in
@@ -94,33 +96,31 @@ VUR_HTML_HOME = /tmp/vur/html_unreleased
 VUR_FRONTEND_DIR = null
 
 # Machine installation should be done on (optional).
-VUR_INSTALL_MACHINE = bmrbweb
+VUR_INSTALL_MACHINE = manatee.bmrb.wisc.edu
 
 #...........................................................
 # This subsection is parameters we actually use when runing
 # the view_entry script, etc.
 
 # The directory in which the JavaScreen client is installed.
-VUR_JS_DIR = /bmrb/devise/js.installed
+VUR_JS_DIR = /website/devise/js.installed
 
 # The "base" directory from which to get the NMR-STAR file.
-# VUR_INPUT_DIR = web@yellowtail:/share/subedit/Third.Ed
-VUR_INPUT_DIR = bmrb@172.16.161.141:/cvsdep
+VUR_INPUT_DIR = web@yellowtail:/share/subedit/Third.Ed
 
 # The level of chemical shift reference processing to do.
 VUR_CSR_LEVEL = 0
 
 # The user that the "front-end" script will log into the "main"
 # machine as.
-# VUR_LOGIN = web@manatee
-VUR_LOGIN = webmaster@bmrbweb
+VUR_LOGIN = web@manatee
 
 # The "main" script to run.
 VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
 
 #-----------------------------------------------------------
 # "Upload and visualize data" configuration
-UVD_DATA_UPLOAD = $(WWW_HOME)/vis_serv/upload_data
+UVD_DATA_UPLOAD = $(WWW_HOME)/devise/html/data_download
 
 #-----------------------------------------------------------
 # LACS-related configuration
@@ -129,34 +129,34 @@ UVD_DATA_UPLOAD = $(WWW_HOME)/vis_serv/upload_data
 LACS_LEVEL_DEFAULT = 1
 
 # The URL of directory containing LACS files (must end with "/").
-LACS_URL = file:/bmrb/ftp/pub/bmrb/validation_reports/LACS/
+LACS_URL = file:/website/ftp/pub/bmrb/validation_reports/LACS/
 
 #-----------------------------------------------------------
 # Histogram-related configuration
 
 # The directory where the histogram html files will be put.
-HISTOGRAM_HTML_HOME = $(WWW_HOME)/devise
+HISTOGRAM_HTML_HOME = $(WWW_HOME)
 
 # The directory containing the "real" histogram data.
-HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/bmrb/statistics/chem_shifts/full/devise
+HISTOGRAM_DATA_HOME = /website/ftp/pub/bmrb/statistics/chem_shifts/full/devise
 
 #-----------------------------------------------------------
 # SPARTA-related configuration
 # The URL of directory containing SPARTA files (must end with "/").
-SPARTA_URL = file:/bmrb/ftp/pub/bmrb/validation_reports/SPARTA/
+SPARTA_URL = file:/website/ftp/pub/bmrb/validation_reports/SPARTA/
 
 #-----------------------------------------------------------
 # Restraint-related configuration.
 
 # The root URL of the restraint grid (must end with "/").
-RESTRAINT_GRID_ROOT = "http://bmrbweb.protein.osaka-u.ac.jp/servlets/"
+RESTRAINT_GRID_ROOT = "http://restraintsgrid.bmrb.wisc.edu/NRG/"
 
 # Default torsion angle restraint processing level: create link
 # if appropriate restraint grid entry is available.
 DO_TAR_DEFAULT = 1
 
 # The root URL of the remediated restraints files.
-REMEDIATED_RESTRAINTS_TEMPLATE = "file:/bmrb/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/divided/@/*/nmr-star/*_linked.str"
+REMEDIATED_RESTRAINTS_TEMPLATE = "file:/website/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/divided/@/*/nmr-star/*_linked.str"
 
 # Default remediated restraints torsion angle processing level: create link
 # if appropriate restraint grid entry is available.
@@ -175,7 +175,8 @@ DO_RRDIST_DEFAULT = 1
 DO_S2PRED_DEFAULT = 1
 
 # The root URL of s2predict output files.
-S2PRED_URL_DEFAULT = file:/bmrb/ftp/pub/bmrb/derived_data/s2predict/
+#TEMP? S2PRED_URL_DEFAULT = file:/website/ftp/pub/bmrb/derived_data/s2predict/
+S2PRED_URL_DEFAULT = file:test_data/
 
 # Do dynamics movies.
 DO_DYN_MOVIE_DEFAULT = 1
@@ -184,10 +185,10 @@ DO_DYN_MOVIE_DEFAULT = 1
 # Other.
 
 # User to send email to on errors.
-ERROR_EMAIL = bmrbsys@protein.osaka-u.ac.jp
+ERROR_EMAIL = devise-sup@cs.wisc.edu
 
 # Email for sending comments in web pages.
-COMMENT_EMAIL = bmrbhelp@protein.osaka-u.ac.jp
+COMMENT_EMAIL = bmrbhelp@bmrb.wisc.edu
 
 # Script for uncompressing PDB mmCIF files.
 MY_UNCOMPRESS = my_uncompress_unix

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2015
+#  (c) Copyright 2001-2016
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -16,7 +16,7 @@
 
 ############################################################
 
-#  $Id$
+#  $Id: Makefile.config.bmrb_manatee,v 1.19 2012/12/12 20:01:23 wenger Exp $
 
 ############################################################
 
@@ -29,6 +29,7 @@ PERL_BIN = /usr/bin
 # Where to find stuff on the web.
 INPUT_WEB_DOMAIN = manatee.bmrb.wisc.edu
 OUTPUT_WEB_DOMAIN = manatee.bmrb.wisc.edu
+CODEBASE = http://manatee/devise/
 
 STAR_URL = file:/website/ftp/pub/bmrb/entry_lists/nmr-star3.1/;file:/website/ftp/pub/bmrb/entry_lists/nmr-star2.1/
 STAR_NAME_TEMPLATE = "bmr*.str"
@@ -180,6 +181,7 @@ S2PRED_URL_DEFAULT = file:test_data/
 # Do dynamics movies.
 DO_DYN_MOVIE_DEFAULT = 1
 
+
 #-----------------------------------------------------------
 # Other.
 
@@ -194,3 +196,4 @@ MY_UNCOMPRESS = my_uncompress_unix
 
 # Default for whether to do the chem shift reference calculation.
 DO_CSR_DEFAULT = 0
+
