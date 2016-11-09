@@ -16,32 +16,9 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.19  2001/01/08 20:31:54  wenger
-// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
-// back onto the trunk.
-//
-// Revision 1.18.4.2  2000/11/22 17:44:00  wenger
-// Finished cleanup of static variables fix; re-changed CGI command code to
-// match the current version of the CGI script.
-//
-// Revision 1.18.4.1  2000/11/21 01:51:34  xuk
-// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
-//
-// Revision 1.18  2000/04/05 06:25:40  hongyu
-// fix excessive memory usage problem associated with gdata
-//
-// Revision 1.17  2000/03/23 16:26:17  wenger
-// Cleaned up headers and added requests for comments.
-//
-// Revision 1.16  1999/12/10 15:37:01  wenger
-// Added standard headers to source files.
 //
 // ========================================================================
 
-//TEMP package edu.wisc.cs.devise.js.util;
 package JavaScreen;
 
 public final class YGlobals

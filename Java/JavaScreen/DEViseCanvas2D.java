@@ -16,137 +16,10 @@
 
 // ------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------
-
-// $Id$
-
-// $Log$
-// Revision 1.10.10.3  2015/07/08 21:48:04  wenger
-// Merged aditya1_br_8 thru aditya1_br_9 to aditya_merge_br.
-//
-// Revision 1.10.10.2  2015/07/08 20:57:11  wenger
-// Merged aditya1_br_7 thru aditya1_br_8 to aditya_merge_br.
-//
-// Revision 1.10.10.1  2015/07/07 14:56:37  wenger
-// Merged aditya1_br_4 thru aditya1_br_5 to aditya_merge_br.
-//
-// Revision 1.10.8.6  2015/02/13 20:15:36  kancherla
-// Fixed the drill down marker disappearing bug
-//
-// Revision 1.10.8.5  2015/02/04 20:05:14  kancherla
-// Added a null check for fixing mouse wheel moved NPE
-//
-// Revision 1.10.8.4  2015/01/26 14:19:34  kancherla
-// changed copyright date
-//
-// Revision 1.10.8.3  2015/01/26 14:18:21  kancherla
-// changed the sense of scroll wheel zooming
-//
-// Revision 1.10.8.2  2015/01/16 23:10:21  kancherla
-// *** empty log message ***
-//
-// Revision 1.10.8.1  2015/01/14 21:47:18  kancherla
-// Added mouse wheel listener
-//
-// Revision 1.10  2012/04/30 22:20:17  wenger
-// Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
-//
-// Revision 1.9.16.3  2012/04/27 16:46:00  wenger
-// Cleaned up a bunch of temporary/debug code.
-//
-// Revision 1.9.16.2  2012/04/23 18:48:24  wenger
-// Data download now handles piles (still with dummy data); partway to
-// correctly doing Miron's requested change of creating a file that we
-// redirect the user's browser to.
-//
-// Revision 1.9.16.1  2012/04/12 23:27:21  wenger
-// Initial implementation of command framework for JavaScreen data saving
-// (the command doesn't really do anything on the devised end yet).  Note
-// that the toolbar icons for data saving are just a copy of the icons
-// for drill down right now -- I want to get things implemented on the
-// devised end before I put time into farting around making new icons.
-//
-// Revision 1.9  2009/09/09 21:50:18  wenger
-// Fixed JavaScreen bugs 960 and 983 (problems with the mouse cursor
-// not changing correctly according to the toolbar mode and the state
-// of the active view).
-//
-// Revision 1.8  2009/05/19 18:13:42  wenger
-// Implementation of JavaScreen drill-down marker is mostly done --
-// committing now with it disabled to make sure changes don't get lost.
-//
-// Revision 1.7  2008/09/25 22:44:21  wenger
-// Workaround for bug 939: fixed off-by-one errors in the JS client
-// so this no longer happens for the JS; no fix on the server side,
-// though.
-//
-// Revision 1.6  2008/03/05 20:02:56  wenger
-// Fixed bug 965 (disabled alt and shift modifiers in 2D views).
-//
-// Revision 1.5  2007/08/27 19:16:39  wenger
-// Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
-//
-// Revision 1.4  2007/08/03 20:17:27  wenger
-// Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
-//
-// Revision 1.3  2007/06/27 17:47:58  wenger
-// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
-// the toolbar stuff, but not the fixes for the "obscured tooltips"
-// problem, which are still in progress).
-//
-// Revision 1.2.2.8  2007/08/27 18:35:31  wenger
-// Implemented "click to zoom" feature in toolbar zoom modes (zooms in or
-// out 50% and re-centers).
-//
-// Revision 1.2.2.7  2007/08/10 15:27:27  wenger
-// Toolbar now stays in the same mode after an action as opposed to
-// resetting to the default mode.
-//
-// Revision 1.2.2.6  2007/08/03 19:21:15  wenger
-// Mouse cursor now changes according to toolbar mode; fixed existing
-// problems with mouse cursor being crosshairs cursor when it should be
-// the default cursor; fixed problems with actions sometimes happening
-// in the wrong toolbar mode; added "XY zoom in" button.
-//
-// Revision 1.2.2.5  2007/06/21 15:07:06  wenger
-// Toolbar help mode now resets to normal after one click.
-//
-// Revision 1.2.2.4  2007/06/19 20:49:48  wenger
-// Toolbar now works for the various zoom modes and for enlarging/reducing
-// symbol size; removed buttons for Y-only zoom modes (not supported right
-// now).
-//
-// Revision 1.2.2.3  2007/06/19 19:32:34  wenger
-// Toolbar now works for help, home, cursor fill, and toggling visual
-// filters; increased the spacing between the "sections" of icons.
-//
-// Revision 1.2.2.2  2007/06/18 19:57:20  wenger
-// Toolbar works for drill-down (including Jmol); we go back to "normal"
-// mode after drilling down; drill-down in Jmol is now disabled by
-// default; removed Jmol menu options to enable/disable drill-down;
-// removed unneeded utils stuff from 'make clean' target.
-//
-// Revision 1.2.2.1  2007/06/15 20:46:08  wenger
-// Fixed problems with how DEViseJSValues was used in the toolbar code;
-// got rid of static members for loading images in jsdevisec, because
-// they might cause problems; made some changes to the toolbar constructor
-// to move towards actually making it functional.
-//
-// Revision 1.2  2006/05/26 16:22:15  wenger
-// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
-//
-// Revision 1.1.2.2  2006/03/31 22:41:14  wenger
-// Finished splitting up DEViseCanvas class.
-//
-// Revision 1.1.2.1  2006/03/30 20:51:25  wenger
-// Partially done splitting up the DEViseCanvas class.
-//
-
 // ========================================================================
 
 // DEViseCanvas2D.java
 
-//TEMP package edu.wisc.cs.devise.js.jsc;
 package JavaScreen;
 
 import  java.awt.*;
@@ -165,7 +38,7 @@ public class DEViseCanvas2D extends DEViseCanvas
     // v is base view if there is a pile in this canvas.
     public DEViseCanvas2D (DEViseView v, Image img)
     {
-	super(v, img);
+        super(v, img);
     }
 
     //===================================================================
@@ -175,26 +48,26 @@ public class DEViseCanvas2D extends DEViseCanvas
     {
         checkMousePos(sp, true);
 
-	// Note:  some of the checks of the toolbar state here don't seem
-	// to be totally necessary, but I'm still doing them, partly for
-	// clarity and partly in case other things change and make them
-	// necessary.  wenger 2007-08-03.
+        // Note:  some of the checks of the toolbar state here don't seem
+        // to be totally necessary, but I'm still doing them, partly for
+        // clarity and partly in case other things change and make them
+        // necessary.  wenger 2007-08-03.
 
-	if (activeView.isRubberBand) {
+        if (activeView.isRubberBand) {
             // Control-drag is X-only zoom.
             if ((jsc.toolBar.doNormal() &&
-	      jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL)
-	      || jsc.toolBar.doZoomXOnly()) {
+                    jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL)
+                    || jsc.toolBar.doZoomXOnly()) {
                 _zoomMode = ZOOM_MODE_X;
             } else if (jsc.toolBar.doNormal() || jsc.toolBar.doZoomXY()) {
                 _zoomMode = ZOOM_MODE_XY;
             } else {
                 _zoomMode = ZOOM_MODE_NONE;
             }
-	}
+        }
 
         if (isInViewDataArea && selectedCursor == null &&
-          activeView.isRubberBand && jsc.toolBar.doRubberband()) {
+                activeView.isRubberBand && jsc.toolBar.doRubberband()) {
             // We can only draw just the rubberband line if we're
             // drawing it in XOR mode.
             _paintRubberbandOnly = DRAW_XOR_RUBBER_BAND;
@@ -207,18 +80,18 @@ public class DEViseCanvas2D extends DEViseCanvas
             Point p = event.getPoint();
             String cmd = "";
 
-	    // Note:  some of the checks of the toolbar state here don't seem
-	    // to be totally necessary, but I'm still doing them, partly for
-	    // clarity and partly in case other things change and make them
-	    // necessary.  wenger 2007-08-03.
+            // Note:  some of the checks of the toolbar state here don't seem
+            // to be totally necessary, but I'm still doing them, partly for
+            // clarity and partly in case other things change and make them
+            // necessary.  wenger 2007-08-03.
 
             if (selectedCursor != null && jsc.toolBar.doCursorOps()) {
-	        // move or resize cursor
+                // move or resize cursor
                 ep.x = activeView.translateX(p.x, 1);
                 ep.y = activeView.translateY(p.y, 1);
 
                 jsc.viewInfo.updateInfo(activeView.getX(ep.x),
-                activeView.getY(ep.y));
+                                        activeView.getY(ep.y));
 
                 int dx = ep.x - sp.x, dy = ep.y - sp.y;
                 DEViseCursor cursor = selectedCursor;
@@ -228,30 +101,30 @@ public class DEViseCanvas2D extends DEViseCanvas
                 cursor.image = null;
 
                 cmd = cmd + DEViseCommands.CURSOR_CHANGED + " {" +
-                  cursor.name + "} " + cursor.x + " " + cursor.y +
-		  " " + cursor.width + " " + cursor.height;
+                      cursor.name + "} " + cursor.x + " " + cursor.y +
+                      " " + cursor.width + " " + cursor.height;
 
                 jscreen.guiAction = true;
                 dispatcher.start(cmd);
 
             } else if (activeView.isRubberBand && jsc.toolBar.doRubberband()) {
-	        // rubber band (zoom)
-		// Move point within data area if it's outside.
+                // rubber band (zoom)
+                // Move point within data area if it's outside.
                 ep.x = activeView.translateX(p.x, 1);
                 ep.y = activeView.translateY(p.y, 1);
 
                 jsc.viewInfo.updateInfo(activeView.getX(ep.x),
-	          activeView.getY(ep.y));
+                                        activeView.getY(ep.y));
 
                 int w = ep.x - sp.x, h = ep.y - sp.y;
                 if (w < 0) w = -w;
                 if (h < 0) h = -h;
 
                 if (w > jsc.jsValues.uiglobals.rubberBandLimit.width ||
-		  h > jsc.jsValues.uiglobals.rubberBandLimit.height) {
-		    doRubberbandZoom(sp.x, sp.y, ep.x, ep.y);
-		    _zoomMode = ZOOM_MODE_NONE;
-		    // jsc.toolBar.setNormal();
+                        h > jsc.jsValues.uiglobals.rubberBandLimit.height) {
+                    doRubberbandZoom(sp.x, sp.y, ep.x, ep.y);
+                    _zoomMode = ZOOM_MODE_NONE;
+                    // jsc.toolBar.setNormal();
                 }
             }
 
@@ -262,11 +135,11 @@ public class DEViseCanvas2D extends DEViseCanvas
 
             repaint();
 
-	    // Workaround for bug 607.  Note that this means that things
-	    // will *not* work correctly if you do two consecutive drags
-	    // while holding down the control key the whole time.
-	    // RKW 2000-08-07.
-	    jsc.jsValues.canvas.lastKey = KeyEvent.VK_UNDEFINED;
+            // Workaround for bug 607.  Note that this means that things
+            // will *not* work correctly if you do two consecutive drags
+            // while holding down the control key the whole time.
+            // RKW 2000-08-07.
+            jsc.jsValues.canvas.lastKey = KeyEvent.VK_UNDEFINED;
         }
     }
 
@@ -277,77 +150,77 @@ public class DEViseCanvas2D extends DEViseCanvas
             Point p = event.getPoint();
 
             if ( ( allowShiftModifier && jsc.toolBar.doNormal() &&
-	      jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) ||
-	      jsc.toolBar.doDrillDown()) {
+                    jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) ||
+                    jsc.toolBar.doDrillDown()) {
                 if (activeView.isDrillDown) {
-                	//drawDrillDownMark(p.x, p.y);
-                	jsc.setDrillDownMarkerCoordinates(p.x, p.y, this);
+                    //drawDrillDownMark(p.x, p.y);
+                    jsc.setDrillDownMarkerCoordinates(p.x, p.y, this);
                     cmd = DEViseCommands.SHOW_RECORDS + " " +
-                      activeView.getCurlyName() + " " +
-		      activeView.translateX(p.x, 2) + " " +
-		      activeView.translateY(p.y, 2);
-	        }
+                          activeView.getCurlyName() + " " +
+                          activeView.translateX(p.x, 2) + " " +
+                          activeView.translateY(p.y, 2);
+                }
 
-	    } else if (jsc.toolBar.doCursorFill()) {
-		cmd = DEViseCommands.KEY_ACTION + " " +
-		  activeView.getCurlyName() + " " + DEVISE_KEY_CURSOR_FILL;
-		// jsc.toolBar.setNormal();
+            } else if (jsc.toolBar.doCursorFill()) {
+                cmd = DEViseCommands.KEY_ACTION + " " +
+                      activeView.getCurlyName() + " " + DEVISE_KEY_CURSOR_FILL;
+                // jsc.toolBar.setNormal();
 
 //TEMPTOOLBAR -- need to get view help to work on Jmol and "plain" 3D views
-	    } else if (jsc.toolBar.doViewHelp()) {
-		// jsc.toolBar.setNormal();
-		showHideHelp();
+            } else if (jsc.toolBar.doViewHelp()) {
+                // jsc.toolBar.setNormal();
+                showHideHelp();
 
-	    } else if (jsc.toolBar.doDataDownload()) {
+            } else if (jsc.toolBar.doDataDownload()) {
                 if (activeView.isDrillDown) {
                     cmd = DEViseCommands.GET_VIEW_DATA + " " +
-                      activeView.getCurlyName() + " 1";
-	        }
+                          activeView.getCurlyName() + " 1";
+                }
 
-	    } else if (jsc.toolBar.doHome()) {
-		cmd = DEViseCommands.KEY_ACTION + " " +
-		  activeView.getCurlyName() + " " + DEVISE_KEY_HOME;
-		// jsc.toolBar.setNormal();
+            } else if (jsc.toolBar.doHome()) {
+                cmd = DEViseCommands.KEY_ACTION + " " +
+                      activeView.getCurlyName() + " " + DEVISE_KEY_HOME;
+                // jsc.toolBar.setNormal();
 
-	    } else if (jsc.toolBar.doToggleFilter()) {
-		cmd = DEViseCommands.KEY_ACTION + " " +
-		  activeView.getCurlyName() + " " + DEVISE_KEY_TOGGLE_FILTER;
-		// jsc.toolBar.setNormal();
+            } else if (jsc.toolBar.doToggleFilter()) {
+                cmd = DEViseCommands.KEY_ACTION + " " +
+                      activeView.getCurlyName() + " " + DEVISE_KEY_TOGGLE_FILTER;
+                // jsc.toolBar.setNormal();
 
-	    } else if (jsc.toolBar.doIncreaseSymSize()) {
-		cmd = DEViseCommands.KEY_ACTION + " " +
-		  activeView.getCurlyName() + " " +
-		  DEVISE_KEY_INCREASE_SYM_SIZE;
-		// jsc.toolBar.setNormal();
+            } else if (jsc.toolBar.doIncreaseSymSize()) {
+                cmd = DEViseCommands.KEY_ACTION + " " +
+                      activeView.getCurlyName() + " " +
+                      DEVISE_KEY_INCREASE_SYM_SIZE;
+                // jsc.toolBar.setNormal();
 
-	    } else if (jsc.toolBar.doDecreaseSymSize()) {
-		cmd = DEViseCommands.KEY_ACTION + " " +
-		  activeView.getCurlyName() + " " +
-		  DEVISE_KEY_DECREASE_SYM_SIZE;
-		// jsc.toolBar.setNormal();
+            } else if (jsc.toolBar.doDecreaseSymSize()) {
+                cmd = DEViseCommands.KEY_ACTION + " " +
+                      activeView.getCurlyName() + " " +
+                      DEVISE_KEY_DECREASE_SYM_SIZE;
+                // jsc.toolBar.setNormal();
 
             } else if (activeView.isCursorMove && jsc.toolBar.doCursorOps()) {
                 DEViseCursor cursor = activeView.getFirstCursor();
 
                 if (cursor != null && (cursor.isXMovable ||
-	          cursor.isYMovable)) {
+                                       cursor.isYMovable)) {
                     Rectangle loc = cursor.cursorLocInCanvas;
 
                     int dx = p.x - loc.x - loc.width / 2;
                     int dy = p.y - loc.y - loc.height / 2;
 
                     cursor.updateCursorLoc(dx, dy, whichCursorSide,
-	              true);
+                                           true);
 
                     cmd = DEViseCommands.CURSOR_CHANGED + " {" +
-		      cursor.name + "} " + cursor.x + " " + cursor.y + " "
-		      + cursor.width + " " + cursor.height;
+                          cursor.name + "} " + cursor.x + " " + cursor.y + " "
+                          + cursor.width + " " + cursor.height;
 
                     cursor.image = null;
                 }
             } else if (activeView.isRubberBand && jsc.toolBar.doZoomOnly()) {
-		doClickZoom(p.x, p.y);
-	    }
+                doClickZoom(p.x, p.y);
+            }
 
             if (cmd != null) {
                 jscreen.guiAction = true;
@@ -370,7 +243,7 @@ public class DEViseCanvas2D extends DEViseCanvas
             ep.y = activeView.translateY(p.y, 1);
 
             jsc.viewInfo.updateInfo(activeView.getX(ep.x),
-              activeView.getY(ep.y));
+                                    activeView.getY(ep.y));
 
             if (selectedCursor != null) {
 
@@ -399,40 +272,40 @@ public class DEViseCanvas2D extends DEViseCanvas
     // only toolbar modes).
     private void doClickZoom(int x1, int y1)
     {
-	if (DEBUG >= 1) {
-	    System.out.println("doClickZoom(" + x1 + ", " + y1 + ")");
-	}
+        if (DEBUG >= 1) {
+            System.out.println("doClickZoom(" + x1 + ", " + y1 + ")");
+        }
 
-	final double ZOOM_FACTOR = 0.5;
-	int xMargin = (int)(activeView.viewLoc.width * ZOOM_FACTOR / 2);
-	int yMargin = (int)(activeView.viewLoc.height * ZOOM_FACTOR / 2);
+        final double ZOOM_FACTOR = 0.5;
+        int xMargin = (int)(activeView.viewLoc.width * ZOOM_FACTOR / 2);
+        int yMargin = (int)(activeView.viewLoc.height * ZOOM_FACTOR / 2);
 
         doRubberbandZoom(x1 - xMargin, y1 - yMargin, x1 + xMargin,
-	  y1 + yMargin);
+                         y1 + yMargin);
     }
 
     // Do a zoom resulting from dragging out a rubberband line.
     private void doRubberbandZoom(int x1, int y1, int x2, int y2)
     {
-	if (DEBUG >= 1) {
-	    System.out.println("doRubberbandZoom(" + x1 + ", " + y1 +
-	      ", " + x2 + ", " + y2 + ")");
-	}
+        if (DEBUG >= 1) {
+            System.out.println("doRubberbandZoom(" + x1 + ", " + y1 +
+                               ", " + x2 + ", " + y2 + ")");
+        }
 
         try {
             String cmd = DEViseCommands.MOUSE_RUBBERBAND + " " +
-	      activeView.getCurlyName() + " " +
-	      activeView.translateX(x1, 2) + " " +
-	      activeView.translateY(y1, 2) + " " +
-	      activeView.translateX(x2, 2) + " " +
-	      activeView.translateY(y2, 2);
+                         activeView.getCurlyName() + " " +
+                         activeView.translateX(x1, 2) + " " +
+                         activeView.translateY(y1, 2) + " " +
+                         activeView.translateX(x2, 2) + " " +
+                         activeView.translateY(y2, 2);
 
             // Alt-drag zooms out.
             if ( (allowShiftModifier &&
-	      jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) ||
-              (allowAltModifier &&
-	      jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) ||
-              jsc.toolBar.doZoomOut()) {
+                    jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) ||
+                    (allowAltModifier &&
+                     jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) ||
+                    jsc.toolBar.doZoomOut()) {
                 cmd = cmd + " 1";
             } else if (jsc.toolBar.doZoomIn()) {
                 cmd = cmd + " 0";
@@ -450,44 +323,44 @@ public class DEViseCanvas2D extends DEViseCanvas
 
             jscreen.guiAction = true;
             dispatcher.start(cmd);
-    
+
         } catch (YError err) {
             System.err.println(err.getMessage());
         }
     }
-    
-	protected void doMouseWheelMoved(MouseWheelEvent e) {
-		try {
-			Point p = e.getPoint();
-			if(p != null){
-				int x1 = p.x;
-				int y1 = p.y;
-				int direction  = e.getWheelRotation();
-				if (DEBUG >= 1) {
-					System.out.println("doMouseWheelMoved " + x1 + "," + y1);
-				}
-				
-				final double ZOOM_FACTOR = 0.5;
-				int xMargin = (int)(activeView.viewLoc.width *  ZOOM_FACTOR / 2);
-				int yMargin = (int)(activeView.viewLoc.height *  ZOOM_FACTOR / 2);
 
-				String cmd = DEViseCommands.MOUSE_RUBBERBAND + " "
-						+ activeView.getCurlyName() + " "
-						+ activeView.translateX(x1 - xMargin, 2) + " "
-						+ activeView.translateY(y1 - yMargin, 2) + " "
-						+ activeView.translateX(x1 + xMargin, 2) + " "
-						+ activeView.translateY(y1 + yMargin, 2);
-				if (direction >= 0) {
-					cmd = cmd + " 0 0";
-				} else {
-					cmd = cmd + " 1 0";
-				}
-				
-				jscreen.guiAction = true;
-	            dispatcher.start(cmd);
-			}
-		} catch (YError err) {
-			System.err.println(err.getMessage());
-		}
-	}
+    protected void doMouseWheelMoved(MouseWheelEvent e) {
+        try {
+            Point p = e.getPoint();
+            if(p != null) {
+                int x1 = p.x;
+                int y1 = p.y;
+                int direction  = e.getWheelRotation();
+                if (DEBUG >= 1) {
+                    System.out.println("doMouseWheelMoved " + x1 + "," + y1);
+                }
+
+                final double ZOOM_FACTOR = 0.5;
+                int xMargin = (int)(activeView.viewLoc.width *  ZOOM_FACTOR / 2);
+                int yMargin = (int)(activeView.viewLoc.height *  ZOOM_FACTOR / 2);
+
+                String cmd = DEViseCommands.MOUSE_RUBBERBAND + " "
+                             + activeView.getCurlyName() + " "
+                             + activeView.translateX(x1 - xMargin, 2) + " "
+                             + activeView.translateY(y1 - yMargin, 2) + " "
+                             + activeView.translateX(x1 + xMargin, 2) + " "
+                             + activeView.translateY(y1 + yMargin, 2);
+                if (direction >= 0) {
+                    cmd = cmd + " 0 0";
+                } else {
+                    cmd = cmd + " 1 0";
+                }
+
+                jscreen.guiAction = true;
+                dispatcher.start(cmd);
+            }
+        } catch (YError err) {
+            System.err.println(err.getMessage());
+        }
+    }
 }

@@ -16,30 +16,9 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
+// ========================================================================
 
-// $Log$
-// Revision 1.4  2001/01/08 20:31:51  wenger
-// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
-// back onto the trunk.
-//
-// Revision 1.3.4.1  2000/11/22 17:43:57  wenger
-// Finished cleanup of static variables fix; re-changed CGI command code to
-// match the current version of the CGI script.
-//
-// Revision 1.3  2000/06/26 16:47:10  wenger
-// Minor cleanups.
-//
-// Revision 1.2  2000/06/06 17:06:43  wenger
-// Fixed bug 595 (array out of bounds in font code).
-//
-// Revision 1.1  2000/05/22 17:52:49  wenger
-// JavaScreen handles fonts much more efficiently to avoid the problems with
-// GData text being drawn very slowly on Intel platforms.
-//
-// ------------------------------------------------------------------------
 
-//TEMP package edu.wisc.cs.devise.js.jsc;
 package JavaScreen;
 
 import java.util.*;
@@ -58,33 +37,33 @@ public final class DEViseFonts
     // fSlant = font slant (0 = plain, 1 = italic)
     public static Font getFont(int fSize, int fFam, int fWeight, int fSlant)
     {
-	if (_debug >= 2) {
-	    System.out.println("DEViseFonts.getFont(" + fSize + ", " + fFam +
-	      ", " + fWeight + ", " + fSlant);
-	}
+        if (_debug >= 2) {
+            System.out.println("DEViseFonts.getFont(" + fSize + ", " + fFam +
+                               ", " + fWeight + ", " + fSlant);
+        }
 
-	// TEMP -- should have defined constants for font family
+        // TEMP -- should have defined constants for font family
         if (fFam < 0 || fFam >= _families.length) {
             fFam = 1;
         }
 
         Font font = FindExisting(fSize, fFam, fWeight, fSlant);
-	if (font == null) {
-	    if (fSize >= _minSize) {
+        if (font == null) {
+            if (fSize >= _minSize) {
 
                 int fontstyle = ((fWeight == 0) ? Font.PLAIN : Font.BOLD) +
-	          ((fSlant == 0) ? Font.PLAIN : Font.ITALIC);
+                                ((fSlant == 0) ? Font.PLAIN : Font.ITALIC);
 
                 if (_debug >= 1) {
                     System.out.println("Creating new font: " + fSize + ", " +
-		      fFam + ", " + fWeight + ", " + fSlant);
+                                       fFam + ", " + fWeight + ", " + fSlant);
                 }
                 font = new Font(_families[fFam], fontstyle, fSize);
-		_fonts.addElement(font);
-	    }
-	}
+                _fonts.addElement(font);
+            }
+        }
 
-	return font;
+        return font;
     }
 
     // ---------------------------------------------------------------------
@@ -95,31 +74,32 @@ public final class DEViseFonts
 
     // ---------------------------------------------------------------------
     private static Font FindExisting(int fSize, int fFam, int fWeight,
-      int fSlant)
+                                     int fSlant)
     {
-	Font font = null;
+        Font font = null;
 
-	String family = _families[fFam];
-	int style = ((fWeight == 0) ? Font.PLAIN : Font.BOLD) +
-	  ((fSlant == 0) ? Font.PLAIN : Font.ITALIC);
+        String family = _families[fFam];
+        int style = ((fWeight == 0) ? Font.PLAIN : Font.BOLD) +
+                    ((fSlant == 0) ? Font.PLAIN : Font.ITALIC);
 
-	int index = 0;
-	while (index < _fonts.size() && font == null) {
-	    Font tmpFont = (Font)_fonts.elementAt(index);
-	    if (tmpFont.getName().equals(family) &&
-	      tmpFont.getSize() == fSize && tmpFont.getStyle() == style) {
-	        font = tmpFont;
-	    }
+        int index = 0;
+        while (index < _fonts.size() && font == null) {
+            Font tmpFont = (Font)_fonts.elementAt(index);
+            if (tmpFont.getName().equals(family) &&
+                    tmpFont.getSize() == fSize && tmpFont.getStyle() == style) {
+                font = tmpFont;
+            }
 
-	    index++;
-	}
+            index++;
+        }
 
         return font;
     }
 
     // DEVise font name
     private static final String[] _families = {"Monospaced", "Serif",
-      "SanSerif"};
+                                               "SanSerif"
+                                              };
 
     private static final int _minSize = 1;
 

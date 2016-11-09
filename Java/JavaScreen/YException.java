@@ -16,29 +16,9 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.14  2001/01/08 20:31:54  wenger
-// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
-// back onto the trunk.
-//
-// Revision 1.13.4.1  2000/11/16 17:13:13  wenger
-// Made static variables into static final variables.
-//
-// Revision 1.13  2000/04/07 22:44:11  wenger
-// Improved shading of atoms (it now works on white atoms); added comments
-// based on meeting with Hongyu on 2000-04-06.
-//
-// Revision 1.12  2000/03/23 16:26:16  wenger
-// Cleaned up headers and added requests for comments.
-//
-// Revision 1.11  1999/12/10 15:37:01  wenger
-// Added standard headers to source files.
 //
 // ========================================================================
 
-//TEMP package edu.wisc.cs.devise.js.util;
 package JavaScreen;
 
 public class YException extends Exception

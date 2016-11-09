@@ -16,22 +16,9 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.7  2000/05/22 17:52:50  wenger
-// JavaScreen handles fonts much more efficiently to avoid the problems with
-// GData text being drawn very slowly on Intel platforms.
-//
-// Revision 1.6  2000/03/23 16:26:18  wenger
-// Cleaned up headers and added requests for comments.
-//
-// Revision 1.5  1999/12/10 15:37:02  wenger
-// Added standard headers to source files.
 //
 // ========================================================================
 
-//TEMP package edu.wisc.cs.devise.js.jsc;
 package JavaScreen;
 
 import java.awt.*;
@@ -58,9 +45,9 @@ import java.util.*;
 public class YMsgBox extends Dialog
 {
     public static final String YIDNO = new String("No"), YIDYES = new String("Yes"),
-                               YIDOK = new String("OK"), YIDCANCEL = new String("Cancel"),
-                               YIDRETRY = new String("Retry"), YIDABORT = new String("Abort"),
-                               YIDIGNORE = new String("Ignore");
+    YIDOK = new String("OK"), YIDCANCEL = new String("Cancel"),
+    YIDRETRY = new String("Retry"), YIDABORT = new String("Abort"),
+    YIDIGNORE = new String("Ignore");
     public static final int YMBXOK = 0, YMBXYESNO = 1, YMBXOKCANCEL = 2, YMBXYESNOCANCEL = 3,
                             YMBXRETRYCANCEL = 4, YMBXABORTRETRYIGNORE = 5;
 
@@ -249,12 +236,12 @@ public class YMsgBox extends Dialog
         // add event handler
         for (int i = 0; i < button.length; i++)  {
             button[i].addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent event)  {
-                            result = event.getActionCommand();
-                            close();
-                        }
-                    });
+            {
+                public void actionPerformed(ActionEvent event)  {
+                    result = event.getActionCommand();
+                    close();
+                }
+            });
         }
 
         // enable destroying window

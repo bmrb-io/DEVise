@@ -20,35 +20,8 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.8  2001/04/02 16:44:36  wenger
-// Minor cleanups; added cpu limit to JavaScreen checking process.
-//
-// Revision 1.7  2001/04/01 03:51:18  xuk
-// Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
-//
-// Revision 1.6  2000/05/24 14:06:58  wenger
-// Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
-// DEViseAtomInCrystal, DEVise3DLCS).
-//
-// Revision 1.5  2000/04/07 22:43:12  wenger
-// Improved shading of atoms (it now works on white atoms); added comments
-// based on meeting with Hongyu on 2000-04-06.
-//
-// Revision 1.4  2000/04/05 06:25:26  hongyu
-// fix excessive memory usage problem associated with gdata
-//
-// Revision 1.3  2000/03/23 16:26:11  wenger
-// Cleaned up headers and added requests for comments.
-//
-// Revision 1.2  1999/12/10 15:37:00  wenger
-// Added standard headers to source files.
-//
 // ========================================================================
 
-//TEMP package edu.wisc.cs.devise.js.jsc;
 package JavaScreen;
 
 // 3D linear coordinate system, the reference coordinate system is a cartesian unit coordinate system
@@ -205,13 +178,13 @@ public class DEVise3DLCS
 
     public void assign(float d[][], float o[])
     {
-	int i, j;
-	for (i=0; i<3; i++)
-	    for (j=0; j<3; j++)
-		data[i][j] = d[i][j];
-	
-	for (i=0; i<3; i++)
-	    origin[i] = o[i];
+        int i, j;
+        for (i=0; i<3; i++)
+            for (j=0; j<3; j++)
+                data[i][j] = d[i][j];
+
+        for (i=0; i<3; i++)
+            origin[i] = o[i];
     }
 
     private void assign(float d[])

@@ -16,18 +16,8 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.11  2000/03/23 16:26:17  wenger
-// Cleaned up headers and added requests for comments.
-//
-// Revision 1.10  1999/12/10 15:37:02  wenger
-// Added standard headers to source files.
-//
 // ========================================================================
 
-//TEMP package edu.wisc.cs.devise.js.util;
 package JavaScreen;
 
 import java.io.*;

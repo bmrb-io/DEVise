@@ -19,56 +19,10 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.11  2007/02/22 23:20:18  wenger
-// Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
-//
-// Revision 1.10.38.3  2007/04/10 22:50:26  wenger
-// Undid a bunch of formatting changes to make subsequent merges to the
-// trunk easier.
-//
-// Revision 1.10.38.2  2007/03/16 17:12:47  adayton
-// Add UI package
-//
-// Revision 1.10.38.1  2007/02/13 18:35:12  adayton
-// Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
-//
-// Revision 1.10  2001/05/11 20:36:09  wenger
-// Set up a package for the JavaScreen code.
-//
-// Revision 1.9  2001/01/08 20:31:53  wenger
-// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
-// back onto the trunk.
-//
-// Revision 1.8.4.1  2000/11/21 01:51:33  xuk
-// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
-//
-// Revision 1.8  2000/06/12 22:13:57  wenger
-// Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
-// DEViseTrafficLight, YImageCanvas; added debug output of number of
-// bytes of data available to the JS.
-//
-// Revision 1.7  2000/05/22 17:52:49  wenger
-// JavaScreen handles fonts much more efficiently to avoid the problems with
-// GData text being drawn very slowly on Intel platforms.
-//
-// Revision 1.6  2000/04/24 20:22:00  hongyu
-// remove UI dependency of jspop and js
-//
-// Revision 1.5  2000/03/23 16:26:15  wenger
-// Cleaned up headers and added requests for comments.
-//
-// Revision 1.4  1999/06/23 20:59:17  wenger
-// Added standard DEVise header.
-//
-
 // ========================================================================
 
 // DEViseTrafficLight.java
 
-//TEMP package edu.wisc.cs.devise.js.jsc;
 package JavaScreen;
 
 import java.awt.*;
@@ -96,15 +50,15 @@ public class DEViseTrafficLight extends JPanel
     public jsdevisec jsc;
 
     public DEViseTrafficLight(Image offi, Image oni, String s, jsdevisec js)
-      throws YException
+    throws YException
     {
         this(offi, oni, s, null, js);
     }
 
     public DEViseTrafficLight(Image offi, Image oni, String s,
-      String align, jsdevisec js) throws YException
+                              String align, jsdevisec js) throws YException
     {
-	jsc = js;
+        jsc = js;
         onImage = oni;
         offImage = offi;
 
@@ -112,12 +66,12 @@ public class DEViseTrafficLight extends JPanel
             canvas[i] = new YImageCanvas(onImage);
             if (!canvas[i].setImage(offImage)) {
                 throw new YException("Invalid Image!");
-	    }
+            }
             // label[i] = new YImageCanvas(c[i], null, jsc.jsValues.uiglobals.bg,
             // jsc.jsValues.uiglobals.fg, 12, 12, 1, 1);
         }
-	counterString = s;
-	canvas[3] = new YImageCanvas(counterString);
+        counterString = s;
+        canvas[3] = new YImageCanvas(counterString);
 
         if (align == null) {
             align = "RIGHT";
@@ -136,55 +90,55 @@ public class DEViseTrafficLight extends JPanel
 
         // for (int i = 0; i < 3; i++) {
         //   lightPanel.add(label[i]);
-	// }
-			
+        // }
+
         for (int i = 0; i < 3; i++) {
-	    lightPanel.add(canvas[i]);
-	}
-
-	setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-	add(lightPanel); // add the stoplights
-	add(canvas[3]); // add the counter
-
-/* Removed by Andy Dayton
-	if (align.equals(ALIGN_TOP) || align.equals(ALIGN_BOTTOM)) {
-            // set new gridbag layout
-            GridBagLayout gridbag = new GridBagLayout();
-            GridBagConstraints c = new GridBagConstraints();
-            //c.gridx = GridBagConstraints.RELATIVE;
-            //c.gridy = GridBagConstraints.RELATIVE;
-            c.gridwidth = GridBagConstraints.REMAINDER;
-            c.gridheight = 1;
-            c.fill = GridBagConstraints.NONE;
-            c.insets = new Insets(0, 0, 0, 0);
-            c.ipadx = 0;
-            c.ipady = 0;
-            c.anchor = GridBagConstraints.CENTER;
-            //c.weightx = 1.0;
-            //c.weighty = 1.0;
-
-            setLayout(gridbag);
-	    if (align.equals(ALIGN_TOP)) {
-                gridbag.setConstraints(canvas[3], c);
-                add(canvas[3]);
-                gridbag.setConstraints(panel, c);
-                add(lightPanel);
-            } else {
-                gridbag.setConstraints(panel, c);
-                add(lightPanel);
-                gridbag.setConstraints(canvas[3], c);
-                add(canvas[3]);
-            }
-        } else if (align.equals(ALIGN_LEFT)) {
-            add(canvas[3]);
-            add(lightPanel);
-        } else if (align.equals(ALIGN_RIGHT)) {
-            add(lightPanel);
-            add(canvas[3]);
-        } else {
-	    throw new YException("Illegal align value: " + align);
+            lightPanel.add(canvas[i]);
         }
-*/
+
+        setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        add(lightPanel); // add the stoplights
+        add(canvas[3]); // add the counter
+
+        /* Removed by Andy Dayton
+            if (align.equals(ALIGN_TOP) || align.equals(ALIGN_BOTTOM)) {
+                    // set new gridbag layout
+                    GridBagLayout gridbag = new GridBagLayout();
+                    GridBagConstraints c = new GridBagConstraints();
+                    //c.gridx = GridBagConstraints.RELATIVE;
+                    //c.gridy = GridBagConstraints.RELATIVE;
+                    c.gridwidth = GridBagConstraints.REMAINDER;
+                    c.gridheight = 1;
+                    c.fill = GridBagConstraints.NONE;
+                    c.insets = new Insets(0, 0, 0, 0);
+                    c.ipadx = 0;
+                    c.ipady = 0;
+                    c.anchor = GridBagConstraints.CENTER;
+                    //c.weightx = 1.0;
+                    //c.weighty = 1.0;
+
+                    setLayout(gridbag);
+                if (align.equals(ALIGN_TOP)) {
+                        gridbag.setConstraints(canvas[3], c);
+                        add(canvas[3]);
+                        gridbag.setConstraints(panel, c);
+                        add(lightPanel);
+                    } else {
+                        gridbag.setConstraints(panel, c);
+                        add(lightPanel);
+                        gridbag.setConstraints(canvas[3], c);
+                        add(canvas[3]);
+                    }
+                } else if (align.equals(ALIGN_LEFT)) {
+                    add(canvas[3]);
+                    add(lightPanel);
+                } else if (align.equals(ALIGN_RIGHT)) {
+                    add(lightPanel);
+                    add(canvas[3]);
+                } else {
+                throw new YException("Illegal align value: " + align);
+                }
+        */
 
     }
 

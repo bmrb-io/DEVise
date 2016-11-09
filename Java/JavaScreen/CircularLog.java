@@ -24,46 +24,8 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
+// ========================================================================
 
-// $Log$
-// Revision 1.2  2005/12/06 20:00:15  wenger
-// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
-// be the end of the V1_7b0_br branch.)
-//
-// Revision 1.1.2.3  2004/09/29 19:08:33  wenger
-// Merged jspop_debug_0405_br_2 thru jspop_debug_0405_br_4 to the
-// V1_7b0_br branch.
-//
-// Revision 1.1.2.2.4.4  2004/09/03 19:00:50  wenger
-// More diagnostic output and debug comments; version is now 5.2.2x3.
-//
-// Revision 1.1.2.2.4.3  2004/09/03 17:25:41  wenger
-// Made currentTimeString() static & public so other parts of the code
-// can use it.
-//
-// Revision 1.1.2.2.4.2  2004/09/02 19:30:46  wenger
-// More improvements to end and rewind messages.
-//
-// Revision 1.1.2.2.4.1  2004/07/01 15:15:47  wenger
-// Improved circular log (now always has "-END-" at the temporal end
-// of the log); various other debug logging improvements; put the
-// sequence of operations in DEViseClientSocket.closeSocket() back
-// the way it was.
-//
-// Revision 1.1.2.2  2003/06/17 22:44:38  wenger
-// Session opens are now logged in a separate JS usage log; the code
-// that generates the usage summary emails is not yet updated to
-// use that log.
-//
-// Revision 1.1.2.1  2003/06/12 20:58:45  wenger
-// JSPoP (but not JSS or DEVised) now use a new CircularLog class, so the
-// log file doesn't grow out of control.
-//
-
-// ------------------------------------------------------------------------
-
-//TEMP package edu.wisc.cs.devise.js;
 package JavaScreen;
 
 import java.io.*;
@@ -94,9 +56,9 @@ public class CircularLog
      */
     public static void main(String[] args)
     {
-	if (checkArgs(args)) {
-	    logStdin();
-	}
+        if (checkArgs(args)) {
+            logStdin();
+        }
     }
 
     //-------------------------------------------------------------------
@@ -106,9 +68,9 @@ public class CircularLog
     public static String currentTimeString()
     {
         Date date = new Date();
-	DateFormat dtf = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
-	  DateFormat.MEDIUM);
-	return dtf.format(date);
+        DateFormat dtf = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
+                         DateFormat.MEDIUM);
+        return dtf.format(date);
     }
 
     //-------------------------------------------------------------------
@@ -118,9 +80,9 @@ public class CircularLog
     public static String currentTimeStringShort()
     {
         Date date = new Date();
-	DateFormat dtf = DateFormat.getDateTimeInstance(DateFormat.SHORT,
-	  DateFormat.SHORT);
-	return dtf.format(date);
+        DateFormat dtf = DateFormat.getDateTimeInstance(DateFormat.SHORT,
+                         DateFormat.SHORT);
+        return dtf.format(date);
     }
 
     //-------------------------------------------------------------------
@@ -131,26 +93,26 @@ public class CircularLog
      * @param The size of the "prolog" (not overwritten on rewind), in bytes.
      */
     public CircularLog(String fileName, int maxSize, int prologSize)
-      throws IOException
+    throws IOException
     {
         if (DEBUG >= 1) {
-	    System.out.println("CircularLog.CircularLog(" + fileName +
-	      ", " + maxSize + ", " + prologSize + ")");
-	}
+            System.out.println("CircularLog.CircularLog(" + fileName +
+                               ", " + maxSize + ", " + prologSize + ")");
+        }
 
-	if (maxSize > 0 && prologSize >= maxSize) {
-	    throw new IllegalArgumentException("Prolog size must be less " +
-	      "than maximum size");
-	}
+        if (maxSize > 0 && prologSize >= maxSize) {
+            throw new IllegalArgumentException("Prolog size must be less " +
+                                               "than maximum size");
+        }
 
-	_maxSize = maxSize;
-	_prologSize = prologSize;
+        _maxSize = maxSize;
+        _prologSize = prologSize;
 
-	_outFile = new RandomAccessFile(fileName, "rw");
+        _outFile = new RandomAccessFile(fileName, "rw");
 
         logMsg("--------------- BEGINNING OF LOG (" + currentTimeString() +
-          ") ---------------\n");
-    	logMsg("Maximum log size: " + _maxSize + " bytes (approx)\n\n");
+               ") ---------------\n");
+        logMsg("Maximum log size: " + _maxSize + " bytes (approx)\n\n");
     }
 
     //-------------------------------------------------------------------
@@ -166,13 +128,13 @@ public class CircularLog
     public void endLog()
     {
         logMsg("--------------- END OF LOG (" + currentTimeString() +
-	  ") ---------------\n");
+               ") ---------------\n");
 
         try {
             _outFile.close();
-	} catch (IOException ex) {
-	    System.err.println("IOException in CircularLog.endLog(): " + ex);
-	}
+        } catch (IOException ex) {
+            System.err.println("IOException in CircularLog.endLog(): " + ex);
+        }
     }
 
     //-------------------------------------------------------------------
@@ -185,29 +147,29 @@ public class CircularLog
     public void logMsg(String msg)
     {
         if (DEBUG >= 2) {
-	    System.out.println("CircularLog.logMsg(" + msg + ")");
-	}
+            System.out.println("CircularLog.logMsg(" + msg + ")");
+        }
 
-	try {
-	    _outFile.writeBytes(msg);
-	    if (_appendTime) {
-	        _outFile.writeBytes(" [" + currentTimeString() + "]\n");
-	    }
+        try {
+            _outFile.writeBytes(msg);
+            if (_appendTime) {
+                _outFile.writeBytes(" [" + currentTimeString() + "]\n");
+            }
 
-	    // Always have the end mark at the end of the log (the temporal
-	    // end, not necessarily the physical end).
+            // Always have the end mark at the end of the log (the temporal
+            // end, not necessarily the physical end).
             String endMark = "-END-[" + currentTimeString() + "]";
-	    _outFile.writeBytes(endMark);
-	    long offset = _outFile.getFilePointer();
-	    offset -= endMark.length();
-	    _outFile.seek(offset);
+            _outFile.writeBytes(endMark);
+            long offset = _outFile.getFilePointer();
+            offset -= endMark.length();
+            _outFile.seek(offset);
 
-	    _outFile.getFD().sync();
-	} catch (IOException ex) {
-	    System.err.println("IOException in CircularLog.logMsg(): " + ex);
-	}
+            _outFile.getFD().sync();
+        } catch (IOException ex) {
+            System.err.println("IOException in CircularLog.logMsg(): " + ex);
+        }
 
-	checkSize();
+        checkSize();
     }
 
     //===================================================================
@@ -219,7 +181,7 @@ public class CircularLog
      */
     protected void finalize()
     {
-       endLog();
+        endLog();
     }
 
     //===================================================================
@@ -233,77 +195,77 @@ public class CircularLog
      */
     private static boolean checkArgs(String[] args)
     {
-	if (DEBUG >= 2) {
-	    System.out.print("CircularLog.checkArgs(");
-	    for (int index = 0; index < args.length; ++index) {
-		if (index > 0) System.out.print(", ");
-	        System.out.print(args[index]);
-	    }
-	    System.out.println(")");
-	}
+        if (DEBUG >= 2) {
+            System.out.print("CircularLog.checkArgs(");
+            for (int index = 0; index < args.length; ++index) {
+                if (index > 0) System.out.print(", ");
+                System.out.print(args[index]);
+            }
+            System.out.println(")");
+        }
 
-	boolean result = true;
+        boolean result = true;
 
         String fileName = null;
-	int maxSize = 1000000;
-	int prologSize = 1000;
+        int maxSize = 1000000;
+        int prologSize = 1000;
 
-	int index = 0;
-	while (index < args.length) {
-	    if ("-usage".equals(args[index])) {
-	        System.out.println(
-		  "Usage: java JavaScreen.CircularLog -file <file> [options]");
-		System.out.println("  -max <max size>: maxmimum log size " +
-		  "(0 means no maximum)");
-		System.out.println("  -pro <prolog size>: prolog size " +
-		  "(not overwritten when log recycles)");
-		result = false;
-		break;
+        int index = 0;
+        while (index < args.length) {
+            if ("-usage".equals(args[index])) {
+                System.out.println(
+                    "Usage: java JavaScreen.CircularLog -file <file> [options]");
+                System.out.println("  -max <max size>: maxmimum log size " +
+                                   "(0 means no maximum)");
+                System.out.println("  -pro <prolog size>: prolog size " +
+                                   "(not overwritten when log recycles)");
+                result = false;
+                break;
 
-	    } else if ("-file".equals(args[index])) {
-	        index++;
-		if (index >= args.length) {
-		    throw new IllegalArgumentException(
-		      "-file option must have a value");
-		}
-		fileName = args[index];
+            } else if ("-file".equals(args[index])) {
+                index++;
+                if (index >= args.length) {
+                    throw new IllegalArgumentException(
+                        "-file option must have a value");
+                }
+                fileName = args[index];
 
-	    } else if ("-max".equals(args[index])) {
-	        index++;
-		if (index >= args.length) {
-		    throw new IllegalArgumentException(
-		      "-max option must have a value");
-		}
-		maxSize = Integer.parseInt(args[index]);
+            } else if ("-max".equals(args[index])) {
+                index++;
+                if (index >= args.length) {
+                    throw new IllegalArgumentException(
+                        "-max option must have a value");
+                }
+                maxSize = Integer.parseInt(args[index]);
 
-	    } else if ("-pro".equals(args[index])) {
-	        index++;
-		if (index >= args.length) {
-		    throw new IllegalArgumentException(
-		      "-max option must have a value");
-		}
-		prologSize = Integer.parseInt(args[index]);
+            } else if ("-pro".equals(args[index])) {
+                index++;
+                if (index >= args.length) {
+                    throw new IllegalArgumentException(
+                        "-max option must have a value");
+                }
+                prologSize = Integer.parseInt(args[index]);
 
-	    }
+            }
             ++index;
-	}
+        }
 
-	if (result) {
-	    if (fileName == null) {
-	        throw new IllegalArgumentException(
-		  "-file option must be specified");
-	    }
+        if (result) {
+            if (fileName == null) {
+                throw new IllegalArgumentException(
+                    "-file option must be specified");
+            }
 
-	    try {
-	        _log = new CircularLog(fileName, maxSize, prologSize);
-	    } catch (IOException ex) {
-	        System.err.println("IOException in CircularLog.checkArgs(): " +
-		  ex);
-	        result = false;
-	    }
-	}
+            try {
+                _log = new CircularLog(fileName, maxSize, prologSize);
+            } catch (IOException ex) {
+                System.err.println("IOException in CircularLog.checkArgs(): " +
+                                   ex);
+                result = false;
+            }
+        }
 
-	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -313,25 +275,25 @@ public class CircularLog
      */
     private static void logStdin()
     {
-	byte[] bytes = new byte[1000];
+        byte[] bytes = new byte[1000];
 
-	boolean eof = false;
-	while (!eof) {
-	    try {
-	        int count = System.in.read(bytes);
-	        if (count == -1) {
-	            eof = true;
-	        } else if (count > 0) {
-	            String msg = new String(bytes, 0, count);
-	            _log.logMsg(msg);
-	        }
-	    } catch (IOException ex) {
-	        System.err.println("IOException in CircularLog.logStdin(): " +
-		  ex);
-	    }
-	}
+        boolean eof = false;
+        while (!eof) {
+            try {
+                int count = System.in.read(bytes);
+                if (count == -1) {
+                    eof = true;
+                } else if (count > 0) {
+                    String msg = new String(bytes, 0, count);
+                    _log.logMsg(msg);
+                }
+            } catch (IOException ex) {
+                System.err.println("IOException in CircularLog.logStdin(): " +
+                                   ex);
+            }
+        }
 
-	_log.endLog();
+        _log.endLog();
 
     }
 
@@ -342,15 +304,15 @@ public class CircularLog
      */
     private void checkSize()
     {
-	try {
+        try {
             if (_maxSize > 0 && _outFile.getFilePointer() > _maxSize) {
-		_outFile.writeBytes("-REWIND-[" + currentTimeString() + "]");
-	        _outFile.seek(_prologSize);
-	        _outFile.writeBytes("\n\n--------------- LOG REWOUND (" +
-	          currentTimeString() + ") ---------------\n");
-	    }
-	} catch (IOException ex) {
-	    System.err.println("IOException in CircularLog.checkSize(): " + ex);
-	}
+                _outFile.writeBytes("-REWIND-[" + currentTimeString() + "]");
+                _outFile.seek(_prologSize);
+                _outFile.writeBytes("\n\n--------------- LOG REWOUND (" +
+                                    currentTimeString() + ") ---------------\n");
+            }
+        } catch (IOException ex) {
+            System.err.println("IOException in CircularLog.checkSize(): " + ex);
+        }
     }
 }

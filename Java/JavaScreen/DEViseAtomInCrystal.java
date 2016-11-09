@@ -20,37 +20,8 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
-
-// $Log$
-// Revision 1.9  2001/04/20 01:25:06  xuk
-// Added Functionality for 3D view drill-down.
-//
-// Revision 1.8  2000/07/14 21:13:01  wenger
-// Speeded up 3D GData processing by a factor of 2-3: improved the parser
-// used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
-// DEViseAtomTypes for atoms used only to define bond ends; reduced string-
-// based processing; eliminated various unused variables, etc.
-//
-// Revision 1.7  2000/05/24 14:07:09  wenger
-// Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
-// DEViseAtomInCrystal, DEVise3DLCS).
-//
-// Revision 1.6  2000/04/05 06:25:36  hongyu
-// fix excessive memory usage problem associated with gdata
-//
-// Revision 1.5  2000/03/23 16:26:12  wenger
-// Cleaned up headers and added requests for comments.
-//
-// Revision 1.4  2000/02/04 15:51:44  hongyu
-// *** empty log message ***
-//
-// Revision 1.3  1999/12/10 15:37:00  wenger
-// Added standard headers to source files.
-//
 // ========================================================================
 
-//TEMP package edu.wisc.cs.devise.js.jsc;
 package JavaScreen;
 
 import java.awt.*;
@@ -101,7 +72,7 @@ public class DEViseAtomInCrystal
     // of the atom that this atom is bonded to.
     public void removeBond(int index)
     {
-	// Remove the given bond (if we find it).
+        // Remove the given bond (if we find it).
         int idx = -1;
         for (int i = 0; i < bondNumber; i++) {
             if (bond[i] == index) {
@@ -110,8 +81,8 @@ public class DEViseAtomInCrystal
             }
         }
 
-	// Move the following bonds toward the front of the array
-	// so that the bonds are contiguous in the array.
+        // Move the following bonds toward the front of the array
+        // so that the bonds are contiguous in the array.
         if (idx != -1) {
             for (int i = idx; i < bondNumber - 1; i++) {
                 bond[i] = bond[i + 1];
@@ -125,7 +96,7 @@ public class DEViseAtomInCrystal
     // of the atom that this atom is bonded to.
     public void addBond(int index)
     {
-	// Enlarge the bonds array if necessary.
+        // Enlarge the bonds array if necessary.
         if (bondNumber == bond.length) {
             int[] tmp = new int[bondNumber * 2];
             boolean[] tmp1 = new boolean[bondNumber * 2];
@@ -133,7 +104,7 @@ public class DEViseAtomInCrystal
             bond = tmp;
         }
 
-	// Enter the bond in the bonds array.
+        // Enter the bond in the bonds array.
         bond[bondNumber] = index;
         bondNumber++;
     }
