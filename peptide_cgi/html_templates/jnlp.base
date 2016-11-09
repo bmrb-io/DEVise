@@ -14,6 +14,7 @@
         <argument>-cgiurl/cgi-bin/devise/js.cgi</argument>
         <argument>-hostDEVISE_HOST</argument>
         <argument>-sessionbmrb/dynamic_sessions/ENTRY_IDd1.ds</argument>
+        <argument>-screensize800x600</argument>
     </application-desc>
     <update check="background"/>
 </jnlp>
