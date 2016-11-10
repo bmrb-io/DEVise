@@ -9,7 +9,7 @@
         <j2se version="1.7+" href="http://java.sun.com/products/autodl/j2se" />
         <jar href="devise_js.jar" main="true" />
     </resources>
-    <application-desc name="DEVise JavaScreen" main-class="JavaScreen.js" width="800" height="600">
+    <application-desc name="DEVise JavaScreen" main-class="JavaScreen.js">
         <argument>-usecgi</argument>
         <argument>-cgiurl/cgi-bin/devise/js.cgi</argument>
         <argument>-hostDEVISE_HOST</argument>
