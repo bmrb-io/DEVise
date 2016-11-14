@@ -71,7 +71,7 @@ endif
 set files = ( devise_js.jar )
 if (! $client_only) then
   set files = ($files JavaScreen/jspop.class JavaScreen/jss.class \
-    JavaScreen/js.class bin/devised bin/Tasvir bin2/java \
+    JavaScreen/js.class bin/devised bin2/java \
     bin2/perl bin2/Xvfb bin2p/java)
 endif
 foreach file ($files)
@@ -235,10 +235,10 @@ if ($client_only) then
 endif
 
 #-----------------------------------------------------------
-# Install the jss, devised, and Tasvir.
+# Install the jss and devised.
 
 echo ""
-echo "Installing server programs (jss, devised, and Tasvir)"
+echo "Installing server programs (jss and devised)"
 
 # Create directories.
 if (! -d $servdir) then
@@ -257,7 +257,7 @@ chmod 644 $servdir/JavaScreen/*.class
 # Install misc. scripts.
 set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
     DEVise.jspop DEVise.jspop_soil get_timestamp jss_savepid \
-    kill_jsall Tasvir)
+    kill_jsall)
 foreach file ($files)
   cp -p $file $servdir
   chmod 755 $servdir/$file
@@ -284,7 +284,7 @@ endif
 cp -p lib/composite.ini $servdir/lib
 chmod 644 $servdir/lib/composite.ini
 
-# Create bin directory, and install devised and Tasvir.
+# Create bin directory, and install devised.
 if (! -d $servdir/bin) then
   mkdir -p $servdir/bin
   chmod 755 $servdir/bin
@@ -295,12 +295,6 @@ if (-f $servdir/bin/devised) then
 endif
 cp -p bin/devised $servdir/bin
 chmod 755 $servdir/bin/devised
-
-if (-f $servdir/bin/Tasvir) then
-  mv $servdir/bin/Tasvir $servdir/bin/Tasvir.bak
-endif
-cp -p bin/Tasvir $servdir/bin
-chmod 755 $servdir/bin/Tasvir
 
 # Install bin2 directory (java, perl, Xvfb *links*) into server directory.
 tar cf bin2.tar bin2
@@ -315,7 +309,7 @@ chmod 644 bin2/java
 cd $curdir
 rm bin2.tar
 
-# Install dynamic library directory (for devised and Tasvir).
+# Install dynamic library directory (for devised).
 if (-e dyn_lib) then
   if (! -e $servdir/dyn_lib) then
     mkdir -p $servdir/dyn_lib
