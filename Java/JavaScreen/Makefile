@@ -162,7 +162,7 @@ setup:
 	jar xf JmolApplet.jar
 	# Note:  The target path here may need to change according
 	# to where the actual cert files are.
-	ln -s /p/devise/ext3/wenger4/certs js_certs
+	ln -s /home/wedell/js_certs
 
 .PHONY: setupclean
 setupclean:
