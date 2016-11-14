@@ -131,7 +131,10 @@ import_cert:
 sign:
 	jarsigner -tsa https://timestamp.geotrust.com/tsa -storetype pkcs12 \
 		-keystore js_certs/uw_signing_chain.pfx \
-		devise_js.jar "university of wisconsin-madison's internet2 id"
+		devise_js.jar "university of wisconsin-madison's incommon rsa code signing ca id"
+
+
+#"university of wisconsin-madison's internet2 id"
 
 showcerts:
 	keytool -printcert -jarfile devise_js.jar
