@@ -42,7 +42,7 @@ jsa.class: *.java utils client appletclass
 	$(JAVAC) jsa.java
 
 jsb.class: *.java utils client appletclass
-	$(JAVAC) jsb.java 
+	$(JAVAC) jsb.java
 
 jspop.class: *.java
 	$(JAVAC) *.java
@@ -79,7 +79,7 @@ client: *.java
     UI/DEViseMouseCursor.java UI/DEViseHtmlWindow.java \
     DEViseScreenResizeHandler.java DEViseSessionMenuButton.java
 
-appletclass: DEViseJSApplet.java 
+appletclass: DEViseJSApplet.java
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
 
 jar:
@@ -131,7 +131,7 @@ import_cert:
 sign:
 	jarsigner -tsa https://timestamp.geotrust.com/tsa -storetype pkcs12 \
 		-keystore js_certs/uw_signing_chain.pfx \
-		devise_js.jar "university of wisconsin-madison's incommon rsa code signing ca id"
+		devise_js.jar "bmrb"
 
 
 #"university of wisconsin-madison's internet2 id"
