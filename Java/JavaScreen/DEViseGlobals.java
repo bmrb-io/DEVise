@@ -40,7 +40,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666,
                             JSSPORT = 7770, JSPOPPORT = 7670;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.15.2x1"/*TEMP*/);
+    public static final String VERSION = new String("5.15.3");
 
     public static final String PROTOCOL_VERSION = new String("17.2");
 
