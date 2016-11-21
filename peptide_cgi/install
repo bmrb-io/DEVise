@@ -215,12 +215,7 @@ endif
 if (! -e $targetdir/help_rrtar.html) then
   ln -s $targetdir/help_tar.html $targetdir/help_rrtar.html
 endif
-chmod a+r $targetdir/*.html
-chmod a+r $targetdir/*.jpg
-chmod a+r $targetdir/*.gif
-chmod a+r $targetdir/*.png
-chmod a+r $targetdir/*.txt
-#find $targetdir -name \* -type f -exec chmod a+r {} \;
+find /website/devise/bmrb/dynamic_html -regex '.*[html|jpg|gif|png|txt]' -type f -maxdepth 1 -print0 | xargs -0 -n 100 chmod a+r
 
 cp -p pep-version-history $targetdir/pep-version-history.txt
 
@@ -288,8 +283,8 @@ endif
 chmod a+rx $targetdir
 
 set executables = (make_view get_version get_version_cgi s2d vsc set_modes \
-	test_all vur view_unreleased uvd make_uvd delete_sessions \
-	generate_movies generate_examples)
+    test_all vur view_unreleased uvd make_uvd delete_sessions \
+    generate_movies generate_examples)
 foreach exec ($executables)
   cp -p cgi-bin/$exec $targetdir
   chmod a+rx $targetdir/$exec
