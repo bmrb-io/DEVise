@@ -215,7 +215,7 @@ endif
 if (! -e $targetdir/help_rrtar.html) then
   ln -s $targetdir/help_tar.html $targetdir/help_rrtar.html
 endif
-find /website/devise/bmrb/dynamic_html -regex '.*[html|jpg|gif|png|txt]' -type f -maxdepth 1 -print0 | xargs -0 -n 100 chmod -f a+r
+find $targetdir -maxdepth 1 -type f -print0 -regex '.*[html|jpg|gif|png|txt]'  | xargs -0 -n 100 chmod -f a+r
 
 cp -p pep-version-history $targetdir/pep-version-history.txt
 
