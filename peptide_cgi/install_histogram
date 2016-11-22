@@ -98,7 +98,7 @@ chmod a+r $targetdir/[a-z]*
 set targetdir = $targetdir/bmrb_histogram_data
 if (-e $targetdir || -l $targetdir) then
   rm $targetdir
-endif 
+endif
 ln -s $datahome $targetdir
 
 
@@ -121,8 +121,10 @@ endif
 chmod a+rwx $targetdir
 cp -p html2/devise/histograms/figures/*.png $targetdir
 chmod a+r $targetdir/*.png
-cp -p html2/devise/histograms/figures/*.gif $targetdir
-chmod a+r $targetdir/*.gif
+
+# There are no gifs
+#cp -p html2/devise/histograms/figures/*.gif $targetdir
+#chmod a+r $targetdir/*.gif
 
 
 # This section is temporary, to work around the histogram link problem.
