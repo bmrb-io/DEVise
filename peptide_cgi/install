@@ -247,9 +247,9 @@ if ($pephome != null) then
     cp -p html2/devise/peptide-cgi/restraint_select.html $targetdir
     chmod a+r $targetdir/restraint_select.html
 
-    ln -s $htmlhome/visualization.css $targetdir/..
+    ln -sf $htmlhome/visualization.css $targetdir/..
 
-    mkdir $targetdir/figures
+    mkdir -p $targetdir/figures
     cp -p html2/devise/peptide-cgi/figures/*.* $targetdir/figures
     chmod a+r $targetdir/figures
     chmod a+r $targetdir/figures/*
