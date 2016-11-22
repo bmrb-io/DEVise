@@ -135,9 +135,11 @@ cp -p html2/devise/*hist*.html $targetdir
 chmod a+r $targetdir/*.html
 
 # Attempt to copy the jnlp files
+echo "Copying JNLP files to $targetdir"
 cp -p histograms/jnlp/* $targetdir
 chmod a+r $targetdir/*jnlp
 # Update the JNLP files based on the settings.
+echo "Updating the JNLP files based on the configuration"
 sed -i "s|CODEBASE|${codebase}|g" $targetdir/*jnlp
 sed -i "s|DEVISE_HOST|${hostname}|g" $targetdir/*jnlp
 
