@@ -12,4 +12,5 @@ make
 make testsetup
 cd cgi-bin
 ./test_all
+cd ..
 make install
