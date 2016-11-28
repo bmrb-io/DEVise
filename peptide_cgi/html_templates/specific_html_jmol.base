@@ -106,7 +106,7 @@
             <h3>To launch the DEVise visualizer on Windows or Linux follow these instructions:</h3>
             <p>In Firefox you should be asked how to handle the file. Select "open with Java" to launch the viewer.</p>
             <p>In Chrome you will be asked if you want to keep the downloaded file. Click "Keep", and then click once on the downloaded file.</p>
-            <h3>To view the instructions for launching DEVise on macOS please look <a href="bmrb/dynamic_html/help_jnlp.html" target="_blank">here</a>.</h3>
+            <h3>To view the instructions for launching DEVise on macOS please look <a href="../help_jnlp.html" target="_blank">here</a>.</h3>
             <hr>
       <hr>
     </object>
