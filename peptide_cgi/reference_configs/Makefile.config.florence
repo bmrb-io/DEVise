@@ -173,10 +173,6 @@ DO_S2PRED_DEFAULT = 1
 # The root URL of s2predict output files.
 S2PRED_URL_DEFAULT = http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/s2predict/
 
-# Do dynamics movies.
-DO_DYN_MOVIE_DEFAULT = 1
-
-
 #-----------------------------------------------------------
 # Other.
 
