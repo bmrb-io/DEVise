@@ -44,7 +44,7 @@ public class S2DMain {
     // Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.5.0";
+    public static final String PEP_CGI_VERSION = "12.5.1";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.8";
 
