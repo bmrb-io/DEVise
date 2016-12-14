@@ -140,7 +140,8 @@ public class S2DSpecificHtml {
 
         // Write the "normal size" file.
         String templateFile = TemplateFileName("specific_html_jmol.base");
-        String templateJNLPFile = TemplateFileName("jnlp.base");
+        // Choose the template based on UVD or not
+        String templateJNLPFile = _isUvd ? TemplateFileName("jnlp_uvd.base") : TemplateFileName("jnlp.base");
         writeOne(templateFile, templateJNLPFile);
     }
 
