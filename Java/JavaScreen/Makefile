@@ -129,7 +129,7 @@ import_cert:
 # http://tsa.starfieldtech.com (see
 # http://ant.apache.org/manual/Tasks/signjar.html).
 sign:
-	jarsigner -tsa http://timestamp.geotrust.com/tsa -storetype pkcs12 \
+	jarsigner -tsa http://sha256timestamp.ws.symantec.com/sha256/timestamp -storetype pkcs12 \
 		-keystore js_certs/uw_signing_chain.pfx \
 		devise_js.jar "bmrb"
 
