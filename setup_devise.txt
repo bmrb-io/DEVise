@@ -1,0 +1,263 @@
+On Centos machine:
+
+yum install java-1.7.0-openjdk-devel tcl-devel tk-devel autofs perl-CGI Xvfb csh
+x11-devel?
+
+Ubuntu:
+
+sudo apt-get install xvfb tcl-dev tk-dev csh libx11-dev
+sudo add-apt-repository ppa:openjdk-r/ppa
+sudo apt-get update
+sudo apt-get install openjdk-7-jdk
+
+Set up autofs:
+/share          -noatime,nodiratime         files:/raid/share
+/bmrb           -noatime,nodiratime         files:/raid/bmrb
+/website        -noatime,nodiratime         manatee:/raid
+/svn            -noatime,nodiratime         hydra:/svn
+/dumpzone/pdb   -ro,noatime,nodiratime      koi-internal:/vol/pdb_ftp/pdb
+
+Devise:
+1) ./scripts/setup
+2) cd distribution directory
+3) ../linux/setup
+4) make
+5) ./dev l
+    (use xlsfonts and -defaultFont if Courier missing with font. Example: -defaultFont "-bitstream-courier 10 pitch-bold-i-normal--0-0-0-0-m-0-iso8859-1")
+    Edit it into: Java/JavaScreen/scripts/start_devised
+6) Open a session file
+
+JavaScreen:
+1) Look at Makefile for test_release - rhel6
+1) Copy appropriate Makefile.config.* to Makefile.config and edit
+    Also edit Makefile.setup:
+        DEVISE_VIS = /websites/www/html/testdevise/compile/public
+        DEVISE_HOME_TABLE = $$DEVISE_SCHEMA/catalog.dte
+Make sure to change path of Xvfb to /usr/bin
+Change path of DEVISE_VIS to demo and symlink ../../public/ or point to full path
+You might need to rm /tmp/.tX1-lock
+2) Edit "setup" and change rhel6 line to distribution folder name
+3) make setup
+4) make
+7) Make sure it works by ./js -hostpacu
+8) ./restart_jspop
+9) ./check_connect and ./check_connect -dev to check for problems
+
+PeptideCGI:
+1) Copy appropriate Makefile.config.* to Makefile.config and edit
+2) cd src and make
+3) cd .. and "make" and then "make testsetup"
+4) cd cgi-bin and run test_all
+
+JavaScreen in devise directory
+
+To perform the install:
+
+1) cd JavaScreen
+2) make jar
+3) make sign
+4) make all
+5) make install
+
+*) cd peptide-cgi
+*) in src / make jar
+*) cd .. && make install
+
+
+Devise Test:
+
+Here's the URL for the base of the test stuff at CS:
+http://devise.cs.wisc.edu/devise/test/
+
+And this is an approximation of the BMRB home page:
+http://devise.cs.wisc.edu/devise/test/bmrb_test/bmrb_home.html
+(the visualization stuff within that all works, but other things may not work).
+
+
+CVS INFO:
+
+As far as the attached files go, java_web_start.txt is general information about Java Web Start.  todo13-012.txt is more about specifically
+implementing things in the JavaScreen.
+
+To check out the DEVise/JavaScreen code on the correct branch:
+setenv CVSROOT /p/devise/cvs
+cvs checkout -r dev_javaws_br devisefull
+
+To check out the Peptide-CGI code on the correct branch:
+s2d_javaws_br
+setenv CVSROOT /p/devise/cvs
+cvs checkout -r s2d_javaws_br peptide_cgi
+
+Last DEVise/JavaScreen commit:
+Todo 13.012:  Sort of got Java Web Start to work in the browser (link
+works, launch button does *not*), but seems to be running things
+within the browser as opposed to via Web Start(!) -- doesn't work at
+all in Chrome, for example.
+
+There are basically two phases to converting things to Java Web Start:
+1) Understanding how Java Web Start works, and "manually" getting the
+JavaScreen to work.
+2) Updating Peptide-CGI to output the correct files.
+
+Basically, the last I was working on this I was in the middle of phase 1. I haven't done much yet on phase 2 -- mostly just some cleaning up on that branch.
+
+Kent
+--
+R. Kent Wenger (wenger@cs.wisc.edu, 608-262-6627,
+http://www.cs.wisc.edu/~wenger/)
+Computer Sciences Department
+University of Wisconsin-Madison
+
+java_web_start.txt
+
+                Java Web Start
+                2016-03-11
+
+Possibly use Java Web Start to deal with the fact that browsers are
+going away from allowing Java as a plugin.
+
+see http://docs.oracle.com/javase/8/docs/technotes/guides/javaws/ ?
+
+https://docs.oracle.com/javase/tutorial/deployment/webstart/examplesIndex.html
+Okay -- one of these just worked in Firefox on my laptop -- I guess
+there's something you have to do in your browser to enable Java Web
+Start.  I'm trying to figure out why it works in that browser but not
+in others...
+
+Maybe see this?:
+https://blogs.oracle.com/java-platform-group/entry/launching_web_start_applications
+http://www.java.com/en/download/faq/java_webstart.xml
+
+
+Hmm -- browsers don't seem to run .jnlp files automatically --
+download it and do 'javaws dynamictree_webstart.jnlp'.
+Is that because the jnlp file doesn't have application/x-java-jnlp-file?
+
+Also see https://en.wikipedia.org/wiki/Java_Web_Start
+
+This looks important:
+https://docs.oracle.com/javase/tutorial/deployment/webstart/deploying.html
+
+Info about how the Java code itself should be written:
+https://docs.oracle.com/javase/tutorial/deployment/webstart/developing.html
+https://docs.oracle.com/javase/tutorial/deployment/index.html#componentBasedArch
+Okay -- this seems to be saying that for a Web Start application, your
+top-level GUI component should be a JFrame, which is what we have
+with the "application" version of the JavaScreen.
+Hmm -- according to this:
+https://docs.oracle.com/javase/1.5.0/docs/guide/javaws/developersguide/syntax.html
+you can launch either an application OR an applet with web start...
+
+
+http://docs.oracle.com/javase/8/docs/technotes/guides/javaws/developersguide/contents.html
+
+https://docs.oracle.com/javase/tutorial/deployment/deploymentInDepth/index.html
+
+https://docs.oracle.com/javase/tutorial/deployment/deploymentInDepth/deployingWithoutCodebase.html
+
+
+
+Hmm -- it looks like maybe you *have* to have special JavaScript code
+in your html page to cause the browser to fire up things from the JNLP
+page.  (I was confused because the browser was firing up Java when
+I directly went to https://docs.oracle.com/javase/tutorialJWS/samples/deployment/dynamictree_webstartJWSProject/dynamictree_webstart.jnlp, but I'll bet that was because I had already gone to that page via the referring web page, and I think the browser probably "remembered" that it should launch things on that page.
+
+http://docs.oracle.com/javase/8/docs/technotes/guides/javaws/developersguide/launch.html
+
+
+Hmm -- supposedly you can deploy without specifying codebase!!:
+https://docs.oracle.com/javase/tutorial/deployment/deploymentInDepth/deployingWithoutCodebase.html
+
+
+This seems like it *might* be useful:
+http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/applet_migration.html
+
+
+todo13-012.txt
+
+    To-do 13.012: Convert the JavaScreen to use Java Web Start
+                2016-03-22
+
+Right now (2016-02-23) I'm still figuring out the details of how web
+start works.  I've been able to run the JavaScreen via web start
+from the command line (javaws), but it has been prohibited from
+connecting to a web server.  I'm not sure if that's maybe because
+so far I've run an application instead of an applet?
+
+I think that, to get things to work in a browser, you need a bit of
+Javascript in the "referring" HTML page.  (It doesn't seem to work
+to directly point the browser to the JNLP page, unless you've already
+gone there from the "referring" HTML page, so I assume the browser
+caches the information that it should run Web Start on the JNLP
+page.)
+
+Anyhow, assuming I get that to work, my plan is to add a link or
+button to the JavaScreen pages that launches the JavaScreen via
+Web Start.  (My plan is to, at least initially, leave the existing
+applet code in place for browsers that support it.  We could take
+that out eventually.)
+
+Note for Peptide-CGI implementation:  Once I figure out the details
+of how Web Start works, I'll obviously have to modify the Peptide-CGI
+code accordingly, and have it generate .JNLP files corresponding to
+the session-specific .HTML files it currently generates.  I think
+there should be config knobs for whether to generate the applet
+code and the web start code; both should initially default to true,
+but we might want to eventually turn off the applet option once
+browsers don't support that anymore.
+
+
+Okay, it looks like when you invoke a JNLP file on the command
+line (e.g., javaws foo.jnlp) the only thing it looks at in that
+file is codebase and href, and it just gets everything else from
+that file, not from the one you specify...  Hmm -- that's not
+totally true -- you need to have application-desc in the one
+you specify on the command line, but javaws doesn't seen to
+actually pay any attention to what the values in application-desc
+are...  (WTF?!?)
+
+Can codebase be "file:/..."?  Maybe have to try that.
+Note:  there's a document that says you can get away without specifying
+codebase at all:
+https://docs.oracle.com/javase/tutorial/deployment/deploymentInDepth/deployingWithoutCodebase.html
+
+Hmm -- just taking out codebase, and trying to run things with javaws,
+it seems like javaws is getting the right jar file, but it refuses to
+run it (even if it's signed) for security reasons...
+
+
+I have to say, though, that the behavior of Java Web Start is really
+weird:  when you run a JNLP file from the command line (with javaws)
+it seems to mostly get its information from the JNLP file specified
+in codebase/href in the JNLP file you specify, not directly from
+that file.  For example, the application-desc stuff comes from the
+referenced file, not the one you specify.  (I don't understand why
+there's this extra level of indirection.)  The weird thing, though,
+is that you *must* have an appliation-desc in the file you specify
+on the command line, even though is can be mostly junk.
+
+One thing I need to figure out:  if you run a JNLP file via a web
+browser, does it run the file you browser is viewing, or does it run
+the file referenced in that file?  Is the codebase/href supposed to
+refer to *itself*?  What if it doesn't?
+
+
+TEMPTEMP -- need to get data download to work.
+Probably first do dialog w/ URL to paste
+Maybe try to save file directly
+JonW suggestion -- tell JSPoP what URL data is at; JavaScript code in
+html page polls the JSPoP
+
+
+For peptide-cgi:
+s2dmain is where I will need to edit to make jnlp files - or the
+sub files that s2dmain calls.
+
+Also worth looking at s2dsummaryhtml.java and s2dsummaryhtmlgen.java
+
+For javascript conversion:
+
+jsa is the makefile target needed
+DEViseJSApplet.java is "main" class - also look at jsdevisec.java
+
+Maybe can remove DEViseCanvas3DPlain.java
